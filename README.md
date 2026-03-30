@@ -185,8 +185,6 @@ Includes:
 - Localization
 - UI improvements
 - Backend optimizations
-- Factions
-- Ironman mode
 
 All tasks are already imported into GitHub Issues under milestones **Phase 1 → Phase 7**.
 
