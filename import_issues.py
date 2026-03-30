@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 import json
 import os
-import requests
+import subprocess
 import time
 
 # Charger le fichier JSON
-with open("issues.json", "r", encoding="utf-8") as f:
+with open("issues_mvp.json", "r", encoding="utf-8") as f:
     data = json.load(f)
 
 REPO = data["repo"]
-API_URL = f"https://api.github.com/repos/{REPO}"
+API_URL = "https://api.github.com/repos/" + REPO
 TOKEN = os.getenv("GITHUB_TOKEN")
 
 if not TOKEN:
@@ -17,26 +17,51 @@ if not TOKEN:
     print("Définis-la avec : export GITHUB_TOKEN='ton_token'")
     exit(1)
 
-HEADERS = {
-    "Authorization": f"token {TOKEN}",
-    "Accept": "application/vnd.github+json"
-}
+def run_curl(args):
+    """Exécute curl et retourne la sortie."""
+    process = subprocess.Popen(
+        args,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
+    )
+    out, err = process.communicate()
+    return out.decode("utf-8")
+
+def api_post(url, payload):
+    return run_curl([
+        "curl", "-s", "-X", "POST",
+        "-H", "Authorization: token " + TOKEN,
+        "-H", "Accept: application/vnd.github+json",
+        "-d", json.dumps(payload),
+        url
+    ])
+
+def api_get(url):
+    return run_curl([
+        "curl", "-s",
+        "-H", "Authorization: token " + TOKEN,
+        "-H", "Accept: application/vnd.github+json",
+        url
+    ])
 
 def create_milestone(name, description):
-    print(f"📌 Création du milestone : {name}")
+    print("📌 Création du milestone :", name)
     payload = {"title": name, "description": description}
-    r = requests.post(f"{API_URL}/milestones", headers=HEADERS, json=payload)
-    if r.status_code not in (200, 201):
-        print(f"⚠️  Erreur milestone {name}: {r.text}")
-    else:
-        print(f"   ✔ Milestone créé")
+    response = api_post(API_URL + "/milestones", payload)
+    print("   ↳ Réponse :", response[:200], "…")
+
+def get_milestone_id(name):
+    milestones_json = api_get(API_URL + "/milestones")
+    milestones = json.loads(milestones_json)
+    for m in milestones:
+        if m["title"] == name:
+            return m["number"]
+    return None
 
 def create_issue(title, body, labels, milestone_name):
-    print(f"📝 Création issue : {title}")
+    print("📝 Création issue :", title)
 
-    # Récupérer l'ID du milestone
-    milestones = requests.get(f"{API_URL}/milestones", headers=HEADERS).json()
-    milestone_id = next((m["number"] for m in milestones if m["title"] == milestone_name), None)
+    milestone_id = get_milestone_id(milestone_name)
 
     payload = {
         "title": title,
@@ -47,11 +72,8 @@ def create_issue(title, body, labels, milestone_name):
     if milestone_id:
         payload["milestone"] = milestone_id
 
-    r = requests.post(f"{API_URL}/issues", headers=HEADERS, json=payload)
-    if r.status_code not in (200, 201):
-        print(f"⚠️  Erreur issue {title}: {r.text}")
-    else:
-        print(f"   ✔ Issue créée")
+    response = api_post(API_URL + "/issues", payload)
+    print("   ↳ Réponse :", response[:200], "…")
 
 # Import milestones
 print("=== Import des milestones ===")

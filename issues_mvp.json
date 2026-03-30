@@ -1,0 +1,161 @@
+{
+  "repo": "Redunca/AI-Mercenary-Manager",
+  "milestones": [
+    {
+      "name": "MVP – Base du jeu",
+      "description": "Toutes les fonctionnalités nécessaires pour obtenir un premier prototype jouable."
+    }
+  ],
+  "issues": [
+    {
+      "title": "Initialisation du backend Node.js",
+      "milestone": "MVP – Base du jeu",
+      "labels": ["backend", "setup"],
+      "body": "Créer la structure minimale du backend Node.js.\n- Initialiser le projet\n- Ajouter Express\n- Ajouter les routes de base\n- Préparer la structure pour les modules futurs"
+    },
+    {
+      "title": "Initialisation du frontend Angular (UI console-like)",
+      "milestone": "MVP – Base du jeu",
+      "labels": ["frontend", "setup"],
+      "body": "Créer le projet Angular.\n- Installer Angular\n- Créer un thème console-like\n- Préparer les composants principaux"
+    },
+    {
+      "title": "Containerisation avec Podman",
+      "milestone": "MVP – Base du jeu",
+      "labels": ["devops", "container"],
+      "body": "Créer un Podmanfile pour le backend et le frontend.\n- Multi-stage build\n- Exposition des ports\n- Configuration de base"
+    },
+    {
+      "title": "Schéma PostgreSQL minimal",
+      "milestone": "MVP – Base du jeu",
+      "labels": ["database"],
+      "body": "Créer les tables nécessaires pour le MVP.\n- users\n- recruits\n- missions_active\n- missions_logs\n- config"
+    },
+    {
+      "title": "Système de temps réel : stockage du timestamp",
+      "milestone": "MVP – Base du jeu",
+      "labels": ["backend", "time"],
+      "body": "Stocker le timestamp de dernière mise à jour pour chaque joueur."
+    },
+    {
+      "title": "Système de temps réel : calcul du delta",
+      "milestone": "MVP – Base du jeu",
+      "labels": ["backend", "time"],
+      "body": "Calculer le temps écoulé depuis la dernière mise à jour."
+    },
+    {
+      "title": "Système de temps réel : rattrapage du temps",
+      "milestone": "MVP – Base du jeu",
+      "labels": ["backend", "time"],
+      "body": "Faire avancer les missions en fonction du delta de temps."
+    },
+    {
+      "title": "Modèle de recrue",
+      "milestone": "MVP – Base du jeu",
+      "labels": ["recrues"],
+      "body": "Créer le modèle de recrue avec : id, nom, stats (0/3/5), état."
+    },
+    {
+      "title": "Génération de candidats",
+      "milestone": "MVP – Base du jeu",
+      "labels": ["recrues"],
+      "body": "Générer des candidats avec une stat à 0, une à 3, une à 5."
+    },
+    {
+      "title": "Recrutement de recrues",
+      "milestone": "MVP – Base du jeu",
+      "labels": ["recrues"],
+      "body": "Permettre au joueur de recruter un candidat."
+    },
+    {
+      "title": "Lecture des missions depuis config.json",
+      "milestone": "MVP – Base du jeu",
+      "labels": ["missions", "config"],
+      "body": "Charger les missions définies dans config.json au démarrage."
+    },
+    {
+      "title": "Structure de mission : avant → événement → retour",
+      "milestone": "MVP – Base du jeu",
+      "labels": ["missions"],
+      "body": "Implémenter la structure temporelle simple d'une mission."
+    },
+    {
+      "title": "Lancement d’une mission",
+      "milestone": "MVP – Base du jeu",
+      "labels": ["missions"],
+      "body": "Permettre au joueur de lancer une mission avec une ou plusieurs recrues."
+    },
+    {
+      "title": "Suivi des missions en cours",
+      "milestone": "MVP – Base du jeu",
+      "labels": ["missions"],
+      "body": "Afficher la progression des missions en cours."
+    },
+    {
+      "title": "Système de jets : table des dés",
+      "milestone": "MVP – Base du jeu",
+      "labels": ["missions", "dice"],
+      "body": "Implémenter la table des dés selon la stat (0–10)."
+    },
+    {
+      "title": "Système de jets : résolution",
+      "milestone": "MVP – Base du jeu",
+      "labels": ["missions", "dice"],
+      "body": "Jet = 1d20 + dés de stat, comparer au DC."
+    },
+    {
+      "title": "Mort / survie des recrues",
+      "milestone": "MVP – Base du jeu",
+      "labels": ["recrues", "missions"],
+      "body": "Si jet < DC → mort, sinon survie."
+    },
+    {
+      "title": "Logs techniques",
+      "milestone": "MVP – Base du jeu",
+      "labels": ["logs"],
+      "body": "Générer des logs techniques détaillant les jets et résultats."
+    },
+    {
+      "title": "Logs narratifs (IA + recrues)",
+      "milestone": "MVP – Base du jeu",
+      "labels": ["logs"],
+      "body": "Ajouter une voix IA neutre et des réactions absurdes des recrues."
+    },
+    {
+      "title": "Interface console-like : dashboard",
+      "milestone": "MVP – Base du jeu",
+      "labels": ["frontend"],
+      "body": "Créer la vue principale du jeu."
+    },
+    {
+      "title": "Interface console-like : recrues",
+      "milestone": "MVP – Base du jeu",
+      "labels": ["frontend"],
+      "body": "Afficher la liste des recrues et leurs stats."
+    },
+    {
+      "title": "Interface console-like : candidats",
+      "milestone": "MVP – Base du jeu",
+      "labels": ["frontend"],
+      "body": "Afficher les candidats disponibles."
+    },
+    {
+      "title": "Interface console-like : missions disponibles",
+      "milestone": "MVP – Base du jeu",
+      "labels": ["frontend"],
+      "body": "Afficher les missions définies dans config.json."
+    },
+    {
+      "title": "Interface console-like : missions en cours",
+      "milestone": "MVP – Base du jeu",
+      "labels": ["frontend"],
+      "body": "Afficher les missions en cours et leur progression."
+    },
+    {
+      "title": "Interface console-like : logs",
+      "milestone": "MVP – Base du jeu",
+      "labels": ["frontend"],
+      "body": "Afficher les logs techniques et narratifs."
+    }
+  ]
+}
