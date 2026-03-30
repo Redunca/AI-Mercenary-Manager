@@ -1,0 +1,283 @@
+# issues.yaml
+# Roadmap complète pour AI-Mercenary-Manager
+# Importable via GitHub CLI avec le script fourni
+
+milestones:
+  - name: "Phase 1 – Consolidation du cœur du jeu"
+    description: "Améliorations du système de missions, blessures, logs"
+  - name: "Phase 2 – Profondeur des recrues"
+    description: "Sous-statistiques, compétences, personnalités"
+  - name: "Phase 3 – Équipement & économie"
+    description: "Inventaire, équipement, économie, réputation"
+  - name: "Phase 4 – Managers & automatisation"
+    description: "Managers humains, erreurs, personnalités, logs"
+  - name: "Phase 5 – Missions narratives complexes"
+    description: "Génération procédurale, arcs narratifs, missions spéciales"
+  - name: "Phase 6 – Infrastructure & qualité de vie"
+    description: "Localisation, interface avancée, optimisation backend"
+  - name: "Phase 7 – Extensions possibles"
+    description: "Idées futures non prioritaires"
+
+issues:
+
+  ###############################################################
+  # PHASE 1 – CONSOLIDATION DU CŒUR DU JEU
+  ###############################################################
+
+  - title: "Support de plusieurs événements par mission"
+    milestone: "Phase 1 – Consolidation du cœur du jeu"
+    labels: ["feature", "missions"]
+    body: |
+      Ajouter la possibilité d'avoir 2 à 3 événements dans une mission.
+      - Structure configurable dans config.json
+      - Gestion du transit entre événements
+      - Mise à jour du système de logs
+      Critères d'acceptation :
+      - Une mission peut contenir plusieurs événements
+      - Le système de rattrapage du temps gère correctement chaque étape
+
+  - title: "Nouveaux types d’événements"
+    milestone: "Phase 1 – Consolidation du cœur du jeu"
+    labels: ["feature", "missions"]
+    body: |
+      Ajouter des événements variés :
+      - Blessure légère
+      - Bonus de loot
+      - Rencontre sociale
+      - Obstacle environnemental
+      Critères d'acceptation :
+      - Chaque type d’événement possède une résolution propre
+      - Les logs reflètent correctement les résultats
+
+  - title: "Système de réussite partielle"
+    milestone: "Phase 1 – Consolidation du cœur du jeu"
+    labels: ["feature", "missions"]
+    body: |
+      Ajouter des paliers de réussite :
+      - Échec critique → mort
+      - Échec → blessure
+      - Réussite → survie
+      - Réussite critique → bonus
+      Critères d'acceptation :
+      - Les missions utilisent les 4 niveaux de résultat
+      - Les logs affichent le palier obtenu
+
+  - title: "Système de blessures"
+    milestone: "Phase 1 – Consolidation du cœur du jeu"
+    labels: ["feature", "recrues"]
+    body: |
+      Ajouter un système de blessures :
+      - États : sain, blessé léger, blessé grave, inconscient, mort
+      - Malus sur les jets
+      - Temps de récupération réel
+      Critères d'acceptation :
+      - Une recrue blessée ne peut pas partir en mission
+      - Les blessures se résorbent avec le temps réel
+
+  - title: "Amélioration du système de logs"
+    milestone: "Phase 1 – Consolidation du cœur du jeu"
+    labels: ["enhancement", "logs"]
+    body: |
+      Ajouter :
+      - Réactions humaines absurdes
+      - Détails techniques (dés, probabilités)
+      - Filtres par recrue / mission / type d’événement
+      Critères d'acceptation :
+      - Les logs sont plus riches et filtrables
+
+  ###############################################################
+  # PHASE 2 – PROFONDEUR DES RECRUES
+  ###############################################################
+
+  - title: "Ajout des sous-statistiques détaillées"
+    milestone: "Phase 2 – Profondeur des recrues"
+    labels: ["feature", "recrues"]
+    body: |
+      Décomposer Physique / Mental / Social en sous-stats.
+      Critères d'acceptation :
+      - Les recrues possèdent les sous-stats
+      - Conversion depuis les stats globales
+
+  - title: "Système de compétences"
+    milestone: "Phase 2 – Profondeur des recrues"
+    labels: ["feature", "recrues"]
+    body: |
+      Ajouter des compétences :
+      - Athlète, Tireur, Médecin, etc.
+      Critères d'acceptation :
+      - Les compétences influencent les jets
+      - Les recrues peuvent en gagner
+
+  - title: "Système de personnalités"
+    milestone: "Phase 2 – Profondeur des recrues"
+    labels: ["feature", "recrues"]
+    body: |
+      Ajouter des traits de personnalité :
+      - Peureux, Vantard, Cynique, etc.
+      Critères d'acceptation :
+      - Les logs reflètent la personnalité
+      - Les traits influencent certains résultats
+
+  ###############################################################
+  # PHASE 3 – ÉQUIPEMENT & ÉCONOMIE
+  ###############################################################
+
+  - title: "Système d’équipement"
+    milestone: "Phase 3 – Équipement & économie"
+    labels: ["feature", "equipment"]
+    body: |
+      Ajouter :
+      - Armes, armures, outils
+      - Bonus de stats
+      Critères d'acceptation :
+      - Inventaire global fonctionnel
+      - Attribution aux recrues
+
+  - title: "Économie : dépenses et revenus"
+    milestone: "Phase 3 – Équipement & économie"
+    labels: ["feature", "economy"]
+    body: |
+      Ajouter :
+      - Coût de recrutement
+      - Achat d’équipement
+      - Revenus de missions
+      Critères d'acceptation :
+      - L’argent est cohérent et persistant
+
+  - title: "Système de réputation"
+    milestone: "Phase 3 – Équipement & économie"
+    labels: ["feature", "progression"]
+    body: |
+      Ajouter la réputation :
+      - Débloque missions
+      - Améliore recrues
+      Critères d'acceptation :
+      - La réputation évolue selon les missions
+
+  ###############################################################
+  # PHASE 4 – MANAGERS & AUTOMATISATION
+  ###############################################################
+
+  - title: "Managers basiques"
+    milestone: "Phase 4 – Managers & automatisation"
+    labels: ["feature", "managers"]
+    body: |
+      Ajouter des managers humains :
+      - Recruteur
+      - Organisateur d’équipes
+      - Envoyeur en mission
+      Critères d'acceptation :
+      - Les managers peuvent effectuer leurs tâches automatiquement
+
+  - title: "Taux d’erreur des managers"
+    milestone: "Phase 4 – Managers & automatisation"
+    labels: ["feature", "managers"]
+    body: |
+      Ajouter un taux d’erreur :
+      - Départ 50%
+      - Minimum 5%
+      Critères d'acceptation :
+      - Les erreurs sont visibles dans les logs
+
+  - title: "Personnalités des managers"
+    milestone: "Phase 4 – Managers & automatisation"
+    labels: ["feature", "managers"]
+    body: |
+      Ajouter des personnalités :
+      - Timide, Vantard, Bureaucrate, etc.
+      Critères d'acceptation :
+      - Les décisions reflètent la personnalité
+
+  - title: "Logs des managers"
+    milestone: "Phase 4 – Managers & automatisation"
+    labels: ["enhancement", "logs"]
+    body: |
+      Ajouter :
+      - Raisonnement
+      - Justifications absurdes
+      Critères d'acceptation :
+      - Les logs des managers sont consultables
+
+  ###############################################################
+  # PHASE 5 – MISSIONS NARRATIVES COMPLEXES
+  ###############################################################
+
+  - title: "Génération procédurale de missions"
+    milestone: "Phase 5 – Missions narratives complexes"
+    labels: ["feature", "missions"]
+    body: |
+      Ajouter :
+      - Structure narrative
+      - 3–6 événements
+      Critères d'acceptation :
+      - Les missions sont cohérentes et variées
+
+  - title: "Arcs narratifs"
+    milestone: "Phase 5 – Missions narratives complexes"
+    labels: ["feature", "missions"]
+    body: |
+      Ajouter des arcs :
+      - Guerre, artefact, conspiration
+      Critères d'acceptation :
+      - Les arcs influencent les missions
+
+  - title: "Missions spéciales"
+    milestone: "Phase 5 – Missions narratives complexes"
+    labels: ["feature", "missions"]
+    body: |
+      Ajouter des missions uniques :
+      - Sauvetage, défense, chronométrées
+      Critères d'acceptation :
+      - Les missions spéciales fonctionnent
+
+  ###############################################################
+  # PHASE 6 – INFRASTRUCTURE & QUALITÉ DE VIE
+  ###############################################################
+
+  - title: "Localisation multilingue"
+    milestone: "Phase 6 – Infrastructure & qualité de vie"
+    labels: ["enhancement", "localization"]
+    body: |
+      Ajouter :
+      - Fichiers de langue
+      - Templates
+      Critères d'acceptation :
+      - Le jeu peut changer de langue
+
+  - title: "Interface avancée"
+    milestone: "Phase 6 – Infrastructure & qualité de vie"
+    labels: ["enhancement", "frontend"]
+    body: |
+      Ajouter :
+      - Filtres
+      - Recherche
+      - Tableaux dynamiques
+      Critères d'acceptation :
+      - L’interface est plus ergonomique
+
+  - title: "Optimisations backend"
+    milestone: "Phase 6 – Infrastructure & qualité de vie"
+    labels: ["enhancement", "backend"]
+    body: |
+      Ajouter :
+      - Indexation
+      - Archivage
+      - Compression
+      Critères d'acceptation :
+      - Les performances sont améliorées
+
+  ###############################################################
+  # PHASE 7 – EXTENSIONS POSSIBLES
+  ###############################################################
+
+  - title: "Mode Ironman"
+    milestone: "Phase 7 – Extensions possibles"
+    labels: ["feature", "mode"]
+    body: |
+      Mode où la mort de la guilde = fin de partie.
+
+  - title: "Factions concurrentes"
+    milestone: "Phase 7 – Extensions possibles"
+    labels: ["feature", "world"]
+    body: |
+      Ajouter des IA rivales.
