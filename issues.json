@@ -1,0 +1,173 @@
+{
+  "repo": "Redunca/AI-Mercenary-Manager",
+  "milestones": [
+    {
+      "name": "Phase 1 – Consolidation du cœur du jeu",
+      "description": "Améliorations du système de missions, blessures, logs"
+    },
+    {
+      "name": "Phase 2 – Profondeur des recrues",
+      "description": "Sous-statistiques, compétences, personnalités"
+    },
+    {
+      "name": "Phase 3 – Équipement & économie",
+      "description": "Inventaire, équipement, économie, réputation"
+    },
+    {
+      "name": "Phase 4 – Managers & automatisation",
+      "description": "Managers humains, erreurs, personnalités, logs"
+    },
+    {
+      "name": "Phase 5 – Missions narratives complexes",
+      "description": "Génération procédurale, arcs narratifs, missions spéciales"
+    },
+    {
+      "name": "Phase 6 – Infrastructure & qualité de vie",
+      "description": "Localisation, interface avancée, optimisation backend"
+    },
+    {
+      "name": "Phase 7 – Extensions possibles",
+      "description": "Idées futures non prioritaires"
+    }
+  ],
+  "issues": [
+    {
+      "title": "Support de plusieurs événements par mission",
+      "milestone": "Phase 1 – Consolidation du cœur du jeu",
+      "labels": ["feature", "missions"],
+      "body": "Ajouter la possibilité d'avoir 2 à 3 événements dans une mission.\n\nTâches :\n- Étendre le modèle de mission pour supporter une liste d'événements.\n- Permettre de définir la structure dans config.json (avant → event1 → transit → event2 → transit → retour).\n- Adapter le système de rattrapage du temps pour gérer chaque étape.\n- Adapter les logs pour afficher chaque événement.\n\nCritères d'acceptation :\n- Une mission peut contenir plusieurs événements.\n- Le rattrapage du temps résout correctement chaque événement dans l'ordre.\n- Les logs affichent chaque événement avec son résultat."
+    },
+    {
+      "title": "Nouveaux types d’événements",
+      "milestone": "Phase 1 – Consolidation du cœur du jeu",
+      "labels": ["feature", "missions"],
+      "body": "Ajouter des types d’événements variés pour enrichir les missions.\n\nTypes d’événements à ajouter :\n- Blessure légère.\n- Bonus de loot.\n- Rencontre sociale.\n- Obstacle environnemental.\n\nTâches :\n- Définir un type d’événement dans le modèle (type, paramètres, effets).\n- Implémenter la résolution de chaque type.\n- Intégrer ces événements dans config.json.\n\nCritères d'acceptation :\n- Chaque type d’événement possède une résolution propre.\n- Les effets (blessure, loot, etc.) sont appliqués correctement.\n- Les logs reflètent correctement les résultats de chaque type d’événement."
+    },
+    {
+      "title": "Système de réussite partielle",
+      "milestone": "Phase 1 – Consolidation du cœur du jeu",
+      "labels": ["feature", "missions"],
+      "body": "Ajouter des paliers de résultat pour les jets de mission.\n\nPaliers proposés :\n- Échec critique → mort.\n- Échec → blessure.\n- Réussite → survie.\n- Réussite critique → bonus (loot, réputation, etc.).\n\nTâches :\n- Définir les seuils de chaque palier (par exemple : marge par rapport au DC).\n- Adapter le système de résolution pour renvoyer un palier plutôt qu’un booléen.\n- Adapter les effets (mort, blessure, bonus) en fonction du palier.\n- Mettre à jour les logs pour afficher le palier obtenu.\n\nCritères d'acceptation :\n- Les missions utilisent les 4 niveaux de résultat.\n- Les effets associés à chaque palier sont appliqués.\n- Les logs indiquent clairement le palier obtenu pour chaque jet."
+    },
+    {
+      "title": "Système de blessures",
+      "milestone": "Phase 1 – Consolidation du cœur du jeu",
+      "labels": ["feature", "recrues"],
+      "body": "Ajouter un système de blessures pour éviter que la mort soit la seule issue négative.\n\nÉtats possibles :\n- Sain.\n- Blessé léger.\n- Blessé grave.\n- Inconscient.\n- Mort.\n\nTâches :\n- Ajouter un champ \"état de santé\" aux recrues.\n- Définir les effets de chaque état (malus, indisponibilité, etc.).\n- Gérer la récupération dans le temps réel (repos).\n\nCritères d'acceptation :\n- Une recrue blessée ne peut pas partir en mission si son état est trop grave.\n- Les blessures se résorbent avec le temps réel (rattrapage inclus).\n- Les logs indiquent les changements d’état de santé."
+    },
+    {
+      "title": "Amélioration du système de logs",
+      "milestone": "Phase 1 – Consolidation du cœur du jeu",
+      "labels": ["enhancement", "logs"],
+      "body": "Rendre les logs plus riches, lisibles et amusants.\n\nTâches :\n- Ajouter des réactions humaines absurdes dans les logs.\n- Ajouter des détails techniques (dés individuels, totaux, DC, marge).\n- Permettre de filtrer les logs par recrue, mission, type d’événement.\n\nCritères d'acceptation :\n- Les logs contiennent à la fois une partie technique et une partie narrative.\n- Il est possible de filtrer les logs par recrue et par mission.\n- Les réactions humaines apparaissent de manière cohérente avec le contexte."
+    },
+    {
+      "title": "Ajout des sous-statistiques détaillées",
+      "milestone": "Phase 2 – Profondeur des recrues",
+      "labels": ["feature", "recrues"],
+      "body": "Décomposer Physique / Mental / Social en sous-statistiques détaillées.\n\nSous-statistiques proposées :\n- Physique : Force, Agilité, Endurance.\n- Mental : Intelligence, Connaissances, Sagesse, Volonté.\n- Social : Prestance, Mensonge, Persuasion.\n\nTâches :\n- Étendre le modèle de recrue pour inclure ces sous-stats.\n- Définir une règle de conversion depuis les stats globales (configurable dans config.json).\n- Adapter l’affichage des recrues.\n\nCritères d'acceptation :\n- Chaque recrue possède des sous-statistiques dérivées de ses stats globales.\n- La conversion est configurable.\n- Les missions peuvent commencer à utiliser certaines sous-statistiques."
+    },
+    {
+      "title": "Système de compétences",
+      "milestone": "Phase 2 – Profondeur des recrues",
+      "labels": ["feature", "recrues"],
+      "body": "Ajouter des compétences pour donner des effets spéciaux aux recrues.\n\nExemples de compétences :\n- Athlète.\n- Tireur.\n- Médecin.\n- Négociateur.\n- Scientifique.\n- Explorateur.\n\nTâches :\n- Définir un modèle de compétence (nom, description, effets).\n- Associer des compétences aux recrues (aléatoire, progression, etc.).\n- Intégrer les effets dans les jets de mission.\n\nCritères d'acceptation :\n- Les recrues peuvent posséder une ou plusieurs compétences.\n- Les compétences influencent les résultats de certaines missions.\n- Les logs mentionnent les compétences utilisées."
+    },
+    {
+      "title": "Système de personnalités pour les recrues",
+      "milestone": "Phase 2 – Profondeur des recrues",
+      "labels": ["feature", "recrues"],
+      "body": "Ajouter des traits de personnalité pour rendre les recrues mémorables.\n\nExemples de traits :\n- Peureux.\n- Vantard.\n- Cynique.\n- Enthousiaste.\n- Paranoïaque.\n- Naïf.\n\nTâches :\n- Définir un ensemble de traits avec effets narratifs et/ou mécaniques.\n- Assigner un ou plusieurs traits aux recrues.\n- Utiliser ces traits dans les logs (réactions, commentaires).\n\nCritères d'acceptation :\n- Chaque recrue peut avoir un ou plusieurs traits de personnalité.\n- Les traits influencent les réactions dans les logs.\n- Certains traits peuvent influencer légèrement les décisions ou les résultats."
+    },
+    {
+      "title": "Système d’équipement",
+      "milestone": "Phase 3 – Équipement & économie",
+      "labels": ["feature", "equipment"],
+      "body": "Introduire un système d’équipement pour les recrues.\n\nTypes d’équipement :\n- Armes.\n- Armures.\n- Outils.\n- Objets spéciaux.\n\nTâches :\n- Définir un modèle d’objet (type, bonus, contraintes).\n- Créer un inventaire global de guilde.\n- Permettre d’équiper/déséquiper les recrues.\n- Intégrer les bonus dans les jets de mission.\n\nCritères d'acceptation :\n- Les recrues peuvent être équipées d’objets.\n- Les objets modifient effectivement les résultats des jets.\n- L’inventaire est persistant et cohérent."
+    },
+    {
+      "title": "Économie : dépenses et revenus",
+      "milestone": "Phase 3 – Équipement & économie",
+      "labels": ["feature", "economy"],
+      "body": "Donner un rôle central à l’argent dans le jeu.\n\nDépenses :\n- Recrutement.\n- Achat d’équipement.\n- Soins avancés.\n- Améliorations de la guilde.\n\nRevenus :\n- Récompenses de missions.\n- Loot.\n- Événements spéciaux.\n\nCritères d'acceptation :\n- L’argent est débité/crédité de manière cohérente.\n- Le joueur doit faire des choix économiques.\n- L’état financier est visible dans l’interface."
+    },
+    {
+      "title": "Système de réputation",
+      "milestone": "Phase 3 – Équipement & économie",
+      "labels": ["feature", "progression"],
+      "body": "Ajouter un système de réputation pour la guilde.\n\nEffets de la réputation :\n- Débloque des missions plus prestigieuses.\n- Améliore la qualité des recrues.\n- Permet l’accès à de l’équipement rare.\n\nCritères d'acceptation :\n- La réputation augmente/diminue en fonction des missions.\n- Certaines missions ou recrues sont conditionnées par un seuil de réputation.\n- La réputation est visible dans l’interface."
+    },
+    {
+      "title": "Managers basiques",
+      "milestone": "Phase 4 – Managers & automatisation",
+      "labels": ["feature", "managers"],
+      "body": "Introduire des managers humains capables d’automatiser certaines tâches.\n\nRôles de base :\n- Recruteur (accepte automatiquement certains candidats).\n- Organisateur d’équipes.\n- Envoyeur en mission.\n\nTâches :\n- Définir un modèle de manager (rôle, paramètres, niveau).\n- Permettre de configurer des règles simples (priorités, risque, etc.).\n- Intégrer les managers dans le rattrapage du temps.\n\nCritères d'acceptation :\n- Un manager peut effectuer sa tâche sans intervention du joueur.\n- Les actions des managers sont visibles dans les logs.\n- Le joueur peut activer/désactiver un manager."
+    },
+    {
+      "title": "Taux d’erreur des managers",
+      "milestone": "Phase 4 – Managers & automatisation",
+      "labels": ["feature", "managers"],
+      "body": "Ajouter un taux d’erreur aux managers pour créer de la tension.\n\nTaux d’erreur :\n- Commence à ~50%.\n- Descend progressivement jusqu’à ~5%.\n- Dépend du niveau du manager et du niveau de la guilde.\n\nCritères d'acceptation :\n- Les managers peuvent se tromper (mauvaise recrue, mauvaise mission, etc.).\n- Le taux d’erreur diminue avec le temps/niveau.\n- Les erreurs sont visibles et compréhensibles dans les logs."
+    },
+    {
+      "title": "Personnalités des managers",
+      "milestone": "Phase 4 – Managers & automatisation",
+      "labels": ["feature", "managers"],
+      "body": "Donner des personnalités distinctes aux managers.\n\nExemples :\n- Timide → choisit des missions trop simples.\n- Vantard → prend des risques excessifs.\n- Dépressif → hésite à recruter.\n- Hyperactif → envoie trop de missions.\n- Bureaucrate → décisions absurdes mais cohérentes.\n\nCritères d'acceptation :\n- Chaque manager a une personnalité qui influence ses décisions.\n- Les logs reflètent cette personnalité.\n- Le joueur peut identifier le style d’un manager à travers ses actions."
+    },
+    {
+      "title": "Logs des managers",
+      "milestone": "Phase 4 – Managers & automatisation",
+      "labels": ["enhancement", "logs"],
+      "body": "Ajouter des logs spécifiques pour les décisions des managers.\n\nContenu des logs :\n- Raisonnement (souvent faux ou biaisé).\n- Justifications absurdes.\n- Statistiques de réussite.\n- Auto-évaluation.\n\nCritères d'acceptation :\n- Chaque action d’un manager génère une entrée de log.\n- Le ton est cohérent avec la personnalité du manager.\n- Le joueur peut comprendre pourquoi une décision a été prise (même si elle est stupide)."
+    },
+    {
+      "title": "Génération procédurale de missions",
+      "milestone": "Phase 5 – Missions narratives complexes",
+      "labels": ["feature", "missions"],
+      "body": "Passer de missions simples à des missions générées procéduralement.\n\nStructure proposée :\n- Introduction.\n- Objectif.\n- 3–6 événements.\n- Twist.\n- Conclusion.\n\nCritères d'acceptation :\n- Les missions générées sont cohérentes (objectif, progression, conclusion).\n- Les événements sont variés et adaptés au type de mission.\n- Les logs reflètent la structure narrative."
+    },
+    {
+      "title": "Arcs narratifs",
+      "milestone": "Phase 5 – Missions narratives complexes",
+      "labels": ["feature", "missions"],
+      "body": "Ajouter des arcs narratifs qui s’étendent sur plusieurs missions.\n\nExemples d’arcs :\n- Guerre entre factions.\n- Artefact mystérieux.\n- Conspiration contre la guilde.\n- Manager disparu.\n\nCritères d'acceptation :\n- Les missions peuvent appartenir à un arc narratif.\n- Les conséquences d’une mission influencent les suivantes dans l’arc.\n- Les logs et l’interface indiquent clairement l’arc en cours."
+    },
+    {
+      "title": "Missions spéciales",
+      "milestone": "Phase 5 – Missions narratives complexes",
+      "labels": ["feature", "missions"],
+      "body": "Ajouter des missions uniques avec des règles particulières.\n\nExemples :\n- Soigner un manager malade.\n- Sauver une recrue capturée.\n- Défendre la base.\n- Mission chronométrée en temps réel (ex : 24h IRL).\n\nCritères d'acceptation :\n- Les missions spéciales ont des conditions de déclenchement spécifiques.\n- Elles offrent des récompenses ou conséquences uniques.\n- Elles sont clairement identifiées comme spéciales dans l’interface."
+    },
+    {
+      "title": "Localisation multilingue",
+      "milestone": "Phase 6 – Infrastructure & qualité de vie",
+      "labels": ["enhancement", "localization"],
+      "body": "Permettre de traduire le jeu dans plusieurs langues.\n\nTâches :\n- Extraire tous les textes dans des fichiers de langue.\n- Utiliser des templates paramétrés pour les logs.\n- Ajouter un mécanisme de sélection de langue.\n\nCritères d'acceptation :\n- Le jeu peut être affiché en au moins 2 langues.\n- Les logs sont générés à partir de templates localisés.\n- L’ajout d’une nouvelle langue est simple."
+    },
+    {
+      "title": "Interface avancée",
+      "milestone": "Phase 6 – Infrastructure & qualité de vie",
+      "labels": ["enhancement", "frontend"],
+      "body": "Améliorer l’interface console-like pour la rendre plus confortable.\n\nTâches :\n- Ajouter des filtres (par recrue, mission, état, etc.).\n- Ajouter une recherche.\n- Ajouter des tableaux dynamiques (tri, pagination).\n- Ajouter un mode \"monitoring temps réel\".\n\nCritères d'acceptation :\n- Le joueur peut facilement naviguer dans de grandes quantités de données.\n- Les vues sont réactives et lisibles.\n- Le style console est conservé."
+    },
+    {
+      "title": "Optimisations backend",
+      "milestone": "Phase 6 – Infrastructure & qualité de vie",
+      "labels": ["enhancement", "backend"],
+      "body": "Optimiser les performances et la gestion des données.\n\nTâches :\n- Ajouter des index sur les tables critiques (logs, missions, recrues).\n- Mettre en place un système d’archivage des vieux logs.\n- Envisager une compression ou un stockage différé.\n\nCritères d'acceptation :\n- Les temps de réponse restent bons malgré un grand nombre de logs.\n- Le stockage ne grossit pas de manière incontrôlée.\n- Les archives restent consultables."
+    },
+    {
+      "title": "Mode Ironman",
+      "milestone": "Phase 7 – Extensions possibles",
+      "labels": ["feature", "mode"],
+      "body": "Ajouter un mode de jeu Ironman.\n\nRègles :\n- Si la guilde est détruite (plus de recrues, faillite, etc.), la partie est définitivement terminée.\n\nCritères d'acceptation :\n- Le mode Ironman est sélectionnable au début d’une partie.\n- Les règles de fin de partie sont clairement définies.\n- Il est impossible de revenir en arrière une fois la guilde détruite."
+    },
+    {
+      "title": "Factions concurrentes",
+      "milestone": "Phase 7 – Extensions possibles",
+      "labels": ["feature", "world"],
+      "body": "Ajouter des factions concurrentes gérées par des IA.\n\nTâches :\n- Définir des factions avec leurs propres caractéristiques.\n- Simuler leurs activités (missions, réputation, etc.).\n- Ajouter des interactions possibles (coopération, compétition).\n\nCritères d'acceptation :\n- Les factions évoluent dans le temps.\n- Le joueur peut voir l’état des factions.\n- Certaines missions ou événements impliquent ces factions."
+    }
+  ]
+}
