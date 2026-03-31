@@ -1,0 +1,16 @@
+{
+  "dependencies": {
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1"
+  },
+  "name": "aimercenarymanager-server",
+  "version": "0.0.1",
+  "description": "The backend for a web game about an AI trying to manage some space mercenaries",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\""
+  },
+  "author": "Cléophée",
+  "license": "ISC"
+}
