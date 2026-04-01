@@ -1,9 +1,9 @@
 
     <div class="module-container">
         <div class="module-content">
-            <app-module-display-base [hasBottomNeighbor]="true" [moduleTitle]="'shouldbedeterminedbymodule'" [userName]="userName"></app-module-display-base>
-            <app-module-display-base [hasBottomNeighbor]="true" [hasTopNeighbor]="true" [moduleTitle]="'shouldbedeterminedbymodule'" [userName]="userName"></app-module-display-base>
-            <app-module-display-base [hasTopNeighbor]="true" [moduleTitle]="'shouldbedeterminedbymodule'" [userName]="userName"></app-module-display-base>
+            <app-module-display-base [hasBottomNeighbor]="true" [userName]="userName" [module]="ModulesType.RecruitList"></app-module-display-base>
+            <app-module-display-base [hasBottomNeighbor]="true" [hasTopNeighbor]="true"  [userName]="userName" [module]="ModulesType.None"></app-module-display-base>
+            <app-module-display-base [hasTopNeighbor]="true"  [userName]="userName" [module]="ModulesType.RecruitList"></app-module-display-base>
         </div>
         <div class="module-footer">
             <span class="module-footer-title">{{ userName }}</span>

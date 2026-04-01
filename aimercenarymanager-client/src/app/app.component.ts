@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ModuleDisplayBaseComponent } from "./modules/module-display-base/module-display-base.component";
+import { ModulesType } from './models/modules-type.enum';
 
 @Component({
   selector: 'app-root',
@@ -11,4 +12,5 @@ import { ModuleDisplayBaseComponent } from "./modules/module-display-base/module
 })
 export class AppComponent {
    @Input() userName = 'Mercen A.I.';
+   ModulesType = ModulesType;
 }
