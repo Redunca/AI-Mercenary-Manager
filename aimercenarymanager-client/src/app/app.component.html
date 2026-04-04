@@ -1,11 +1,13 @@
-
     <div class="module-container">
         <div class="module-content">
-            <app-module-display-base [hasBottomNeighbor]="true" [userName]="userName" [module]="ModulesType.RecruitList"></app-module-display-base>
-            <app-module-display-base [hasBottomNeighbor]="true" [hasTopNeighbor]="true"  [userName]="userName" [module]="ModulesType.None"></app-module-display-base>
-            <app-module-display-base [hasTopNeighbor]="true"  [userName]="userName" [module]="ModulesType.RecruitList"></app-module-display-base>
+            <app-module-display-base
+    *ngFor="let panel of layoutService.panneaux"
+    [module]="panel.type"
+    [isSelected]="panel === layoutService.activePanel"
+>
+</app-module-display-base>
         </div>
         <div class="module-footer">
-            <span class="module-footer-title">{{ userName }}</span>
+            <span class="module-footer-title">{{ gameService.userName }}</span>
         </div>
     </div>

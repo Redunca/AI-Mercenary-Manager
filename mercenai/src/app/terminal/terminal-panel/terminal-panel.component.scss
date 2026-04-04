@@ -1,0 +1,36 @@
+.panel {
+  border: 1px solid #444;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel.active {
+  border-color: #13A10E;
+}
+
+.panel-content {
+  flex: 1;
+  padding-bottom: 0.5rem;
+}
+
+.panel-command-line {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.prompt {
+  margin-right: 0.5rem;
+  color: lightgrey;
+}
+
+.command-input {
+  flex: 1;
+  background: black;
+  color: lightgrey;
+  border: none;
+  outline: none;
+  caret-color: lightgrey;
+  font-family: monospace;
+}

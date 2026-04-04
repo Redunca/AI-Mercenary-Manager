@@ -1,4 +1,5 @@
 export enum ModulesType{
     None,
-    RecruitList
+    RecruitList,
+    RecruitDetail
 }

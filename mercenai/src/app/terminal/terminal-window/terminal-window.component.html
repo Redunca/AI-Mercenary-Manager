@@ -1,0 +1,13 @@
+<div class="window">
+   <div class="window-content">
+    <app-terminal-panel
+      *ngFor="let p of layout.panels"
+      [panel]="p"
+      [isActive]="p.id === layout.activePanelId"
+    ></app-terminal-panel>
+  </div>
+
+   <div class="window-footer">
+        <span class="module-footer-title">MERCEN A.I.</span>
+    </div>
+</div>

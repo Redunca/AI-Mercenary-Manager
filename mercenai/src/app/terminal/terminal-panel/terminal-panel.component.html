@@ -1,0 +1,35 @@
+<div class="panel" [class.active]="isActive">
+
+<div class="panel-content">
+  <ng-container [ngSwitch]="panel.module">
+
+    <p *ngSwitchCase="'none'">Panel vide</p>
+
+    <app-recruit-list
+      *ngSwitchCase="'recruit-list'"
+    ></app-recruit-list>
+
+    <app-recruit-detail
+      *ngSwitchCase="'recruit-detail'"
+      [id]="panel.data?.id"
+    ></app-recruit-detail>
+
+  </ng-container>
+</div>
+
+
+  <!-- Invite de commande -->
+  <div class="panel-command-line">
+    <span class="prompt">{{'['+'user' + '@' + panel.module + '_' + panel.id + ']$'}}</span>
+
+    <input
+      class="command-input"
+      [value]="commandService.getInput()"
+      (input)="commandService.setInput($any($event.target).value)"
+      (keydown.enter)="commandService.execute()"
+      (keydown.arrowup)="commandService.historyPrevious()"
+      (keydown.arrowdown)="commandService.historyNext()"
+    />
+  </div>
+
+</div>

@@ -2,6 +2,8 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Recruit } from '../../../models/recruit.model';
 import { RecruitState } from '../../../models/recruit-state.enum';
 import { Attributes } from '../../../models/attributes.model';
+import { ModuleDisplayBaseComponent } from '../../module-display-base/module-display-base.component';
+import { ModulesType } from '../../../models/modules-type.enum';
 
 @Component({
   selector: 'app-recruit-list',
@@ -10,8 +12,28 @@ import { Attributes } from '../../../models/attributes.model';
   templateUrl: './recruit-list.component.html',
   styleUrl: './recruit-list.component.sass',
 })
-export class RecruitListComponent implements OnInit {
+export class RecruitListComponent
+  extends ModuleDisplayBaseComponent
+  implements OnInit
+{
+
+  recruits: Recruit[] = [];
+    /**
+   * Recruit List
+   */
+  constructor() {
+    super();
+    this.commands["detail"] = ():void => {};
+  }
+
   ngOnInit(): void {
+    this.module = ModulesType.RecruitList;
+    this.moduleTitle = "Recruit List"
+    this.populateRecruitList();
+  }
+  
+
+  private populateRecruitList(): void {
     this.recruits.push({
       name: 'Bob',
       id: 'alf-adf-4567',
@@ -37,5 +59,4 @@ export class RecruitListComponent implements OnInit {
       attributes: { level: 1, mental: 3, physical: 0, social: 5 } as Attributes,
     } as Recruit);
   }
-  recruits: Recruit[] = [];
 }
