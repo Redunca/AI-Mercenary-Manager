@@ -78,6 +78,29 @@ export class CommandService {
     }
   }
 
+
+  routeCommand(input: string, panelId: number) {
+  const { command, args } = this.parse(input);
+
+  // 1. commandes locales
+  console.log("Called routeCommand with parameters",input,panelId);
+  const panel = this.layout.getPanelById(panelId);
+  console.log("Panel had theses commands",panel?.terminal?.localCommands);
+  if (panel?.terminal?.localCommands[command]) {
+    panel.terminal.localCommands[command](...args);
+    return;
+  }
+
+  // 2. commandes globales
+  if (this.globalCommands[command]) {
+    this.globalCommands[command](...args);
+    return;
+  }
+
+  console.warn("Commande inconnue :", command);
+}
+
+
   private handleRecruit(...args: string[]) {
     // aucun argument → aide
     if (args.length === 0) {

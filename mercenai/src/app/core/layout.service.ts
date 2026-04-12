@@ -15,13 +15,16 @@ export class LayoutService {
   const panel: Panel = {
     id: this.nextId++,
     module,
-    data: data ?? null
+    data: data ?? null,
+    terminal: undefined
   };
 
   this.panels.push(panel);
   this.activePanelId = panel.id;
 }
-
+  getPanelById(panelId: number) {
+    return this.panels.find(panel => panel.id === panelId);
+  }
 
   removePanel(id: number) {
     this.panels = this.panels.filter(p => p.id !== id);

@@ -1,5 +1,4 @@
 <div class="panel" [class.active]="isActive">
-
 <div class="panel-content">
   <ng-container [ngSwitch]="panel.module">
 
@@ -7,12 +6,16 @@
 
     <app-recruit-list
       *ngSwitchCase="'recruit-list'"
+      #moduleInstance
     ></app-recruit-list>
 
     <app-recruit-detail
       *ngSwitchCase="'recruit-detail'"
       [id]="panel.data?.id"
+      #moduleInstance
     ></app-recruit-detail>
+
+    <p *ngSwitchDefault>Module inconnu : {{ panel.module }}</p>
 
   </ng-container>
 </div>
@@ -20,16 +23,21 @@
 
   <!-- Invite de commande -->
   <div class="panel-command-line">
-    <span class="prompt">{{'['+'user' + '@' + panel.module + '_' + panel.id + ']$'}}</span>
+    <span class="prompt">{{
+      "[" + "user" + "@" + panel.module + "(" + panel.id + ")]$"
+    }}</span>
 
     <input
       class="command-input"
-      [value]="commandService.getInput()"
-      (input)="commandService.setInput($any($event.target).value)"
-      (keydown.enter)="commandService.execute()"
-      (keydown.arrowup)="commandService.historyPrevious()"
-      (keydown.arrowdown)="commandService.historyNext()"
+      [value]="panel.terminal?.getInput()"
+      (input)="panel.terminal?.setInput($any($event.target).value)"
+      (keydown.enter)="
+        panel.terminal?.execute(
+          commandService.routeCommand.bind(commandService)
+        )
+      "
+      (keydown.arrowup)="panel.terminal?.historyPrevious()"
+      (keydown.arrowdown)="panel.terminal?.historyNext()"
     />
   </div>
-
 </div>
