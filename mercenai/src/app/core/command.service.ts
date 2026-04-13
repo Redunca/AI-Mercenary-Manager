@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { LayoutService } from './layout.service';
+import { PanelModule } from '../models/panel';
 
 @Injectable({ providedIn: 'root' })
 export class CommandService {
@@ -90,7 +91,7 @@ export class CommandService {
     panel.terminal.localCommands[command](...args);
     return;
   }
-
+  console.log("Looking into global commands", this.globalCommands)
   // 2. commandes globales
   if (this.globalCommands[command]) {
     this.globalCommands[command](...args);
@@ -102,27 +103,29 @@ export class CommandService {
 
 
   private handleRecruit(...args: string[]) {
-    // aucun argument → aide
-    if (args.length === 0) {
-      console.log('Usage: recruit -l | --list | -d <id> | --detail <id>');
-      return;
-    }
 
-    const option = args[0];
+  const panelId = this.layout.activePanelId;
+  if (!panelId) return;
 
-    // LISTE
-    if (option === '-l' || option === '--list') {
-      this.layout.addPanel('recruit-list');
-      return;
-    }
-
-    // DETAIL
-    if ((option === '-d' || option === '--detail') && args[1]) {
-      const id = args[1];
-      this.layout.addPanel('recruit-detail', { id });
-      return;
-    }
-
-    console.warn('Option inconnue :', option);
+  if (args.length === 0) {
+    console.log("Usage: recruit -l | --list | -d <id>");
+    return;
   }
+
+  const opt = args[0];
+
+  if (opt === "-l" || opt === "--list") {
+    console.log("Trying to add module ", PanelModule.RecruitList, "to panel ", panelId);
+    this.layout.setPanelModule(panelId, PanelModule.RecruitList);
+    return;
+  }
+
+  if ((opt === "-d" || opt === "--detail") && args[1]) {
+    console.log("Trying to add module ", PanelModule.RecruitDetail, "to panel ", panelId, ' with data ', args[1]);
+    this.layout.setPanelModule(panelId, PanelModule.RecruitDetail, { id: args[1] });
+    return;
+  }
+
+  console.warn("Option inconnue :", opt);
+}
 }

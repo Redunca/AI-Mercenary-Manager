@@ -47,11 +47,7 @@ export class TerminalPanelComponent implements OnInit, AfterViewChecked {
 
   ngOnInit(): void {
     console.log("On essaye de créer le terminal", this.panel);
-    this.panel.terminal = new TerminalController(this.panel.id, {
-      'close': () => this.commandService.layout.removePanel(this.panel.id),
-      'split-h': () => console.log('split horizontal'),
-      'split-v': () => console.log('split vertical'),
-    });
+    this.panel.terminal = new TerminalController(this.panel.id, this.localCommands);
     console.log(this.panel);
   }
 
@@ -76,21 +72,27 @@ private _lastModuleInstance: any = null;
   }
 }
 
+manageKeyDownEnter(){
+  this.layout.activePanelId = this.getPanelId();
+  this.panel.terminal?.execute(
+          this.commandService.routeCommand.bind(this.commandService)
+        )
 
+}
 
-  private getModuleCommands(): { [name: string]: (...args: string[]) => void } {
-    console.log("Tryign to get module commands", this);
-    switch (this.panel.module) {
-      case 'recruit-list':
-        return (this.moduleInstance as RecruitListComponent).registerCommands();
+  // private getModuleCommands(): { [name: string]: (...args: string[]) => void } {
+  //   console.log("Tryign to get module commands", this);
+  //   switch (this.panel.module) {
+  //     case 'recruit-list':
+  //       return (this.moduleInstance as RecruitListComponent).registerCommands();
 
-      case 'recruit-detail':
-        return (
-          this.moduleInstance as RecruitDetailComponent
-        ).registerCommands();
+  //     case 'recruit-detail':
+  //       return (
+  //         this.moduleInstance as RecruitDetailComponent
+  //       ).registerCommands();
 
-      default:
-        return {};
-    }
-  }
+  //     default:
+  //       return {};
+  //   }
+  // }
 }

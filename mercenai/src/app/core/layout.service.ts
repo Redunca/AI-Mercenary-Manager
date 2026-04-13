@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Panel } from '../models/panel';
+import { Panel, PanelModule } from '../models/panel';
 
 
 export type LayoutNode =
@@ -24,7 +24,8 @@ export class LayoutService {
   panels: Record<number, Panel> = {};
   activePanelId: number | null = null;
 
-  addPanel(module: string, data?: any) {
+  addPanel(module: PanelModule, data?: any) {
+    console.log("Trying to add panel ", module, " with ", data);
     const id = this.nextId++;
 
     this.panels[id] = { id, module, data };
@@ -34,8 +35,11 @@ export class LayoutService {
     }
 
     this.activePanelId = id;
+    console.log("Existing tree :", this.root);
+    console.log("Existing panels :", this.panels);
     return id;
   }
+
   getPanelById(panelId: number) {
     return this.panels[panelId] ?? null;
   }
@@ -53,21 +57,62 @@ export class LayoutService {
     this.activePanelId = id;
   }
 
+  private collectPanelIds(node: LayoutNode | null, set: Set<number>) {
+  if (!node) return;
+
+  if (node.type === 'leaf') {
+    set.add(node.panelId);
+    return;
+  }
+
+  // split node
+  this.collectPanelIds(node.children[0], set);
+  this.collectPanelIds(node.children[1], set);
+}
+
+
+  clearInactivePanels() {
+    const activeIds = new Set<number>();
+    this.collectPanelIds(this.root, activeIds);
+
+    // Supprimer les panels qui ne sont plus dans l'arbre
+    for (const id of Object.keys(this.panels).map(Number)) {
+      if (!activeIds.has(id)) {
+        delete this.panels[id];
+      }
+    }
+
+    // Ajuster le panneau actif si nécessaire
+    if (this.activePanelId && !activeIds.has(this.activePanelId)) {
+      this.activePanelId = activeIds.size ? [...activeIds][0] : null;
+    }
+  }
+
+
+  setPanelModule(panelId: number, module: PanelModule, data?: any) {
+    const panel = this.panels[panelId];
+    if (!panel) return;
+
+    panel.module = module;
+    panel.data = data ?? null;
+    this.clearInactivePanels();
+  }
+
+
   split(panelId: number, direction: 'row' | 'column') {
-    const nodeId = this.nextId++;
-    const newPanelId = this.addPanel('none');
+    const newPanelId = this.addPanel(PanelModule.None);
     if (this.root && panelId) {
       this.root = this.replaceLeaf(this.root, panelId, {
         type: 'split',
         direction,
-        panelId: nodeId,
+        panelId: -1,
         children: [
           { type: 'leaf', panelId },
           { type: 'leaf', panelId: newPanelId }
         ]
       });
     }
-
+    this.clearInactivePanels();
   }
 
   removeLeaf(node: LayoutNode, targetId: number): LayoutNode | null {
@@ -87,6 +132,11 @@ export class LayoutService {
   closePanel(panelId: number) {
     if (this.root) {
       this.root = this.removeLeaf(this.root, panelId);
+    }
+    this.clearInactivePanels();
+    //Dans ce cas on vient de fermer le seul panel ouvert, on en ouvre un nouveau
+    if(Object.keys(this.panels).length == 0){
+      this.addPanel(PanelModule.None);
     }
   }
 

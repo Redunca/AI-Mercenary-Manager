@@ -1,5 +1,5 @@
 <div *ngIf="node.type === 'leaf'" class="leaf">
-  <app-terminal-panel [panel]="layout.panels[node.panelId]"></app-terminal-panel>
+  <app-terminal-panel [panel]="layout.panels[node.panelId]" [isActive]="layout.activePanelId === node.panelId"></app-terminal-panel>
 </div>
 
 <div *ngIf="node.type === 'split'" class="split" [class.row]="node.direction === 'row'"

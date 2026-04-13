@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { LayoutService } from '../../core/layout.service';
 import { TerminalPanelComponent } from '../terminal-panel/terminal-panel.component';
 import { LayoutNodeComponent } from '../layout-node/layout-node.component';
+import { PanelModule } from '../../models/panel';
 
 @Component({
   selector: 'app-terminal-window',
@@ -15,6 +16,6 @@ export class TerminalWindowComponent implements OnInit {
   layout = inject(LayoutService);
 
   ngOnInit(): void {
-    this.layout.addPanel('none');
+    this.layout.addPanel(PanelModule.None);
   }
 }
