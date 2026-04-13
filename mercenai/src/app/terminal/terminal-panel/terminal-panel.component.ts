@@ -1,44 +1,58 @@
-import { AfterViewChecked, AfterViewInit, Component, inject, Input, ViewChild } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, inject, Input, OnInit, ViewChild } from '@angular/core';
 import { Panel } from '../../models/panel';
 import { CommonModule } from '@angular/common';
 import { CommandService } from '../../core/command.service';
 import { RecruitDetailComponent } from '../../game/recruit-detail/recruit-detail.component';
 import { RecruitListComponent } from '../../game/recruit-list/recruit-list.component';
 import { TerminalController } from '../../core/terminal-controller';
+import { LayoutService } from '../../core/layout.service';
+import { LayoutNodeComponent } from '../layout-node/layout-node.component';
 
 @Component({
   selector: 'app-terminal-panel',
   standalone: true,
-  imports: [CommonModule, RecruitDetailComponent, RecruitListComponent],
+  imports: [CommonModule, RecruitDetailComponent, RecruitListComponent, LayoutNodeComponent],
   templateUrl: './terminal-panel.component.html',
   styleUrl: './terminal-panel.component.scss',
 })
-export class TerminalPanelComponent implements AfterViewInit, AfterViewChecked {
+export class TerminalPanelComponent implements OnInit, AfterViewChecked {
   @Input() panel!: Panel;
   @Input() isActive = false;
 
   commandService = inject(CommandService);
+  layout = inject(LayoutService);
 
 @ViewChild('moduleInstance') moduleInstance: any;
 
 
   // commandes locales
   localCommands = {
-    close: () => this.commandService.layout.removePanel(this.panel.id),
-    'split-h': () => console.log('split horizontal (plus tard)'),
-    'split-v': () => console.log('split vertical (plus tard)'),
-  };
+  "split-h": () => this.layout.split(this.getPanelId(), 'row'),
+  "split-v": () => this.layout.split(this.getPanelId(), 'column'),
+  "close": () => this.layout.closePanel(this.getPanelId())
+};
 
   constructor() {
     // enregistre les commandes locales dans le service
     this.commandService.registerPanelCommands(this.localCommands);
   }
-  ngAfterViewInit(): void {
+
+  getPanelId(){
+    return this.panel.id
+  }
+
+  get prompt() {
+  return `user@${this.panel?.module ?? 'localhost'}(${this.getPanelId() ?? '?'})`;
+}
+
+  ngOnInit(): void {
+    console.log("On essaye de créer le terminal", this.panel);
     this.panel.terminal = new TerminalController(this.panel.id, {
-      close: () => this.commandService.layout.removePanel(this.panel.id),
+      'close': () => this.commandService.layout.removePanel(this.panel.id),
       'split-h': () => console.log('split horizontal'),
       'split-v': () => console.log('split vertical'),
     });
+    console.log(this.panel);
   }
 
 ngAfterViewChecked() {

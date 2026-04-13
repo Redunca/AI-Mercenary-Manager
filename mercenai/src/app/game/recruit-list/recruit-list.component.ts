@@ -1,9 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { CommonModule, NgFor } from '@angular/common';
+import { LayoutService } from '../../core/layout.service';
 
 @Component({
   selector: 'app-recruit-list',
   standalone: true,
-  imports: [],
+  imports: [CommonModule, NgFor],
   templateUrl: './recruit-list.component.html',
   styleUrl: './recruit-list.component.scss'
 })
@@ -15,6 +17,8 @@ export class RecruitListComponent {
     { id: "2", name: "Bob" }
   ];
 
+  layout = inject(LayoutService);
+
   registerCommands() {
     return {
       "detail": (id: string) => {
@@ -22,7 +26,7 @@ export class RecruitListComponent {
           console.warn("Usage: detail <id>");
           return;
         }
-        console.log("Ouvrir recruit-detail pour", id);
+        this.layout.addPanel("recruit-detail", { id });
       }
     };
   }

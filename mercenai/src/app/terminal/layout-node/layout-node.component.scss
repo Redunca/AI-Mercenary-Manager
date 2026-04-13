@@ -1,0 +1,17 @@
+.split {
+  display: flex;
+  flex: 1;
+}
+
+.split.row {
+  flex-direction: row;
+}
+
+.split.column {
+  flex-direction: column;
+}
+
+.leaf {
+  flex: 1;
+  display: flex;
+}

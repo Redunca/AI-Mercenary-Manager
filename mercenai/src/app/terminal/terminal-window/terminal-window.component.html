@@ -1,10 +1,6 @@
 <div class="window">
    <div class="window-content">
-    <app-terminal-panel
-      *ngFor="let p of layout.panels"
-      [panel]="p"
-      [isActive]="p.id === layout.activePanelId"
-    ></app-terminal-panel>
+    <app-layout-node *ngIf="layout.root" [node]="layout.root"></app-layout-node>
   </div>
 
    <div class="window-footer">
