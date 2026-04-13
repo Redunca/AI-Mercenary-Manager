@@ -1,6 +1,15 @@
+:host {
+  display: flex;
+  flex: 1;
+  min-height: 0; /* indispensable pour éviter les overflow */
+  min-width: 0;
+}
+
 .split {
   display: flex;
   flex: 1;
+  min-height: 0;
+  min-width: 0;
 }
 
 .split.row {
@@ -12,6 +21,13 @@
 }
 
 .leaf {
-  flex: 1;
   display: flex;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+}
+
+.panelContent {
+  width: stretch;
+
 }

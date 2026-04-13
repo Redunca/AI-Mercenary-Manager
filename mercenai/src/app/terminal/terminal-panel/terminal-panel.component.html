@@ -1,37 +1,25 @@
 <div class="panel" [class.active]="isActive">
-<div class="panel-content">
-  <ng-container [ngSwitch]="panel.module">
+  <div class="panel-content">
+    <ng-container [ngSwitch]="panel.module">
 
-    <p *ngSwitchCase="'none'">Panel vide</p>
+      <p *ngSwitchCase="'none'">Panel vide</p>
 
-    <app-recruit-list
-      *ngSwitchCase="'recruit-list'"
-      #moduleInstance
-    ></app-recruit-list>
+      <app-recruit-list *ngSwitchCase="'recruit-list'" #moduleInstance></app-recruit-list>
 
-    <app-recruit-detail
-      *ngSwitchCase="'recruit-detail'"
-      [id]="panel.data?.id"
-      #moduleInstance
-    ></app-recruit-detail>
+      <app-recruit-detail *ngSwitchCase="'recruit-detail'" [id]="panel.data?.id" #moduleInstance></app-recruit-detail>
 
-    <p *ngSwitchDefault>Module inconnu : {{ panel.module }}</p>
+      <p *ngSwitchDefault>Module inconnu : {{ panel.module }}</p>
 
-  </ng-container>
-</div>
+    </ng-container>
+  </div>
 
 
   <!-- Invite de commande -->
   <div class="panel-command-line">
     <span class="prompt">[{{ prompt }}]$</span>
 
-    <input
-      class="command-input"
-      [value]="panel.terminal?.getInput()"
-      (input)="panel.terminal?.setInput($any($event.target).value)"
-      (keydown.enter)="manageKeyDownEnter()"
-      (keydown.arrowup)="panel.terminal?.historyPrevious()"
-      (keydown.arrowdown)="panel.terminal?.historyNext()"
-    />
+    <input class="command-input" [value]="panel.terminal?.getInput()"
+      (input)="panel.terminal?.setInput($any($event.target).value)" (keydown.enter)="manageKeyDownEnter()"
+      (keydown.arrowup)="panel.terminal?.historyPrevious()" (keydown.arrowdown)="panel.terminal?.historyNext()" />
   </div>
 </div>
