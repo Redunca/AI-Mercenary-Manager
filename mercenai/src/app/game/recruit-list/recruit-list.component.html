@@ -1,5 +1,6 @@
-<ul>
-  <li *ngFor="let r of recruits">
-    {{ r.id }} — {{ r.name }}
-  </li>
-</ul>
+<div>TASK: [<span class="task-title">List recruits</span>] ******************************************</div>
+<div>ok ==> {{ '{' }}</div>
+<div *ngFor="let r of recruits" class="indent-one">
+  "{{ r.id }}" : "{{ r.name }}",
+</div>
+<div>{{ '}' }}</div>

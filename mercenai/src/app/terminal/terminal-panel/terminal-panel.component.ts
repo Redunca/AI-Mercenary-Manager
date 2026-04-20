@@ -1,4 +1,4 @@
-import { AfterViewChecked, AfterViewInit, Component, inject, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, ElementRef, inject, Input, OnInit, ViewChild } from '@angular/core';
 import { Panel } from '../../models/panel';
 import { CommonModule } from '@angular/common';
 import { CommandService } from '../../core/command.service';
@@ -23,7 +23,7 @@ export class TerminalPanelComponent implements OnInit, AfterViewChecked {
   layout = inject(LayoutService);
 
 @ViewChild('moduleInstance') moduleInstance: any;
-
+@ViewChild('cmdInput') textareaRef!: ElementRef<HTMLTextAreaElement>;
 
   // commandes locales
   localCommands = {
@@ -42,7 +42,7 @@ export class TerminalPanelComponent implements OnInit, AfterViewChecked {
   }
 
   get prompt() {
-  return `user@${this.panel?.module ?? 'localhost'}(${this.getPanelId() ?? '?'})`;
+    return `user@${this.panel?.module ?? 'localhost'}(${this.getPanelId() ?? '?'})`;
 }
 
   ngOnInit(): void {
@@ -77,9 +77,23 @@ manageKeyDownEnter(){
   this.panel.terminal?.execute(
           this.commandService.routeCommand.bind(this.commandService)
         )
-
+  this.panel.terminal?.setInput('');
+  this.resetInputHeight();
+}
+autoResize(event: Event) {
+  const textarea = event.target as HTMLTextAreaElement;
+  textarea.style.height = 'auto';
+  textarea.style.height = textarea.scrollHeight + 'px';
 }
 
+resetInputHeight() {
+  const textarea = this.textareaRef?.nativeElement;
+  console.log("Trying to reset text area height", textarea);
+
+  if (!textarea) return;
+  console.log("resetting text area height");
+  textarea.style.height = '';
+}
   // private getModuleCommands(): { [name: string]: (...args: string[]) => void } {
   //   console.log("Tryign to get module commands", this);
   //   switch (this.panel.module) {

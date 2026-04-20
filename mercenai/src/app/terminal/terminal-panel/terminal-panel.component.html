@@ -2,7 +2,7 @@
   <div class="panel-content">
     <ng-container [ngSwitch]="panel.module">
 
-      <p *ngSwitchCase="'none'">Panel vide</p>
+      <div *ngSwitchCase="'none'">Panel vide</div>
 
       <app-recruit-list *ngSwitchCase="'recruit-list'" #moduleInstance></app-recruit-list>
 
@@ -18,8 +18,14 @@
   <div class="panel-command-line">
     <span class="prompt">[{{ prompt }}]$</span>
 
-    <input class="command-input" [value]="panel.terminal?.getInput()"
-      (input)="panel.terminal?.setInput($any($event.target).value)" (keydown.enter)="manageKeyDownEnter()"
-      (keydown.arrowup)="panel.terminal?.historyPrevious()" (keydown.arrowdown)="panel.terminal?.historyNext()" />
+    <textarea
+    #cmdInput
+    class="command-input"
+    [value]="panel.terminal?.getInput()"
+    (input)="autoResize($event); panel.terminal?.setInput($any($event.target).value)"
+    (keydown.enter)="panel.terminal?.execute(commandService.routeCommand.bind(commandService))"
+    (keydown.arrowup)="panel.terminal?.historyPrevious()"
+    (keydown.arrowdown)="panel.terminal?.historyNext()"
+  ></textarea>
   </div>
 </div>
