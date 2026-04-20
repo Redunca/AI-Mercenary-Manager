@@ -21,6 +21,7 @@
     <textarea
     #cmdInput
     class="command-input"
+    (focus)="onFocus()"
     [value]="panel.terminal?.getInput()"
     (input)="autoResize($event); panel.terminal?.setInput($any($event.target).value)"
     (keydown.enter)="panel.terminal?.execute(commandService.routeCommand.bind(commandService))"

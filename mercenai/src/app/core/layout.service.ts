@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Panel, PanelModule } from '../models/panel';
+import { Subject } from 'rxjs';
 
 
 export type LayoutNode =
@@ -23,6 +24,7 @@ export class LayoutService {
   root: LayoutNode | null = null;
   panels: Record<number, Panel> = {};
   activePanelId: number | null = null;
+  activePanelChanged = new Subject<number>();
 
   addPanel(module: PanelModule, data?: any) {
     console.log("Trying to add panel ", module, " with ", data);
@@ -54,8 +56,11 @@ export class LayoutService {
   }
 
   setActivePanel(id: number) {
+  if (this.panels[id]) {
     this.activePanelId = id;
+    this.activePanelChanged.next(id);
   }
+}
 
   private collectPanelIds(node: LayoutNode | null, set: Set<number>) {
   if (!node) return;
@@ -96,6 +101,7 @@ export class LayoutService {
     panel.module = module;
     panel.data = data ?? null;
     this.clearInactivePanels();
+    this.activePanelChanged.next(this.activePanelId ?? 0);
   }
 
 
@@ -113,6 +119,7 @@ export class LayoutService {
       });
     }
     this.clearInactivePanels();
+    this.activePanelChanged.next(this.activePanelId ?? 0);
   }
 
   removeLeaf(node: LayoutNode, targetId: number): LayoutNode | null {
@@ -129,6 +136,7 @@ export class LayoutService {
 
     return { ...node, children: [left, right] };
   }
+
   closePanel(panelId: number) {
     if (this.root) {
       this.root = this.removeLeaf(this.root, panelId);
@@ -138,6 +146,7 @@ export class LayoutService {
     if(Object.keys(this.panels).length == 0){
       this.addPanel(PanelModule.None);
     }
+    this.activePanelChanged.next(this.activePanelId ?? 0);
   }
 
   replaceLeaf(node: LayoutNode, targetId: number, replacement: LayoutNode): LayoutNode {
@@ -153,4 +162,68 @@ export class LayoutService {
       ]
     };
   }
+
+findPath(node: LayoutNode | null, targetId: number, path: LayoutNode[] = []): LayoutNode[] | null {
+  if (!node) return null;
+
+  if (node.type === 'leaf') {
+    return node.panelId === targetId ? [...path, node] : null;
+  }
+
+  const left = this.findPath(node.children[0], targetId, [...path, node]);
+  if (left) return left;
+
+  const right = this.findPath(node.children[1], targetId, [...path, node]);
+  if (right) return right;
+
+  return null;
+}
+getSibling(node: LayoutNode, parent: LayoutNode, direction: 'left' | 'right' | 'up' | 'down'): LayoutNode | null {
+  if (parent.type !== 'split') return null;
+
+  const [a, b] = parent.children;
+
+  if (parent.direction === 'row') {
+    if (direction === 'left' && b === node) return a;
+    if (direction === 'right' && a === node) return b;
+  }
+
+  if (parent.direction === 'column') {
+    if (direction === 'up' && b === node) return a;
+    if (direction === 'down' && a === node) return b;
+  }
+
+  return null;
+}
+
+findLeaf(node: LayoutNode): number {
+  if (node.type === 'leaf') return node.panelId;
+  return this.findLeaf(node.children[0]);
+}
+
+
+focus(direction: 'left' | 'right' | 'up' | 'down') {
+  if (!this.activePanelId || !this.root) return;
+
+  const path = this.findPath(this.root, this.activePanelId);
+  if (!path) return;
+
+  // le leaf actif est le dernier élément
+  const leaf = path[path.length - 1];
+
+  // remonter dans l’arbre
+  for (let i = path.length - 2; i >= 0; i--) {
+    const parent = path[i];
+    const sibling = this.getSibling(leaf, parent, direction);
+
+    if (sibling) {
+      const newId = this.findLeaf(sibling);
+      this.activePanelId = newId;
+      this.activePanelChanged.next(this.activePanelId);
+      return;
+    }
+  }
+}
+
+
 }

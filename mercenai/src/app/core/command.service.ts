@@ -6,6 +6,8 @@ import { PanelModule } from '../models/panel';
 export class CommandService {
   constructor(public layout: LayoutService) {
     this.registerGlobalCommands('recruit', this.handleRecruit.bind(this));
+    this.registerGlobalCommands("focus", this.handleFocus.bind(this));
+
   }
 
   private input = '';
@@ -81,51 +83,66 @@ export class CommandService {
 
 
   routeCommand(input: string, panelId: number) {
-  const { command, args } = this.parse(input);
+    const { command, args } = this.parse(input);
 
-  // 1. commandes locales
-  console.log("Called routeCommand with parameters",input,panelId);
-  const panel = this.layout.getPanelById(panelId);
-  console.log("Panel had theses commands",panel?.terminal?.localCommands);
-  if (panel?.terminal?.localCommands[command]) {
-    panel.terminal.localCommands[command](...args);
-    return;
-  }
-  console.log("Looking into global commands", this.globalCommands)
-  // 2. commandes globales
-  if (this.globalCommands[command]) {
-    this.globalCommands[command](...args);
-    return;
-  }
+    // 1. commandes locales
+    console.log("Called routeCommand with parameters", input, panelId);
+    const panel = this.layout.getPanelById(panelId);
+    console.log("Panel had theses commands", panel?.terminal?.localCommands);
+    if (panel?.terminal?.localCommands[command]) {
+      panel.terminal.localCommands[command](...args);
+      panel.terminal?.setInput('');
+      return;
+    }
+    console.log("Looking into global commands", this.globalCommands)
+    // 2. commandes globales
+    if (this.globalCommands[command]) {
+      this.globalCommands[command](...args);
+      panel.terminal?.setInput('');
+      return;
+    }
 
-  console.warn("Commande inconnue :", command);
-}
+    console.warn("Commande inconnue :", command);
+  }
 
 
   private handleRecruit(...args: string[]) {
 
-  const panelId = this.layout.activePanelId;
-  if (!panelId) return;
+    const panelId = this.layout.activePanelId;
+    if (!panelId) return;
 
-  if (args.length === 0) {
-    console.log("Usage: recruit -l | --list | -d <id>");
+    if (args.length === 0) {
+      console.log("Usage: recruit -l | --list | -d <id>");
+      return;
+    }
+
+    const opt = args[0];
+
+    if (opt === "-l" || opt === "--list") {
+      console.log("Trying to add module ", PanelModule.RecruitList, "to panel ", panelId);
+      this.layout.setPanelModule(panelId, PanelModule.RecruitList);
+      return;
+    }
+
+    if ((opt === "-d" || opt === "--detail") && args[1]) {
+      console.log("Trying to add module ", PanelModule.RecruitDetail, "to panel ", panelId, ' with data ', args[1]);
+      this.layout.setPanelModule(panelId, PanelModule.RecruitDetail, { id: args[1] });
+      return;
+    }
+
+    console.warn("Option inconnue :", opt);
+  }
+  private handleFocus(arg: string) {
+    // focus par ID
+  const id = Number(arg);
+  if (!isNaN(id)) {
+    this.layout.setActivePanel(id);
     return;
   }
 
-  const opt = args[0];
-
-  if (opt === "-l" || opt === "--list") {
-    console.log("Trying to add module ", PanelModule.RecruitList, "to panel ", panelId);
-    this.layout.setPanelModule(panelId, PanelModule.RecruitList);
-    return;
+  // focus directionnel
+  const dir = arg as 'left' | 'right' | 'up' | 'down';
+  this.layout.focus(dir);
   }
 
-  if ((opt === "-d" || opt === "--detail") && args[1]) {
-    console.log("Trying to add module ", PanelModule.RecruitDetail, "to panel ", panelId, ' with data ', args[1]);
-    this.layout.setPanelModule(panelId, PanelModule.RecruitDetail, { id: args[1] });
-    return;
-  }
-
-  console.warn("Option inconnue :", opt);
-}
 }

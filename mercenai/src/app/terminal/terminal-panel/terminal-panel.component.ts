@@ -15,35 +15,52 @@ import { LayoutNodeComponent } from '../layout-node/layout-node.component';
   templateUrl: './terminal-panel.component.html',
   styleUrl: './terminal-panel.component.scss',
 })
-export class TerminalPanelComponent implements OnInit, AfterViewChecked {
+export class TerminalPanelComponent implements OnInit, AfterViewChecked, AfterViewInit {
   @Input() panel!: Panel;
   @Input() isActive = false;
 
   commandService = inject(CommandService);
   layout = inject(LayoutService);
 
-@ViewChild('moduleInstance') moduleInstance: any;
-@ViewChild('cmdInput') textareaRef!: ElementRef<HTMLTextAreaElement>;
+  @ViewChild('moduleInstance') moduleInstance: any;
+  @ViewChild('cmdInput') textareaRef!: ElementRef<HTMLTextAreaElement>;
 
   // commandes locales
   localCommands = {
-  "split-h": () => this.layout.split(this.getPanelId(), 'row'),
-  "split-v": () => this.layout.split(this.getPanelId(), 'column'),
-  "close": () => this.layout.closePanel(this.getPanelId())
-};
+    "split-h": () => this.layout.split(this.getPanelId(), 'row'),
+    "split-v": () => this.layout.split(this.getPanelId(), 'column'),
+    "close": () => this.layout.closePanel(this.getPanelId())
+  };
 
   constructor() {
     // enregistre les commandes locales dans le service
     this.commandService.registerPanelCommands(this.localCommands);
   }
 
-  getPanelId(){
+  ngAfterViewInit(): void {
+    this.layout.activePanelChanged.subscribe(id => {
+      console.log('Received focus changed ', id, this.panel);
+      if (id === this.panel.id) {
+        this.focusTextarea();
+      }
+    });
+    //On fait le check en cas de nouveau panneau (comme après un split) parce que sinon l'événement part avant que la vue existe
+    if (this.layout.activePanelId === this.panel.id) {
+      this.focusTextarea();
+    }
+  }
+  focusTextarea() {
+    this.textareaRef?.nativeElement.focus();
+  }
+  getPanelId() {
     return this.panel.id
   }
-
+  onFocus() {
+    this.layout.setActivePanel(this.panel.id);
+  }
   get prompt() {
     return `user@${this.panel?.module ?? 'localhost'}(${this.getPanelId() ?? '?'})`;
-}
+  }
 
   ngOnInit(): void {
     console.log("On essaye de créer le terminal", this.panel);
@@ -51,49 +68,48 @@ export class TerminalPanelComponent implements OnInit, AfterViewChecked {
     console.log(this.panel);
   }
 
-ngAfterViewChecked() {
-  if (this.moduleInstance && this.moduleInstance !== this._lastModuleInstance) {
-    this._lastModuleInstance = this.moduleInstance;
-    this.setModuleInstance(this.moduleInstance);
+  ngAfterViewChecked() {
+    if (this.moduleInstance && this.moduleInstance !== this._lastModuleInstance) {
+      this._lastModuleInstance = this.moduleInstance;
+      this.setModuleInstance(this.moduleInstance);
+    }
   }
-}
 
-private _lastModuleInstance: any = null;
+  private _lastModuleInstance: any = null;
 
 
- setModuleInstance(instance: any) {
-  const moduleCommands = instance.registerCommands?.() ?? {};
-  if(this.panel.terminal){
+  setModuleInstance(instance: any) {
+    const moduleCommands = instance.registerCommands?.() ?? {};
+    if (this.panel.terminal) {
 
-    this.panel.terminal.localCommands = {
-      ...this.localCommands,
-      ...moduleCommands
-    };
+      this.panel.terminal.localCommands = {
+        ...this.localCommands,
+        ...moduleCommands
+      };
+    }
   }
-}
 
-manageKeyDownEnter(){
-  this.layout.activePanelId = this.getPanelId();
-  this.panel.terminal?.execute(
-          this.commandService.routeCommand.bind(this.commandService)
-        )
-  this.panel.terminal?.setInput('');
-  this.resetInputHeight();
-}
-autoResize(event: Event) {
-  const textarea = event.target as HTMLTextAreaElement;
-  textarea.style.height = 'auto';
-  textarea.style.height = textarea.scrollHeight + 'px';
-}
+  manageKeyDownEnter() {
+    this.layout.activePanelId = this.getPanelId();
+    this.panel.terminal?.execute(
+      this.commandService.routeCommand.bind(this.commandService)
+    )
 
-resetInputHeight() {
-  const textarea = this.textareaRef?.nativeElement;
-  console.log("Trying to reset text area height", textarea);
+  }
+  autoResize(event: Event) {
+    const textarea = event.target as HTMLTextAreaElement;
+    textarea.style.height = 'auto';
+    textarea.style.height = textarea.scrollHeight + 'px';
+  }
 
-  if (!textarea) return;
-  console.log("resetting text area height");
-  textarea.style.height = '';
-}
+  resetInputHeight() {
+    const textarea = this.textareaRef?.nativeElement;
+    console.log("Trying to reset text area height", textarea);
+
+    if (!textarea) return;
+    console.log("resetting text area height");
+    textarea.style.height = '';
+  }
   // private getModuleCommands(): { [name: string]: (...args: string[]) => void } {
   //   console.log("Tryign to get module commands", this);
   //   switch (this.panel.module) {
