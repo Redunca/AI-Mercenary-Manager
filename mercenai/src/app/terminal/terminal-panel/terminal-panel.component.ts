@@ -4,6 +4,11 @@ import { CommonModule } from '@angular/common';
 import { CommandService } from '../../core/command.service';
 import { RecruitDetailComponent } from '../../game/recruit-detail/recruit-detail.component';
 import { RecruitListComponent } from '../../game/recruit-list/recruit-list.component';
+import { MissionListComponent } from '../../game/mission-list/mission-list.component';
+import { MissionDetailComponent } from '../../game/mission-detail/mission-detail.component';
+import { GlobalLogsComponent } from '../../game/global-logs/global-logs.component';
+import { MissionLogsComponent } from '../../game/mission-logs/mission-logs.component';
+import { DashboardComponent } from '../../game/dashboard/dashboard.component';
 import { TerminalController } from '../../core/terminal-controller';
 import { LayoutService } from '../../core/layout.service';
 import { LayoutNodeComponent } from '../layout-node/layout-node.component';
@@ -11,7 +16,7 @@ import { LayoutNodeComponent } from '../layout-node/layout-node.component';
 @Component({
   selector: 'app-terminal-panel',
   standalone: true,
-  imports: [CommonModule, RecruitDetailComponent, RecruitListComponent, LayoutNodeComponent],
+  imports: [CommonModule, RecruitDetailComponent, RecruitListComponent, MissionListComponent, MissionDetailComponent, GlobalLogsComponent, MissionLogsComponent, DashboardComponent, LayoutNodeComponent],
   templateUrl: './terminal-panel.component.html',
   styleUrl: './terminal-panel.component.scss',
 })

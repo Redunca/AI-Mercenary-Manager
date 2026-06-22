@@ -1,37 +1,35 @@
 import { Component, inject, Input, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { GameService } from '../../core/game.service';
+import { Recruit } from '../../models/recruit';
 
 @Component({
   selector: 'app-recruit-detail',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './recruit-detail.component.html',
   styleUrl: './recruit-detail.component.scss'
 })
 export class RecruitDetailComponent implements OnInit {
-
   @Input() id!: string;
   game = inject(GameService);
 
-  recruit : {id: string, name: string} | null = null;
+  recruit: Recruit | null = null;
 
-   ngOnInit(): void {
-     this.recruit = this.game?.getRecruit(this.id);
-     console.log("Trying to show recruit with id " + this.id, this.recruit);
+  ngOnInit(): void {
+    this.recruit = this.game.getRecruit(this.id);
+  }
+
+  statBar(value: number): string {
+    return '[' + '■'.repeat(value) + '□'.repeat(10 - value) + ']';
   }
 
   registerCommands() {
-    console.log("Registering commands for panel", this)
     return {
-      "rename": (newName: string) => {
-        if (!newName) {
-          console.warn("Usage: rename <newName>");
-          return;
-        }
-        console.log("Renommer la recrue", this.id, "→", newName);
+      'rename': (newName: string) => {
+        if (!newName) { console.warn('Usage: rename <newName>'); return; }
         this.game.renameRecruit(this.id, newName);
       }
     };
   }
 }
-

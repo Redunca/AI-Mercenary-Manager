@@ -1,14 +1,19 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { LayoutService } from './layout.service';
 import { PanelModule } from '../models/panel';
+import { MissionService } from './mission.service';
 
 @Injectable({ providedIn: 'root' })
 export class CommandService {
   constructor(public layout: LayoutService) {
     this.registerGlobalCommands('recruit', this.handleRecruit.bind(this));
-    this.registerGlobalCommands("focus", this.handleFocus.bind(this));
-
+    this.registerGlobalCommands('focus', this.handleFocus.bind(this));
+    this.registerGlobalCommands('mission', this.handleMission.bind(this));
+    this.registerGlobalCommands('logs', this.handleLogs.bind(this));
+    this.registerGlobalCommands('home', this.handleHome.bind(this));
   }
+
+  missionService = inject(MissionService);
 
   private input = '';
   private history: string[] = [];
@@ -118,14 +123,12 @@ export class CommandService {
 
     const opt = args[0];
 
-    if (opt === "-l" || opt === "--list") {
-      console.log("Trying to add module ", PanelModule.RecruitList, "to panel ", panelId);
+    if (opt === "list" || opt === "-l" || opt === "--list") {
       this.layout.setPanelModule(panelId, PanelModule.RecruitList);
       return;
     }
 
-    if ((opt === "-d" || opt === "--detail") && args[1]) {
-      console.log("Trying to add module ", PanelModule.RecruitDetail, "to panel ", panelId, ' with data ', args[1]);
+    if ((opt === "detail" || opt === "-d" || opt === "--detail") && args[1]) {
       this.layout.setPanelModule(panelId, PanelModule.RecruitDetail, { id: args[1] });
       return;
     }
@@ -143,6 +146,41 @@ export class CommandService {
   // focus directionnel
   const dir = arg as 'left' | 'right' | 'up' | 'down';
   this.layout.focus(dir);
+  }
+
+
+  private handleMission(action: string, ...args: string[]) {
+  switch (action) {
+    case "list":
+      this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.MissionList);
+      break;
+
+    case "start":
+      this.missionService.startMission(Number(args[0]), Number(args[1]));
+      this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.MissionDetail, { id: Number(args[0]) });
+      break;
+
+    case "stop":
+      this.missionService.stopMission(Number(args[0]));
+      this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.MissionDetail, { id: Number(args[0]) });
+      break;
+
+    case "detail":
+      this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.MissionDetail, { id: Number(args[0]) });
+      break;
+
+    case "logs":
+      this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.MissionLogs, { id: Number(args[0]) });
+      break;
+  }
+}
+
+  private handleLogs() {
+    this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.Logs);
+  }
+
+  private handleHome() {
+    this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.Dashboard);
   }
 
 }

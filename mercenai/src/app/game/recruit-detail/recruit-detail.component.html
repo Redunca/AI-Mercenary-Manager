@@ -1,10 +1,12 @@
 <div>TASK: [<span class="task-title">Recruit detail</span>] ******************************************</div>
 <div>ok ==> {{ '{' }}</div>
-<div class="indent-one">
-  "id" : "{{ recruit?.id }}",
-</div>
-<div class="indent-one">
-  "name" : "{{ recruit?.name }}"
-</div>
-
+<div class="indent-one">"id"   : "{{ recruit?.id }}",</div>
+<div class="indent-one">"name" : "{{ recruit?.name }}",</div>
+<ng-container *ngIf="recruit">
+  <div class="indent-one">"stats" : {{ '{' }}</div>
+  <div class="indent-one indent-one">PHY  {{ statBar(recruit.stats.phy) }}  {{ recruit.stats.phy }}</div>
+  <div class="indent-one indent-one">MEN  {{ statBar(recruit.stats.men) }}  {{ recruit.stats.men }}</div>
+  <div class="indent-one indent-one">SOC  {{ statBar(recruit.stats.soc) }}  {{ recruit.stats.soc }}</div>
+  <div class="indent-one">{{ '}' }}</div>
+</ng-container>
 <div>{{ '}' }}</div>

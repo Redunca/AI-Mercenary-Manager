@@ -1,6 +1,6 @@
 <div>TASK: [<span class="task-title">List recruits</span>] ******************************************</div>
 <div>ok ==> {{ '{' }}</div>
 <div *ngFor="let r of recruits" class="indent-one">
-  "{{ r.id }}" : "{{ r.name }}",
+  "{{ r.id }}" : "{{ r.name }}" — {{ isInMission(r.id) ? 'In Mission' : 'Available' }},
 </div>
 <div>{{ '}' }}</div>

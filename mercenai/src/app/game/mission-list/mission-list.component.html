@@ -1,0 +1,21 @@
+<div>TASK: [<span class="task-title">List missions</span>] ******************************************</div>
+<div>ok ==> {{ '{' }}</div>
+<table class="indent-one">
+  <tr>
+    <th>ID</th>
+    <th>Nom</th>
+    <th>Description</th>
+    <th>Statut</th>
+    <th>Progression</th>
+    <th>Recrue</th>
+  </tr>
+  <tr *ngFor="let m of missions">
+    <td>{{ m.id }}</td>
+    <td>{{ m.name }}</td>
+    <td>{{ m.description }}</td>
+    <td>{{ m.available ? 'available' : (missionService.getState(m.id)?.phase ?? 'in progress') }}</td>
+    <td>{{ m.available ? '' : (missionService.getState(m.id)?.progress ?? 0) + '%' }}</td>
+    <td>{{ m.assignedRecruitId ?? '—' }}</td>
+  </tr>
+</table>
+<div>{{ '}' }}</div>

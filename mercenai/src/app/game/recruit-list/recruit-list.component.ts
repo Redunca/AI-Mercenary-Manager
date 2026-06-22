@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule, NgFor } from '@angular/common';
 import { LayoutService } from '../../core/layout.service';
+import { MissionService } from '../../core/mission.service';
 import { PanelModule } from '../../models/panel';
 
 @Component({
@@ -19,6 +20,12 @@ export class RecruitListComponent {
   ];
 
   layout = inject(LayoutService);
+  missionService = inject(MissionService);
+
+  isInMission(id: string): boolean {
+    return Object.values(this.missionService.missionStates)
+      .some(s => s.recruitId === Number(id) && s.phase !== 'TERMINEE');
+  }
 
   registerCommands() {
     return {

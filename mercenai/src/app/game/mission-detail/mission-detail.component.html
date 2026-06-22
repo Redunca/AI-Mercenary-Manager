@@ -1,0 +1,17 @@
+<div>TASK: [<span class="task-title">Mission detail</span>] ******************************************</div>
+<div>ok ==> {{ '{' }}</div>
+<div class="indent-one">"id"          : {{ mission?.id }},</div>
+<div class="indent-one">"name"        : "{{ mission?.name }}",</div>
+<div class="indent-one">"description" : "{{ mission?.description }}",</div>
+
+<ng-container *ngIf="state; else available">
+  <div class="indent-one">"recruit"     : "{{ recruitName }}",</div>
+  <div class="indent-one">"phase"       : "{{ state.phase }}",</div>
+  <div class="indent-one">"progress"    : "{{ progressBar }}  {{ state.progress }}%"</div>
+</ng-container>
+
+<ng-template #available>
+  <div class="indent-one">"status"      : "available"</div>
+</ng-template>
+
+<div>{{ '}' }}</div>

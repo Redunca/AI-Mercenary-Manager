@@ -4,7 +4,12 @@ import { TerminalController } from "../core/terminal-controller";
 export enum PanelModule{
   None='none',
   RecruitList='recruit-list',
-  RecruitDetail='recruit-detail'
+  RecruitDetail='recruit-detail',
+  MissionList = "mission-list",
+  MissionDetail = "mission-detail",
+  Logs = "logs",
+  MissionLogs = "mission-logs",
+  Dashboard = "dashboard"
 }
 
 export interface Panel {

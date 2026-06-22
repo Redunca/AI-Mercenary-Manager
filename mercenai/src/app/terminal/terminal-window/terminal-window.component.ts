@@ -16,6 +16,6 @@ export class TerminalWindowComponent implements OnInit {
   layout = inject(LayoutService);
 
   ngOnInit(): void {
-    this.layout.addPanel(PanelModule.None);
+    this.layout.addPanel(PanelModule.Dashboard);
   }
 }

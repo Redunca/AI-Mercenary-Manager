@@ -8,6 +8,16 @@
 
       <app-recruit-detail *ngSwitchCase="'recruit-detail'" [id]="panel.data?.id" #moduleInstance></app-recruit-detail>
 
+      <app-mission-list *ngSwitchCase="'mission-list'" #moduleInstance></app-mission-list>
+
+      <app-mission-detail *ngSwitchCase="'mission-detail'" [id]="panel.data?.id" #moduleInstance></app-mission-detail>
+
+      <app-dashboard *ngSwitchCase="'dashboard'" #moduleInstance></app-dashboard>
+
+      <app-global-logs *ngSwitchCase="'logs'" #moduleInstance></app-global-logs>
+
+      <app-mission-logs *ngSwitchCase="'mission-logs'" [id]="panel.data?.id" #moduleInstance></app-mission-logs>
+
       <p *ngSwitchDefault>Module inconnu : {{ panel.module }}</p>
 
     </ng-container>

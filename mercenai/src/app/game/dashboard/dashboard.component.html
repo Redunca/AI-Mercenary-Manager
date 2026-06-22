@@ -1,0 +1,21 @@
+<div class="header">=== MERCENARY MANAGER v0.1 ===</div>
+<div>&nbsp;</div>
+
+<div>RECRUES    {{ availableRecruits.length }} / {{ totalRecruits }} disponibles</div>
+<div>MISSIONS   {{ activeMissions.length }} / {{ totalMissions }} actives</div>
+<div>&nbsp;</div>
+
+<ng-container *ngIf="activeMissions.length > 0">
+  <div class="section-title">MISSIONS EN COURS :</div>
+  <div *ngFor="let s of activeMissions" class="indent-one mission-row">
+    [{{ s.missionId }}] {{ pad(getMissionName(s.missionId), 12) }}{{ pad(getRecruitName(s.recruitId), 10) }}{{ pad(s.phase, 10) }}{{ progressBar(s.progress) }}  {{ s.progress }}%
+  </div>
+  <div>&nbsp;</div>
+</ng-container>
+
+<ng-container *ngIf="availableRecruits.length > 0">
+  <div class="section-title">RECRUES DISPONIBLES :</div>
+  <div *ngFor="let r of availableRecruits" class="indent-one">
+    [{{ r.id }}] {{ r.name }}
+  </div>
+</ng-container>
