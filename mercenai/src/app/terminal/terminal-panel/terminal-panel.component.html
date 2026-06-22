@@ -14,6 +14,8 @@
 
       <app-dashboard *ngSwitchCase="'dashboard'" #moduleInstance></app-dashboard>
 
+      <app-help *ngSwitchCase="'help'" #moduleInstance></app-help>
+
       <app-global-logs *ngSwitchCase="'logs'" #moduleInstance></app-global-logs>
 
       <app-mission-logs *ngSwitchCase="'mission-logs'" [id]="panel.data?.id" #moduleInstance></app-mission-logs>

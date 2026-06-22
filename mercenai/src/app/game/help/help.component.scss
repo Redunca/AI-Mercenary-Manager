@@ -1,0 +1,19 @@
+.section-title {
+  font-weight: bold;
+  margin-top: 0.25rem;
+}
+
+.row {
+  display: flex;
+  gap: 1rem;
+  margin-left: 1rem;
+}
+
+.cmd {
+  min-width: 26ch;
+  flex-shrink: 0;
+}
+
+.desc {
+  opacity: 0.8;
+}

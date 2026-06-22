@@ -11,6 +11,7 @@ export class CommandService {
     this.registerGlobalCommands('mission', this.handleMission.bind(this));
     this.registerGlobalCommands('logs', this.handleLogs.bind(this));
     this.registerGlobalCommands('home', this.handleHome.bind(this));
+    this.registerGlobalCommands('help', this.handleHelp.bind(this));
   }
 
   missionService = inject(MissionService);
@@ -181,6 +182,10 @@ export class CommandService {
 
   private handleHome() {
     this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.Dashboard);
+  }
+
+  private handleHelp() {
+    this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.Help);
   }
 
 }

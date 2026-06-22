@@ -9,7 +9,8 @@ export enum PanelModule{
   MissionDetail = "mission-detail",
   Logs = "logs",
   MissionLogs = "mission-logs",
-  Dashboard = "dashboard"
+  Dashboard = "dashboard",
+  Help = "help"
 }
 
 export interface Panel {
