@@ -13,8 +13,8 @@
     <td>{{ m.id }}</td>
     <td>{{ m.name }}</td>
     <td>{{ m.description }}</td>
-    <td>{{ m.available ? 'available' : (missionService.getState(m.id)?.phase ?? 'in progress') }}</td>
-    <td>{{ m.available ? '' : (missionService.getState(m.id)?.progress ?? 0) + '%' }}</td>
+    <td>{{ m.status === 'in_progress' ? (missionService.getState(m.id)?.phase ?? 'in_progress') : m.status }}</td>
+    <td>{{ m.status === 'in_progress' ? (missionService.getState(m.id)?.progress ?? 0) + '%' : '' }}</td>
     <td>{{ m.assignedRecruitId ?? '—' }}</td>
   </tr>
 </table>

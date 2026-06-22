@@ -17,7 +17,7 @@ export class MissionListComponent {
   layout = inject(LayoutService);
 
   get missions(): Mission[] {
-    return Object.values(this.missionService.missions);
+    return this.missionService.missions;
   }
 
   registerCommands() {

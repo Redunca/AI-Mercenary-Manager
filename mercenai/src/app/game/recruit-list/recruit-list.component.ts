@@ -1,8 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule, NgFor } from '@angular/common';
 import { LayoutService } from '../../core/layout.service';
-import { MissionService } from '../../core/mission.service';
+import { GameService } from '../../core/game.service';
 import { PanelModule } from '../../models/panel';
+import { Recruit } from '../../models/recruit';
 
 @Component({
   selector: 'app-recruit-list',
@@ -12,31 +13,25 @@ import { PanelModule } from '../../models/panel';
   styleUrl: './recruit-list.component.scss'
 })
 export class RecruitListComponent {
-
-  // plus tard tu auras une vraie liste
-  recruits = [
-    { id: "1", name: "Alice" },
-    { id: "2", name: "Bob" }
-  ];
-
   layout = inject(LayoutService);
-  missionService = inject(MissionService);
+  game = inject(GameService);
 
-  isInMission(id: string): boolean {
-    return Object.values(this.missionService.missionStates)
-      .some(s => s.recruitId === Number(id) && s.phase !== 'TERMINEE');
+  get recruits(): Recruit[] {
+    return this.game.recruits;
+  }
+
+  statusLabel(r: Recruit): string {
+    if (r.status === 'dead') return 'DEAD';
+    if (r.status === 'in_mission') return 'In Mission';
+    return 'Available';
   }
 
   registerCommands() {
     return {
-      "detail": (id: string) => {
-        if (!id) {
-          console.warn("Usage: detail <id>");
-          return;
-        }
+      'detail': (id: string) => {
+        if (!id) { console.warn('Usage: detail <id>'); return; }
         this.layout.addPanel(PanelModule.RecruitDetail, { id });
       }
     };
   }
 }
-
