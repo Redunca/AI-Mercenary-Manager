@@ -1,0 +1,2 @@
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS personality TEXT NOT NULL DEFAULT 'Explorer';
+ALTER TABLE recruits   ADD COLUMN IF NOT EXISTS personality TEXT NOT NULL DEFAULT 'Explorer';

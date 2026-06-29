@@ -53,12 +53,12 @@ async function generateCandidatesForPlayer(client, player, count = 5) {
     const candidate = generateCandidate(nextId, perksFlaws, rollInRange)
     await client.query(
       `INSERT INTO candidates
-        (id, player_id, name, job_title, archetype, hp, max_hp, attributes, perks, flaws)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+        (id, player_id, name, job_title, archetype, hp, max_hp, attributes, perks, flaws, personality)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
       [
         candidate.id, player.id, candidate.name, candidate.jobTitle, candidate.archetype,
         candidate.hp, candidate.maxHp, JSON.stringify(candidate.attributes),
-        JSON.stringify(candidate.perks), JSON.stringify(candidate.flaws),
+        JSON.stringify(candidate.perks), JSON.stringify(candidate.flaws), candidate.personality,
       ],
     )
     nextId++
@@ -161,6 +161,7 @@ async function resolveEvents(client, playerId, instance, template, recruitRow) {
     const result = {
       eventIndex: i,
       type: event.type,
+      attribute: event.attribute,
       d20: roll.d20,
       bonus: roll.bonus,
       diceNotation: roll.diceNotation,
@@ -188,6 +189,9 @@ async function resolveEvents(client, playerId, instance, template, recruitRow) {
             missionId,
             missionName: template.name,
             recruitName,
+            recruitPerks: recruitRow.perks,
+            recruitFlaws: recruitRow.flaws,
+            recruitPersonality: recruitRow.personality,
           }))
           await insertLogEntries(client, playerId, [
             ...logs[logs.length - 1].mission,
@@ -204,6 +208,9 @@ async function resolveEvents(client, playerId, instance, template, recruitRow) {
           missionId,
           missionName: template.name,
           recruitName,
+          recruitPerks: recruitRow.perks,
+          recruitFlaws: recruitRow.flaws,
+          recruitPersonality: recruitRow.personality,
         }))
         await insertLogEntries(client, playerId, [
           ...logs[logs.length - 1].mission,
@@ -222,6 +229,9 @@ async function resolveEvents(client, playerId, instance, template, recruitRow) {
       missionId,
       missionName: template.name,
       recruitName,
+      recruitPerks: recruitRow.perks,
+      recruitFlaws: recruitRow.flaws,
+      recruitPersonality: recruitRow.personality,
     })
     await insertLogEntries(client, playerId, [...eventLogs.mission, ...eventLogs.global])
   }
@@ -241,6 +251,7 @@ async function completeMission(client, playerId, instance, template, failed) {
     rewardForfeited: instance.reward_forfeited,
     missionId: template.id,
     missionName: template.name,
+    missionDifficulty: template.difficulty,
     recruitName: (await client.query(
       'SELECT name FROM recruits WHERE player_id = $1 AND id = $2',
       [playerId, instance.recruit_id],
@@ -291,6 +302,7 @@ async function advanceMission(client, playerId, instance, template, now) {
         rewardForfeited,
         missionId: template.id,
         missionName: template.name,
+        missionDifficulty: template.difficulty,
         recruitName: (await client.query(
           'SELECT name FROM recruits WHERE player_id = $1 AND id = $2',
           [playerId, instance.recruit_id],
@@ -324,6 +336,7 @@ async function advanceMission(client, playerId, instance, template, now) {
         rewardForfeited,
         missionId: template.id,
         missionName: template.name,
+        missionDifficulty: template.difficulty,
         recruitName: recruitRow.name,
       })
       await insertLogEntries(client, playerId, retourLogs.mission)
@@ -354,6 +367,7 @@ async function advanceMission(client, playerId, instance, template, now) {
       rewardForfeited,
       missionId: template.id,
       missionName: template.name,
+      missionDifficulty: template.difficulty,
       recruitName,
     })
     await insertLogEntries(client, playerId, retourLogs.mission)
@@ -422,11 +436,12 @@ async function hireCandidate(client, playerId, candidateId) {
 
   await client.query(
     `INSERT INTO recruits
-      (id, player_id, name, job_title, status, hp, max_hp, attributes, perks, flaws)
-     VALUES ($1, $2, $3, $4, 'available', $5, $6, $7, $8, $9)`,
+      (id, player_id, name, job_title, status, hp, max_hp, attributes, perks, flaws, personality)
+     VALUES ($1, $2, $3, $4, 'available', $5, $6, $7, $8, $9, $10)`,
     [
       recruitId, playerId, candidate.name, candidate.job_title,
       candidate.hp, candidate.max_hp, candidate.attributes, candidate.perks, candidate.flaws,
+      candidate.personality,
     ],
   )
   await client.query(
@@ -489,6 +504,7 @@ async function startMission(client, playerId, templateId, recruitId) {
     rewardForfeited: false,
     missionId: templateId,
     missionName: template.name,
+    missionDifficulty: template.difficulty,
     recruitName: recruit.rows[0].name,
   })
   await insertLogEntries(client, playerId, [...phaseLogs.mission, ...phaseLogs.global])
@@ -537,6 +553,7 @@ async function forceReturnMission(client, playerId, templateId) {
     rewardForfeited: instance.reward_forfeited,
     missionId: templateId,
     missionName: template.name,
+    missionDifficulty: template.difficulty,
     recruitName,
   })
   await insertLogEntries(client, playerId, retourLogs.mission)

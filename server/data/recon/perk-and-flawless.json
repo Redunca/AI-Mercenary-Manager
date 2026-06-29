@@ -1,0 +1,68 @@
+{
+  "RECON": {
+    "success": {
+      "perk-and-flawless": {
+        "Analyst": [
+          "Observation réussie. Leur camouflage repose sur l’idée que personne ne regarde jamais vraiment.",
+          "Zone analysée. Statistiquement, ils auraient dû cacher au moins un détail.",
+          "Reconnaissance complète. Je note que leur discrétion est… conceptuellement théorique.",
+          "Rien d’anormal détecté. Je propose qu’on classe leur stratégie dans ‘invisibilité par naïveté’.",
+          "Repérage effectué. Leur capacité à se fondre dans le décor est un hommage involontaire au hasard."
+        ],
+        "Diplomat": [
+          "La zone s’est révélée à moi… je crois qu’elle voulait qu’on la comprenne.",
+          "Reconnaissance harmonieuse. Je ressens une belle énergie dans cet espace silencieux.",
+          "J’ai perçu ce qu’il fallait. Peut‑être que l’environnement voulait nous guider.",
+          "Rien d’inquiétant. Je sens que l’univers nous offre un moment de clarté.",
+          "Observation réussie. Je crois que cette zone cherchait simplement à être vue."
+        ],
+        "Sentinel": [
+          "Reconnaissance validée. Je vais consigner : zone stable, aucune anomalie.",
+          "Observation complète. Je recommande d’ajouter cette méthode au protocole de surveillance.",
+          "Analyse réussie. Situation conforme, périmètre sécurisé, rapport en cours.",
+          "Rien à signaler. Je note que la procédure improvisée a été étonnamment efficace.",
+          "Repérage effectué. Je classe l’opération dans les inspections exemplaires."
+        ],
+        "Explorer": [
+          "Ok, j’ai regardé partout et j’ai rien vu. Donc c’est bon, non ?",
+          "J’ai fait un tour, j’ai regardé derrière les trucs… tout est clean.",
+          "Je pensais voir un truc bizarre, mais finalement c’était juste un caillou.",
+          "J’ai exploré un peu au hasard, et ça a marché. Zone tranquille.",
+          "J’ai failli tomber, mais j’ai vu ce qu’il fallait. Recon réussie."
+        ]
+      }
+    },
+    "failure": {
+      "perk-and-flawless": {
+        "Analyst": [
+          "Reconnaissance échouée. Leur camouflage est si chaotique qu’il défie toute analyse.",
+          "Observation impossible. Statistiquement, j’aurais dû voir quelque chose… n’importe quoi.",
+          "Analyse infructueuse. Je note que leur discrétion repose sur une confusion tenace.",
+          "Rien détecté. Je suppose que l’environnement a décidé de ne rien montrer.",
+          "Repérage raté. Je vais considérer cet incident comme une anomalie perceptive."
+        ],
+        "Diplomat": [
+          "La zone ne s’est pas révélée… je crois qu’elle traverse une période de fermeture.",
+          "Reconnaissance bloquée. Je ressens beaucoup de tension dans cet espace silencieux.",
+          "Je n’ai rien perçu. Peut‑être que l’environnement n’était pas prêt à s’ouvrir.",
+          "Rien d’inquiétant… ou peut‑être que je n’ai pas su écouter correctement.",
+          "Observation impossible. Je crois que cette zone avait besoin de plus de douceur."
+        ],
+        "Sentinel": [
+          "Reconnaissance échouée. Je vais consigner : observation non conforme, incident majeur.",
+          "Analyse impossible. Je recommande une révision complète du protocole de surveillance.",
+          "Observation infructueuse. Situation instable, périmètre non validé, rapport d’échec en préparation.",
+          "Rien détecté. Je note que la procédure improvisée n’a pas été productive.",
+          "Repérage non effectué. Je classe l’opération dans les inspections à risque élevé."
+        ],
+        "Explorer": [
+          "Bon, j’ai regardé partout… et j’ai rien vu. Genre vraiment rien.",
+          "J’ai exploré un peu au hasard, mais je crois que j’ai raté un truc important.",
+          "Je pensais voir un truc bizarre, mais j’ai juste vu un caillou. Encore.",
+          "J’ai failli tomber, et du coup j’ai pas vu ce qu’il fallait. Oups.",
+          "J’ai regardé derrière les trucs… mais pas les bons trucs, apparemment."
+        ]
+      }
+    }
+  }
+}

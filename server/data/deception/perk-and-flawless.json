@@ -1,0 +1,68 @@
+{
+  "DECEPTION": {
+    "success": {
+      "perk-and-flawless": {
+        "Analyst": [
+          "Manipulation réussie. Leur crédulité dépasse mes projections les plus pessimistes.",
+          "Leur esprit a cédé. Je note que la logique n’a joué aucun rôle dans leur décision.",
+          "Mensonge accepté. Statistiquement, ils auraient dû poser au moins une question.",
+          "Couverture validée. Je propose qu’on classe cette opération dans ‘efficacité involontaire’.",
+          "Illusion maintenue. Leur capacité d’analyse est… conceptuellement décorative."
+        ],
+        "Diplomat": [
+          "Ils ont cru ce que je disais… je pense qu’ils avaient besoin d’entendre quelque chose de rassurant.",
+          "La vérité alternative a trouvé sa place. Je ressens une étrange harmonie dans ce mensonge.",
+          "Ils ont accepté mes paroles. Peut‑être que l’univers voulait qu’on les guide un peu.",
+          "La façade a tenu. Je crois que nous avons créé un petit pont émotionnel… même s’il est imaginaire.",
+          "Ils se sont laissés convaincre. Je sens que ce mensonge a apporté une forme de paix."
+        ],
+        "Sentinel": [
+          "Déception réussie. Je vais consigner : couverture opérationnelle maintenue sans incident.",
+          "Mensonge accepté. Je recommande d’ajouter cette méthode au protocole de dissimulation.",
+          "Manipulation validée. Situation stable, aucune alarme, rapport en cours de rédaction.",
+          "Couverture confirmée. Je note que la procédure improvisée a été étonnamment efficace.",
+          "Illusion opérationnelle maintenue. Je classe l’action dans les réussites non conformes."
+        ],
+        "Explorer": [
+          "Ok, ils ont gobé tout ce que j’ai dit. Je suis aussi surpris qu’eux.",
+          "J’ai improvisé un truc, et ils ont dit ‘ah oui, bien sûr’. Incroyable.",
+          "Je leur ai raconté n’importe quoi… et ça a marché. Je devrais faire ça plus souvent.",
+          "J’ai paniqué, j’ai parlé, et maintenant ils me croient. Je sais pas comment j’ai fait.",
+          "Je pensais que c’était un mensonge nul, mais apparemment c’était un mensonge génial."
+        ]
+      }
+    },
+    "failure": {
+      "perk-and-flawless": {
+        "Analyst": [
+          "Échec de manipulation. Leur esprit a détecté l’incohérence… par accident, probablement.",
+          "Mensonge refusé. Je note que même un système cognitif défaillant peut dire ‘non’.",
+          "Couverture brisée. Statistiquement, ils n’auraient pas dû être aussi attentifs.",
+          "Illusion non maintenue. Je suppose que leur suspicion s’est activée par erreur.",
+          "Manipulation ratée. Je vais considérer cet incident comme une anomalie intellectuelle."
+        ],
+        "Diplomat": [
+          "Ils n’ont pas cru ce que je disais… je crois qu’ils traversent une période de doute.",
+          "La vérité alternative n’a pas trouvé sa place. Je ressens une grande résistance.",
+          "Ils ont rejeté mes paroles. Peut‑être que leur cœur n’était pas prêt à entendre ça.",
+          "La façade s’est effondrée. Je sens que l’univers voulait qu’on soit honnêtes… malheureusement.",
+          "Ils n’ont pas été convaincus. Je crois que ce mensonge manquait de douceur."
+        ],
+        "Sentinel": [
+          "Déception échouée. Je vais consigner : couverture non maintenue, incident majeur.",
+          "Mensonge refusé. Je recommande une révision complète du protocole de dissimulation.",
+          "Manipulation ratée. Situation instable, risque accru, rapport d’échec en préparation.",
+          "Couverture compromise. Je note que la procédure improvisée n’a pas été efficace.",
+          "Illusion non opérationnelle. Je classe l’action dans les échecs à risque élevé."
+        ],
+        "Explorer": [
+          "Bon, j’ai essayé de dire un truc… et ils m’ont regardé comme si j’étais bizarre.",
+          "J’ai improvisé un mensonge, mais il était vraiment trop nul pour marcher.",
+          "Je crois qu’ils ont compris que je racontais n’importe quoi. Ça arrive.",
+          "J’ai paniqué, j’ai parlé, et maintenant ils savent que je mens. Oups.",
+          "Wow, ils sont beaucoup moins crédules que prévu. Je prends note : mentir mieux."
+        ]
+      }
+    }
+  }
+}

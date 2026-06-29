@@ -1,0 +1,68 @@
+{
+  "PSYCHWAR": {
+    "success": {
+      "perk-and-flawless": {
+        "Analyst": [
+          "Influence mentale établie. Leur structure cognitive ressemble à un château de cartes… en papier mouillé.",
+          "Pression psychologique réussie. Statistiquement, leur esprit aurait dû tenir plus longtemps.",
+          "Domination mentale obtenue. Je note que leur résistance repose sur des illusions… très fragiles.",
+          "Impact psychique confirmé. Je propose qu’on classe leur réaction dans ‘effondrement prévisible’.",
+          "Contrôle émotionnel acquis. Leur volonté s’est dissoute avec une efficacité presque mathématique."
+        ],
+        "Diplomat": [
+          "Ils ont ouvert leur esprit… je crois qu’ils avaient besoin d’être entendus, même dans le chaos.",
+          "La tension intérieure s’est apaisée. Je ressens une étrange harmonie dans leur capitulation mentale.",
+          "Nous avons touché quelque chose en eux. Peut‑être que l’univers voulait qu’ils lâchent prise.",
+          "Leur résistance s’est dissoute. Je crois que cette énergie profonde a apporté une forme de paix.",
+          "Ils ont cédé. Je sens que cette connexion psychique a éclairé un coin sombre de leur cœur."
+        ],
+        "Sentinel": [
+          "Pression mentale validée. Je vais consigner : résistance brisée, situation stabilisée.",
+          "Influence psychologique obtenue. Je recommande d’ajouter cette méthode au protocole de persuasion avancée.",
+          "Domination mentale établie. Intervention réussie, aucun contrecoup notable.",
+          "Impact psychique confirmé. Je note que la procédure improvisée a été étonnamment efficace.",
+          "Contrôle émotionnel acquis. Je classe l’opération dans les actions psychologiques exemplaires."
+        ],
+        "Explorer": [
+          "Ok, j’ai dit un truc bizarre, et ils ont complètement paniqué. Trop puissant.",
+          "J’ai juste regardé intensément, et ils ont flanché. Je suis un genre de sorcier.",
+          "Je pensais que ça allait être compliqué, mais ils ont craqué direct.",
+          "J’ai improvisé une phrase chelou, et ça a marché. Je devrais faire ça plus souvent.",
+          "Je sais pas ce que j’ai fait, mais ça les a retournés. Talent naturel, j’imagine."
+        ]
+      }
+    },
+    "failure": {
+      "perk-and-flawless": {
+        "Analyst": [
+          "Influence mentale échouée. Leur esprit est si chaotique qu’il défie toute tentative de pression.",
+          "Pression psychologique inefficace. Statistiquement, ils auraient dû au moins vaciller.",
+          "Domination mentale impossible. Je note que leur résistance repose sur une confusion tenace.",
+          "Impact psychique nul. Je suppose que leur esprit a décidé de ne rien comprendre.",
+          "Contrôle émotionnel non établi. Je vais considérer cet incident comme une anomalie cognitive."
+        ],
+        "Diplomat": [
+          "Ils n’ont pas ouvert leur esprit… je crois qu’ils traversent une période de grande turbulence.",
+          "La tension intérieure n’a pas bougé. Je ressens beaucoup de résistance émotionnelle.",
+          "Nous n’avons pas réussi à les toucher. Peut‑être que leur cœur n’était pas prêt.",
+          "Leur résistance est restée intacte. Je sens que l’univers voulait qu’on soit plus doux.",
+          "Ils n’ont pas cédé. Je crois qu’ils avaient besoin d’un autre type d’énergie."
+        ],
+        "Sentinel": [
+          "Pression mentale échouée. Je vais consigner : résistance intacte, incident majeur.",
+          "Influence psychologique refusée. Je recommande une révision complète du protocole de persuasion avancée.",
+          "Domination mentale impossible. Intervention ratée, situation instable, rapport d’échec en préparation.",
+          "Impact psychique nul. Je note que la procédure improvisée n’a pas été productive.",
+          "Contrôle émotionnel non établi. Je classe l’action dans les échecs à risque élevé."
+        ],
+        "Explorer": [
+          "Bon, j’ai dit un truc bizarre, et ils ont juste haussé les épaules.",
+          "J’ai essayé de les perturber, mais ils m’ont regardé comme si j’étais étrange.",
+          "Je pensais que ça allait les retourner, mais ça les a juste confus… un peu.",
+          "J’ai improvisé une phrase chelou, mais elle était vraiment trop nulle pour marcher.",
+          "Wow, ils sont beaucoup plus solides que prévu. Je vais devoir être encore plus bizarre."
+        ]
+      }
+    }
+  }
+}

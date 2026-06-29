@@ -1,0 +1,68 @@
+{
+  "INFILTRATION": {
+    "success": {
+      "perk-and-flawless": {
+        "Analyst": [
+          "Entrée réussie. Leur sécurité repose manifestement sur l’optimisme plutôt que sur la logique.",
+          "Pénétration effectuée. Je note que la surveillance était… conceptuellement décorative.",
+          "Accès discret obtenu. Statistiquement, ils auraient dû remarquer quelque chose.",
+          "Zone infiltrée. Je propose qu’on classe ce dispositif dans ‘illusion de protection’.",
+          "Passage validé. Leur protocole de sécurité est un hommage involontaire à l’improvisation."
+        ],
+        "Diplomat": [
+          "Je suis passé sans être vu… je crois que l’environnement voulait nous accueillir.",
+          "L’infiltration s’est faite en douceur. Je ressens une belle harmonie dans ce silence.",
+          "La zone m’a laissé entrer. Peut‑être qu’elle sentait que nos intentions étaient pacifiques.",
+          "Le passage s’est ouvert à moi. Je crois que nous avons trouvé un équilibre discret.",
+          "Je suis passé sans alerte. Je sens que l’univers approuve cette approche délicate."
+        ],
+        "Sentinel": [
+          "Infiltration validée. Je vais consigner : passage discret conforme, aucune alarme.",
+          "Accès obtenu. Je recommande d’ajouter cette méthode au protocole d’approche silencieuse.",
+          "Zone pénétrée. Intervention réussie, surveillance contournée, rapport en cours.",
+          "Passage sécurisé. Je note que la procédure improvisée a été étonnamment efficace.",
+          "Infiltration complète. Je classe l’opération dans les actions discrètes exemplaires."
+        ],
+        "Explorer": [
+          "Ok, j’ai glissé entre deux trucs et personne m’a vu. Je suis un ninja accidentel.",
+          "J’ai rampé, sauté, tourné… et ça a marché. Je sais pas comment, mais ça a marché.",
+          "Je suis passé juste derrière eux. Ils regardaient ailleurs. Timing parfait.",
+          "J’ai improvisé un chemin, et maintenant je suis dedans. Trop facile.",
+          "Je pensais que ça allait faire du bruit, mais finalement c’était super discret."
+        ]
+      }
+    },
+    "failure": {
+      "perk-and-flawless": {
+        "Analyst": [
+          "Infiltration échouée. Leur système d’alerte s’est activé… par accident, probablement.",
+          "Accès refusé. Je note que même une sécurité médiocre peut dire ‘non’.",
+          "Zone non pénétrée. Statistiquement, ils n’auraient pas dû remarquer ma présence.",
+          "Passage compromis. Je suppose que leur vigilance s’est déclenchée par erreur.",
+          "Infiltration ratée. Je vais considérer cet incident comme une anomalie comportementale."
+        ],
+        "Diplomat": [
+          "Je n’ai pas réussi à passer… je crois que la zone n’était pas prête à m’accueillir.",
+          "L’environnement a rejeté mon approche. Je ressens une grande tension silencieuse.",
+          "La zone n’a pas voulu s’ouvrir. Peut‑être qu’elle avait besoin de plus de douceur.",
+          "Le passage s’est fermé devant moi. Je sens que l’univers voulait qu’on attende.",
+          "Je n’ai pas pu entrer. Je crois que l’endroit traverse une période de méfiance."
+        ],
+        "Sentinel": [
+          "Infiltration échouée. Je vais consigner : passage discret non conforme, incident majeur.",
+          "Accès refusé. Je recommande une révision complète du protocole d’approche silencieuse.",
+          "Zone non pénétrée. Intervention ratée, surveillance active, rapport d’échec en préparation.",
+          "Passage compromis. Je note que la procédure improvisée n’a pas été efficace.",
+          "Infiltration non opérationnelle. Je classe l’action dans les échecs à risque élevé."
+        ],
+        "Explorer": [
+          "Bon, j’ai essayé de passer… et ils m’ont vu direct. Pas très discret.",
+          "J’ai rampé, sauté, tourné… et j’ai fait tomber un truc. Ils ont tout entendu.",
+          "Je suis passé juste derrière eux… mais ils se sont retournés. Mauvais timing.",
+          "J’ai improvisé un chemin, et maintenant je suis coincé. Oups.",
+          "Je pensais que ça allait être discret, mais j’ai fait un bruit énorme. Je prends note."
+        ]
+      }
+    }
+  }
+}

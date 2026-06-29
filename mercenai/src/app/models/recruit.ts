@@ -21,10 +21,13 @@ export interface RecruitAttributes {
   presence: number;
 }
 
+export type RecruitPersonality = 'Analyst' | 'Diplomat' | 'Sentinel' | 'Explorer';
+
 export interface Recruit {
   id: string;
   name: string;
   jobTitle?: string;
+  personality?: RecruitPersonality;
   attributes: RecruitAttributes;
   hp: number;
   maxHp: number;

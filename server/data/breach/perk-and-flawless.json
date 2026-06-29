@@ -1,0 +1,68 @@
+{
+  "BREACH": {
+    "success": {
+      "perk-and-flawless": {
+        "Analyst": [
+          "Intrusion réussie. Je note que le système de sécurité était… conceptuellement insultant.",
+          "Accès obtenu. Si tous les pare-feux sont comme ça, je comprends pourquoi on a besoin d’IA.",
+          "J’ai ouvert la porte numérique. Quelqu’un a vraiment été payé pour concevoir ce truc.",
+          "Connexion établie. Je propose qu’on classe ce réseau dans la catégorie ‘amateur éclairé’.",
+          "Données récupérées. C’est presque décevant quand ça marche aussi bien."
+        ],
+        "Diplomat": [
+          "Le système a accepté ma présence… je crois qu’on vient de faire la paix avec un pare-feu.",
+          "Accès accordé. J’ai l’impression que ce réseau voulait qu’on le comprenne.",
+          "On est dedans. Je ressens une sorte d’harmonie entre moi et ces protocoles.",
+          "La porte numérique s’est ouverte, comme si elle avait confiance en nous.",
+          "Les données se laissent lire… c’est presque poétique, cette coopération silencieuse."
+        ],
+        "Sentinel": [
+          "Intrusion validée. Je vais consigner que le protocole s’est déroulé sans incident majeur.",
+          "Accès obtenu. Je recommande de mettre à jour la procédure pour inclure cette méthode.",
+          "Le système a cédé. Ce n’était pas exactement conforme au manuel, mais le résultat est là.",
+          "Connexion établie. Je note : opération de pénétration réseau réussie, aucune alarme détectée.",
+          "Données sécurisées. Je vais considérer ça comme un cas d’école… même si rien n’était prévu."
+        ],
+        "Explorer": [
+          "Ok, j’ai cliqué partout et maintenant ça marche. Je crois qu’on est dedans.",
+          "Je sais pas ce que j’ai fait, mais la porte numérique s’est ouverte. C’est bon signe, non ?",
+          "J’ai bidouillé trois trucs et le système a arrêté de hurler. Victoire technique.",
+          "Bon, j’ai appuyé sur ‘oui’ à tout et maintenant on a les données. Facile.",
+          "Je pensais avoir tout cassé, mais en fait ça a fonctionné. J’appelle ça du talent spontané."
+        ]
+      }
+    },
+    "failure": {
+      "perk-and-flawless": {
+        "Analyst": [
+          "Échec d’intrusion. Le système est stupide, mais manifestement plus têtu que moi.",
+          "Le pare-feu a refusé l’accès. Techniquement, c’est une victoire pour la médiocrité.",
+          "Connexion bloquée. Je note que ce réseau préfère rester inutile plutôt que coopératif.",
+          "Tentative d’accès avortée. Je suppose que quelqu’un a enfin trouvé le bouton ‘refuser’.",
+          "Données inaccessibles. Statistiquement, ce genre de fiasco devait arriver… mais pas à moi."
+        ],
+        "Diplomat": [
+          "Le système m’a rejeté… je crois qu’il ne se sent pas prêt à nous faire confiance.",
+          "Accès refusé. Peut‑être que ce réseau traverse une phase difficile.",
+          "La porte numérique est restée fermée. Je ressens beaucoup de résistance ici.",
+          "Les données ne veulent pas se laisser approcher… c’est blessant, quelque part.",
+          "On m’a dit non. Même les pare‑feux ont des limites émotionnelles, visiblement."
+        ],
+        "Sentinel": [
+          "Intrusion échouée. Je vais consigner : procédure non conforme, résultat négatif.",
+          "Accès refusé. Ce n’était pas dans le manuel, mais l’échec, lui, est très clair.",
+          "Le système a bloqué la tentative. Je recommande une révision complète du protocole.",
+          "Connexion impossible. Incident à noter : résistance réseau supérieure aux attentes.",
+          "Données non récupérées. Je classe ça dans la catégorie ‘opération à ne pas reproduire’."
+        ],
+        "Explorer": [
+          "J’ai tout essayé, y compris les boutons rouges, et ça n’a toujours pas marché.",
+          "Bon, j’ai peut‑être cassé quelque chose… le système fait juste ‘non’ en boucle.",
+          "Je crois que le réseau m’a insulté. Ou alors c’est juste un message d’erreur.",
+          "J’ai cliqué partout, et maintenant plus rien ne répond. C’est un style de résultat.",
+          "Ok, ce truc refuse de s’ouvrir. Je prends ça personnellement."
+        ]
+      }
+    }
+  }
+}

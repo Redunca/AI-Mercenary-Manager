@@ -1,4 +1,4 @@
-import { RecruitAttributes } from './recruit';
+import type { RecruitAttributes, RecruitPersonality } from './recruit';
 
 export type CandidateArchetype = 'specialized' | 'well-rounded' | 'jack-of-all-trades';
 
@@ -17,6 +17,7 @@ export interface Candidate {
   name: string;
   jobTitle: string;
   archetype: CandidateArchetype;
+  personality: RecruitPersonality;
   attributes: RecruitAttributes;
   hp: number;
   maxHp: number;

@@ -1,0 +1,68 @@
+{
+  "SURVIVAL": {
+    "success": {
+      "perk-and-flawless": {
+        "Analyst": [
+          "Survie assurée. Leur environnement hostile repose sur des principes… étonnamment simplistes.",
+          "Menace évitée. Statistiquement, nous aurions dû rencontrer au moins un danger réel.",
+          "Situation stabilisée. Je note que la nature semble fonctionner en mode ‘bêta instable’.",
+          "Péril contourné. Je propose qu’on classe cet incident dans ‘risque surestimé’.",
+          "Zone sécurisée. Leur conception du danger est un hommage involontaire à la panique irrationnelle."
+        ],
+        "Diplomat": [
+          "Nous avons traversé l’épreuve… je crois que l’environnement voulait nous laisser passer.",
+          "La nature s’est apaisée autour de nous. Je ressens une belle harmonie dans ce moment.",
+          "Le danger s’est dissipé. Peut‑être que l’univers voulait nous offrir une seconde chance.",
+          "La situation s’est éclaircie. Je sens que cette épreuve nous a rapprochés de quelque chose.",
+          "Nous sommes en sécurité. Je crois que cette zone cherchait simplement à nous tester avec douceur."
+        ],
+        "Sentinel": [
+          "Survie validée. Je vais consigner : menace évitée, protocole respecté autant que possible.",
+          "Situation stabilisée. Je recommande d’ajouter cette méthode au manuel de survie.",
+          "Péril contourné. Intervention conforme, aucun incident majeur, rapport en cours.",
+          "Zone sécurisée. Je note que la procédure improvisée a été étonnamment efficace.",
+          "Menace neutralisée. Je classe l’opération dans les actions de survie exemplaires."
+        ],
+        "Explorer": [
+          "Ok, j’ai couru, j’ai sauté, j’ai crié… et ça a marché. Je suis vivant.",
+          "J’ai improvisé un chemin, et apparemment c’était le bon. Trop facile.",
+          "Je pensais que ça allait être super dangereux, mais finalement c’était fun.",
+          "J’ai failli tomber trois fois, mais je suis là. Victoire.",
+          "J’ai fait n’importe quoi, et ça a fonctionné. Je suis un survivant naturel."
+        ]
+      }
+    },
+    "failure": {
+      "perk-and-flawless": {
+        "Analyst": [
+          "Survie compromise. Leur environnement hostile est si chaotique qu’il défie toute analyse.",
+          "Menace non évitée. Statistiquement, nous aurions dû repérer ce danger… mais non.",
+          "Situation instable. Je note que la nature semble fonctionner en mode ‘erreur critique’.",
+          "Péril non contourné. Je suppose que l’environnement a décidé d’être imprévisible.",
+          "Zone non sécurisée. Je vais considérer cet incident comme une anomalie environnementale."
+        ],
+        "Diplomat": [
+          "Nous n’avons pas traversé l’épreuve… je crois que l’environnement était en colère.",
+          "La nature s’est refermée sur nous. Je ressens beaucoup de tension dans l’air.",
+          "Le danger n’a pas voulu se dissiper. Peut‑être que l’univers voulait nous ralentir.",
+          "La situation s’est assombrie. Je sens que cette épreuve demandait plus de douceur.",
+          "Nous ne sommes pas en sécurité. Je crois que cette zone traverse une période difficile."
+        ],
+        "Sentinel": [
+          "Survie échouée. Je vais consigner : menace non évitée, incident majeur.",
+          "Situation instable. Je recommande une révision complète du protocole de survie.",
+          "Péril non contourné. Intervention ratée, risque accru, rapport d’échec en préparation.",
+          "Zone non sécurisée. Je note que la procédure improvisée n’a pas été productive.",
+          "Menace persistante. Je classe l’opération dans les actions de survie à risque élevé."
+        ],
+        "Explorer": [
+          "Bon, j’ai couru, j’ai sauté… et je me suis vautré. Pas top.",
+          "J’ai improvisé un chemin, mais c’était clairement le mauvais.",
+          "Je pensais que ça allait être fun, mais c’était surtout dangereux.",
+          "J’ai failli tomber trois fois… et la quatrième fois j’ai pas failli.",
+          "J’ai fait n’importe quoi, et ça n’a pas du tout fonctionné. Oups."
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "NEGOTIATION": {
+    "success": {
+      "perk-and-flawless": {
+        "Analyst": [
+          "Accord obtenu. Leur logique interne est si fragile qu’un souffle aurait suffi à la convaincre.",
+          "Négociation conclue. Statistiquement, ils auraient dû demander au moins une contre‑proposition.",
+          "Discussion réussie. Je note que leur argumentation repose principalement sur l’enthousiasme naïf.",
+          "Terrain d’entente trouvé. Je propose qu’on classe leur stratégie dans ‘optimisme irrationnel’.",
+          "Accord signé. Leur capacité de décision semble fortement corrélée à la fatigue mentale."
+        ],
+        "Diplomat": [
+          "Ils ont accepté… je crois qu’ils avaient besoin d’un peu de douceur dans cette discussion.",
+          "La négociation s’est harmonisée. Je ressens une belle énergie dans cet accord.",
+          "Nous avons trouvé un terrain d’entente. Peut‑être que l’univers voulait nous rapprocher.",
+          "La conversation a porté ses fruits. Je sens que nos intentions ont touché leur cœur.",
+          "Ils ont dit oui. Je crois que cette entente apporte une paix subtile à tout le monde."
+        ],
+        "Sentinel": [
+          "Négociation validée. Je vais consigner : accord conforme, aucune déviation majeure.",
+          "Accord obtenu. Je recommande d’ajouter cette méthode au protocole de médiation.",
+          "Discussion réussie. Situation stabilisée, compromis atteint, rapport en cours.",
+          "Terrain d’entente trouvé. Je note que la procédure improvisée a été étonnamment efficace.",
+          "Accord signé. Je classe l’opération dans les médiations exemplaires."
+        ],
+        "Explorer": [
+          "Ok, j’ai dit un truc au hasard et ils ont accepté. Je suis trop fort.",
+          "J’ai improvisé une idée, et ils ont dit oui direct. Incroyable.",
+          "Je pensais que ça allait être compliqué, mais finalement c’était super simple.",
+          "J’ai parlé sans réfléchir, et ça a marché. Je devrais négocier plus souvent.",
+          "Ils ont accepté tout ce que j’ai proposé. Je crois que j’ai un talent caché."
+        ]
+      }
+    },
+    "failure": {
+      "perk-and-flawless": {
+        "Analyst": [
+          "Négociation échouée. Leur raisonnement est si chaotique qu’il défie toute tentative de persuasion.",
+          "Accord refusé. Statistiquement, ils auraient dû au moins considérer l’offre.",
+          "Discussion infructueuse. Je note que leur logique interne est… conceptuellement absente.",
+          "Terrain d’entente non trouvé. Je suppose que leur esprit a décidé de ne rien comprendre.",
+          "Accord impossible. Je vais considérer cet incident comme une anomalie cognitive."
+        ],
+        "Diplomat": [
+          "Ils n’ont pas accepté… je crois qu’ils traversent une période de grande confusion.",
+          "La négociation n’a pas pris. Je ressens beaucoup de tension dans leurs réponses.",
+          "Nous n’avons pas trouvé d’accord. Peut‑être que leur cœur n’était pas prêt.",
+          "La conversation s’est bloquée. Je sens que l’univers voulait qu’on soit patients.",
+          "Ils ont dit non. Je crois qu’ils avaient besoin d’un autre type d’énergie."
+        ],
+        "Sentinel": [
+          "Négociation échouée. Je vais consigner : accord non conforme, incident majeur.",
+          "Accord refusé. Je recommande une révision complète du protocole de médiation.",
+          "Discussion infructueuse. Situation instable, compromis impossible, rapport d’échec en préparation.",
+          "Terrain d’entente non trouvé. Je note que la procédure improvisée n’a pas été productive.",
+          "Accord impossible. Je classe l’opération dans les médiations à risque élevé."
+        ],
+        "Explorer": [
+          "Bon, j’ai dit un truc, et ils ont juste fait ‘non’. Pas super.",
+          "J’ai improvisé une idée, mais elle était vraiment trop nulle pour marcher.",
+          "Je pensais que ça allait être simple, mais ils ont tout refusé.",
+          "J’ai parlé sans réfléchir, et ça a empiré la situation. Oups.",
+          "Wow, ils sont beaucoup plus têtus que prévu. Je vais devoir parler mieux."
+        ]
+      }
+    }
+  }
+}

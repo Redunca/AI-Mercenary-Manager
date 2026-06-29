@@ -1,3 +1,40 @@
+const fs = require('fs')
+const path = require('path')
+
+const DATA_DIR = path.join(__dirname, '../../data')
+
+function slugify(name) {
+  return name.toLowerCase().replace(/\s+/g, '-')
+}
+
+function pickEventRecruitQuote({ eventType, success, perks, flaws, personality }) {
+  const dir = path.join(DATA_DIR, eventType.toLowerCase())
+  if (!fs.existsSync(dir)) return null
+
+  const availableFiles = fs.readdirSync(dir)
+    .filter(f => f.endsWith('.json'))
+    .map(f => f.replace('.json', ''))
+
+  const perkFlawSlugs = [
+    ...(perks ?? []).map(p => slugify(p.name)),
+    ...(flaws ?? []).map(f => slugify(f.name)),
+  ]
+  const matches = perkFlawSlugs.filter(slug => availableFiles.includes(slug))
+  const fileKey = matches.length > 0
+    ? matches[Math.floor(Math.random() * matches.length)]
+    : 'perk-and-flawless'
+
+  if (!availableFiles.includes(fileKey)) return null
+
+  try {
+    const data = JSON.parse(fs.readFileSync(path.join(dir, `${fileKey}.json`), 'utf8'))
+    const outcomeKey = success ? 'success' : 'failure'
+    const phrases = data[eventType.toUpperCase()]?.[outcomeKey]?.[fileKey]?.[personality ?? 'Explorer']
+    if (!Array.isArray(phrases) || phrases.length === 0) return null
+    return phrases[Math.floor(Math.random() * phrases.length)]
+  } catch { return null }
+}
+
 const POOL = {
   EN_ROUTE: {
     sys: ["Unité en déplacement vers la zone d'opération.", "Départ confirmé. Aucun incident au départ."],
@@ -66,11 +103,12 @@ async function insertLogEntries(client, playerId, entries) {
   }
 }
 
-function buildPhaseLogs({ phase, failed, rewardForfeited, missionId, missionName, recruitName }) {
+function buildPhaseLogs({ phase, failed, rewardForfeited, missionId, missionName, missionDifficulty, recruitName }) {
   const failedPool = failed ? POOL_FAILED[phase] : null
   const pool = POOL[phase]
+  const prefix = missionDifficulty ? `[${missionName} · ${missionDifficulty}] ` : `[${missionName}] `
   const entries = [
-    { tag: '[SYS]', message: pick(failedPool?.sys ?? pool.sys), missionId },
+    { tag: '[SYS]', message: `${prefix}${pick(failedPool?.sys ?? pool.sys)}`, missionId },
     { tag: '[IA]', message: pick(failedPool?.ia ?? pool.ia), missionId },
   ]
 
@@ -100,38 +138,51 @@ function buildPhaseLogs({ phase, failed, rewardForfeited, missionId, missionName
   return { mission: entries, global }
 }
 
-function buildEventResultLogs({ eventResult, missionId, missionName, recruitName }) {
+function buildEventResultLogs({ eventResult, missionId, missionName, recruitName, recruitPerks, recruitFlaws, recruitPersonality }) {
   const r = eventResult
   const rollStr = formatRoll(r)
   const entries = []
+  const tag = `[${recruitName.toUpperCase()}]`
+
+  function recruitQuote(defaultPool) {
+    const fromFile = pickEventRecruitQuote({
+      eventType: r.type,
+      success: r.success,
+      perks: recruitPerks,
+      flaws: recruitFlaws,
+      personality: recruitPersonality,
+    })
+    return `"${fromFile ?? pick(defaultPool)}"`
+  }
 
   if (r.recruitDied) {
-    entries.push({ tag: '[SYS]', message: `${r.type} — ${rollStr} → MORT AU COMBAT`, missionId })
+    entries.push({ tag: '[SYS]', message: `${r.type}${r.attribute ? ` [${r.attribute}]` : ''} — ${rollStr} → MORT AU COMBAT`, missionId })
     entries.push({ tag: '[IA]', message: pick(EVENT_PHRASES.death_ia), missionId })
-    entries.push({ tag: `[${recruitName.toUpperCase()}]`, message: `"${pick(EVENT_PHRASES.last_words)}"`, missionId })
+    entries.push({ tag, message: `"${pick(EVENT_PHRASES.last_words)}"`, missionId })
     return {
       mission: entries,
       global: [{ tag: '[SYS]', message: `${recruitName} est mort(e) au cours de la mission "${missionName}".` }],
     }
   }
 
+  const typeLabel = `${r.type}${r.attribute ? ` [${r.attribute}]` : ''}`
   if (!r.success && r.consequence === 'FORCED_DEPARTURE') {
-    entries.push({ tag: '[SYS]', message: `${r.type} — ${rollStr} → ÉCHEC — Extraction forcée`, missionId })
+    entries.push({ tag: '[SYS]', message: `${typeLabel} — ${rollStr} → ÉCHEC — Extraction forcée`, missionId })
     entries.push({ tag: '[IA]', message: pick(EVENT_PHRASES.abort_ia), missionId })
-    entries.push({ tag: `[${recruitName.toUpperCase()}]`, message: `"${pick(EVENT_PHRASES.abort_recruit)}"`, missionId })
+    entries.push({ tag, message: recruitQuote(EVENT_PHRASES.abort_recruit), missionId })
   } else if (!r.success && r.consequence === 'NO_REWARD') {
-    entries.push({ tag: '[SYS]', message: `${r.type} — ${rollStr} → ÉCHEC — aucune récompense`, missionId })
+    entries.push({ tag: '[SYS]', message: `${typeLabel} — ${rollStr} → ÉCHEC — aucune récompense`, missionId })
     entries.push({ tag: '[IA]', message: pick(EVENT_PHRASES.no_reward_ia), missionId })
-    entries.push({ tag: `[${recruitName.toUpperCase()}]`, message: `"${pick(EVENT_PHRASES.no_reward_recruit)}"`, missionId })
+    entries.push({ tag, message: recruitQuote(EVENT_PHRASES.no_reward_recruit), missionId })
   } else if (!r.success && r.consequence === 'HP_LOSS') {
-    entries.push({ tag: '[SYS]', message: `${r.type} — ${rollStr} → ÉCHEC — -${r.hpLost} PV`, missionId })
+    entries.push({ tag: '[SYS]', message: `${typeLabel} — ${rollStr} → ÉCHEC — -${r.hpLost} PV`, missionId })
     entries.push({ tag: '[IA]', message: pick(EVENT_PHRASES.hp_loss_ia), missionId })
-    entries.push({ tag: `[${recruitName.toUpperCase()}]`, message: `"${pick(EVENT_PHRASES.hp_loss_recruit)}"`, missionId })
+    entries.push({ tag, message: recruitQuote(EVENT_PHRASES.hp_loss_recruit), missionId })
   } else {
     const rewardStr = r.rewardEarned ? ` [+${r.rewardEarned.amount} ${r.rewardEarned.type}]` : ''
-    entries.push({ tag: '[SYS]', message: `${r.type} — ${rollStr} → SUCCÈS${rewardStr}`, missionId })
+    entries.push({ tag: '[SYS]', message: `${typeLabel} — ${rollStr} → SUCCÈS${rewardStr}`, missionId })
     entries.push({ tag: '[IA]', message: pick(EVENT_PHRASES.success_ia), missionId })
-    entries.push({ tag: `[${recruitName.toUpperCase()}]`, message: `"${pick(EVENT_PHRASES.success_recruit)}"`, missionId })
+    entries.push({ tag, message: recruitQuote(EVENT_PHRASES.success_recruit), missionId })
   }
 
   return { mission: entries, global: [] }

@@ -24,6 +24,7 @@ const CANDIDATE_NAMES = [
 ]
 
 const ARCHETYPES = ['specialized', 'well-rounded', 'jack-of-all-trades']
+const PERSONALITIES = ['Analyst', 'Diplomat', 'Sentinel', 'Explorer']
 
 function computeMaxHp(attributes) {
   return 2 * (attributes.fortitude + attributes.presence + attributes.will) + 10
@@ -55,6 +56,7 @@ function buildAttributes(values, rollInRange) {
 
 function generateCandidate(id, perksFlaws, rollInRange) {
   const archetype = pickRandom(ARCHETYPES, rollInRange)
+  const personality = pickRandom(PERSONALITIES, rollInRange)
   const name = pickRandom(CANDIDATE_NAMES, rollInRange)
   const jobTitle = pickRandom(JOB_TITLES[archetype], rollInRange)
   const attributes = buildAttributes(ATTRIBUTE_TABLES[archetype], rollInRange)
@@ -69,6 +71,7 @@ function generateCandidate(id, perksFlaws, rollInRange) {
     name,
     jobTitle,
     archetype,
+    personality,
     attributes,
     hp: maxHp,
     maxHp,
@@ -83,6 +86,7 @@ function rowToCandidate(row) {
     name: row.name,
     jobTitle: row.job_title,
     archetype: row.archetype,
+    personality: row.personality,
     attributes: row.attributes,
     hp: row.hp,
     maxHp: row.max_hp,
@@ -96,6 +100,7 @@ function rowToRecruit(row) {
     id: String(row.id),
     name: row.name,
     jobTitle: row.job_title ?? undefined,
+    personality: row.personality,
     attributes: row.attributes,
     hp: row.hp,
     maxHp: row.max_hp,
