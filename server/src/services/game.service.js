@@ -440,7 +440,7 @@ async function hireCandidate(client, playerId, candidateId) {
      VALUES ($1, $2, $3, $4, 'available', $5, $6, $7, $8, $9, $10)`,
     [
       recruitId, playerId, candidate.name, candidate.job_title,
-      candidate.hp, candidate.max_hp, candidate.attributes, candidate.perks, candidate.flaws,
+      candidate.hp, candidate.max_hp, JSON.stringify(candidate.attributes), JSON.stringify(candidate.perks), JSON.stringify(candidate.flaws),
       candidate.personality,
     ],
   )

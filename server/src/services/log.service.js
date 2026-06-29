@@ -16,8 +16,8 @@ function pickEventRecruitQuote({ eventType, success, perks, flaws, personality }
     .map(f => f.replace('.json', ''))
 
   const perkFlawSlugs = [
-    ...(perks ?? []).map(p => slugify(p.name)),
-    ...(flaws ?? []).map(f => slugify(f.name)),
+    ...(Array.isArray(perks) ? perks : []).map(p => slugify(p.name)),
+    ...(Array.isArray(flaws) ? flaws : []).map(f => slugify(f.name)),
   ]
   const matches = perkFlawSlugs.filter(slug => availableFiles.includes(slug))
   const fileKey = matches.length > 0
