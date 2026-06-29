@@ -46,23 +46,6 @@ export class CommandService {
     return { command, args };
   }
 
-  execute() {
-    const { command, args } = this.parse(this.input);
-
-    this.history.push(this.input);
-    this.index = -1;
-
-    if (this.panelCommands[command]) {
-      this.panelCommands[command](...args);
-    } else if (this.globalCommands[command]) {
-      this.globalCommands[command](...args);
-    } else {
-      console.warn('Commande inconnue :', name);
-    }
-
-    this.input = '';
-  }
-
   historyPrevious() {
     if (this.history.length === 0) return;
 

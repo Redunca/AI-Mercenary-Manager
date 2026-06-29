@@ -38,10 +38,6 @@ export class TerminalPanelComponent implements OnInit, AfterViewChecked, AfterVi
     "close": () => this.layout.closePanel(this.getPanelId())
   };
 
-  constructor() {
-    // enregistre les commandes locales dans le service
-    this.commandService.registerPanelCommands(this.localCommands);
-  }
 
   ngAfterViewInit(): void {
     this.layout.activePanelChanged.subscribe(id => {
@@ -116,19 +112,4 @@ export class TerminalPanelComponent implements OnInit, AfterViewChecked, AfterVi
     console.log("resetting text area height");
     textarea.style.height = '';
   }
-  // private getModuleCommands(): { [name: string]: (...args: string[]) => void } {
-  //   console.log("Tryign to get module commands", this);
-  //   switch (this.panel.module) {
-  //     case 'recruit-list':
-  //       return (this.moduleInstance as RecruitListComponent).registerCommands();
-
-  //     case 'recruit-detail':
-  //       return (
-  //         this.moduleInstance as RecruitDetailComponent
-  //       ).registerCommands();
-
-  //     default:
-  //       return {};
-  //   }
-  // }
 }
