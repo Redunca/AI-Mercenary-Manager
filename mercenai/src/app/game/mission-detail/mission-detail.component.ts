@@ -18,7 +18,7 @@ export class MissionDetailComponent {
   game = inject(GameService);
 
   get mission(): Mission | null {
-    return this.missionService.missions[this.id] ?? null;
+    return this.missionService.missions.find(m => m.id === this.id) ?? null;
   }
 
   get state(): MissionState | undefined {
