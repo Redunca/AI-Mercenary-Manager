@@ -55,6 +55,8 @@ export class GameSyncService implements OnDestroy {
     this.candidates.applyState(state);
     this.missions.applyState(state);
     this.logs.applyState(state);
+    this.lastState = state;
+    this.reconcilePolling();
   }
 
   private updatePolling(state: GameSnapshot): void {
