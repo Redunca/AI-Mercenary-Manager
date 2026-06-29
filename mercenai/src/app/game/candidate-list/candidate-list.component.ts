@@ -35,7 +35,7 @@ export class CandidateListComponent {
 
   registerCommands() {
     return {
-      'refresh': () => this.candidateService.generateCandidates(5),
+      'refresh': () => { void this.candidateService.generateCandidates(5); },
     };
   }
 }

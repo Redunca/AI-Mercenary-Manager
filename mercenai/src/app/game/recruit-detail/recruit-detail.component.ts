@@ -1,7 +1,6 @@
-import { Component, inject, Input, OnInit } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GameService } from '../../core/game.service';
-import { Recruit } from '../../models/recruit';
 
 @Component({
   selector: 'app-recruit-detail',
@@ -10,14 +9,12 @@ import { Recruit } from '../../models/recruit';
   templateUrl: './recruit-detail.component.html',
   styleUrl: './recruit-detail.component.scss'
 })
-export class RecruitDetailComponent implements OnInit {
+export class RecruitDetailComponent {
   @Input() id!: string;
   game = inject(GameService);
 
-  recruit: Recruit | null = null;
-
-  ngOnInit(): void {
-    this.recruit = this.game.getRecruit(this.id);
+  get recruit() {
+    return this.game.getRecruit(this.id);
   }
 
   statBar(value: number): string {
@@ -28,7 +25,7 @@ export class RecruitDetailComponent implements OnInit {
     return {
       'rename': (newName: string) => {
         if (!newName) { console.warn('Usage: rename <newName>'); return; }
-        this.game.renameRecruit(this.id, newName);
+        void this.game.renameRecruit(this.id, newName);
       }
     };
   }

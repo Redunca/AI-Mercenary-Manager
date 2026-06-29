@@ -1,6 +1,7 @@
-import { Component, inject, Input } from '@angular/core';
+import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LogService } from '../../core/log.service';
+import { GameSyncService } from '../../core/game-sync.service';
 
 @Component({
   selector: 'app-mission-logs',
@@ -9,10 +10,19 @@ import { LogService } from '../../core/log.service';
   templateUrl: './mission-logs.component.html',
   styleUrl: './mission-logs.component.scss'
 })
-export class MissionLogsComponent {
+export class MissionLogsComponent implements OnInit, OnDestroy {
   @Input() id!: number;
 
   logService = inject(LogService);
+  private sync = inject(GameSyncService);
+
+  ngOnInit(): void {
+    this.sync.watchMissionProgress();
+  }
+
+  ngOnDestroy(): void {
+    this.sync.unwatchMissionProgress();
+  }
 
   get logs() { return this.logService.missionLogs[this.id] ?? []; }
 

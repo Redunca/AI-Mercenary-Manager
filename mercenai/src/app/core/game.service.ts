@@ -1,61 +1,35 @@
-import { Injectable } from '@angular/core';
-import { computeMaxHp, Recruit, RecruitAttributes, RecruitStatus } from '../models/recruit';
+import { inject, Injectable, Injector } from '@angular/core';
+import { Recruit, RecruitStatus } from '../models/recruit';
 import { Subject } from 'rxjs';
-
-function makeRecruit(
-  id: string,
-  name: string,
-  attrs: RecruitAttributes,
-  jobTitle?: string,
-  perks?: Recruit['perks'],
-  flaws?: Recruit['flaws'],
-): Recruit {
-  const maxHp = computeMaxHp(attrs);
-  return { id, name, jobTitle, attributes: attrs, hp: maxHp, maxHp, status: 'available', perks: perks ?? [], flaws: flaws ?? [] };
-}
+import { GameSnapshot } from '../models/game-state';
+import { GameApiService } from './game-api.service';
+import { GameSyncService } from './game-sync.service';
 
 @Injectable({ providedIn: 'root' })
 export class GameService {
-  private nextRecruitId = 1;
-  recruitHired$ = new Subject<Recruit>();
+  private api = inject(GameApiService);
+  private injector = inject(Injector);
 
+  recruitHired$ = new Subject<Recruit>();
   recruits: Recruit[] = [];
+  maxRecruits = 5;
+
+  applyState(state: GameSnapshot): void {
+    this.recruits = state.recruits;
+  }
 
   getRecruit(id: string): Recruit | null {
     return this.recruits.find(r => r.id === id) ?? null;
   }
 
-  renameRecruit(id: string, newName: string): void {
-    const r = this.getRecruit(id);
-    if (r) r.name = newName;
+  async renameRecruit(id: string, newName: string): Promise<void> {
+    const result = await this.api.renameRecruit(id, newName);
+    if (result.state) {
+      this.injector.get(GameSyncService).applyState(result.state);
+    }
   }
 
-  setRecruitStatus(id: string, status: RecruitStatus): void {
-    const r = this.getRecruit(id);
-    if (r && r.status !== 'dead') r.status = status;
-  }
-
-  damageRecruit(id: string, amount: number): void {
-    const r = this.getRecruit(id);
-    if (!r || r.status === 'dead') return;
-    r.hp = Math.max(0, r.hp - amount);
-    if (r.hp === 0) this.killRecruit(id);
-  }
-
-  killRecruit(id: string): void {
-    const r = this.getRecruit(id);
-    if (!r) return;
-    r.hp = 0;
-    r.status = 'dead';
-  }
-
-  maxRecruits = 5;
-
-  addRecruit(name: string, attrs: RecruitAttributes, jobTitle?: string, perks?: Recruit['perks'], flaws?: Recruit['flaws']): Recruit | null {
-    if (this.recruits.length >= this.maxRecruits) return null;
-    const recruit = makeRecruit(String(this.nextRecruitId++), name, attrs, jobTitle, perks, flaws);
-    this.recruits.push(recruit);
-    this.recruitHired$.next(recruit);
-    return recruit;
+  setRecruitStatus(_id: string, _status: RecruitStatus): void {
+    // Status is owned by the server; refreshed via sync.
   }
 }

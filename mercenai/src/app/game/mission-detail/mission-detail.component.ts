@@ -1,7 +1,8 @@
-import { Component, inject, Input } from '@angular/core';
+import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MissionService } from '../../core/mission.service';
 import { GameService } from '../../core/game.service';
+import { GameSyncService } from '../../core/game-sync.service';
 import { Mission, MissionState } from '../../models/mission';
 
 @Component({
@@ -11,11 +12,20 @@ import { Mission, MissionState } from '../../models/mission';
   templateUrl: './mission-detail.component.html',
   styleUrl: './mission-detail.component.scss'
 })
-export class MissionDetailComponent {
+export class MissionDetailComponent implements OnInit, OnDestroy {
   @Input() id!: number;
 
   missionService = inject(MissionService);
   game = inject(GameService);
+  private sync = inject(GameSyncService);
+
+  ngOnInit(): void {
+    this.sync.watchMissionProgress();
+  }
+
+  ngOnDestroy(): void {
+    this.sync.unwatchMissionProgress();
+  }
 
   get mission(): Mission | null {
     return this.missionService.missions.find(m => m.id === this.id) ?? null;
@@ -39,7 +49,7 @@ export class MissionDetailComponent {
 
   registerCommands() {
     return {
-      'stop': () => this.missionService.forceReturn(this.id)
+      'stop': () => { void this.missionService.forceReturn(this.id); }
     };
   }
 }

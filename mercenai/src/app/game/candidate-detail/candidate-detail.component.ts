@@ -1,7 +1,8 @@
-import { Component, inject, Input, OnInit } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Candidate } from '../../models/candidate';
 import { CandidateService } from '../../core/candidate.service';
+import { GameService } from '../../core/game.service';
 
 @Component({
   selector: 'app-candidate-detail',
@@ -10,14 +11,15 @@ import { CandidateService } from '../../core/candidate.service';
   templateUrl: './candidate-detail.component.html',
   styleUrl: './candidate-detail.component.scss',
 })
-export class CandidateDetailComponent implements OnInit {
+export class CandidateDetailComponent {
   @Input() id!: string;
   candidateService = inject(CandidateService);
+  game = inject(GameService);
 
-  candidate: Candidate | null = null;
+  hireError: string | null = null;
 
-  ngOnInit(): void {
-    this.candidate = this.candidateService.candidates.find(c => c.id === this.id) ?? null;
+  get candidate(): Candidate | null {
+    return this.candidateService.candidates.find(c => c.id === this.id) ?? null;
   }
 
   archetypeLabel(c: Candidate): string {
@@ -32,16 +34,15 @@ export class CandidateDetailComponent implements OnInit {
     return '[' + '■'.repeat(value) + '□'.repeat(10 - value) + ']';
   }
 
-  hireError: string | null = null;
-
   registerCommands() {
     return {
       'hire': () => {
         if (!this.candidate) return;
-        const result = this.candidateService.hireCandidate(this.candidate.id);
-        if (!result) {
-          this.hireError = `Effectif complet (max ${this.candidateService.game.maxRecruits} recrues)`;
-        }
+        void this.candidateService.hireCandidate(this.candidate.id).then(result => {
+          if (!result) {
+            this.hireError = `Effectif complet (max ${this.game.maxRecruits} recrues)`;
+          }
+        });
       },
     };
   }

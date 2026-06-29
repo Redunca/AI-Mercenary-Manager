@@ -65,7 +65,8 @@
               "buildTarget": "mercenai:build:production"
             },
             "development": {
-              "buildTarget": "mercenai:build:development"
+              "buildTarget": "mercenai:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"

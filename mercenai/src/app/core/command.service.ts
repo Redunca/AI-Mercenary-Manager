@@ -121,12 +121,11 @@ export class CommandService {
     }
 
     if (opt === "hire" && args[1]) {
-      const recruit = this.candidateService.hireCandidate(args[1]);
-      if (recruit) {
-        this.layout.setPanelModule(panelId, PanelModule.RecruitDetail, { id: recruit.id });
-      } else {
-        console.warn(`Candidat ${args[1]} introuvable`);
-      }
+      void this.candidateService.hireCandidate(args[1]).then(recruit => {
+        if (recruit) {
+          this.layout.setPanelModule(panelId, PanelModule.RecruitDetail, { id: recruit.id });
+        }
+      });
       return;
     }
 
@@ -153,13 +152,15 @@ export class CommandService {
       break;
 
     case "start":
-      this.missionService.startMission(Number(args[0]), Number(args[1]));
-      this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.MissionDetail, { id: Number(args[0]) });
+      void this.missionService.startMission(Number(args[0]), Number(args[1])).then(() => {
+        this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.MissionDetail, { id: Number(args[0]) });
+      });
       break;
 
     case "stop":
-      this.missionService.stopMission(Number(args[0]));
-      this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.MissionDetail, { id: Number(args[0]) });
+      void this.missionService.stopMission(Number(args[0])).then(() => {
+        this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.MissionDetail, { id: Number(args[0]) });
+      });
       break;
 
     case "detail":

@@ -1,7 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule, NgFor } from '@angular/common';
 import { MissionService } from '../../core/mission.service';
 import { LayoutService } from '../../core/layout.service';
+import { GameSyncService } from '../../core/game-sync.service';
 import { PanelModule } from '../../models/panel';
 import { Mission } from '../../models/mission';
 
@@ -12,9 +13,18 @@ import { Mission } from '../../models/mission';
   templateUrl: './mission-list.component.html',
   styleUrl: './mission-list.component.scss'
 })
-export class MissionListComponent {
+export class MissionListComponent implements OnInit, OnDestroy {
   missionService = inject(MissionService);
   layout = inject(LayoutService);
+  private sync = inject(GameSyncService);
+
+  ngOnInit(): void {
+    this.sync.watchMissionProgress();
+  }
+
+  ngOnDestroy(): void {
+    this.sync.unwatchMissionProgress();
+  }
 
   get missions(): Mission[] {
     return this.missionService.missions;

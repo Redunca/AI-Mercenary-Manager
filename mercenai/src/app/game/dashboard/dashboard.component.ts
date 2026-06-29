@@ -1,7 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GameService } from '../../core/game.service';
 import { MissionService } from '../../core/mission.service';
+import { GameSyncService } from '../../core/game-sync.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -10,9 +11,18 @@ import { MissionService } from '../../core/mission.service';
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit, OnDestroy {
   game = inject(GameService);
   missionService = inject(MissionService);
+  private sync = inject(GameSyncService);
+
+  ngOnInit(): void {
+    this.sync.watchMissionProgress();
+  }
+
+  ngOnDestroy(): void {
+    this.sync.unwatchMissionProgress();
+  }
 
   get activeMissions() {
     return Object.values(this.missionService.missionStates)
@@ -24,7 +34,7 @@ export class DashboardComponent {
     return this.game.recruits.filter(r => !busyIds.has(Number(r.id)));
   }
 
-  get totalMissions() { return Object.keys(this.missionService.missions).length; }
+  get totalMissions() { return this.missionService.missions.length; }
   get totalRecruits()  { return this.game.recruits.length; }
 
   getMissionName(missionId: number): string {

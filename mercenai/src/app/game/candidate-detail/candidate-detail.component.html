@@ -41,5 +41,5 @@
   <div class="indent-one muted">Candidat introuvable : {{ id }}</div>
 </ng-template>
 <div>{{ '}' }}</div>
-<div class="hint">[ hire ] pour recruter ce candidat ({{ candidateService.game.recruits.length }}/{{ candidateService.game.maxRecruits }})</div>
+<div class="hint">[ hire ] pour recruter ce candidat ({{ game.recruits.length }}/{{ game.maxRecruits }})</div>
 <div *ngIf="hireError" class="flaw">{{ hireError }}</div>
