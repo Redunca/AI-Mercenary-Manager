@@ -12,6 +12,17 @@
 | `focus left/right/up/down` | Navigation directionnelle entre panels      |
 | `help`                | Affiche cette aide                               |
 
+## Recrutement
+
+| Commande                    | Description                                                    |
+|-----------------------------|----------------------------------------------------------------|
+| `candidate list`            | Liste des candidats disponibles au recrutement                 |
+| `candidate detail <id>`     | Détail d'un candidat : stats, personnalité, perks/flaws        |
+| `recruit hire <id>`         | Recrute un candidat par son ID                                 |
+| `refresh`                   | *(panel candidate-list)* Génère de nouveaux candidats          |
+| `hire`                      | *(panel candidate-detail)* Recrute ce candidat                 |
+| `detail <id>`               | *(panel candidate-list)* Raccourci vers le détail              |
+
 ## Recrues
 
 | Commande                  | Description                                             |
