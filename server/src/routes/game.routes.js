@@ -84,6 +84,15 @@ router.post('/missions/:templateId/stop', async (req, res, next) => {
   }
 })
 
+router.get('/missions/:templateId/logs', async (req, res, next) => {
+  try {
+    const logs = await game.getMissionLogs(Number(req.params.templateId))
+    res.json({ logs })
+  } catch (err) {
+    next(err)
+  }
+})
+
 router.post('/missions/:templateId/force-return', async (req, res, next) => {
   try {
     const result = await game.forceReturnMission(Number(req.params.templateId))

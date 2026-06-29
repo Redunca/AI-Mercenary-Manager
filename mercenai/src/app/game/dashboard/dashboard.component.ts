@@ -38,7 +38,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   get totalRecruits()  { return this.game.recruits.length; }
 
   getMissionName(missionId: number): string {
-    return this.missionService.missions[missionId]?.name ?? String(missionId);
+    return this.missionService.missions.find(m => m.id === missionId)?.name ?? String(missionId);
   }
 
   getRecruitName(recruitId: number): string {

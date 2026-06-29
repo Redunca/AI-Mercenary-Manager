@@ -1,11 +1,5 @@
 import { inject, Injectable, Injector } from '@angular/core';
-import { Subject } from 'rxjs';
-import {
-  Mission,
-  MissionEventResult,
-  MissionLogEvent,
-  MissionState,
-} from '../models/mission';
+import { Mission, MissionState } from '../models/mission';
 import { GameApiService } from './game-api.service';
 import { GameSyncService } from './game-sync.service';
 import { GameSnapshot } from '../models/game-state';
@@ -17,8 +11,6 @@ export class MissionService {
 
   missions: Mission[] = [];
   missionStates: Record<number, MissionState> = {};
-  logEvents$ = new Subject<MissionLogEvent>();
-  eventResults$ = new Subject<MissionEventResult>();
 
   applyState(state: GameSnapshot): void {
     this.missions = state.missions;

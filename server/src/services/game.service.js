@@ -247,8 +247,6 @@ async function completeMission(client, playerId, instance, template, failed) {
     )).rows[0]?.name ?? String(instance.recruit_id),
   })
   await insertLogEntries(client, playerId, [...termineeLogs.mission, ...termineeLogs.global])
-
-  await client.query('DELETE FROM mission_instances WHERE id = $1', [instance.id])
 }
 
 async function advanceMission(client, playerId, instance, template, now) {
@@ -454,7 +452,10 @@ async function startMission(client, playerId, templateId, recruitId) {
     'SELECT * FROM mission_instances WHERE player_id = $1 AND template_id = $2',
     [playerId, templateId],
   )
-  if (existing.rows.length > 0) return { error: 'Mission déjà en cours' }
+  if (existing.rows.length > 0) {
+    const s = existing.rows[0].status
+    return { error: s === 'in_progress' ? 'Mission déjà en cours' : 'Mission déjà effectuée' }
+  }
 
   const recruit = await client.query(
     'SELECT * FROM recruits WHERE player_id = $1 AND id = $2',
@@ -609,6 +610,7 @@ async function buildGameState(client, playerId) {
 
   const missionStates = {}
   for (const instance of instancesResult.rows) {
+    if (instance.status !== 'in_progress') continue
     const template = templatesResult.rows.find(t => t.id === instance.template_id)
     missionStates[instance.template_id] = {
       missionId: instance.template_id,
@@ -682,11 +684,22 @@ async function getGameState() {
   })
 }
 
+async function getMissionLogs(playerId, missionId) {
+  const result = await pool.query(
+    `SELECT tag, message FROM log_entries
+     WHERE player_id = $1 AND mission_id = $2
+     ORDER BY id`,
+    [playerId, missionId],
+  )
+  return result.rows
+}
+
 module.exports = {
   DEFAULT_PLAYER_ID,
   initGame,
   syncGame,
   getGameState,
+  getMissionLogs: (missionId) => getMissionLogs(DEFAULT_PLAYER_ID, missionId),
   hireCandidate: (candidateId) => withTransaction(async (client) => {
     await bootstrapPlayer(client)
     const recruit = await hireCandidate(client, DEFAULT_PLAYER_ID, candidateId)

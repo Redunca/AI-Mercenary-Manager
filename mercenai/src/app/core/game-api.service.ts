@@ -46,4 +46,8 @@ export class GameApiService {
   forceReturnMission(templateId: number): Promise<StateResponse> {
     return firstValueFrom(this.http.post<StateResponse>(`${this.base}/missions/${templateId}/force-return`, {}));
   }
+
+  getMissionLogs(templateId: number): Promise<{ logs: { tag: string; message: string }[] }> {
+    return firstValueFrom(this.http.get<{ logs: { tag: string; message: string }[] }>(`${this.base}/missions/${templateId}/logs`));
+  }
 }

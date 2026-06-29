@@ -61,22 +61,6 @@ export interface Mission {
   status: MissionStatus;
 }
 
-export interface MissionLogEvent {
-  missionId: number;
-  missionName: string;
-  recruitId: number;
-  phase: MissionPhase;
-  failed?: boolean;
-  rewardForfeited?: boolean;
-}
-
-export interface MissionEventResult {
-  missionId: number;
-  missionName: string;
-  recruitId: number;
-  eventResult: EventResult;
-}
-
 export interface MissionState {
   missionId: number;
   recruitId: number;
