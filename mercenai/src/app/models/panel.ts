@@ -12,6 +12,7 @@ export enum PanelModule{
   Dashboard = "dashboard",
   Help = "help",
   CandidateList = "candidate-list",
+  CandidateDetail = "candidate-detail",
 }
 
 export interface Panel {

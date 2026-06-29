@@ -1,24 +1,43 @@
 <div>TASK: [<span class="task-title">Recruit detail</span>] ******************************************</div>
 <div>ok ==> {{ '{' }}</div>
-<div class="indent-one">"id"     : "{{ recruit?.id }}",</div>
-<div class="indent-one">"name"   : "{{ recruit?.name }}",</div>
-<div class="indent-one">"status" : "{{ recruit?.status }}",</div>
-<div class="indent-one">"hp"     : {{ recruit?.hp }}/{{ recruit?.maxHp }},</div>
-<ng-container *ngIf="recruit">
+<ng-container *ngIf="recruit; else notFound">
+  <div class="indent-one">"id"       : "{{ recruit.id }}",</div>
+  <div class="indent-one">"name"     : "{{ recruit.name }}",</div>
+  <div class="indent-one indent-one" *ngIf="recruit.jobTitle">"job"      : "{{ recruit.jobTitle }}",</div>
+  <div class="indent-one">"status"   : "{{ recruit.status }}",</div>
+  <div class="indent-one">"hp"       : {{ recruit.hp }}/{{ recruit.maxHp }},</div>
+
   <div class="indent-one">"attributes" : {{ '{' }}</div>
-  <div class="indent-one indent-one">// Physical</div>
-  <div class="indent-one indent-one">agility    {{ statBar(recruit.attributes.agility) }}  {{ recruit.attributes.agility }}</div>
-  <div class="indent-one indent-one">fortitude  {{ statBar(recruit.attributes.fortitude) }}  {{ recruit.attributes.fortitude }}</div>
-  <div class="indent-one indent-one">might      {{ statBar(recruit.attributes.might) }}  {{ recruit.attributes.might }}</div>
-  <div class="indent-one indent-one">// Mental</div>
-  <div class="indent-one indent-one">learning   {{ statBar(recruit.attributes.learning) }}  {{ recruit.attributes.learning }}</div>
-  <div class="indent-one indent-one">logic      {{ statBar(recruit.attributes.logic) }}  {{ recruit.attributes.logic }}</div>
-  <div class="indent-one indent-one">perception {{ statBar(recruit.attributes.perception) }}  {{ recruit.attributes.perception }}</div>
-  <div class="indent-one indent-one">will       {{ statBar(recruit.attributes.will) }}  {{ recruit.attributes.will }}</div>
-  <div class="indent-one indent-one">// Social</div>
-  <div class="indent-one indent-one">deception  {{ statBar(recruit.attributes.deception) }}  {{ recruit.attributes.deception }}</div>
-  <div class="indent-one indent-one">persuasion {{ statBar(recruit.attributes.persuasion) }}  {{ recruit.attributes.persuasion }}</div>
-  <div class="indent-one indent-one">presence   {{ statBar(recruit.attributes.presence) }}  {{ recruit.attributes.presence }}</div>
-  <div class="indent-one">{{ '}' }}</div>
+  <div class="indent-two muted">// Physique</div>
+  <div class="indent-two">agility    {{ statBar(recruit.attributes.agility) }}  {{ recruit.attributes.agility }}</div>
+  <div class="indent-two">fortitude  {{ statBar(recruit.attributes.fortitude) }}  {{ recruit.attributes.fortitude }}</div>
+  <div class="indent-two">might      {{ statBar(recruit.attributes.might) }}  {{ recruit.attributes.might }}</div>
+  <div class="indent-two muted">// Mental</div>
+  <div class="indent-two">learning   {{ statBar(recruit.attributes.learning) }}  {{ recruit.attributes.learning }}</div>
+  <div class="indent-two">logic      {{ statBar(recruit.attributes.logic) }}  {{ recruit.attributes.logic }}</div>
+  <div class="indent-two">perception {{ statBar(recruit.attributes.perception) }}  {{ recruit.attributes.perception }}</div>
+  <div class="indent-two">will       {{ statBar(recruit.attributes.will) }}  {{ recruit.attributes.will }}</div>
+  <div class="indent-two muted">// Social</div>
+  <div class="indent-two">deception  {{ statBar(recruit.attributes.deception) }}  {{ recruit.attributes.deception }}</div>
+  <div class="indent-two">persuasion {{ statBar(recruit.attributes.persuasion) }}  {{ recruit.attributes.persuasion }}</div>
+  <div class="indent-two">presence   {{ statBar(recruit.attributes.presence) }}  {{ recruit.attributes.presence }}</div>
+  <div class="indent-one">{{ '}' }},</div>
+
+  <div class="indent-one">"perks" : [</div>
+  <ng-container *ngFor="let p of recruit.perks">
+    <div class="indent-two perk">{{ p.name }} — {{ p.description }}</div>
+  </ng-container>
+  <div *ngIf="!recruit.perks?.length" class="indent-two muted">—</div>
+  <div class="indent-one">],</div>
+
+  <div class="indent-one">"flaws" : [</div>
+  <ng-container *ngFor="let f of recruit.flaws">
+    <div class="indent-two flaw">{{ f.name }} — {{ f.description }}</div>
+  </ng-container>
+  <div *ngIf="!recruit.flaws?.length" class="indent-two muted">—</div>
+  <div class="indent-one">]</div>
 </ng-container>
+<ng-template #notFound>
+  <div class="indent-one muted">Recrue introuvable : {{ id }}</div>
+</ng-template>
 <div>{{ '}' }}</div>

@@ -1,0 +1,45 @@
+<div>TASK: [<span class="task-title">Candidate detail</span>] ******************************************</div>
+<div>ok ==> {{ '{' }}</div>
+<ng-container *ngIf="candidate; else notFound">
+  <div class="indent-one">"id"        : "{{ candidate.id }}",</div>
+  <div class="indent-one">"name"      : "{{ candidate.name }}",</div>
+  <div class="indent-one">"job"       : "{{ candidate.jobTitle }}",</div>
+  <div class="indent-one">"archetype" : "{{ archetypeLabel(candidate) }}",</div>
+  <div class="indent-one">"hp"        : {{ candidate.hp }}/{{ candidate.maxHp }},</div>
+
+  <div class="indent-one">"attributes" : {{ '{' }}</div>
+  <div class="indent-two">// Physique</div>
+  <div class="indent-two">agility    {{ statBar(candidate.attributes.agility) }}  {{ candidate.attributes.agility }}</div>
+  <div class="indent-two">fortitude  {{ statBar(candidate.attributes.fortitude) }}  {{ candidate.attributes.fortitude }}</div>
+  <div class="indent-two">might      {{ statBar(candidate.attributes.might) }}  {{ candidate.attributes.might }}</div>
+  <div class="indent-two">// Mental</div>
+  <div class="indent-two">learning   {{ statBar(candidate.attributes.learning) }}  {{ candidate.attributes.learning }}</div>
+  <div class="indent-two">logic      {{ statBar(candidate.attributes.logic) }}  {{ candidate.attributes.logic }}</div>
+  <div class="indent-two">perception {{ statBar(candidate.attributes.perception) }}  {{ candidate.attributes.perception }}</div>
+  <div class="indent-two">will       {{ statBar(candidate.attributes.will) }}  {{ candidate.attributes.will }}</div>
+  <div class="indent-two">// Social</div>
+  <div class="indent-two">deception  {{ statBar(candidate.attributes.deception) }}  {{ candidate.attributes.deception }}</div>
+  <div class="indent-two">persuasion {{ statBar(candidate.attributes.persuasion) }}  {{ candidate.attributes.persuasion }}</div>
+  <div class="indent-two">presence   {{ statBar(candidate.attributes.presence) }}  {{ candidate.attributes.presence }}</div>
+  <div class="indent-one">{{ '}' }},</div>
+
+  <div class="indent-one">"perks" : [</div>
+  <ng-container *ngFor="let p of candidate.perks">
+    <div class="indent-two perk">{{ p.name }} — {{ p.description }}</div>
+  </ng-container>
+  <div *ngIf="candidate.perks.length === 0" class="indent-two muted">—</div>
+  <div class="indent-one">],</div>
+
+  <div class="indent-one">"flaws" : [</div>
+  <ng-container *ngFor="let f of candidate.flaws">
+    <div class="indent-two flaw">{{ f.name }} — {{ f.description }}</div>
+  </ng-container>
+  <div *ngIf="candidate.flaws.length === 0" class="indent-two muted">—</div>
+  <div class="indent-one">]</div>
+</ng-container>
+<ng-template #notFound>
+  <div class="indent-one muted">Candidat introuvable : {{ id }}</div>
+</ng-template>
+<div>{{ '}' }}</div>
+<div class="hint">[ hire ] pour recruter ce candidat ({{ candidateService.game.recruits.length }}/{{ candidateService.game.maxRecruits }})</div>
+<div *ngIf="hireError" class="flaw">{{ hireError }}</div>

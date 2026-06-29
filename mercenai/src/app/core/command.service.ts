@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { LayoutService } from './layout.service';
 import { PanelModule } from '../models/panel';
 import { MissionService } from './mission.service';
+import { CandidateService } from './candidate.service';
 
 @Injectable({ providedIn: 'root' })
 export class CommandService {
@@ -16,6 +17,7 @@ export class CommandService {
   }
 
   missionService = inject(MissionService);
+  candidateService = inject(CandidateService);
 
   private input = '';
   private history: string[] = [];
@@ -118,6 +120,16 @@ export class CommandService {
       return;
     }
 
+    if (opt === "hire" && args[1]) {
+      const recruit = this.candidateService.hireCandidate(args[1]);
+      if (recruit) {
+        this.layout.setPanelModule(panelId, PanelModule.RecruitDetail, { id: recruit.id });
+      } else {
+        console.warn(`Candidat ${args[1]} introuvable`);
+      }
+      return;
+    }
+
     console.warn("Option inconnue :", opt);
   }
   private handleFocus(arg: string) {
@@ -172,11 +184,20 @@ export class CommandService {
     this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.Help);
   }
 
-  private handleCandidate(action: string) {
-    if (action === 'list' || action === '-l') {
-      this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.CandidateList);
-    } else {
-      console.warn('Usage: candidate list');
+  private handleCandidate(action: string, ...args: string[]) {
+    switch (action) {
+      case 'list':
+      case '-l':
+        this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.CandidateList);
+        break;
+      case 'detail':
+      case '-d':
+        if (args[0]) {
+          this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.CandidateDetail, { id: args[0] });
+        }
+        break;
+      default:
+        console.warn('Usage: candidate list | candidate detail <id>');
     }
   }
 

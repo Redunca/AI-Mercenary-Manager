@@ -1,7 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { Candidate, CandidateArchetype, Flaw, Perk } from '../models/candidate';
-import { computeMaxHp, RecruitAttributes } from '../models/recruit';
+import { computeMaxHp, Recruit, RecruitAttributes } from '../models/recruit';
 import { DiceService } from './dice.service';
+import { GameService } from './game.service';
 import perksFlawsData from '../data/perks-flaws.json';
 
 const ATTRIBUTE_KEYS: (keyof RecruitAttributes)[] = [
@@ -35,12 +36,14 @@ const ARCHETYPES: CandidateArchetype[] = ['specialized', 'well-rounded', 'jack-o
 @Injectable({ providedIn: 'root' })
 export class CandidateService {
   private dice = inject(DiceService);
+  game = inject(GameService);
 
   private nextId = 1;
   candidates: Candidate[] = [];
 
   constructor() {
     this.generateCandidates(5);
+    this.hireCandidate(this.candidates[0].id);
   }
 
   generateCandidates(count: number): void {
@@ -84,5 +87,16 @@ export class CandidateService {
 
   private pickUnique<T>(arr: T[], count: number): T[] {
     return this.shuffle([...arr]).slice(0, count);
+  }
+
+  hireCandidate(candidateId: string): Recruit | null {
+    const index = this.candidates.findIndex(c => c.id === candidateId);
+    if (index === -1) return null;
+
+    const candidate = this.candidates[index];
+    const recruit = this.game.addRecruit(candidate.name, candidate.attributes, candidate.jobTitle, candidate.perks, candidate.flaws);
+    if (!recruit) return null;
+    this.candidates.splice(index, 1);
+    return recruit;
   }
 }

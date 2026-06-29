@@ -11,6 +11,7 @@ import { MissionLogsComponent } from '../../game/mission-logs/mission-logs.compo
 import { DashboardComponent } from '../../game/dashboard/dashboard.component';
 import { HelpComponent } from '../../game/help/help.component';
 import { CandidateListComponent } from '../../game/candidate-list/candidate-list.component';
+import { CandidateDetailComponent } from '../../game/candidate-detail/candidate-detail.component';
 import { TerminalController } from '../../core/terminal-controller';
 import { LayoutService } from '../../core/layout.service';
 import { LayoutNodeComponent } from '../layout-node/layout-node.component';
@@ -18,7 +19,7 @@ import { LayoutNodeComponent } from '../layout-node/layout-node.component';
 @Component({
   selector: 'app-terminal-panel',
   standalone: true,
-  imports: [CommonModule, RecruitDetailComponent, RecruitListComponent, MissionListComponent, MissionDetailComponent, GlobalLogsComponent, MissionLogsComponent, DashboardComponent, HelpComponent, CandidateListComponent, LayoutNodeComponent],
+  imports: [CommonModule, RecruitDetailComponent, RecruitListComponent, MissionListComponent, MissionDetailComponent, GlobalLogsComponent, MissionLogsComponent, DashboardComponent, HelpComponent, CandidateListComponent, CandidateDetailComponent, LayoutNodeComponent],
   templateUrl: './terminal-panel.component.html',
   styleUrl: './terminal-panel.component.scss',
 })

@@ -24,10 +24,13 @@ export interface RecruitAttributes {
 export interface Recruit {
   id: string;
   name: string;
+  jobTitle?: string;
   attributes: RecruitAttributes;
   hp: number;
   maxHp: number;
   status: RecruitStatus;
+  perks?: { name: string; description: string }[];
+  flaws?: { name: string; description: string }[];
 }
 
 export function computeMaxHp(a: RecruitAttributes): number {

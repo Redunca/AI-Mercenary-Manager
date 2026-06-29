@@ -18,6 +18,8 @@
 
       <app-candidate-list *ngSwitchCase="'candidate-list'" #moduleInstance></app-candidate-list>
 
+      <app-candidate-detail *ngSwitchCase="'candidate-detail'" [id]="panel.data?.id" #moduleInstance></app-candidate-detail>
+
       <app-global-logs *ngSwitchCase="'logs'" #moduleInstance></app-global-logs>
 
       <app-mission-logs *ngSwitchCase="'mission-logs'" [id]="panel.data?.id" #moduleInstance></app-mission-logs>
