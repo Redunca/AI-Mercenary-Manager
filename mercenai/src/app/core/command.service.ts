@@ -12,6 +12,7 @@ export class CommandService {
     this.registerGlobalCommands('logs', this.handleLogs.bind(this));
     this.registerGlobalCommands('home', this.handleHome.bind(this));
     this.registerGlobalCommands('help', this.handleHelp.bind(this));
+    this.registerGlobalCommands('candidate', this.handleCandidate.bind(this));
   }
 
   missionService = inject(MissionService);
@@ -169,6 +170,14 @@ export class CommandService {
 
   private handleHelp() {
     this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.Help);
+  }
+
+  private handleCandidate(action: string) {
+    if (action === 'list' || action === '-l') {
+      this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.CandidateList);
+    } else {
+      console.warn('Usage: candidate list');
+    }
   }
 
 }

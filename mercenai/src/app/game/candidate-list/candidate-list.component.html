@@ -1,0 +1,9 @@
+<div>TASK: [<span class="task-title">Candidats disponibles</span>] ******************************************</div>
+<div>ok ==> {{ '{' }}</div>
+<div *ngFor="let c of candidates" class="indent-one candidate-entry">
+  <div>[{{ c.id }}] <span class="candidate-name">{{ c.name }}</span> · {{ c.jobTitle }} <span class="archetype">({{ archetypeLabel(c) }})</span> — HP {{ c.hp }}/{{ c.maxHp }}</div>
+  <div class="indent-two" *ngIf="c.perks.length > 0">Atouts : <span class="perk">{{ perkNames(c) }}</span></div>
+  <div class="indent-two" *ngIf="c.flaws.length > 0">Défauts : <span class="flaw">{{ flawNames(c) }}</span></div>
+</div>
+<div>{{ '}' }}</div>
+<div class="hint">[ refresh ] pour de nouveaux candidats</div>
