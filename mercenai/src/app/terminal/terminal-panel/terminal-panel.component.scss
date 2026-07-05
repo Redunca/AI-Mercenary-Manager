@@ -26,12 +26,34 @@
   width: 100%;
   min-height: 0;
   min-width: 0;
-  //border-top: 1px solid #333;
   background: #111;
-  display: flex;
-  align-items: flex-start;
-  //gap: 0.5rem;
 
+  /* Force flexbox to grow with content, but keep input single-line */
+  display: flex;
+}
+
+/* Fix for .command-input: Allow vertical scroll instead of growing infinitely if needed, or let autoResize handle height */
+.command-input {
+  width: 100%; /* Ensure it takes full horizontal space */
+
+  /* Terminal-like behavior: single line initially, grows with content OR scrolls */
+  min-height: calc(2 * 1.2rem);
+  max-height: none;
+
+  flex: 1; /* Takes remaining horizontal space */
+
+  /* Prevent resize handle */
+  resize: none;
+
+  border: none;
+  outline: none;
+  background: transparent;
+  color: lightgrey;
+  font-family: monospace;
+  font-size: 1rem;
+  line-height: 1.2rem;
+  word-wrap: break-word;
+  white-space: pre-wrap
 }
 
 .prompt {
@@ -41,18 +63,7 @@
   flex-shrink: 0;
 }
 
-.command-input {
-  flex: 1;
-  resize: none;
-  border: none;
+.command-input:focus {
   outline: none;
-  background: transparent;
-  color: lightgrey;
-  font-family: monospace;
-  font-size: 1rem;
-  line-height: 1.2rem;
-  overflow-wrap: break-word;
-  overflow-y: hidden;
-  min-height: 1.2rem;
-  padding: 0;
 }
+

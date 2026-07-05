@@ -3,6 +3,8 @@ import { LayoutService } from './layout.service';
 import { PanelModule } from '../models/panel';
 import { MissionService } from './mission.service';
 import { CandidateService } from './candidate.service';
+import { ShipService } from './ship.service';
+import { ShopService } from './shop.service';
 
 @Injectable({ providedIn: 'root' })
 export class CommandService {
@@ -10,14 +12,20 @@ export class CommandService {
     this.registerGlobalCommands('recruit', this.handleRecruit.bind(this));
     this.registerGlobalCommands('focus', this.handleFocus.bind(this));
     this.registerGlobalCommands('mission', this.handleMission.bind(this));
+    this.registerGlobalCommands('ship', this.handleShip.bind(this));
+    this.registerGlobalCommands('equipment', this.handleEquipment.bind(this));
     this.registerGlobalCommands('logs', this.handleLogs.bind(this));
     this.registerGlobalCommands('home', this.handleHome.bind(this));
     this.registerGlobalCommands('help', this.handleHelp.bind(this));
     this.registerGlobalCommands('candidate', this.handleCandidate.bind(this));
+    this.registerGlobalCommands('shop', this.handleShop.bind(this));
+    this.registerGlobalCommands('wallet', this.handleWallet.bind(this));
   }
 
   missionService = inject(MissionService);
   candidateService = inject(CandidateService);
+  shipService = inject(ShipService);
+  shopService = inject(ShopService);
 
   private input = '';
   private history: string[] = [];
@@ -200,6 +208,109 @@ export class CommandService {
       default:
         console.warn('Usage: candidate list | candidate detail <id>');
     }
+  }
+
+  private handleShip(action: string, ...args: string[]) {
+    switch (action) {
+      case 'list':
+      case '-l':
+        this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShipList);
+        break;
+
+      case 'detail':
+      case '-d':
+        if (args[0]) {
+          this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShipDetail, { id: args[0] });
+        }
+        break;
+
+      case 'assign':
+        if (args[0] && args[1]) {
+          void this.shipService.assignCrewToShip(Number(args[0]), [Number(args[1])]).then(() => {
+            this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShipDetail, { id: args[0] });
+          });
+        }
+        break;
+
+      case 'unassign':
+        if (args[0] && args[1]) {
+          void this.shipService.unassignCrewFromShip(Number(args[0]), Number(args[1])).then(() => {
+            this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShipDetail, { id: args[0] });
+          });
+        }
+        break;
+
+      case 'rename':
+        if (args[0]) {
+          void this.shipService.renameShip(Number(args[0]), args.slice(1).join(' ')).then(() => {
+            this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShipDetail, { id: args[0] });
+          });
+        }
+        break;
+
+      default:
+        console.warn('Usage: ship list | ship detail <id> | ship assign <shipId> <recruitId> | ship unassign <shipId> <recruitId> | ship rename <shipId> <newName>');
+    }
+  }
+
+  private handleEquipment(action: string, ...args: string[]) {
+    switch (action) {
+      case 'list':
+      case '-l':
+        this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.EquipmentList);
+        break;
+
+      case 'detail':
+      case '-d':
+        if (args[0]) {
+          this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.EquipmentDetail, { id: args[0] });
+        }
+        break;
+
+      case 'assign':
+        if (args[0] && args[1]) {
+          void this.shipService.assignEquipmentToShip(Number(args[0]), Number(args[1])).then(() => {
+            this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.EquipmentDetail, { id: args[0] });
+          });
+        }
+        break;
+
+      case 'unassign':
+        if (args[0]) {
+          void this.shipService.unassignEquipmentFromShip(Number(args[0])).then(() => {
+            this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.EquipmentDetail, { id: args[0] });
+          });
+        }
+        break;
+
+      default:
+        console.warn('Usage: equipment list | equipment detail <id> | equipment assign <equipmentId> <shipId> | equipment unassign <equipmentId>');
+    }
+  }
+
+  private handleShop(action: string, ...args: string[]) {
+    switch (action) {
+      case 'list':
+      case '-l':
+        this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShopList);
+        break;
+
+      case 'detail':
+      case '-d':
+        if (args[0]) {
+          this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShopDetail, { id: args[0] });
+        }
+        break;
+
+      default:
+        console.warn('Usage: shop list | shop detail <id>');
+    }
+  }
+
+  private handleWallet() {
+    this.shopService.getWallet().subscribe(wallet => {
+      console.log(`💰 Crédit actuel: ${wallet} ₹`);
+    });
   }
 
 }

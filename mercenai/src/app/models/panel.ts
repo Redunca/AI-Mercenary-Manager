@@ -1,6 +1,5 @@
 import { TerminalController } from "../core/terminal-controller";
 
-
 export enum PanelModule{
   None='none',
   RecruitList='recruit-list',
@@ -13,6 +12,12 @@ export enum PanelModule{
   Help = "help",
   CandidateList = "candidate-list",
   CandidateDetail = "candidate-detail",
+  ShipList = "ship-list",
+  ShipDetail = "ship-detail",
+  EquipmentList = "equipment-list",
+  EquipmentDetail = "equipment-detail",
+  ShopList = "shop-list",
+  ShopDetail = "shop-detail",
 }
 
 export interface Panel {

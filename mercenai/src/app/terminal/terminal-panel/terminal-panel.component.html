@@ -1,48 +1,115 @@
-<div class="panel" [class.active]="isActive">
+<div class="terminal-panel" [class.active]="isActive" (click)="onFocus()">
+  <!-- <div class="panel-header">
+    <span class="prompt">{{ prompt }}</span>
+  </div> -->
+
   <div class="panel-content">
     <ng-container [ngSwitch]="panel.module">
 
-      <div *ngSwitchCase="'none'">Panel vide</div>
+      <app-recruit-list 
+        #moduleInstance 
+        *ngSwitchCase="'recruit-list'">
+      </app-recruit-list>
+      
+      <app-recruit-detail 
+        #moduleInstance 
+        *ngSwitchCase="'recruit-detail'"
+        [id]="panel.data?.id">
+      </app-recruit-detail>
 
-      <app-recruit-list *ngSwitchCase="'recruit-list'" #moduleInstance></app-recruit-list>
+      <app-mission-list 
+        #moduleInstance 
+        *ngSwitchCase="'mission-list'">
+      </app-mission-list>
 
-      <app-recruit-detail *ngSwitchCase="'recruit-detail'" [id]="panel.data?.id" #moduleInstance></app-recruit-detail>
+      <app-mission-detail 
+        #moduleInstance 
+        *ngSwitchCase="'mission-detail'"
+        [id]="panel.data?.id">
+      </app-mission-detail>
 
-      <app-mission-list *ngSwitchCase="'mission-list'" #moduleInstance></app-mission-list>
+      <app-global-logs 
+        #moduleInstance 
+        *ngSwitchCase="'logs'">
+      </app-global-logs>
 
-      <app-mission-detail *ngSwitchCase="'mission-detail'" [id]="panel.data?.id" #moduleInstance></app-mission-detail>
+      <app-mission-logs 
+        #moduleInstance 
+        *ngSwitchCase="'mission-logs'"
+        [id]="panel.data?.missionId">
+      </app-mission-logs>
 
-      <app-dashboard *ngSwitchCase="'dashboard'" #moduleInstance></app-dashboard>
+      <app-dashboard 
+        #moduleInstance 
+        *ngSwitchCase="'dashboard'">
+      </app-dashboard>
 
-      <app-help *ngSwitchCase="'help'" #moduleInstance></app-help>
+      <app-help 
+        #moduleInstance 
+        *ngSwitchCase="'help'">
+      </app-help>
 
-      <app-candidate-list *ngSwitchCase="'candidate-list'" #moduleInstance></app-candidate-list>
+      <app-candidate-list 
+        #moduleInstance 
+        *ngSwitchCase="'candidate-list'">
+      </app-candidate-list>
 
-      <app-candidate-detail *ngSwitchCase="'candidate-detail'" [id]="panel.data?.id" #moduleInstance></app-candidate-detail>
+      <app-candidate-detail 
+        #moduleInstance 
+        *ngSwitchCase="'candidate-detail'"
+        [id]="panel.data?.id">
+      </app-candidate-detail>
 
-      <app-global-logs *ngSwitchCase="'logs'" #moduleInstance></app-global-logs>
+      <app-ship-list 
+        #moduleInstance 
+        *ngSwitchCase="'ship-list'">
+      </app-ship-list>
 
-      <app-mission-logs *ngSwitchCase="'mission-logs'" [id]="panel.data?.id" #moduleInstance></app-mission-logs>
+      <app-ship-detail 
+        #moduleInstance 
+        *ngSwitchCase="'ship-detail'"
+        [id]="panel.data?.id">
+      </app-ship-detail>
 
-      <p *ngSwitchDefault>Module inconnu : {{ panel.module }}</p>
+      <app-equipment-list 
+        #moduleInstance 
+        *ngSwitchCase="'equipment-list'">
+      </app-equipment-list>
 
+      <app-equipment-detail 
+        #moduleInstance 
+        *ngSwitchCase="'equipment-detail'"
+        [id]="panel.data?.id">
+      </app-equipment-detail>
+
+      <app-shop-list 
+        #moduleInstance 
+        *ngSwitchCase="'shop-list'">
+      </app-shop-list>
+
+      <app-shop-detail 
+        #moduleInstance 
+        *ngSwitchCase="'shop-detail'"
+        [id]="panel.data?.id">
+      </app-shop-detail>
+
+      <app-dashboard 
+        #moduleInstance 
+        *ngSwitchDefault>
+      </app-dashboard>
     </ng-container>
   </div>
 
-
-  <!-- Invite de commande -->
-  <div class="panel-command-line">
-    <span class="prompt">[{{ prompt }}]$</span>
-
+  <div class="panel-input">
     <textarea
-    #cmdInput
-    class="command-input"
-    (focus)="onFocus()"
-    [value]="panel.terminal?.getInput()"
-    (input)="autoResize($event); panel.terminal?.setInput($any($event.target).value)"
-    (keydown.enter)="panel.terminal?.execute(commandService.routeCommand.bind(commandService))"
-    (keydown.arrowup)="panel.terminal?.historyPrevious()"
-    (keydown.arrowdown)="panel.terminal?.historyNext()"
-  ></textarea>
+      #cmdInput
+      [value]="panel.terminal?.getInput() ?? ''"
+      (input)="onInputChange($event); autoResize($event)"
+      (keydown.enter)="manageKeyDownEnter()"
+      (focus)="onFocus()"
+      placeholder="Entrez une commande..."
+      class="command-input">
+    </textarea>
   </div>
 </div>
+

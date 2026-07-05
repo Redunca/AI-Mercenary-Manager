@@ -7,13 +7,13 @@ cleanup() {
   echo ""
   echo "Arrêt en cours..."
   kill "$SERVER_PID" "$ANGULAR_PID" 2>/dev/null
-  docker compose -f "$ROOT/docker-compose.yml" stop
+  podman-compose -f "$ROOT/docker-compose.yml" stop
   exit 0
 }
 trap cleanup INT TERM
 
 echo "Démarrage de PostgreSQL..."
-docker compose -f "$ROOT/docker-compose.yml" up -d
+podman-compose -f "$ROOT/docker-compose.yml" up -d
 
 echo "Démarrage du serveur..."
 cd "$ROOT/server" && npm run dev &

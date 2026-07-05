@@ -9,6 +9,8 @@ jest.mock('../src/db/pool', () => ({
 
 jest.mock('../src/services/dice.service');
 jest.mock('../src/services/log.service');
+jest.mock('../src/services/ship.service');
+jest.mock('../src/services/equipment.service');
 
 describe('Game Service', () => {
   beforeEach(() => {
@@ -25,7 +27,7 @@ describe('Game Service', () => {
     expect(typeof GameService.hireCandidate).toBe('function');
   });
 
-  test('startMission is callable', () => {
+  test('startMission is callable with shipId parameter', () => {
     expect(typeof GameService.startMission).toBe('function');
   });
 

@@ -1,5 +1,5 @@
 import { AfterViewChecked, AfterViewInit, Component, ElementRef, inject, Input, OnInit, ViewChild } from '@angular/core';
-import { Panel } from '../../models/panel';
+import { Panel, PanelModule } from '../../models/panel';
 import { CommonModule } from '@angular/common';
 import { CommandService } from '../../core/command.service';
 import { RecruitDetailComponent } from '../../game/recruit-detail/recruit-detail.component';
@@ -12,14 +12,39 @@ import { DashboardComponent } from '../../game/dashboard/dashboard.component';
 import { HelpComponent } from '../../game/help/help.component';
 import { CandidateListComponent } from '../../game/candidate-list/candidate-list.component';
 import { CandidateDetailComponent } from '../../game/candidate-detail/candidate-detail.component';
+import { ShipListComponent } from '../../game/ship/ship-list/ship-list.component';
+import { ShipDetailComponent } from '../../game/ship/ship-detail/ship-detail.component';
+import { EquipmentListComponent } from '../../game/equipment/equipment-list/equipment-list.component';
+import { EquipmentDetailComponent } from '../../game/equipment/equipment-detail/equipment-detail.component';
 import { TerminalController } from '../../core/terminal-controller';
 import { LayoutService } from '../../core/layout.service';
 import { LayoutNodeComponent } from '../layout-node/layout-node.component';
+import { ShopListComponent } from '../../game/shop/shop-list/shop-list.component';
+import { ShopDetailComponent } from '../../game/shop/shop-detail/shop-detail.component';
 
 @Component({
   selector: 'app-terminal-panel',
   standalone: true,
-  imports: [CommonModule, RecruitDetailComponent, RecruitListComponent, MissionListComponent, MissionDetailComponent, GlobalLogsComponent, MissionLogsComponent, DashboardComponent, HelpComponent, CandidateListComponent, CandidateDetailComponent, LayoutNodeComponent],
+  imports: [
+    CommonModule,
+    RecruitDetailComponent,
+    RecruitListComponent,
+    MissionListComponent,
+    MissionDetailComponent,
+    GlobalLogsComponent,
+    MissionLogsComponent,
+    DashboardComponent,
+    HelpComponent,
+    CandidateListComponent,
+    CandidateDetailComponent,
+    ShipListComponent,
+    ShipDetailComponent,
+    EquipmentListComponent,
+    EquipmentDetailComponent,
+    LayoutNodeComponent,
+    ShopListComponent,
+    ShopDetailComponent
+  ],
   templateUrl: './terminal-panel.component.html',
   styleUrl: './terminal-panel.component.scss',
 })
@@ -33,6 +58,8 @@ export class TerminalPanelComponent implements OnInit, AfterViewChecked, AfterVi
   @ViewChild('moduleInstance') moduleInstance: any;
   @ViewChild('cmdInput') textareaRef!: ElementRef<HTMLTextAreaElement>;
 
+  prompt = '> ';
+
   // commandes locales
   localCommands = {
     "split-h": () => this.layout.split(this.getPanelId(), 'row'),
@@ -40,78 +67,79 @@ export class TerminalPanelComponent implements OnInit, AfterViewChecked, AfterVi
     "close": () => this.layout.closePanel(this.getPanelId())
   };
 
-
-  ngAfterViewInit(): void {
-    this.layout.activePanelChanged.subscribe(id => {
-      console.log('Received focus changed ', id, this.panel);
-      if (id === this.panel.id) {
-        this.focusTextarea();
-      }
-    });
-    //On fait le check en cas de nouveau panneau (comme après un split) parce que sinon l'événement part avant que la vue existe
-    if (this.layout.activePanelId === this.panel.id) {
-      this.focusTextarea();
-    }
-  }
-  focusTextarea() {
-    this.textareaRef?.nativeElement.focus();
-  }
-  getPanelId() {
-    return this.panel.id
-  }
-  onFocus() {
-    this.layout.setActivePanel(this.panel.id);
-  }
-  get prompt() {
-    return `user@${this.panel?.module ?? 'localhost'}(${this.getPanelId() ?? '?'})`;
+  ngOnInit() {
+    this.panel.terminal = new TerminalController(this.getPanelId(), this.localCommands);
   }
 
-  ngOnInit(): void {
-    console.log("On essaye de créer le terminal", this.panel);
-    this.panel.terminal = new TerminalController(this.panel.id, this.localCommands);
-    console.log(this.panel);
+  ngAfterViewInit() {
+    this.textareaRef?.nativeElement?.focus();
   }
 
   ngAfterViewChecked() {
-    if (this.moduleInstance && this.moduleInstance !== this._lastModuleInstance) {
-      this._lastModuleInstance = this.moduleInstance;
-      this.setModuleInstance(this.moduleInstance);
-    }
+    this.textareaRef?.nativeElement?.scrollIntoView({ block: 'nearest' });
   }
 
-  private _lastModuleInstance: any = null;
-
-
-  setModuleInstance(instance: any) {
-    const moduleCommands = instance.registerCommands?.() ?? {};
-    if (this.panel.terminal) {
-
-      this.panel.terminal.localCommands = {
-        ...this.localCommands,
-        ...moduleCommands
-      };
-    }
+  onInputChange(event: Event): void {
+    const target = event.target as HTMLTextAreaElement;
+    this.panel.terminal?.setInput(target.value);
   }
 
-  manageKeyDownEnter() {
-    this.layout.activePanelId = this.getPanelId();
-    this.panel.terminal?.execute(
-      this.commandService.routeCommand.bind(this.commandService)
-    )
-
-  }
-  autoResize(event: Event) {
+  autoResize(event: Event): void {
     const textarea = event.target as HTMLTextAreaElement;
     textarea.style.height = 'auto';
     textarea.style.height = textarea.scrollHeight + 'px';
   }
 
-  resetInputHeight() {
-    const textarea = this.textareaRef?.nativeElement;
-    console.log("Trying to reset text area height", textarea);
+  manageKeyDownEnter(): void {
+    this.panel.terminal?.execute((input: string, panelId: number) => {
+      this.commandService.routeCommand(input, panelId);
+    });
+  }
 
-    if (!textarea) return;
-    console.log("resetting text area height");
-    textarea.style.height = '';
+  onFocus(): void {
+    this.layout.setActivePanel(this.getPanelId());
+  }
+
+  getPanelId(): number {
+    return this.panel.id;
+  }
+
+  getComponentForModule(module: PanelModule) {
+    switch (module) {
+      case PanelModule.RecruitList:
+        return RecruitListComponent;
+      case PanelModule.RecruitDetail:
+        return RecruitDetailComponent;
+      case PanelModule.MissionList:
+        return MissionListComponent;
+      case PanelModule.MissionDetail:
+        return MissionDetailComponent;
+      case PanelModule.Logs:
+        return GlobalLogsComponent;
+      case PanelModule.MissionLogs:
+        return MissionLogsComponent;
+      case PanelModule.Dashboard:
+        return DashboardComponent;
+      case PanelModule.Help:
+        return HelpComponent;
+      case PanelModule.CandidateList:
+        return CandidateListComponent;
+      case PanelModule.CandidateDetail:
+        return CandidateDetailComponent;
+      case PanelModule.ShipList:
+        return ShipListComponent;
+      case PanelModule.ShipDetail:
+        return ShipDetailComponent;
+      case PanelModule.EquipmentList:
+        return EquipmentListComponent;
+      case PanelModule.EquipmentDetail:
+        return EquipmentDetailComponent;
+      case PanelModule.ShopList:
+        return ShopListComponent;
+      case PanelModule.ShopDetail:
+        return ShopDetailComponent;
+      default:
+        return DashboardComponent;
+    }
   }
 }

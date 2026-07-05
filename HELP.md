@@ -32,17 +32,48 @@
 | `rename <nom>`            | *(panel recruit-detail)* Renomme la recrue              |
 | `detail <id>`             | *(panel recruit-list)* Raccourci vers le détail         |
 
+## Navires
+
+| Commande                      | Description                                              |
+|-------------------------------|----------------------------------------------------------|
+| `ship list`                   | Liste des navires avec statut (amarré/en mission)       |
+| `ship detail <id>`            | Détail d'un navire : stats, équipage, équipement        |
+| `ship assign <shipId> <recruitId>` | *(panel ship-detail)* Assigne une recrue à l'équipage   |
+| `ship unassign <shipId> <recruitId>` | *(panel ship-detail)* Retire une recrue de l'équipage   |
+| `ship rename <shipId> <nom>`  | *(panel ship-detail)* Renomme le navire                 |
+| `detail <id>`                 | *(panel ship-list)* Raccourci vers le détail            |
+
+## Équipement
+
+| Commande                           | Description                                               |
+|------------------------------------|-----------------------------------------------------------|
+| `equipment list`                   | Liste de l'équipement en inventaire                       |
+| `equipment detail <id>`            | Détail d'un équipement : effet, rareté, prix             |
+| `equipment assign <equipmentId> <shipId>` | *(panel equipment-detail)* Assigne à un navire           |
+| `equipment unassign <equipmentId>`  | *(panel equipment-detail)* Retire du navire assigné       |
+| `detail <id>`                      | *(panel equipment-list)* Raccourci vers le détail        |
+
+## Boutique
+
+| Commande                    | Description                                          |
+|-----------------------------|------------------------------------------------------|
+| `shop list`                 | Liste des navires et équipements disponibles à l'achat |
+| `shop detail <id>`          | Détail d'un article : prix, stats, description       |
+| `shop buy <id>`             | *(panel shop-detail)* Achète un navire ou équipement |
+| `wallet`                    | Affiche le solde crédit courant                       |
+| `detail <id>`               | *(panel shop-list)* Raccourci vers le détail         |
+
 ## Missions
 
-| Commande                          | Description                                          |
-|-----------------------------------|------------------------------------------------------|
-| `mission list`                    | Liste des missions avec statut et progression        |
-| `mission detail <id>`             | Détail d'une mission : phase et barre de progression |
-| `mission start <missionId> <recruitId>` | Lance une mission avec une recrue              |
-| `mission stop <missionId>`        | Annule une mission et remet la recrue disponible     |
-| `mission logs <id>`               | Logs détaillés d'une mission                         |
-| `stop`                            | *(panel mission-detail)* Déclenche un retour forcé   |
-| `detail <id>`                     | *(panel mission-list)* Raccourci vers le détail      |
+| Commande                            | Description                                          |
+|-------------------------------------|------------------------------------------------------|
+| `mission list`                      | Liste des missions avec statut et progression        |
+| `mission detail <id>`               | Détail d'une mission : phase et barre de progression |
+| `mission start <missionId> <shipId>` | Lance une mission avec un navire                    |
+| `mission stop <missionId>`          | Annule une mission et remet l'équipage disponible    |
+| `mission logs <id>`                 | Logs détaillés d'une mission                         |
+| `stop`                              | *(panel mission-detail)* Déclenche un retour forcé   |
+| `detail <id>`                       | *(panel mission-list)* Raccourci vers le détail      |
 
 ## Logs
 

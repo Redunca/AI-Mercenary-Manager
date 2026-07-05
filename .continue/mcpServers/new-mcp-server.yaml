@@ -1,0 +1,15 @@
+name: New MCP server
+version: 0.0.1
+schema: v1
+mcpServers:
+  - name: nodejs-api-docs
+    command: docker
+    args:
+      - "run"
+      - "-i" 
+      - "--rm"
+      - "--init"
+      - "-e"
+      - "DOCKER_CONTAINER=true"
+      - "ghcr.io/lirantal/mcp-server-nodejs-api-docs:latest"
+    env: {}

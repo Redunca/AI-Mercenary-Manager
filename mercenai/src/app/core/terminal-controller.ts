@@ -18,8 +18,9 @@ export class TerminalController {
   }
 
   execute(parseFn: (input: string, panelId: number) => void) {
+    const trimmedInput = this.input.trim();
     const snapshot = this.input;
-    parseFn(this.input, this.panelId);
+    parseFn(trimmedInput, this.panelId);
     this.history.push(snapshot);
     this.index = -1;
     this.input = '';
@@ -49,3 +50,4 @@ export class TerminalController {
     }
   }
 }
+
