@@ -75,4 +75,39 @@ describe('Equipment Service', () => {
       [1]
     );
   });
+
+  test('getPlayerEquipment retrieves all equipment when unassignedOnly is not requested', async () => {
+    mockClient.query.mockResolvedValue({ rows: [] });
+
+    await EquipmentService.getPlayerEquipment(mockClient, 1);
+
+    expect(mockClient.query).toHaveBeenCalledWith(
+      expect.not.stringContaining('assigned_to_ship IS NULL'),
+      [1]
+    );
+  });
+
+  test('getEquipment retrieves a single equipment item by id', async () => {
+    const equipment = { id: 5, name: 'Blindage Renforcé' };
+    mockClient.query.mockResolvedValue({ rows: [equipment] });
+
+    const result = await EquipmentService.getEquipment(mockClient, 5);
+
+    expect(mockClient.query).toHaveBeenCalledWith(
+      expect.stringContaining('SELECT * FROM equipment WHERE id = $1'),
+      [5]
+    );
+    expect(result).toEqual(equipment);
+  });
+
+  test('unassignEquipmentFromShip clears the assigned ship', async () => {
+    mockClient.query.mockResolvedValue({ rows: [{ id: 1, assigned_to_ship: null }] });
+
+    await EquipmentService.unassignEquipmentFromShip(mockClient, 1);
+
+    expect(mockClient.query).toHaveBeenCalledWith(
+      expect.stringContaining('assigned_to_ship = NULL'),
+      [1]
+    );
+  });
 });

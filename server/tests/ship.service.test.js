@@ -96,4 +96,84 @@ describe('Ship Service', () => {
       [1, 5]
     );
   });
+
+  test('getShip returns the ship for the given player and id', async () => {
+    const ship = { id: 1, player_id: 1 };
+    mockClient.query.mockResolvedValue({ rows: [ship] });
+
+    const result = await ShipService.getShip(mockClient, 1, 1);
+
+    expect(mockClient.query).toHaveBeenCalledWith(
+      expect.stringContaining('SELECT * FROM ships'),
+      [1, 1]
+    );
+    expect(result).toEqual(ship);
+  });
+
+  test('getShip returns undefined when the ship is not found', async () => {
+    mockClient.query.mockResolvedValue({ rows: [] });
+
+    const result = await ShipService.getShip(mockClient, 1, 999);
+
+    expect(result).toBeUndefined();
+  });
+
+  test('appendCrewMember adds a recruit to the crew array', async () => {
+    mockClient.query.mockResolvedValue({ rows: [{ id: 1, crew: [1] }] });
+
+    await ShipService.appendCrewMember(mockClient, 1, 1, 1);
+
+    expect(mockClient.query).toHaveBeenCalledWith(
+      expect.stringContaining('array_append(crew, $3)'),
+      [1, 1, 1]
+    );
+  });
+
+  test('removeCrewMember removes a recruit from the crew array', async () => {
+    mockClient.query.mockResolvedValue({ rows: [{ id: 1, crew: [] }] });
+
+    await ShipService.removeCrewMember(mockClient, 1, 1, 1);
+
+    expect(mockClient.query).toHaveBeenCalledWith(
+      expect.stringContaining('array_remove(crew, $3)'),
+      [1, 1, 1]
+    );
+  });
+
+  test('renameShip updates the ship name', async () => {
+    mockClient.query.mockResolvedValue({ rows: [{ id: 1, name: 'Nouveau Nom' }] });
+
+    await ShipService.renameShip(mockClient, 1, 1, 'Nouveau Nom');
+
+    expect(mockClient.query).toHaveBeenCalledWith(
+      expect.stringContaining('SET name = $3'),
+      [1, 1, 'Nouveau Nom']
+    );
+  });
+
+  test('getHangar returns the player hangar', async () => {
+    const hangar = { player_id: 1, max_ships: 5 };
+    mockClient.query.mockResolvedValue({ rows: [hangar] });
+
+    const result = await ShipService.getHangar(mockClient, 1);
+
+    expect(mockClient.query).toHaveBeenCalledWith(
+      expect.stringContaining('SELECT * FROM hangars'),
+      [1]
+    );
+    expect(result).toEqual(hangar);
+  });
+
+  test('getDockingStations lists the player docking stations', async () => {
+    const stations = [{ id: 1, capacity: 5 }];
+    mockClient.query.mockResolvedValue({ rows: stations });
+
+    const result = await ShipService.getDockingStations(mockClient, 1);
+
+    expect(mockClient.query).toHaveBeenCalledWith(
+      expect.stringContaining('SELECT * FROM docking_stations'),
+      [1]
+    );
+    expect(result).toEqual(stations);
+  });
 });

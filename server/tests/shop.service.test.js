@@ -182,4 +182,30 @@ describe('Shop Service', () => {
       expect(result.wallet).toBe(8500); // 10000 - (500 * 3)
     });
   });
+
+  describe('seedShopItems', () => {
+    test('insère les 3 navires et les 3 équipements du catalogue par défaut', async () => {
+      mockClient.query.mockResolvedValue({ rows: [] });
+
+      await shop.seedShopItems(mockClient);
+
+      expect(mockClient.query).toHaveBeenCalledTimes(6);
+      const shipCalls = mockClient.query.mock.calls.filter(([sql]) =>
+        sql.includes('stats, available'));
+      const equipmentCalls = mockClient.query.mock.calls.filter(([sql]) =>
+        sql.includes('effect, available'));
+      expect(shipCalls).toHaveLength(3);
+      expect(equipmentCalls).toHaveLength(3);
+    });
+
+    test('utilise ON CONFLICT DO NOTHING pour rester idempotent', async () => {
+      mockClient.query.mockResolvedValue({ rows: [] });
+
+      await shop.seedShopItems(mockClient);
+
+      for (const [sql] of mockClient.query.mock.calls) {
+        expect(sql).toContain('ON CONFLICT DO NOTHING');
+      }
+    });
+  });
 });

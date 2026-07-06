@@ -270,15 +270,7 @@ async function resolveEvents(client, playerId, instance, template, crewMembers) 
 async function completeMission(client, playerId, instance, template, failed, shipDestroyed) {
   const status = failed ? 'failed' : 'success'
   
-  if (!failed) {
-    // Return all crew to available
-    const ship = await ShipService.getShip(client, playerId, instance.ship_id)
-    if (ship && ship.crew) {
-      for (const recruitId of ship.crew) {
-        await setRecruitStatus(client, playerId, recruitId, 'available')
-      }
-    }
-  } else if (shipDestroyed) {
+  if (shipDestroyed) {
     // Return crew via shuttle
     const ship = await ShipService.getShip(client, playerId, instance.ship_id)
     if (ship && ship.crew) {
@@ -287,6 +279,15 @@ async function completeMission(client, playerId, instance, template, failed, shi
       }
     }
     await ShipService.destroyShip(client, playerId, instance.ship_id)
+  } else {
+    // Ship survived (mission réussie ou échouée sans destruction) : équipage et vaisseau rentrent à la base
+    const ship = await ShipService.getShip(client, playerId, instance.ship_id)
+    if (ship && ship.crew) {
+      for (const recruitId of ship.crew) {
+        await setRecruitStatus(client, playerId, recruitId, 'available')
+      }
+    }
+    await ShipService.updateShipStatus(client, playerId, instance.ship_id, 'docked')
   }
 
   const shipData = await ShipService.getShip(client, playerId, instance.ship_id)
