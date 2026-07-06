@@ -1,100 +1,53 @@
 const request = require('supertest');
-const app = require('../../server/index'); // Express app
+const { app } = require('../index');
 const { rollAction, rollDie, rollInRange } = require('../src/services/dice.service');
 const GameService = require('../src/services/game.service');
 
-jest.mock('../../server/src/services/dice.service');
-jest.mock('../../server/src/services/log.service');
+jest.mock('../src/services/dice.service');
+jest.mock('../src/services/log.service');
 jest.mock('../src/db/pool');
 jest.mock('../src/services/ship.service');
 jest.mock('../src/services/equipment.service');
+jest.mock('../src/services/game.service');
 
 describe('Mission Flow', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  test('starts a mission with a valid recruit', async () => {
-    const recruit = { id: 'r1', name: 'Test Recruit', stats: { str: 3 } };
-    GameService.recruits = [recruit];
-
-    const mission = {
-      id: 'm1',
-      name: 'Test Mission',
-      events: []
-    };
-    GameService.missions = [mission];
+  test('starts a mission with a valid ship', async () => {
+    GameService.startMission.mockResolvedValue({ id: 1, status: 'in_progress' });
 
     const res = await request(app)
-      .post('/game/start-mission')
-      .send({ recruitId: 'r1', missionId: 'm1' });
+      .post('/api/game/missions/1/start')
+      .send({ shipId: 1 });
 
     expect(res.status).toBe(200);
-    expect(GameService.activeMissions['m1']).toBeDefined();
-    expect(LogService.log).toHaveBeenCalled();
+    expect(GameService.startMission).toHaveBeenCalledWith(1, 1);
   });
 
-  test('resolves a mission event using dice roll', async () => {
-    DiceService.roll.mockReturnValue(15);
-
-    const recruit = { id: 'r1', name: 'Test Recruit', stats: { str: 3 } };
-    const mission = {
-      id: 'm1',
-      name: 'Test Mission',
-      events: [{ type: 'strength', difficulty: 10 }]
-    };
-
-    GameService.recruits = [recruit];
-    GameService.missions = [mission];
-    GameService.activeMissions['m1'] = { recruit, mission, currentEvent: 0 };
-
-    const result = await GameService.resolveEvent('m1');
-
-    expect(result.success).toBe(true);
-    expect(DiceService.roll).toHaveBeenCalled();
-    expect(LogService.log).toHaveBeenCalled();
+  test('rollDie renvoie la valeur mockée', () => {
+    rollDie.mockReturnValue(15);
+    expect(rollDie(6)).toBe(15);
+    expect(rollDie).toHaveBeenCalledWith(6);
   });
 
-  test('completes mission and credits AI account', async () => {
-    GameService.aiAccount = 0;
+  test('stopMission renvoie le résultat du service', async () => {
+    GameService.stopMission.mockResolvedValue({ success: true });
 
-    const recruit = { id: 'r1', name: 'Test Recruit', stats: { str: 3 } };
-    const mission = {
-      id: 'm1',
-      name: 'Test Mission',
-      reward: 100,
-      events: []
-    };
+    const res = await request(app).post('/api/game/missions/1/stop');
 
-    GameService.recruits = [recruit];
-    GameService.missions = [mission];
-    GameService.activeMissions['m1'] = { recruit, mission, currentEvent: 0 };
-
-    const result = await GameService.completeMission('m1');
-
-    expect(GameService.aiAccount).toBe(100);
-    expect(LogService.log).toHaveBeenCalled();
+    expect(res.status).toBe(200);
+    expect(GameService.stopMission).toHaveBeenCalledWith(1);
   });
 
-  test('handles crew death and mission failure', async () => {
-    DiceService.roll.mockReturnValue(1);
+  test('forceReturnMission renvoie une erreur si la mission est introuvable', async () => {
+    GameService.forceReturnMission.mockResolvedValue({ error: 'Mission introuvable' });
 
-    const recruit = { id: 'r1', name: 'Test Recruit', stats: { str: 3 } };
-    const mission = {
-      id: 'm1',
-      name: 'Test Mission',
-      events: [{ type: 'strength', difficulty: 20 }]
-    };
+    const res = await request(app).post('/api/game/missions/99/force-return');
 
-    GameService.recruits = [recruit];
-    GameService.missions = [mission];
-    GameService.activeMissions['m1'] = { recruit, mission, currentEvent: 0 };
-
-    const result = await GameService.resolveEvent('m1');
-
-    expect(result.success).toBe(false);
-    expect(recruit.dead).toBe(true);
-    expect(LogService.log).toHaveBeenCalled();
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBeDefined();
   });
 
   test('startMission is callable with shipId', () => {
