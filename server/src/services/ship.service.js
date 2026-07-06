@@ -99,11 +99,48 @@ async function createDockingStation(client, playerId, capacity = 5) {
   return result.rows[0]
 }
 
+async function appendCrewMember(client, playerId, shipId, recruitId) {
+  const result = await client.query(
+    `UPDATE ships
+     SET crew = array_append(crew, $3)
+     WHERE player_id = $1 AND id = $2 AND deleted_at IS NULL
+       AND NOT ($3 = ANY(crew))
+     RETURNING *`,
+    [playerId, shipId, recruitId]
+  )
+  return result.rows[0]
+}
+
+async function removeCrewMember(client, playerId, shipId, recruitId) {
+  const result = await client.query(
+    `UPDATE ships
+     SET crew = array_remove(crew, $3)
+     WHERE player_id = $1 AND id = $2 AND deleted_at IS NULL
+     RETURNING *`,
+    [playerId, shipId, recruitId]
+  )
+  return result.rows[0]
+}
+
+async function renameShip(client, playerId, shipId, name) {
+  const result = await client.query(
+    `UPDATE ships
+     SET name = $3
+     WHERE player_id = $1 AND id = $2 AND deleted_at IS NULL
+     RETURNING *`,
+    [playerId, shipId, name]
+  )
+  return result.rows[0]
+}
+
 module.exports = {
   getShips,
   getShip,
   createShip,
   assignCrewToShip,
+  appendCrewMember,
+  removeCrewMember,
+  renameShip,
   updateShipStatus,
   destroyShip,
   getHangar,

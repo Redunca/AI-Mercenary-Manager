@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule, NgFor } from '@angular/common';
 import { LayoutService } from '../../core/layout.service';
 import { GameService } from '../../core/game.service';
+import { ShipService } from '../../core/ship.service';
 import { PanelModule } from '../../models/panel';
 import { Recruit } from '../../models/recruit';
 
@@ -15,6 +16,7 @@ import { Recruit } from '../../models/recruit';
 export class RecruitListComponent {
   layout = inject(LayoutService);
   game = inject(GameService);
+  ships = inject(ShipService);
 
   get recruits(): Recruit[] {
     return this.game.recruits;

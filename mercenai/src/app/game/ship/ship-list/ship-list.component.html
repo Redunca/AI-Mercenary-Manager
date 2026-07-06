@@ -1,7 +1,7 @@
 <div class="ship-list">
   <h2>Navires</h2>
   <div class="ship-item" *ngFor="let ship of ships">
-    <div class="ship-name">{{ ship.name }}</div>
+    <div class="ship-name">#{{ ship.id }} {{ ship.name }}</div>
     <div class="ship-status" [class]="'status-' + ship.status">{{ ship.status }}</div>
     <div class="ship-crew">Équipage: {{ ship.crew.length }}/{{ ship.stats.capacity }}</div>
   </div>

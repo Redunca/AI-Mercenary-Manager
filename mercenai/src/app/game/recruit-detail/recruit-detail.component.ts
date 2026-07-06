@@ -1,6 +1,7 @@
 import { Component, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GameService } from '../../core/game.service';
+import { ShipService } from '../../core/ship.service';
 
 @Component({
   selector: 'app-recruit-detail',
@@ -12,6 +13,7 @@ import { GameService } from '../../core/game.service';
 export class RecruitDetailComponent {
   @Input() id!: string;
   game = inject(GameService);
+  ships = inject(ShipService);
 
   get recruit() {
     return this.game.getRecruit(this.id);

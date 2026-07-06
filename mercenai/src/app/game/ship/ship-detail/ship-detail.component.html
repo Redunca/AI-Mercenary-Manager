@@ -1,6 +1,7 @@
 <div class="ship-detail" *ngIf="ship">
   <h2>{{ ship.name }}</h2>
   <div class="ship-info">
+    <p><strong>ID:</strong> {{ ship.id }}</p>
     <p><strong>ID Galactique:</strong> {{ ship.galactic_id }}</p>
     <p><strong>Rareté:</strong> {{ ship.rarity }}</p>
     <p><strong>Statut:</strong> {{ ship.status }}</p>
@@ -16,7 +17,7 @@
     <h3>Équipage ({{ ship.crew.length }}/{{ ship.stats.capacity }})</h3>
     <div *ngIf="ship.crew.length === 0" class="empty">Pas d'équipage assigné</div>
     <div *ngFor="let recruitId of ship.crew" class="crew-member">
-      Recrue #{{ recruitId }}
+      {{ getRecruit(recruitId)?.name ?? 'Recrue #' + recruitId }}
     </div>
   </div>
 </div>

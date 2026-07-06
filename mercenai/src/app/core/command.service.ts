@@ -162,13 +162,15 @@ export class CommandService {
       break;
 
     case "start":
-      void this.missionService.startMission(Number(args[0]), Number(args[1])).then(() => {
+      void this.missionService.startMission(Number(args[0]), Number(args[1])).then(err => {
+        if (err) { console.error(`[mission start] ${err}`); return; }
         this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.MissionDetail, { id: Number(args[0]) });
       });
       break;
 
     case "stop":
-      void this.missionService.stopMission(Number(args[0])).then(() => {
+      void this.missionService.stopMission(Number(args[0])).then(err => {
+        if (err) { console.error(`[mission stop] ${err}`); return; }
         this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.MissionDetail, { id: Number(args[0]) });
       });
       break;
@@ -228,25 +230,28 @@ export class CommandService {
 
       case 'assign':
         if (args[0] && args[1]) {
-          void this.shipService.assignCrewToShip(Number(args[0]), [Number(args[1])]).then(() => {
-            this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShipDetail, { id: args[0] });
-          });
+          void this.shipService.assignCrewToShip(Number(args[0]), [Number(args[1])])
+            .then(() => this.gameSync.sync())
+            .then(() => this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShipDetail, { id: args[0] }))
+            .catch(err => console.error('[ship assign]', err?.error?.error ?? err?.message ?? err));
         }
         break;
 
       case 'unassign':
         if (args[0] && args[1]) {
-          void this.shipService.unassignCrewFromShip(Number(args[0]), Number(args[1])).then(() => {
-            this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShipDetail, { id: args[0] });
-          });
+          void this.shipService.unassignCrewFromShip(Number(args[0]), Number(args[1]))
+            .then(() => this.gameSync.sync())
+            .then(() => this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShipDetail, { id: args[0] }))
+            .catch(err => console.error('[ship unassign]', err?.error?.error ?? err?.message ?? err));
         }
         break;
 
       case 'rename':
         if (args[0]) {
-          void this.shipService.renameShip(Number(args[0]), args.slice(1).join(' ')).then(() => {
-            this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShipDetail, { id: args[0] });
-          });
+          void this.shipService.renameShip(Number(args[0]), args.slice(1).join(' '))
+            .then(() => this.gameSync.sync())
+            .then(() => this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShipDetail, { id: args[0] }))
+            .catch(err => console.error('[ship rename]', err?.error?.error ?? err?.message ?? err));
         }
         break;
 

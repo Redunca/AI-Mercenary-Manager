@@ -14,7 +14,7 @@ export class ShipListComponent implements OnInit {
   ships: Ship[] = [];
 
   ngOnInit() {
-    this.shipService.getShips().subscribe(ships => {
+    this.shipService.ships$.subscribe(ships => {
       this.ships = ships;
     });
   }

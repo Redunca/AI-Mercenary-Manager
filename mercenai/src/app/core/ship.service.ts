@@ -40,6 +40,10 @@ export class ShipService {
     return this.shipsSubject.value.find(s => s.id === id);
   }
 
+  getShipForRecruit(recruitId: number): Ship | undefined {
+    return this.shipsSubject.value.find(s => s.crew.includes(recruitId));
+  }
+
   assignCrewToShip(shipId: number, recruitIds: number[]): Promise<Ship> {
     return this.http.post<Ship>(`/api/ships/${shipId}/crew`, { recruitIds }).toPromise() as Promise<Ship>;
   }

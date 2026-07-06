@@ -1,6 +1,6 @@
 <div>TASK: [<span class="task-title">List recruits</span>] ******************************************</div>
 <div>ok ==> {{ '{' }}</div>
 <div *ngFor="let r of recruits" class="indent-one">
-  "{{ r.id }}" : "{{ r.name }}" [HP {{ r.hp }}/{{ r.maxHp }}] — {{ statusLabel(r) }},
+  "{{ r.id }}" : "{{ r.name }}" [HP {{ r.hp }}/{{ r.maxHp }}] — {{ statusLabel(r) }}<ng-container *ngIf="ships.getShipForRecruit(+r.id) as ship"> @ {{ ship.name }}</ng-container>,
 </div>
 <div>{{ '}' }}</div>

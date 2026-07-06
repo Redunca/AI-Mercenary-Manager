@@ -5,6 +5,7 @@
   <div class="indent-one">"name"     : "{{ recruit.name }}",</div>
   <div class="indent-one indent-one" *ngIf="recruit.jobTitle">"job"      : "{{ recruit.jobTitle }}",</div>
   <div class="indent-one">"status"   : "{{ recruit.status }}",</div>
+  <div class="indent-one" *ngIf="ships.getShipForRecruit(+recruit.id) as ship">"ship"     : "{{ ship.name }}",</div>
   <div class="indent-one">"hp"       : {{ recruit.hp }}/{{ recruit.maxHp }},</div>
 
   <div class="indent-one">"attributes" : {{ '{' }}</div>

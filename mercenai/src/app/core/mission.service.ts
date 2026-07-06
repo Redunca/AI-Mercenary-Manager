@@ -17,37 +17,25 @@ export class MissionService {
     this.missionStates = state.missionStates;
   }
 
-  async startMission(missionId: number, shipId: number): Promise<void> {
+  async startMission(missionId: number, shipId: number): Promise<string | null> {
     const result = await this.api.startMission(missionId, shipId);
-    if (result.error) {
-      console.warn(result.error);
-      return;
-    }
-    if (result.state) {
-      this.injector.get(GameSyncService).applyState(result.state);
-    }
+    if (result.error) return result.error;
+    if (result.state) this.injector.get(GameSyncService).applyState(result.state);
+    return null;
   }
 
-  async stopMission(missionId: number): Promise<void> {
+  async stopMission(missionId: number): Promise<string | null> {
     const result = await this.api.stopMission(missionId);
-    if (result.error) {
-      console.warn(result.error);
-      return;
-    }
-    if (result.state) {
-      this.injector.get(GameSyncService).applyState(result.state);
-    }
+    if (result.error) return result.error;
+    if (result.state) this.injector.get(GameSyncService).applyState(result.state);
+    return null;
   }
 
-  async forceReturn(missionId: number): Promise<void> {
+  async forceReturn(missionId: number): Promise<string | null> {
     const result = await this.api.forceReturnMission(missionId);
-    if (result.error) {
-      console.warn(result.error);
-      return;
-    }
-    if (result.state) {
-      this.injector.get(GameSyncService).applyState(result.state);
-    }
+    if (result.error) return result.error;
+    if (result.state) this.injector.get(GameSyncService).applyState(result.state);
+    return null;
   }
 
   getState(missionId: number): MissionState | undefined {
