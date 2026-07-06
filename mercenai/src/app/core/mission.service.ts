@@ -17,8 +17,8 @@ export class MissionService {
     this.missionStates = state.missionStates;
   }
 
-  async startMission(missionId: number, recruitId: number): Promise<void> {
-    const result = await this.api.startMission(missionId, recruitId);
+  async startMission(missionId: number, shipId: number): Promise<void> {
+    const result = await this.api.startMission(missionId, shipId);
     if (result.error) {
       console.warn(result.error);
       return;

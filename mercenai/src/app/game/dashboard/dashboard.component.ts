@@ -2,6 +2,7 @@ import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GameService } from '../../core/game.service';
 import { MissionService } from '../../core/mission.service';
+import { ShipService } from '../../core/ship.service';
 import { GameSyncService } from '../../core/game-sync.service';
 
 @Component({
@@ -14,6 +15,7 @@ import { GameSyncService } from '../../core/game-sync.service';
 export class DashboardComponent implements OnInit, OnDestroy {
   game = inject(GameService);
   missionService = inject(MissionService);
+  shipService = inject(ShipService);
   private sync = inject(GameSyncService);
 
   ngOnInit(): void {
@@ -30,19 +32,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   get availableRecruits() {
-    const busyIds = new Set(this.activeMissions.map(s => s.recruitId));
-    return this.game.recruits.filter(r => !busyIds.has(Number(r.id)));
+    return this.game.recruits.filter(r => r.status === 'available');
   }
 
-  get totalMissions() { return this.missionService.missions.length; }
+  get totalMissions() { return this.game.player$.value.maxAvailableMissions; }
   get totalRecruits()  { return this.game.recruits.length; }
 
   getMissionName(missionId: number): string {
     return this.missionService.missions.find(m => m.id === missionId)?.name ?? String(missionId);
   }
 
-  getRecruitName(recruitId: number): string {
-    return this.game.getRecruit(String(recruitId))?.name ?? String(recruitId);
+  getShipName(shipId: number): string {
+    return this.shipService.getShipById(shipId)?.name ?? String(shipId);
   }
 
   progressBar(progress: number): string {

@@ -8,7 +8,7 @@
 <ng-container *ngIf="activeMissions.length > 0">
   <div class="section-title">MISSIONS EN COURS :</div>
   <div *ngFor="let s of activeMissions" class="indent-one mission-row">
-    [{{ s.missionId }}] {{ pad(getMissionName(s.missionId), 12) }}{{ pad(getRecruitName(s.recruitId), 10) }}{{ pad(s.phase, 10) }}{{ progressBar(s.progress) }}  {{ s.progress }}%
+    [{{ s.missionId }}] {{ pad(getMissionName(s.missionId), 12) }}{{ pad(getShipName(s.shipId), 10) }}{{ pad(s.phase, 10) }}{{ progressBar(s.progress) }}  {{ s.progress }}%
   </div>
   <div>&nbsp;</div>
 </ng-container>

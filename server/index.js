@@ -5,6 +5,7 @@ const cors = require('cors')
 const { migrate } = require('./src/db/migrate')
 const { initGame } = require('./src/services/game.service')
 const gameRoutes = require('./src/routes/game.routes')
+const shopRoutes = require('./src/routes/shop.routes')
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -17,6 +18,7 @@ app.get('/health', (_req, res) => {
 })
 
 app.use('/api/game', gameRoutes)
+app.use('/api/shop', shopRoutes)
 
 app.use((err, _req, res, _next) => {
   console.error(err)

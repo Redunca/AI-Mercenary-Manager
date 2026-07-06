@@ -59,8 +59,8 @@ router.post('/candidates/:id/hire', async (req, res, next) => {
 
 router.post('/missions/:templateId/start', async (req, res, next) => {
   try {
-    const recruitId = Number(req.body.recruitId)
-    const result = await game.startMission(Number(req.params.templateId), recruitId)
+    const shipId = Number(req.body.shipId)
+    const result = await game.startMission(Number(req.params.templateId), shipId)
     if (result.error) {
       res.status(400).json(result)
       return

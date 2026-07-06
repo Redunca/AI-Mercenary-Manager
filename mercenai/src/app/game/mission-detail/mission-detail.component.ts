@@ -1,7 +1,7 @@
 import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MissionService } from '../../core/mission.service';
-import { GameService } from '../../core/game.service';
+import { ShipService } from '../../core/ship.service';
 import { GameSyncService } from '../../core/game-sync.service';
 import { Mission, MissionState } from '../../models/mission';
 
@@ -16,7 +16,7 @@ export class MissionDetailComponent implements OnInit, OnDestroy {
   @Input() id!: number;
 
   missionService = inject(MissionService);
-  game = inject(GameService);
+  shipService = inject(ShipService);
   private sync = inject(GameSyncService);
 
   ngOnInit(): void {
@@ -35,10 +35,10 @@ export class MissionDetailComponent implements OnInit, OnDestroy {
     return this.missionService.getState(this.id);
   }
 
-  get recruitName(): string {
-    const recruitId = this.state?.recruitId ?? this.mission?.assignedRecruitId;
-    if (recruitId == null) return '—';
-    return this.game.getRecruit(String(recruitId))?.name ?? String(recruitId);
+  get shipName(): string {
+    const shipId = this.state?.shipId ?? this.mission?.assignedShipId;
+    if (shipId == null) return '—';
+    return this.shipService.getShipById(shipId)?.name ?? String(shipId);
   }
 
   get progressBar(): string {

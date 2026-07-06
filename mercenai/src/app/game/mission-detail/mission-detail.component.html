@@ -5,7 +5,7 @@
 <div class="indent-one">"description" : "{{ mission?.description }}",</div>
 
 <ng-container *ngIf="state; else available">
-  <div class="indent-one">"recruit"     : "{{ recruitName }}",</div>
+  <div class="indent-one">"ship"        : "{{ shipName }}",</div>
   <div class="indent-one">"phase"       : "{{ state.phase }}",</div>
   <div class="indent-one">"progress"    : "{{ progressBar }}  {{ state.progress }}%"</div>
 </ng-container>

@@ -35,8 +35,8 @@ export class GameApiService {
     return firstValueFrom(this.http.patch<StateResponse>(`${this.base}/recruits/${id}`, { name }));
   }
 
-  startMission(templateId: number, recruitId: number): Promise<StateResponse> {
-    return firstValueFrom(this.http.post<StateResponse>(`${this.base}/missions/${templateId}/start`, { recruitId }));
+  startMission(templateId: number, shipId: number): Promise<StateResponse> {
+    return firstValueFrom(this.http.post<StateResponse>(`${this.base}/missions/${templateId}/start`, { shipId }));
   }
 
   stopMission(templateId: number): Promise<StateResponse> {

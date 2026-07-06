@@ -40,7 +40,7 @@ export class CandidateDetailComponent {
         if (!this.candidate) return;
         void this.candidateService.hireCandidate(this.candidate.id).then(result => {
           if (!result) {
-            this.hireError = `Effectif complet (max ${this.game.maxRecruits} recrues)`;
+            this.hireError = `Effectif complet (max ${this.game.player$.value.maxNumberOfRecruits} recrues)`;
           }
         });
       },

@@ -13,12 +13,7 @@ const DEFAULT_PLAYER_ID = 1
 const DATA_DIR = path.join(__dirname, '../../data')
 
 function loadJson(name) {
-  const filePath = path.join(DATA_DIR, name)
-  if (fs.existsSync(filePath)) {
-    return JSON.parse(fs.readFileSync(filePath, 'utf8'))
-  }
-  const fallback = path.join(__dirname, '../../../mercenai/src/app/data', name)
-  return JSON.parse(fs.readFileSync(fallback, 'utf8'))
+  return JSON.parse(fs.readFileSync(path.join(DATA_DIR, name), 'utf8'))
 }
 
 async function seedMissionTemplates(client) {
@@ -689,6 +684,12 @@ async function renameRecruit(client, playerId, recruitId, newName) {
 }
 
 async function buildGameState(client, playerId) {
+  const playerResult = await client.query(
+    'SELECT max_recruits, max_available_missions FROM players WHERE id = $1',
+    [playerId],
+  )
+  const player = playerResult.rows[0]
+
   const recruitsResult = await client.query(
     'SELECT * FROM recruits WHERE player_id = $1 ORDER BY id',
     [playerId],
@@ -764,11 +765,19 @@ async function buildGameState(client, playerId) {
     }
   }
 
+  const visibleMissions = missions
+    .filter(m => m.status !== 'failed' && m.status !== 'success')
+    .slice(0, player.max_available_missions)
+
   return {
+    player: {
+      maxNumberOfRecruits: player.max_recruits,
+      maxAvailableMissions: player.max_available_missions,
+    },
     recruits: recruitsResult.rows.map(rowToRecruit),
     candidates: candidatesResult.rows.map(rowToCandidate),
     ships: shipsResult.rows,
-    missions,
+    missions: visibleMissions,
     missionStates,
     globalLogs,
     missionLogs,

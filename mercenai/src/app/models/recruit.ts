@@ -36,6 +36,3 @@ export interface Recruit {
   flaws?: { name: string; description: string }[];
 }
 
-export function computeMaxHp(a: RecruitAttributes): number {
-  return 2 * (a.fortitude + a.presence + a.will) + 10;
-}

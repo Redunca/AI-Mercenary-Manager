@@ -1,9 +1,10 @@
 import { inject, Injectable, Injector } from '@angular/core';
 import { Recruit, RecruitStatus } from '../models/recruit';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { GameSnapshot } from '../models/game-state';
 import { GameApiService } from './game-api.service';
 import { GameSyncService } from './game-sync.service';
+import { Player } from '../models/player';
 
 @Injectable({ providedIn: 'root' })
 export class GameService {
@@ -12,10 +13,23 @@ export class GameService {
 
   recruitHired$ = new Subject<Recruit>();
   recruits: Recruit[] = [];
-  maxRecruits = 5;
+  player$ = new BehaviorSubject<Player>({
+      credits:0,
+      dockingStations: [],
+      maxAvailableMissions: 5,
+      maxNumberOfRecruits: 5
+    });
+
+
 
   applyState(state: GameSnapshot): void {
     this.recruits = state.recruits;
+    this.player$.next({
+      credits: 0,
+      dockingStations: [],
+      maxNumberOfRecruits: state.player.maxNumberOfRecruits,
+      maxAvailableMissions: state.player.maxAvailableMissions,
+    });
   }
 
   getRecruit(id: string): Recruit | null {

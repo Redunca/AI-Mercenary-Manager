@@ -1,0 +1,1 @@
+ALTER TABLE players ADD COLUMN IF NOT EXISTS max_available_missions INT NOT NULL DEFAULT 5;

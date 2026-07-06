@@ -57,13 +57,13 @@ export interface Mission {
   description: string;
   difficulty: MissionDifficulty;
   events: MissionEvent[];
-  assignedRecruitId: number | null;
+  assignedShipId: number | null;
   status: MissionStatus;
 }
 
 export interface MissionState {
   missionId: number;
-  recruitId: number;
+  shipId: number;
   phase: MissionPhase;
   progress: number;
   events: MissionEvent[];
@@ -71,5 +71,4 @@ export interface MissionState {
   eventResults: EventResult[];
   failed: boolean;
   rewardForfeited: boolean;
-  intervalId: ReturnType<typeof setInterval> | null;
 }

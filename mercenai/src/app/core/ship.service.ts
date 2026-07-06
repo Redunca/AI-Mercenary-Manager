@@ -1,36 +1,10 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { Ship, Equipment } from '../models/ship';
+import { GameSnapshot } from '../models/game-state';
 
-export interface Ship {
-  id: number;
-  name: string;
-  galactic_id: string;
-  rarity: string;
-  stats: {
-    speed: number;
-    capacity: number;
-    inventory_space: number;
-    durability: number;
-    price: number;
-  };
-  crew: number[];
-  status: 'docked' | 'in_mission' | 'destroyed';
-  created_at: string;
-  deleted_at?: string;
-}
-
-export interface Equipment {
-  id: number;
-  name: string;
-  description: string;
-  rarity: string;
-  price: number;
-  effect: string;
-  quantity: number;
-  assigned_to_ship?: number;
-  created_at: string;
-}
+export { Ship, Equipment };
 
 @Injectable({ providedIn: 'root' })
 export class ShipService {
@@ -56,6 +30,14 @@ export class ShipService {
 
   getEquipmentById(id: number): Observable<Equipment> {
     return this.http.get<Equipment>(`/api/equipment/${id}`);
+  }
+
+  applyState(state: GameSnapshot): void {
+    this.shipsSubject.next(state.ships ?? []);
+  }
+
+  getShipById(id: number): Ship | undefined {
+    return this.shipsSubject.value.find(s => s.id === id);
   }
 
   assignCrewToShip(shipId: number, recruitIds: number[]): Promise<Ship> {

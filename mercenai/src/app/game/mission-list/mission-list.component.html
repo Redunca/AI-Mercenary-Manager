@@ -7,7 +7,7 @@
     <th>Description</th>
     <th>Statut</th>
     <th>Progression</th>
-    <th>Recrue</th>
+    <th>Navire</th>
   </tr>
   <tr *ngFor="let m of missions">
     <td>{{ m.id }}</td>
@@ -15,7 +15,7 @@
     <td>{{ m.description }}</td>
     <td>{{ m.status === 'in_progress' ? (missionService.getState(m.id)?.phase ?? 'in_progress') : m.status }}</td>
     <td>{{ m.status === 'in_progress' ? (missionService.getState(m.id)?.progress ?? 0) + '%' : '' }}</td>
-    <td>{{ m.assignedRecruitId ?? '—' }}</td>
+    <td>{{ m.assignedShipId ?? '—' }}</td>
   </tr>
 </table>
 <div>{{ '}' }}</div>
