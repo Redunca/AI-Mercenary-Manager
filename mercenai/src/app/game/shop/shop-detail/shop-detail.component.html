@@ -1,0 +1,32 @@
+<div class="shop-detail" *ngIf="item">
+  <div class="title">[ DETAIL ARTICLE ]</div>
+
+  <div class="line"><span class="label">ID</span> : #{{ item.id }}</div>
+  <div class="line"><span class="label">Nom</span> : {{ item.name }}</div>
+  <div class="line"><span class="label">Type</span> : {{ item.type === 'ship' ? 'NAVIRE' : 'EQUIPEMENT' }}</div>
+  <div class="line"><span class="label">Rareté</span> : {{ item.rarity }}</div>
+  <div class="line"><span class="label">Prix</span> : {{ item.price }} ¥</div>
+  <div class="line"><span class="label">Description</span> : {{ item.description }}</div>
+
+  <div *ngIf="item.type === 'ship'" class="stats">
+    <div class="section-title">Stats navire</div>
+    <div class="line">Vitesse : {{ item.stats?.speed }}</div>
+    <div class="line">Capacité : {{ item.stats?.capacity }}</div>
+    <div class="line">Durabilité : {{ item.stats?.durability }}</div>
+    <div class="line">Inventaire : {{ item.stats?.inventory_space }}</div>
+  </div>
+
+  <div *ngIf="item.type === 'equipment'" class="stats">
+    <div class="section-title">Effet</div>
+    <div class="line">{{ item.effect }}</div>
+  </div>
+
+  <div class="hint">
+    Usage terminal : buy | buy &lt;quantité&gt;
+  </div>
+</div>
+
+<div class="shop-detail empty" *ngIf="!item">
+  <div class="title">[ DETAIL ARTICLE ]</div>
+  <div class="line">Article introuvable.</div>
+</div>

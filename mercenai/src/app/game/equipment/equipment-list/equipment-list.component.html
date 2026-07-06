@@ -1,0 +1,9 @@
+<div class="equipment-list">
+  <h2>Équipement</h2>
+  <div class="equipment-item" *ngFor="let item of equipment">
+    <div class="item-name">{{ item.name }}</div>
+    <div class="item-rarity" [class]="'rarity-' + item.rarity">{{ item.rarity }}</div>
+    <div class="item-quantity">Qty: {{ item.quantity }}</div>
+    <div class="item-price">Prix: {{ item.price }}</div>
+  </div>
+</div>

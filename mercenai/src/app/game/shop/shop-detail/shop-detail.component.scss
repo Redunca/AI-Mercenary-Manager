@@ -1,0 +1,49 @@
+.shop-detail {
+  padding: 0.75rem;
+  color: #d0d0d0;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  line-height: 1.35;
+  background: #0f1115;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.title {
+  color: #7ee787;
+  font-weight: bold;
+  margin-bottom: 0.6rem;
+  text-transform: uppercase;
+}
+
+.section-title {
+  color: #58a6ff;
+  margin: 0.7rem 0 0.3rem;
+  text-transform: uppercase;
+}
+
+.label {
+  color: #8b949e;
+  display: inline-block;
+  min-width: 6rem;
+}
+
+.line {
+  margin: 0.2rem 0;
+}
+
+.stats {
+  margin-top: 0.6rem;
+  padding-left: 0.4rem;
+  border-left: 2px solid #30363d;
+}
+
+.hint {
+  margin-top: 0.8rem;
+  color: #6e7681;
+  font-style: italic;
+}
+
+.empty {
+  color: #8b949e;
+}

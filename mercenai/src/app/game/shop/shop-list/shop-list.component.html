@@ -1,0 +1,28 @@
+<div class="shop-list">
+  <div class="title">[ BOUTIQUE ]</div>
+
+  <div class="line">Crédit disponible : {{ wallet }} ¥</div>
+
+  <div class="section-title">Articles disponibles</div>
+
+  <div class="item" *ngFor="let item of items">
+    <div class="item-head">
+      <span class="item-id">#{{ item.id }}</span>
+      <span class="item-name">{{ item.name }}</span>
+      <span class="item-price">{{ item.price }} ¥</span>
+    </div>
+    <div class="item-meta">
+      <span class="item-type" [class]="'type-' + item.type">
+        {{ item.type === 'ship' ? 'NAVIRE' : 'EQUIPEMENT' }}
+      </span>
+      <span class="item-rarity" [class]="'rarity-' + item.rarity">
+        {{ item.rarity }}
+      </span>
+    </div>
+    <div class="item-desc">{{ item.description }}</div>
+  </div>
+
+  <div class="hint">
+    Usage terminal : shop detail &lt;id&gt; | shop buy &lt;id&gt;
+  </div>
+</div>
