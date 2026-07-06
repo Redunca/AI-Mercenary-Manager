@@ -34,6 +34,10 @@ export class ShopService {
     return this.http.get<number>('/api/shop/wallet');
   }
 
+  buyItem(itemId: number, quantity: number = 1): Promise<any> {
+    return this.http.post(`/api/shop/buy/${itemId}`, { quantity }).toPromise() as Promise<any>;
+  }
+
   buyShip(itemId: number): Promise<any> {
     return this.http.post(`/api/shop/buy/ship/${itemId}`, {}).toPromise() as Promise<any>;
   }

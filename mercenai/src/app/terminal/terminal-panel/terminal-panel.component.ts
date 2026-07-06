@@ -61,11 +61,13 @@ export class TerminalPanelComponent implements OnInit, AfterViewChecked, AfterVi
   prompt = '> ';
 
   // commandes locales
-  localCommands = {
+  localCommands: { [name: string]: (...args: string[]) => void } = {
     "split-h": () => this.layout.split(this.getPanelId(), 'row'),
     "split-v": () => this.layout.split(this.getPanelId(), 'column'),
     "close": () => this.layout.closePanel(this.getPanelId())
   };
+
+  private lastModuleInstance: any = null;
 
   ngOnInit() {
     this.panel.terminal = new TerminalController(this.getPanelId(), this.localCommands);
@@ -77,6 +79,17 @@ export class TerminalPanelComponent implements OnInit, AfterViewChecked, AfterVi
 
   ngAfterViewChecked() {
     this.textareaRef?.nativeElement?.scrollIntoView({ block: 'nearest' });
+    if (this.moduleInstance !== this.lastModuleInstance) {
+      this.lastModuleInstance = this.moduleInstance;
+      for (const key of Object.keys(this.localCommands)) {
+        if (key !== 'split-h' && key !== 'split-v' && key !== 'close') {
+          delete this.localCommands[key];
+        }
+      }
+      if (this.moduleInstance?.registerCommands) {
+        Object.assign(this.localCommands, this.moduleInstance.registerCommands());
+      }
+    }
   }
 
   onInputChange(event: Event): void {

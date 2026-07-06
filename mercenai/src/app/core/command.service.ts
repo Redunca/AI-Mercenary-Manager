@@ -5,6 +5,7 @@ import { MissionService } from './mission.service';
 import { CandidateService } from './candidate.service';
 import { ShipService } from './ship.service';
 import { ShopService } from './shop.service';
+import { GameSyncService } from './game-sync.service';
 
 @Injectable({ providedIn: 'root' })
 export class CommandService {
@@ -26,6 +27,7 @@ export class CommandService {
   candidateService = inject(CandidateService);
   shipService = inject(ShipService);
   shopService = inject(ShopService);
+  private gameSync = inject(GameSyncService);
 
   private input = '';
   private history: string[] = [];
@@ -302,8 +304,22 @@ export class CommandService {
         }
         break;
 
+      case 'buy':
+        if (args[0]) {
+          void this.shopService.buyItem(Number(args[0])).then(result => {
+            if (result?.error) {
+              console.warn('Achat échoué :', result.error);
+              return;
+            }
+            void this.gameSync.sync().then(() => {
+              this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShipList);
+            });
+          });
+        }
+        break;
+
       default:
-        console.warn('Usage: shop list | shop detail <id>');
+        console.warn('Usage: shop list | shop detail <id> | shop buy <id>');
     }
   }
 
