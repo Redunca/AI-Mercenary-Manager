@@ -1,46 +1,82 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MissionDetailComponent } from './mission-detail.component';
+import { MissionService } from '../../core/mission.service';
+import { ShipService } from '../../core/ship.service';
+import { GameSyncService } from '../../core/game-sync.service';
+import { Mission } from '../../models/mission';
+import { of } from 'rxjs';
 
-// Bug : le getter `mission` utilise missions[this.id] (accès par index de tableau)
-// au lieu de missions.find(m => m.id === this.id) (recherche par identifiant).
-// Les IDs de missions commencent à 1, les indices de tableau à 0 : décalage systématique.
-describe('MissionDetailComponent - getter mission', () => {
+const MOCK_MISSIONS: Mission[] = [
+  {
+    id: 1, name: 'Patrouille de couloir', description: 'Desc 1',
+    difficulty: 'ROUTINE', events: [], assignedShipId: null, status: 'available',
+  },
+  {
+    id: 2, name: 'Livraison express', description: 'Desc 2',
+    difficulty: 'STANDARD', events: [], assignedShipId: null, status: 'available',
+  },
+];
+
+describe('MissionDetailComponent', () => {
   let component: MissionDetailComponent;
   let fixture: ComponentFixture<MissionDetailComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [MissionDetailComponent],
+      providers: [
+        {
+          provide: MissionService,
+          useValue: {
+            missions: MOCK_MISSIONS,
+            missionStates: {},
+            getState: (_id: number) => undefined,
+          },
+        },
+        {
+          provide: ShipService,
+          useValue: {
+            getShipById: (_id: number) => undefined,
+            ships$: of([]),
+          },
+        },
+        {
+          provide: GameSyncService,
+          useValue: {
+            watchMissionProgress: () => {},
+            unwatchMissionProgress: () => {},
+          },
+        },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(MissionDetailComponent);
     component = fixture.componentInstance;
   });
 
-  it('devrait retourner la mission avec id=1 quand le composant reçoit id=1', () => {
+  it('retourne la mission avec id=1', () => {
     component.id = 1;
-    fixture.detectChanges();
-
-    // Avec le bug : missions[1] retourne la mission id=2 ("Livraison express")
-    // Comportement attendu : retourner la mission id=1 ("Patrouille de couloir")
     expect(component.mission).not.toBeNull();
     expect(component.mission?.id).toBe(1);
+    expect(component.mission?.name).toBe('Patrouille de couloir');
   });
 
-  it('devrait retourner la mission avec id=2 quand le composant reçoit id=2', () => {
+  it('retourne la mission avec id=2', () => {
     component.id = 2;
-    fixture.detectChanges();
-
-    // Avec le bug : missions[2] retourne la mission id=3
-    // Comportement attendu : retourner la mission id=2 ("Livraison express")
     expect(component.mission).not.toBeNull();
     expect(component.mission?.id).toBe(2);
+    expect(component.mission?.name).toBe('Livraison express');
   });
 
-  it('devrait retourner null pour un id de mission inexistant', () => {
+  it('retourne null pour un id inexistant', () => {
     component.id = 999;
-    fixture.detectChanges();
-
     expect(component.mission).toBeNull();
+  });
+
+  it('utilise find() et non l\'accès par index — id=2 n\'est pas missions[2]', () => {
+    // Avec l'ancien bug missions[2] retournait undefined (hors bornes sur 2 éléments)
+    // Avec le fix missions.find(m => m.id === 2) retourne la bonne mission
+    component.id = 2;
+    expect(component.mission?.id).toBe(2);
   });
 });

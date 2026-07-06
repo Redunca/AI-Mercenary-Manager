@@ -10,6 +10,35 @@ jest.mock('../src/services/ship.service');
 jest.mock('../src/services/equipment.service');
 jest.mock('../src/services/game.service');
 
+describe('Mission Logs Route', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test('GET /api/game/missions/:id/logs retourne les logs de la mission', async () => {
+    const mockLogs = [
+      { tag: 'INFO', message: 'Départ en mission' },
+      { tag: 'COMBAT', message: 'Victoire au combat' },
+    ];
+    GameService.getMissionLogs.mockResolvedValue(mockLogs);
+
+    const res = await request(app).get('/api/game/missions/1/logs');
+
+    expect(res.status).toBe(200);
+    expect(res.body.logs).toEqual(mockLogs);
+    expect(GameService.getMissionLogs).toHaveBeenCalledWith(1);
+  });
+
+  test('GET /api/game/missions/:id/logs retourne un tableau vide si aucun log', async () => {
+    GameService.getMissionLogs.mockResolvedValue([]);
+
+    const res = await request(app).get('/api/game/missions/99/logs');
+
+    expect(res.status).toBe(200);
+    expect(res.body.logs).toEqual([]);
+  });
+});
+
 describe('Mission Flow', () => {
   beforeEach(() => {
     jest.clearAllMocks();
