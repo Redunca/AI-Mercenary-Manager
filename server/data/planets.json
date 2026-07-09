@@ -1,0 +1,110 @@
+[
+  {
+    "id": "arid_frontier",
+    "tags": ["arid", "frontier", "independent"],
+    "provides": {
+      "climate": "aride",
+      "colonizationLevel": "avant-poste frontalier",
+      "faction": { "category": "faction", "tags": ["frontier"] },
+      "distance": "en bordure du secteur, à plusieurs jours de saut"
+    },
+    "approachTemplates": [
+      "Le vaisseau quitte les voies commerciales et plonge vers {planetName}, {distance}, sous un ciel {climate} balayé par les vents de poussière.",
+      "L'équipage repère {planetName} à l'horizon, un {colonizationLevel} isolé sous la tutelle de {faction}."
+    ],
+    "aftermathTemplates": [
+      "De retour à bord, l'équipage regarde {planetName} rapetisser derrière eux, indifférente et {climate} comme toujours.",
+      "Le vaisseau reprend son cap, laissant {faction} gérer les conséquences sur {planetName}."
+    ]
+  },
+  {
+    "id": "jungle_colonized",
+    "tags": ["jungle", "colonized", "independent"],
+    "provides": {
+      "climate": "tropical et humide",
+      "colonizationLevel": "colonie établie",
+      "faction": { "category": "faction", "tags": ["jungle"] },
+      "distance": "à l'intérieur du secteur, sous couverture nuageuse permanente"
+    },
+    "approachTemplates": [
+      "Le vaisseau perce la canopée électromagnétique de {planetName}, {distance}, {colonizationLevel} administrée par {faction}.",
+      "L'équipage descend vers {planetName}, où le climat {climate} colle déjà aux hublots."
+    ],
+    "aftermathTemplates": [
+      "Le vaisseau s'arrache à l'atmosphère {climate} de {planetName}, laissant {faction} refermer les dossiers.",
+      "L'équipage quitte {planetName}, {colonizationLevel} qui retourne déjà à son silence végétal."
+    ]
+  },
+  {
+    "id": "ice_isolated",
+    "tags": ["ice", "isolated", "independent"],
+    "provides": {
+      "climate": "glacial",
+      "colonizationLevel": "station isolée",
+      "faction": { "category": "faction", "tags": ["ice"] },
+      "distance": "aux confins gelés du secteur"
+    },
+    "approachTemplates": [
+      "Le vaisseau se pose sur {planetName}, {distance}, où {faction} maintient tant bien que mal une {colonizationLevel}.",
+      "L'équipage enfile ses combinaisons thermiques en approchant {planetName}, {climate} et silencieuse."
+    ],
+    "aftermathTemplates": [
+      "Le vaisseau décolle de {planetName}, laissant derrière lui le froid {climate} et les patrouilles de {faction}.",
+      "L'équipage se réchauffe en quittant {planetName}, {colonizationLevel} qu'ils espèrent ne jamais revoir."
+    ]
+  },
+  {
+    "id": "urban_corporate",
+    "tags": ["urban", "megacity", "corporate"],
+    "provides": {
+      "climate": "climatisé en permanence",
+      "colonizationLevel": "mégapole verticale",
+      "faction": { "category": "corporation", "tags": ["megacorp"] },
+      "distance": "en orbite basse, au cœur du trafic commercial"
+    },
+    "approachTemplates": [
+      "Le vaisseau s'insère dans les couloirs aériens de {planetName}, {distance}, {colonizationLevel} sous contrôle de {faction}.",
+      "L'équipage plonge vers les niveaux inférieurs de {planetName}, où l'air {climate} sent le métal et la publicité."
+    ],
+    "aftermathTemplates": [
+      "Le vaisseau se fond dans le trafic en quittant {planetName}, laissant {faction} gérer les caméras.",
+      "L'équipage s'éloigne de {planetName}, {colonizationLevel} qui ne remarquera jamais leur passage."
+    ]
+  },
+  {
+    "id": "ocean_newcolony",
+    "tags": ["ocean", "newcolony", "independent"],
+    "provides": {
+      "climate": "humide et salin",
+      "colonizationLevel": "nouvelle colonie flottante",
+      "faction": { "category": "faction", "tags": ["frontier"] },
+      "distance": "à la limite des routes de ravitaillement"
+    },
+    "approachTemplates": [
+      "Le vaisseau se pose sur les plateformes de {planetName}, {distance}, {colonizationLevel} tenue à bout de bras par {faction}.",
+      "L'équipage sent l'air {climate} de {planetName} s'infiltrer dans le sas avant même l'ouverture complète."
+    ],
+    "aftermathTemplates": [
+      "Le vaisseau décolle des plateformes de {planetName}, laissant {faction} continuer sa lutte contre les marées.",
+      "L'équipage quitte {planetName}, {colonizationLevel} qui survivra, une fois de plus, un jour de plus."
+    ]
+  },
+  {
+    "id": "volcanic_mining",
+    "tags": ["volcanic", "mining", "corporate"],
+    "provides": {
+      "climate": "étouffant et sulfureux",
+      "colonizationLevel": "complexe minier industriel",
+      "faction": { "category": "corporation", "tags": ["mining"] },
+      "distance": "près des failles actives du secteur"
+    },
+    "approachTemplates": [
+      "Le vaisseau se stabilise au-dessus de {planetName}, {distance}, {colonizationLevel} exploité par {faction}.",
+      "L'équipage voit les foreuses de {faction} strier la surface {climate} de {planetName}."
+    ],
+    "aftermathTemplates": [
+      "Le vaisseau s'arrache à la gravité de {planetName}, laissant {faction} reprendre l'extraction.",
+      "L'équipage quitte {planetName}, {colonizationLevel} qui continuera de fumer longtemps après leur départ."
+    ]
+  }
+]

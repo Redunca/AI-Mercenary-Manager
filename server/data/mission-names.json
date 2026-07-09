@@ -1,0 +1,38 @@
+{
+  "ESCORT": [
+    { "template": "Convoi sous protection", "tags": [] },
+    { "template": "Garde rapprochée", "tags": [] },
+    { "template": "Itinéraire sécurisé", "tags": [] },
+    { "template": "Le prix de {targetName}", "tags": ["PERILOUS", "EPIC"] }
+  ],
+  "HEIST": [
+    { "template": "Casse chez {targetCorpName}", "tags": [] },
+    { "template": "Vol à haut risque", "tags": [] },
+    { "template": "Coffre de {targetCorpName}", "tags": [] },
+    { "template": "Le grand coup contre {targetCorpName}", "tags": ["PERILOUS", "EPIC"] }
+  ],
+  "SABOTAGE": [
+    { "template": "Sabotage ciblé", "tags": [] },
+    { "template": "Installation compromise", "tags": [] },
+    { "template": "Charges sur {planetName}", "tags": [] },
+    { "template": "L'incendie de {enemyGroupName}", "tags": ["PERILOUS", "EPIC"] }
+  ],
+  "RECON": [
+    { "template": "Reconnaissance discrète", "tags": [] },
+    { "template": "Dossier {enemyGroupName}", "tags": [] },
+    { "template": "Yeux sur {planetName}", "tags": [] },
+    { "template": "Infiltration profonde de {enemyGroupName}", "tags": ["PERILOUS", "EPIC"] }
+  ],
+  "DIPLOMACY": [
+    { "template": "Pourparlers tendus", "tags": [] },
+    { "template": "Audience avec {targetName}", "tags": [] },
+    { "template": "Traité de {planetName}", "tags": [] },
+    { "template": "Accords de haute trahison avec {enemyGroupName}", "tags": ["PERILOUS", "EPIC"] }
+  ],
+  "EXTRACTION_OP": [
+    { "template": "Extraction de {targetName}", "tags": [] },
+    { "template": "Sauvetage sous tension", "tags": [] },
+    { "template": "Sortir {targetName} de {planetName}", "tags": [] },
+    { "template": "Fuite de {enemyGroupName}", "tags": ["PERILOUS", "EPIC"] }
+  ]
+}

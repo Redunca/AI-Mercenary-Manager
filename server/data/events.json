@@ -1,0 +1,223 @@
+[
+  {
+    "id": "PLAN_ITINERARY",
+    "eventType": "RECON",
+    "attribute": "perception",
+    "beat": "INFILTRATION",
+    "consumes": ["targetName", "planetName"],
+    "descriptionTemplates": [
+      "L'équipage étudie la route la plus sûre pour amener {targetName} jusqu'à {planetName}.",
+      "Une reconnaissance rapide des axes de transit de {planetName} permet d'esquisser un itinéraire pour {targetName}."
+    ],
+    "rewardDescriptions": ["Prime de préparation d'itinéraire"]
+  },
+  {
+    "id": "AMBUSH",
+    "eventType": "COMBAT",
+    "attribute": "agility",
+    "beat": "EXECUTION",
+    "consumes": ["enemyGroupName", "planetName"],
+    "descriptionTemplates": [
+      "{enemyGroupName} tend une embuscade au convoi non loin de {planetName}.",
+      "Le convoi essuie le feu de {enemyGroupName}, embusqués sur la route de {planetName}."
+    ],
+    "rewardDescriptions": ["Prime de repoussement d'embuscade"]
+  },
+  {
+    "id": "FIELD_MEDICINE",
+    "eventType": "SURVIVAL",
+    "attribute": "fortitude",
+    "beat": "EXTRACTION",
+    "consumes": ["targetName"],
+    "descriptionTemplates": [
+      "Blessé pendant l'accrochage, {targetName} doit être stabilisé avant l'arrivée du vaisseau.",
+      "L'équipage improvise des soins de fortune pour maintenir {targetName} en vie jusqu'au décollage."
+    ],
+    "rewardDescriptions": ["Prime de stabilisation"]
+  },
+
+  {
+    "id": "CASE_THE_JOINT",
+    "eventType": "RECON",
+    "attribute": "perception",
+    "beat": "INFILTRATION",
+    "consumes": ["targetCorpName", "securityGroupName"],
+    "descriptionTemplates": [
+      "Repérer les rotations de {securityGroupName} avant l'assaut du coffre de {targetCorpName}.",
+      "L'équipage cartographie les défenses de {targetCorpName}, sous l'œil vigilant de {securityGroupName}."
+    ],
+    "rewardDescriptions": ["Prime de repérage"]
+  },
+  {
+    "id": "CRACK_THE_VAULT",
+    "eventType": "BREACH",
+    "attribute": "learning",
+    "beat": "EXECUTION",
+    "consumes": ["targetCorpName"],
+    "descriptionTemplates": [
+      "Forcer le chiffrement du coffre de {targetCorpName} avant le déclenchement de l'alarme.",
+      "Contourner les protocoles de sécurité de {targetCorpName} pour atteindre le cœur du coffre."
+    ],
+    "rewardDescriptions": ["Prime d'effraction"]
+  },
+  {
+    "id": "CLEAN_GETAWAY",
+    "eventType": "INFILTRATION",
+    "attribute": "agility",
+    "beat": "EXTRACTION",
+    "consumes": ["securityGroupName", "planetName"],
+    "descriptionTemplates": [
+      "Semer les agents de {securityGroupName} lancés à la poursuite du convoi de fuite sur {planetName}.",
+      "L'équipage se fond dans la foule de {planetName} pour échapper à {securityGroupName}."
+    ],
+    "rewardDescriptions": ["Prime de fuite propre"]
+  },
+
+  {
+    "id": "DISABLE_SENSORS",
+    "eventType": "ENGINEERING",
+    "attribute": "logic",
+    "beat": "INFILTRATION",
+    "consumes": ["planetName"],
+    "descriptionTemplates": [
+      "Neutraliser en silence le réseau de capteurs de l'installation sur {planetName}.",
+      "Court-circuiter les capteurs périmétriques avant qu'ils n'alertent l'installation de {planetName}."
+    ],
+    "rewardDescriptions": ["Prime de neutralisation des capteurs"]
+  },
+  {
+    "id": "PLANT_CHARGES",
+    "eventType": "ENGINEERING",
+    "attribute": "logic",
+    "beat": "EXECUTION",
+    "consumes": ["enemyGroupName"],
+    "descriptionTemplates": [
+      "Placer les charges au cœur de l'installation sans alerter les gardes de {enemyGroupName}.",
+      "Miner les points structurels critiques pendant que {enemyGroupName} patrouille à proximité."
+    ],
+    "rewardDescriptions": ["Prime de sabotage"]
+  },
+  {
+    "id": "ESCAPE_BLAST",
+    "eventType": "SURVIVAL",
+    "attribute": "fortitude",
+    "beat": "EXTRACTION",
+    "consumes": ["planetName"],
+    "descriptionTemplates": [
+      "Fuir l'installation de {planetName} avant que l'explosion ne ravage le secteur.",
+      "Courir vers le point d'exfiltration alors que {planetName} tremble sous l'onde de choc."
+    ],
+    "rewardDescriptions": ["Prime d'exfiltration"]
+  },
+
+  {
+    "id": "INFILTRATE_PERIMETER",
+    "eventType": "INFILTRATION",
+    "attribute": "agility",
+    "beat": "INFILTRATION",
+    "consumes": ["enemyGroupName", "planetName"],
+    "descriptionTemplates": [
+      "Franchir le périmètre tenu par {enemyGroupName} sur {planetName} sans déclencher d'alerte.",
+      "Se glisser entre les patrouilles de {enemyGroupName} pour atteindre le cœur de la zone."
+    ],
+    "rewardDescriptions": ["Prime de franchissement"]
+  },
+  {
+    "id": "GATHER_INTEL",
+    "eventType": "RECON",
+    "attribute": "perception",
+    "beat": "EXECUTION",
+    "consumes": ["enemyGroupName"],
+    "descriptionTemplates": [
+      "Collecter des preuves sur les activités de {enemyGroupName} sans se faire repérer.",
+      "Intercepter les communications de {enemyGroupName} pour en tirer un dossier complet."
+    ],
+    "rewardDescriptions": ["Prime de renseignement"]
+  },
+  {
+    "id": "AVOID_PATROL",
+    "eventType": "DECEPTION",
+    "attribute": "deception",
+    "beat": "EXTRACTION",
+    "consumes": ["enemyGroupName", "planetName"],
+    "descriptionTemplates": [
+      "Se fondre dans le décor de {planetName} pour échapper aux dernières patrouilles de {enemyGroupName}.",
+      "Improviser une couverture crédible face aux hommes de {enemyGroupName} postés à la sortie."
+    ],
+    "rewardDescriptions": ["Prime de couverture"]
+  },
+
+  {
+    "id": "ESTABLISH_CONTACT",
+    "eventType": "NEGOTIATION",
+    "attribute": "persuasion",
+    "beat": "INFILTRATION",
+    "consumes": ["targetName"],
+    "descriptionTemplates": [
+      "Obtenir une audience avec {targetName} malgré les protocoles diplomatiques rigides.",
+      "Approcher {targetName} par les canaux officieux avant l'ouverture des négociations."
+    ],
+    "rewardDescriptions": ["Prime de prise de contact"]
+  },
+  {
+    "id": "NEGOTIATE_TERMS",
+    "eventType": "NEGOTIATION",
+    "attribute": "persuasion",
+    "beat": "EXECUTION",
+    "consumes": ["targetName", "enemyGroupName"],
+    "descriptionTemplates": [
+      "Négocier des termes acceptables avec {targetName} face aux pressions de {enemyGroupName}.",
+      "Trouver un compromis avec {targetName} avant que {enemyGroupName} ne fasse échouer les pourparlers."
+    ],
+    "rewardDescriptions": ["Prime de négociation"]
+  },
+  {
+    "id": "WITHSTAND_PRESSURE",
+    "eventType": "PSYCHWAR",
+    "attribute": "will",
+    "beat": "EXTRACTION",
+    "consumes": ["enemyGroupName"],
+    "descriptionTemplates": [
+      "Résister aux manœuvres d'intimidation de {enemyGroupName} jusqu'à la signature finale.",
+      "Tenir bon face aux dernières manipulations de {enemyGroupName} avant de clore l'accord."
+    ],
+    "rewardDescriptions": ["Prime de résistance psychologique"]
+  },
+
+  {
+    "id": "LOCATE_TARGET",
+    "eventType": "RECON",
+    "attribute": "perception",
+    "beat": "INFILTRATION",
+    "consumes": ["targetName", "enemyGroupName"],
+    "descriptionTemplates": [
+      "Localiser {targetName}, détenu quelque part dans les installations de {enemyGroupName}.",
+      "Recouper les indices pour retrouver la cellule où {enemyGroupName} retient {targetName}."
+    ],
+    "rewardDescriptions": ["Prime de localisation"]
+  },
+  {
+    "id": "BREACH_HOLDING",
+    "eventType": "COMBAT",
+    "attribute": "agility",
+    "beat": "EXECUTION",
+    "consumes": ["targetName", "enemyGroupName"],
+    "descriptionTemplates": [
+      "Percer les défenses de {enemyGroupName} pour atteindre la cellule de {targetName}.",
+      "Neutraliser les gardes de {enemyGroupName} avant qu'ils n'exécutent {targetName}."
+    ],
+    "rewardDescriptions": ["Prime de percée"]
+  },
+  {
+    "id": "FIGHTING_RETREAT",
+    "eventType": "COMBAT",
+    "attribute": "might",
+    "beat": "EXTRACTION",
+    "consumes": ["targetName", "enemyGroupName"],
+    "descriptionTemplates": [
+      "Couvrir la retraite de {targetName} alors que {enemyGroupName} lance ses renforts.",
+      "Se frayer un chemin jusqu'au vaisseau avec {targetName}, {enemyGroupName} sur les talons."
+    ],
+    "rewardDescriptions": ["Prime d'extraction sous le feu"]
+  }
+]

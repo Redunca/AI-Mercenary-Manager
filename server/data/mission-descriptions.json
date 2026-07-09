@@ -1,0 +1,26 @@
+{
+  "ESCORT": [
+    { "template": "Escorter {targetName} jusqu'à {planetName} en évitant les hommes de {enemyGroupName}.", "tags": [] },
+    { "template": "{clientName} engage l'équipage pour amener {targetName} sain et sauf sur {planetName}, malgré la menace de {enemyGroupName}.", "tags": [] }
+  ],
+  "HEIST": [
+    { "template": "S'introduire dans les installations de {targetCorpName} sur {planetName} pour y dérober des données sensibles.", "tags": [] },
+    { "template": "{clientName} paie grassement pour vider le coffre de {targetCorpName}, sous le nez de {securityGroupName}.", "tags": [] }
+  ],
+  "SABOTAGE": [
+    { "template": "Neutraliser une installation appartenant à {enemyGroupName} sur {planetName} avant qu'elle ne devienne opérationnelle.", "tags": [] },
+    { "template": "{clientName} veut voir les infrastructures de {enemyGroupName} réduites au silence, sur {planetName}.", "tags": [] }
+  ],
+  "RECON": [
+    { "template": "Rassembler des renseignements sur les activités de {enemyGroupName} dans le secteur de {planetName}.", "tags": [] },
+    { "template": "{clientName} a besoin d'un dossier complet sur {enemyGroupName} avant de risquer un mouvement sur {planetName}.", "tags": [] }
+  ],
+  "DIPLOMACY": [
+    { "template": "Négocier un accord avec {targetName} au nom de {clientName}, malgré la pression de {enemyGroupName}.", "tags": [] },
+    { "template": "Représenter les intérêts de {clientName} face à {targetName} sur {planetName}, une planète sous tension.", "tags": [] }
+  ],
+  "EXTRACTION_OP": [
+    { "template": "Récupérer {targetName}, retenu par {enemyGroupName} sur {planetName}, avant qu'il ne soit trop tard.", "tags": [] },
+    { "template": "{clientName} exige l'extraction de {targetName} des mains de {enemyGroupName}, sur {planetName}.", "tags": [] }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "categories": {
+    "person": [
+      { "value": "Kael Voss", "tags": ["human", "neutral"] },
+      { "value": "Mira Sten", "tags": ["human", "neutral"] },
+      { "value": "Dr. Anouk Reyes", "tags": ["human", "scientist"] },
+      { "value": "l'Ambassadeur Tolven", "tags": ["human", "diplomat"] },
+      { "value": "Juro Halden", "tags": ["human", "criminal"] },
+      { "value": "Sera Wick", "tags": ["human", "neutral"] },
+      { "value": "l'Émissaire Vashti", "tags": ["alien", "diplomat"] },
+      { "value": "le Contremaître Obeng", "tags": ["human", "worker"] },
+      { "value": "Ilyana Korr", "tags": ["human", "scientist"] },
+      { "value": "Petit Rasko", "tags": ["human", "criminal"] }
+    ],
+    "gang": [
+      { "value": "les Chiens Rouges", "tags": ["hostile", "criminal", "urban"] },
+      { "value": "la Fraternité du Vide", "tags": ["hostile", "criminal", "frontier"] },
+      { "value": "les Cendres Noires", "tags": ["hostile", "criminal", "arid"] },
+      { "value": "le Cartel Sylvain", "tags": ["hostile", "criminal", "jungle"] },
+      { "value": "les Loups de Kethar", "tags": ["hostile", "criminal", "ice"] },
+      { "value": "la Main Grise", "tags": ["hostile", "criminal", "corporate"] }
+    ],
+    "corporation": [
+      { "value": "Aurelian Dynamics", "tags": ["corporate", "megacorp"] },
+      { "value": "Vantrix Extraction", "tags": ["corporate", "mining"] },
+      { "value": "Cindral Biotech", "tags": ["corporate", "science"] },
+      { "value": "Oskar-Renn Logistics", "tags": ["corporate", "shipping"] },
+      { "value": "Halcyon Systems", "tags": ["corporate", "megacorp"] }
+    ],
+    "faction": [
+      { "value": "le Directoire Kessarien", "tags": ["independent", "frontier"] },
+      { "value": "l'Alliance des Confins", "tags": ["independent", "frontier"] },
+      { "value": "le Conclave Jade", "tags": ["independent", "jungle"] },
+      { "value": "la Garde Polaire", "tags": ["independent", "ice"] },
+      { "value": "le Syndicat Rouge", "tags": ["corporate", "urban"] }
+    ],
+    "planet": [
+      { "value": "Kessar-9", "tags": ["arid", "frontier"] },
+      { "value": "Verdanth", "tags": ["jungle", "colonized"] },
+      { "value": "Nord-Kethar", "tags": ["ice", "isolated"] },
+      { "value": "Halyxion", "tags": ["urban", "megacity", "corporate"] },
+      { "value": "Maren-Tal", "tags": ["ocean", "newcolony"] },
+      { "value": "Cendre-Vor", "tags": ["volcanic", "mining", "corporate"] }
+    ]
+  }
+}

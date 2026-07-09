@@ -9,6 +9,18 @@ const { createStarterShip, validateCrewAssignment, calculateEffectiveTravelTime 
 const ShipService = require('./ship.service')
 const EquipmentService = require('./equipment.service')
 
+
+const { loadData } = require('../dataLoader')
+const { generateMission } = require('../engine/missionGenerator')
+const MISSION_TEMPLATE_COUNT = 25
+const SEED_DIFFICULTIES = [
+  'ROUTINE', 'ROUTINE', 'ROUTINE', 'ROUTINE', 'ROUTINE',
+  'STANDARD', 'STANDARD', 'STANDARD', 'STANDARD', 'STANDARD',
+  'HARD', 'HARD', 'HARD', 'HARD', 'HARD', 'HARD',
+  'PERILOUS', 'PERILOUS', 'PERILOUS', 'PERILOUS', 'PERILOUS',
+  'EPIC', 'EPIC', 'EPIC', 'EPIC', 'EPIC',
+]
+
 const DEFAULT_PLAYER_ID = 1
 const DATA_DIR = path.join(__dirname, '../../data')
 
@@ -17,8 +29,13 @@ function loadJson(name) {
 }
 
 async function seedMissionTemplates(client) {
-  const missions = loadJson('missions.json')
-  for (const mission of missions) {
+  const existing = await client.query('SELECT COUNT(*)::int AS count FROM mission_templates')
+  if (existing.rows[0].count > 0) return
+
+  const data = loadData()
+  for (let i = 0; i < MISSION_TEMPLATE_COUNT; i++) {
+    const id = i + 1
+    const mission = generateMission(data, { difficulty: SEED_DIFFICULTIES[i] })
     await client.query(
       `INSERT INTO mission_templates (id, name, description, difficulty, events)
        VALUES ($1, $2, $3, $4, $5)
@@ -27,7 +44,7 @@ async function seedMissionTemplates(client) {
          description = EXCLUDED.description,
          difficulty = EXCLUDED.difficulty,
          events = EXCLUDED.events`,
-      [mission.id, mission.name, mission.description, mission.difficulty, JSON.stringify(mission.events)],
+      [id, mission.name, mission.description, mission.difficulty, JSON.stringify(mission.events)],
     )
   }
 }

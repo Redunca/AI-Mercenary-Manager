@@ -1,0 +1,66 @@
+[
+  {
+    "type": "ESCORT",
+    "tags": ["escort", "protection"],
+    "requiresPlanetTags": [],
+    "provides": {
+      "clientName": { "category": "person" },
+      "targetName": { "category": "person" },
+      "enemyGroupName": { "category": "gang" }
+    },
+    "eventPool": ["PLAN_ITINERARY", "AMBUSH", "FIELD_MEDICINE"]
+  },
+  {
+    "type": "HEIST",
+    "tags": ["heist", "theft"],
+    "requiresPlanetTags": [],
+    "provides": {
+      "clientName": { "category": "person" },
+      "targetCorpName": { "category": "corporation" },
+      "securityGroupName": { "category": "gang" }
+    },
+    "eventPool": ["CASE_THE_JOINT", "CRACK_THE_VAULT", "CLEAN_GETAWAY"]
+  },
+  {
+    "type": "SABOTAGE",
+    "tags": ["sabotage", "destruction"],
+    "requiresPlanetTags": [],
+    "provides": {
+      "clientName": { "category": "person" },
+      "enemyGroupName": { "category": "corporation" }
+    },
+    "eventPool": ["DISABLE_SENSORS", "PLANT_CHARGES", "ESCAPE_BLAST"]
+  },
+  {
+    "type": "RECON",
+    "tags": ["recon", "espionage"],
+    "requiresPlanetTags": [],
+    "provides": {
+      "clientName": { "category": "person" },
+      "enemyGroupName": { "category": "gang" }
+    },
+    "eventPool": ["INFILTRATE_PERIMETER", "GATHER_INTEL", "AVOID_PATROL"]
+  },
+  {
+    "type": "DIPLOMACY",
+    "tags": ["diplomacy", "negotiation"],
+    "requiresPlanetTags": [],
+    "provides": {
+      "clientName": { "category": "person" },
+      "targetName": { "category": "person", "tags": ["diplomat"] },
+      "enemyGroupName": { "category": "faction" }
+    },
+    "eventPool": ["ESTABLISH_CONTACT", "NEGOTIATE_TERMS", "WITHSTAND_PRESSURE"]
+  },
+  {
+    "type": "EXTRACTION_OP",
+    "tags": ["extraction", "rescue"],
+    "requiresPlanetTags": [],
+    "provides": {
+      "clientName": { "category": "person" },
+      "targetName": { "category": "person" },
+      "enemyGroupName": { "category": "gang" }
+    },
+    "eventPool": ["LOCATE_TARGET", "BREACH_HOLDING", "FIGHTING_RETREAT"]
+  }
+]
