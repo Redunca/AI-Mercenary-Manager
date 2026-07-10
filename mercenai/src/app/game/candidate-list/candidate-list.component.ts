@@ -2,6 +2,8 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Candidate } from '../../models/candidate';
 import { CandidateService } from '../../core/candidate.service';
+import { LayoutService } from '../../core/layout.service';
+import { PanelModule } from '../../models/panel';
 
 @Component({
   selector: 'app-candidate-list',
@@ -12,6 +14,7 @@ import { CandidateService } from '../../core/candidate.service';
 })
 export class CandidateListComponent {
   candidateService = inject(CandidateService);
+  layout = inject(LayoutService);
 
   get candidates(): Candidate[] {
     return this.candidateService.candidates;
@@ -36,6 +39,10 @@ export class CandidateListComponent {
   registerCommands() {
     return {
       'refresh': () => { void this.candidateService.generateCandidates(5); },
+      'detail': (id: string) => {
+        if (!id) { console.warn('Usage: detail <id>'); return; }
+        this.layout.addPanel(PanelModule.CandidateDetail, { id });
+      },
     };
   }
 }

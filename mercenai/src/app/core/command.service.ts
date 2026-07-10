@@ -158,6 +158,8 @@ export class CommandService {
   private handleMission(action: string, ...args: string[]) {
   switch (action) {
     case "list":
+    case "-l":
+    case "--list":
       this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.MissionList);
       break;
 
@@ -176,12 +178,17 @@ export class CommandService {
       break;
 
     case "detail":
+    case "-d":
+    case "--detail":
       this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.MissionDetail, { id: Number(args[0]) });
       break;
 
     case "logs":
       this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.MissionLogs, { id: Number(args[0]) });
       break;
+
+    default:
+      console.warn('Usage: mission list | mission start <shipId> <missionId> | mission stop <id> | mission detail <id> | mission logs <id>');
   }
 }
 
@@ -201,10 +208,12 @@ export class CommandService {
     switch (action) {
       case 'list':
       case '-l':
+      case '--list':
         this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.CandidateList);
         break;
       case 'detail':
       case '-d':
+      case '--detail':
         if (args[0]) {
           this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.CandidateDetail, { id: args[0] });
         }
@@ -218,11 +227,13 @@ export class CommandService {
     switch (action) {
       case 'list':
       case '-l':
+      case '--list':
         this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShipList);
         break;
 
       case 'detail':
       case '-d':
+      case '--detail':
         if (args[0]) {
           this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShipDetail, { id: args[0] });
         }
@@ -264,11 +275,13 @@ export class CommandService {
     switch (action) {
       case 'list':
       case '-l':
+      case '--list':
         this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.EquipmentList);
         break;
 
       case 'detail':
       case '-d':
+      case '--detail':
         if (args[0]) {
           this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.EquipmentDetail, { id: args[0] });
         }
@@ -299,11 +312,13 @@ export class CommandService {
     switch (action) {
       case 'list':
       case '-l':
+      case '--list':
         this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShopList);
         break;
 
       case 'detail':
       case '-d':
+      case '--detail':
         if (args[0]) {
           this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShopDetail, { id: args[0] });
         }
