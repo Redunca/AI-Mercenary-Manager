@@ -1,9 +1,8 @@
-<div class="equipment-list">
-  <h2>Équipement</h2>
-  <div class="equipment-item" *ngFor="let item of equipment">
-    <div class="item-name">{{ item.name }}</div>
-    <div class="item-rarity" [class]="'rarity-' + item.rarity">{{ item.rarity }}</div>
-    <div class="item-quantity">Qty: {{ item.quantity }}</div>
-    <div class="item-price">Prix: {{ item.price }}</div>
-  </div>
+<div>TASK: [<span class="task-title">List equipment</span>] ******************************************</div>
+<div>ok ==> {{ '{' }}</div>
+<div *ngFor="let item of equipment" class="indent-one equipment-entry">
+  [{{ item.id }}] <span class="item-name">{{ item.name }}</span> <span [class]="'rarity-' + item.rarity">({{ item.rarity }})</span> — Qty {{ item.quantity }} — {{ item.price }} ¥
 </div>
+<div *ngIf="equipment.length === 0" class="indent-one muted">— aucun équipement —</div>
+<div>{{ '}' }}</div>
+<div class="hint">[ detail &lt;id&gt; ] pour plus d'informations</div>

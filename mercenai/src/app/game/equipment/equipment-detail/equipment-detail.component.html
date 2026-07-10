@@ -1,17 +1,17 @@
-<div class="equipment-detail" *ngIf="equipment">
-  <h2>{{ equipment.name }}</h2>
-  <div class="equipment-info">
-    <p><strong>Description:</strong> {{ equipment.description }}</p>
-    <p><strong>Effet:</strong> {{ equipment.effect }}</p>
-    <p><strong>Rareté:</strong> {{ equipment.rarity }}</p>
-    <p><strong>Prix:</strong> {{ equipment.price }}</p>
-    <p><strong>Quantité:</strong> {{ equipment.quantity }}</p>
-    <p *ngIf="equipment.assigned_to_ship">
-      <strong>Assigné au Navire:</strong> #{{ equipment.assigned_to_ship }}
-    </p>
-    <p *ngIf="!equipment.assigned_to_ship" class="unassigned">
-      Non assigné
-    </p>
-  </div>
-</div>
-<div *ngIf="!equipment" class="empty">Équipement non trouvé</div>
+<div>TASK: [<span class="task-title">Equipment detail</span>] ******************************************</div>
+<div>ok ==> {{ '{' }}</div>
+<ng-container *ngIf="equipment; else notFound">
+  <div class="indent-one">"id"          : {{ equipment.id }},</div>
+  <div class="indent-one">"name"        : "{{ equipment.name }}",</div>
+  <div class="indent-one">"description" : "{{ equipment.description }}",</div>
+  <div class="indent-one">"effect"      : "{{ equipment.effect }}",</div>
+  <div class="indent-one">"rarity"      : <span [class]="'rarity-' + equipment.rarity">"{{ equipment.rarity }}"</span>,</div>
+  <div class="indent-one">"price"       : {{ equipment.price }},</div>
+  <div class="indent-one">"quantity"    : {{ equipment.quantity }},</div>
+  <div class="indent-one" *ngIf="equipment.assigned_to_ship">"assigned_to" : "Navire #{{ equipment.assigned_to_ship }}"</div>
+  <div class="indent-one muted" *ngIf="!equipment.assigned_to_ship">"assigned_to" : null</div>
+</ng-container>
+<ng-template #notFound>
+  <div class="indent-one muted">Équipement introuvable : {{ id }}</div>
+</ng-template>
+<div>{{ '}' }}</div>

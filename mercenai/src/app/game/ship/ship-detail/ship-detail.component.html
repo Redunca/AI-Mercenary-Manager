@@ -1,24 +1,27 @@
-<div class="ship-detail" *ngIf="ship">
-  <h2>{{ ship.name }}</h2>
-  <div class="ship-info">
-    <p><strong>ID:</strong> {{ ship.id }}</p>
-    <p><strong>ID Galactique:</strong> {{ ship.galactic_id }}</p>
-    <p><strong>Rareté:</strong> {{ ship.rarity }}</p>
-    <p><strong>Statut:</strong> {{ ship.status }}</p>
-  </div>
-  <div class="ship-stats">
-    <h3>Stats</h3>
-    <p>Vitesse: {{ ship.stats.speed }}%</p>
-    <p>Capacité: {{ ship.stats.capacity }}</p>
-    <p>Durabilité: {{ ship.stats.durability }}</p>
-    <p>Prix: {{ ship.stats.price }}</p>
-  </div>
-  <div class="ship-crew">
-    <h3>Équipage ({{ ship.crew.length }}/{{ ship.stats.capacity }})</h3>
-    <div *ngIf="ship.crew.length === 0" class="empty">Pas d'équipage assigné</div>
-    <div *ngFor="let recruitId of ship.crew" class="crew-member">
-      {{ getRecruit(recruitId)?.name ?? 'Recrue #' + recruitId }}
-    </div>
-  </div>
-</div>
-<div *ngIf="!ship" class="empty">Navire non trouvé</div>
+<div>TASK: [<span class="task-title">Ship detail</span>] ******************************************</div>
+<div>ok ==> {{ '{' }}</div>
+<ng-container *ngIf="ship; else notFound">
+  <div class="indent-one">"id"          : {{ ship.id }},</div>
+  <div class="indent-one">"name"        : "{{ ship.name }}",</div>
+  <div class="indent-one">"galactic_id" : "{{ ship.galactic_id }}",</div>
+  <div class="indent-one">"rarity"      : "{{ ship.rarity }}",</div>
+  <div class="indent-one">"status"      : <span [class]="'status-' + ship.status">"{{ ship.status }}"</span>,</div>
+
+  <div class="indent-one">"stats" : {{ '{' }}</div>
+  <div class="indent-two">speed       {{ ship.stats.speed }}%</div>
+  <div class="indent-two">capacity    {{ ship.stats.capacity }}</div>
+  <div class="indent-two">durability  {{ ship.stats.durability }}</div>
+  <div class="indent-two">price       {{ ship.stats.price }}</div>
+  <div class="indent-one">{{ '}' }},</div>
+
+  <div class="indent-one">"crew" ({{ ship.crew.length }}/{{ ship.stats.capacity }}) : [</div>
+  <ng-container *ngFor="let recruitId of ship.crew">
+    <div class="indent-two crew-member">{{ getRecruit(recruitId)?.name ?? 'Recrue #' + recruitId }}</div>
+  </ng-container>
+  <div *ngIf="ship.crew.length === 0" class="indent-two muted">— pas d'équipage assigné —</div>
+  <div class="indent-one">]</div>
+</ng-container>
+<ng-template #notFound>
+  <div class="indent-one muted">Navire introuvable : {{ id }}</div>
+</ng-template>
+<div>{{ '}' }}</div>

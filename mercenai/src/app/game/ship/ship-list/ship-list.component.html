@@ -1,8 +1,9 @@
-<div class="ship-list">
-  <h2>Navires</h2>
-  <div class="ship-item" *ngFor="let ship of ships">
-    <div class="ship-name">#{{ ship.id }} {{ ship.name }}</div>
-    <div class="ship-status" [class]="'status-' + ship.status">{{ ship.status }}</div>
-    <div class="ship-crew">Équipage: {{ ship.crew.length }}/{{ ship.stats.capacity }}</div>
-  </div>
+<div>TASK: [<span class="task-title">List ships</span>] ******************************************</div>
+<div>ok ==> {{ '{' }}</div>
+<div *ngFor="let s of ships" class="indent-one ship-entry">
+  <div>[{{ s.id }}] <span class="ship-name">{{ s.name }}</span> — <span [class]="'status-' + s.status">{{ s.status }}</span></div>
+  <div class="indent-two muted">Équipage {{ s.crew.length }}/{{ s.stats.capacity }}</div>
 </div>
+<div *ngIf="ships.length === 0" class="indent-one muted">— aucun navire —</div>
+<div>{{ '}' }}</div>
+<div class="hint">[ detail &lt;id&gt; ] pour plus d'informations</div>

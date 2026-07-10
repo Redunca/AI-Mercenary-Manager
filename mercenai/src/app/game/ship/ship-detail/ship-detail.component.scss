@@ -1,21 +1,10 @@
-.ship-detail {
-  padding: 1rem;
-}
+.task-title { font-weight: bold; }
 
-.ship-info,
-.ship-stats,
-.ship-crew {
-  margin: 1rem 0;
-}
+.indent-one { margin-left: 1rem; }
+.indent-two { margin-left: 2rem; }
 
-.empty {
-  color: #888;
-  font-style: italic;
-}
+.status-docked     { color: #7ecf7e; }
+.status-in_mission { color: inherit; }
+.status-destroyed  { color: #cf7e7e; }
 
-.crew-member {
-  padding: 0.25rem 0.5rem;
-  background: #1a1a1a;
-  margin: 0.25rem 0;
-  border-left: 2px solid #0f0;
-}
+.muted { opacity: 0.5; }

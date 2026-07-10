@@ -1,16 +1,11 @@
-.equipment-detail {
-  padding: 1rem;
-}
+.task-title { font-weight: bold; }
 
-.equipment-info {
-  margin: 1rem 0;
-}
+.indent-one { margin-left: 1rem; }
 
-.empty {
-  color: #888;
-  font-style: italic;
-}
+.rarity-common    { color: inherit; opacity: 0.7; }
+.rarity-uncommon  { color: #7ecf7e; }
+.rarity-rare      { color: #7ecf7e; }
+.rarity-epic      { color: #cf9ef7; }
+.rarity-legendary { color: #e8b34a; }
 
-.unassigned {
-  color: #888;
-}
+.muted { opacity: 0.5; }
