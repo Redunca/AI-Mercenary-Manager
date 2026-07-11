@@ -103,6 +103,17 @@ export class TerminalPanelComponent implements OnInit, AfterViewChecked, AfterVi
     textarea.style.height = textarea.scrollHeight + 'px';
   }
 
+  onEnterKey(event: Event): void {
+    // Without this, the browser's default behavior for Enter in a <textarea>
+    // inserts a newline *after* the command has run. That newline then fires
+    // a native `input` event, which re-syncs the (stale) DOM value back into
+    // the TerminalController and undoes the input clearing done by execute(),
+    // leaving a trailing blank line in the box and corrupting the next command's
+    // parsing (parse() splits on \s+, which also matches \n).
+    event.preventDefault();
+    this.manageKeyDownEnter();
+  }
+
   manageKeyDownEnter(): void {
     this.panel.terminal?.execute((input: string, panelId: number) => {
       this.commandService.routeCommand(input, panelId);

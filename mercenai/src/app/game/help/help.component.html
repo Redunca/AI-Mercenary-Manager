@@ -1,3 +1,6 @@
+<div class="legend">Les sous-commandes <span class="cmd">list</span> et <span class="cmd">detail</span> (recruit, candidate, ship, equipment, shop, mission) acceptent aussi <span class="cmd">-l</span>/<span class="cmd">--list</span> et <span class="cmd">-d</span>/<span class="cmd">--detail</span>.</div>
+
+<div>&nbsp;</div>
 <div class="section-title">NAVIGATION</div>
 <div class="row"><span class="cmd">home</span><span class="desc">Ouvre le dashboard (vue globale)</span></div>
 <div class="row"><span class="cmd">split-h</span><span class="desc">Divise le panel courant horizontalement</span></div>
@@ -16,40 +19,56 @@
 <div class="row"><span class="cmd">hire</span><span class="desc">(panel candidate-detail) Recrute ce candidat</span></div>
 <div class="row"><span class="cmd">detail &lt;id&gt;</span><span class="desc">(panel candidate-list) Raccourci vers le détail</span></div>
 
-<!-- Missing Row from HELP.md: recruit assign -->
-<div class="row"><span class="cmd">recruit assign &lt;shipId&gt; &lt;recruitId&gt;</span><span class="desc">*(panel ship-detail)* Assigne une recrue à l'équipage</span></div>
-
 <div>&nbsp;</div>
 <div class="section-title">RECRUES</div>
-<!-- Corrected Description for consistency with HELP.md if needed, keeping it simple as per previous HTML structure -->
 <div class="row"><span class="cmd">recruit list</span><span class="desc">Liste des recrues avec statut</span></div>
 <div class="row"><span class="cmd">recruit detail &lt;id&gt;</span><span class="desc">Détail d'une recrue : stats PHY / MEN / SOC</span></div>
 <div class="row"><span class="cmd">rename &lt;nom&gt;</span><span class="desc">(panel recruit-detail) Renomme la recrue</span></div>
-<!-- Corrected Description for consistency with HELP.md (optional, removed extra context note if strictly matching markdown table intent) -->
 <div class="row"><span class="cmd">detail &lt;id&gt;</span><span class="desc">(panel recruit-list) Raccourci vers le détail</span></div>
 
 <div>&nbsp;</div>
-<div class="section-title">NAVIREs</div>
-<!-- Missing Section and Rows from HELP.md -->
+<div class="section-title">NAVIRES</div>
 <div class="row"><span class="cmd">ship list</span><span class="desc">Liste des navires avec statut (amarré/en mission)</span></div>
 <div class="row"><span class="cmd">ship detail &lt;id&gt;</span><span class="desc">Détail d'un navire : stats, équipage, équipement</span></div>
-<!-- Corrected Description for consistency with HELP.md -->
-<div class="row"><span class="cmd">shop buy &lt;id&gt;</span><span class="desc">*(panel shop-detail)* Achète un navire ou équipement</span></div>
+<div class="row"><span class="cmd">ship assign &lt;shipId&gt; &lt;recruitId&gt;</span><span class="desc">Assigne une recrue à l'équipage d'un navire</span></div>
+<div class="row"><span class="cmd">ship unassign &lt;shipId&gt; &lt;recruitId&gt;</span><span class="desc">Retire une recrue de l'équipage d'un navire</span></div>
+<div class="row"><span class="cmd">ship rename &lt;shipId&gt; &lt;nom&gt;</span><span class="desc">Renomme un navire</span></div>
+<div class="row"><span class="cmd">detail &lt;id&gt;</span><span class="desc">(panel ship-list) Raccourci vers le détail</span></div>
+<div class="row"><span class="cmd">assign &lt;recruitId&gt;</span><span class="desc">(panel ship-detail) Assigne une recrue à ce navire</span></div>
+<div class="row"><span class="cmd">unassign &lt;recruitId&gt;</span><span class="desc">(panel ship-detail) Retire une recrue de ce navire</span></div>
+<div class="row"><span class="cmd">rename &lt;nom&gt;</span><span class="desc">(panel ship-detail) Renomme ce navire</span></div>
 
-<!-- Note: Renaming ship is also missing in the provided HTML snippet, adding it below if needed. -->
-<div class="row"><span class="cmd">ship rename &lt;shipId&gt; &lt;nom&gt;</span><span class="desc">*(panel ship-detail)* Renomme le navire</span></div>
+<div>&nbsp;</div>
+<div class="section-title">ÉQUIPEMENT</div>
+<div class="row"><span class="cmd">equipment list</span><span class="desc">Liste de l'équipement en inventaire</span></div>
+<div class="row"><span class="cmd">equipment detail &lt;id&gt;</span><span class="desc">Détail d'un équipement : effet, rareté, prix</span></div>
+<div class="row"><span class="cmd">equipment assign &lt;equipmentId&gt; &lt;shipId&gt;</span><span class="desc">Assigne un équipement à un navire</span></div>
+<div class="row"><span class="cmd">equipment unassign &lt;equipmentId&gt;</span><span class="desc">Retire un équipement de son navire</span></div>
+<div class="row"><span class="cmd">detail &lt;id&gt;</span><span class="desc">(panel equipment-list) Raccourci vers le détail</span></div>
+<div class="row"><span class="cmd">assign &lt;shipId&gt;</span><span class="desc">(panel equipment-detail) Assigne cet équipement à un navire</span></div>
+<div class="row"><span class="cmd">unassign</span><span class="desc">(panel equipment-detail) Retire cet équipement de son navire</span></div>
+
+<div>&nbsp;</div>
+<div class="section-title">BOUTIQUE</div>
+<div class="row"><span class="cmd">shop list</span><span class="desc">Liste des navires et équipements disponibles à l'achat</span></div>
+<div class="row"><span class="cmd">shop detail &lt;id&gt;</span><span class="desc">Détail d'un article : prix, stats, description</span></div>
+<div class="row"><span class="cmd">shop buy &lt;id&gt;</span><span class="desc">Achète un navire ou équipement (1 unité)</span></div>
+<div class="row"><span class="cmd">wallet</span><span class="desc">Affiche le solde crédit courant</span></div>
+<div class="row"><span class="cmd">detail &lt;id&gt;</span><span class="desc">(panel shop-list) Raccourci vers le détail</span></div>
+<div class="row"><span class="cmd">buy &lt;id&gt; [quantité]</span><span class="desc">(panel shop-list) Achète un article par son ID</span></div>
+<div class="row"><span class="cmd">buy [quantité]</span><span class="desc">(panel shop-detail) Achète cet article</span></div>
 
 <div>&nbsp;</div>
 <div class="section-title">MISSIONS</div>
-<!-- Note: The HTML snippet provided in the prompt was missing this section entirely. I am adding it below based on HELP.md -->
 <div class="row"><span class="cmd">mission list</span><span class="desc">Liste des missions avec statut et progression</span></div>
 <div class="row"><span class="cmd">mission detail &lt;id&gt;</span><span class="desc">Détail d'une mission : phase et barre de progression</span></div>
 <div class="row"><span class="cmd">mission start &lt;missionId&gt; &lt;shipId&gt;</span><span class="desc">Lance une mission avec un navire</span></div>
-<div class="row"><span class="cmd">mission stop &lt;missionId&gt;</span><span class="desc">Annule une mission et remet la recrue disponible</span></div>
+<div class="row"><span class="cmd">mission stop &lt;missionId&gt;</span><span class="desc">Annule une mission et remet l'équipage disponible</span></div>
+<div class="row"><span class="cmd">mission logs &lt;id&gt;</span><span class="desc">Logs détaillés d'une mission</span></div>
 <div class="row"><span class="cmd">stop</span><span class="desc">(panel mission-detail) Déclenche un retour forcé</span></div>
 <div class="row"><span class="cmd">detail &lt;id&gt;</span><span class="desc">(panel mission-list) Raccourci vers le détail</span></div>
 
 <div>&nbsp;</div>
-<div class="section-title">BOUTIQUE</div>
-<!-- Added missing rows from HELP.md for Shop section -->
-<div class="row"><span class="cmd">shop buy &lt;id&gt;</span><span class="desc">*(panel shop-detail)* Achète un navire ou équipement</span></div>
+<div class="section-title">LOGS</div>
+<div class="row"><span class="cmd">logs</span><span class="desc">Log global : lancements et fins de mission</span></div>
+<div class="row"><span class="cmd">mission logs &lt;id&gt;</span><span class="desc">Logs détaillés d'une mission ([SYS] / [IA] / [RECRUE])</span></div>

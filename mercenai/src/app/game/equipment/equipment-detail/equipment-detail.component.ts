@@ -15,10 +15,31 @@ export class EquipmentDetailComponent implements OnInit {
   equipment: Equipment | null = null;
 
   ngOnInit() {
+    this.refresh();
+  }
+
+  private refresh(): void {
     if (this.id) {
       this.shipService.getEquipmentById(Number(this.id)).subscribe(equipment => {
         this.equipment = equipment;
       });
     }
+  }
+
+  registerCommands() {
+    return {
+      'assign': (shipId: string) => {
+        if (!this.equipment || !shipId) { console.warn('Usage: assign <shipId>'); return; }
+        void this.shipService.assignEquipmentToShip(this.equipment.id, Number(shipId))
+          .then(() => this.refresh())
+          .catch(err => console.error('[equipment assign]', err?.error?.error ?? err?.message ?? err));
+      },
+      'unassign': () => {
+        if (!this.equipment) { console.warn('Aucun équipement chargé'); return; }
+        void this.shipService.unassignEquipmentFromShip(this.equipment.id)
+          .then(() => this.refresh())
+          .catch(err => console.error('[equipment unassign]', err?.error?.error ?? err?.message ?? err));
+      },
+    };
   }
 }

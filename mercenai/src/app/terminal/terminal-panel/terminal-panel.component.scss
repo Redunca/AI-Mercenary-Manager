@@ -37,7 +37,7 @@
   width: 100%; /* Ensure it takes full horizontal space */
 
   /* Terminal-like behavior: single line initially, grows with content OR scrolls */
-  min-height: calc(2 * 1.2rem);
+  min-height: 1.2rem;
   max-height: none;
 
   flex: 1; /* Takes remaining horizontal space */

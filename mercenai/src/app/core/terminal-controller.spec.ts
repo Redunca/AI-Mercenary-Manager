@@ -54,4 +54,23 @@ describe('TerminalController - historique des commandes', () => {
     ctrl.historyNext();
     expect(ctrl.getInput()).toBe('');
   });
+
+  // Regression test for the "two-line terminal" bug: the textarea's Enter
+  // key wasn't calling preventDefault(), so the browser inserted a native
+  // "\n" after the command ran, and the resulting (input) event re-synced
+  // that "\n" back into the controller via setInput(), undoing the clear.
+  // execute() must unconditionally win that race by clearing `input` itself
+  // *after* parseFn returns, no matter what parseFn (or anything it
+  // triggers) does to the input in the meantime.
+  it('leaves the input empty after execute() even if parseFn leaves stray characters behind', () => {
+    ctrl.setInput('mission list');
+
+    ctrl.execute((input, _panelId) => {
+      // Simulates the stale DOM value (trailing newline) that used to leak
+      // back in via the textarea's (input) handler before the fix.
+      ctrl.setInput(input + '\n');
+    });
+
+    expect(ctrl.getInput()).toBe('');
+  });
 });

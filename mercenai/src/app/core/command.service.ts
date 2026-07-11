@@ -88,19 +88,17 @@ export class CommandService {
     const { command, args } = this.parse(input);
 
     // 1. commandes locales
-    console.log("Called routeCommand with parameters", input, panelId);
     const panel = this.layout.getPanelById(panelId);
-    console.log("Panel had theses commands", panel?.terminal?.localCommands);
     if (panel?.terminal?.localCommands[command]) {
       panel.terminal.localCommands[command](...args);
       panel.terminal?.setInput('');
       return;
     }
-    console.log("Looking into global commands", this.globalCommands)
+
     // 2. commandes globales
     if (this.globalCommands[command]) {
       this.globalCommands[command](...args);
-      panel.terminal?.setInput('');
+      panel?.terminal?.setInput('');
       return;
     }
 

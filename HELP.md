@@ -1,5 +1,7 @@
 # Commandes disponibles
 
+> Les sous-commandes `list` et `detail` (recruit, candidate, ship, equipment, shop, mission) acceptent aussi les raccourcis `-l` / `--list` et `-d` / `--detail`, ex. `recruit list` ≡ `recruit -l`.
+
 ## Navigation
 
 | Commande              | Description                                      |
@@ -34,14 +36,17 @@
 
 ## Navires
 
-| Commande                      | Description                                              |
-|-------------------------------|----------------------------------------------------------|
-| `ship list`                   | Liste des navires avec statut (amarré/en mission)       |
-| `ship detail <id>`            | Détail d'un navire : stats, équipage, équipement        |
-| `ship assign <shipId> <recruitId>` | *(panel ship-detail)* Assigne une recrue à l'équipage   |
-| `ship unassign <shipId> <recruitId>` | *(panel ship-detail)* Retire une recrue de l'équipage   |
-| `ship rename <shipId> <nom>`  | *(panel ship-detail)* Renomme le navire                 |
-| `detail <id>`                 | *(panel ship-list)* Raccourci vers le détail            |
+| Commande                             | Description                                              |
+|---------------------------------------|----------------------------------------------------------|
+| `ship list`                           | Liste des navires avec statut (amarré/en mission)        |
+| `ship detail <id>`                    | Détail d'un navire : stats, équipage, équipement         |
+| `ship assign <shipId> <recruitId>`    | Assigne une recrue à l'équipage d'un navire               |
+| `ship unassign <shipId> <recruitId>`  | Retire une recrue de l'équipage d'un navire               |
+| `ship rename <shipId> <nom>`          | Renomme un navire                                         |
+| `detail <id>`                         | *(panel ship-list)* Raccourci vers le détail              |
+| `assign <recruitId>`                  | *(panel ship-detail)* Assigne une recrue à ce navire      |
+| `unassign <recruitId>`                | *(panel ship-detail)* Retire une recrue de ce navire      |
+| `rename <nom>`                        | *(panel ship-detail)* Renomme ce navire                   |
 
 ## Équipement
 
@@ -49,9 +54,11 @@
 |------------------------------------|-----------------------------------------------------------|
 | `equipment list`                   | Liste de l'équipement en inventaire                       |
 | `equipment detail <id>`            | Détail d'un équipement : effet, rareté, prix             |
-| `equipment assign <equipmentId> <shipId>` | *(panel equipment-detail)* Assigne à un navire           |
-| `equipment unassign <equipmentId>`  | *(panel equipment-detail)* Retire du navire assigné       |
+| `equipment assign <equipmentId> <shipId>` | Assigne un équipement à un navire                    |
+| `equipment unassign <equipmentId>`  | Retire un équipement de son navire                         |
 | `detail <id>`                      | *(panel equipment-list)* Raccourci vers le détail        |
+| `assign <shipId>`                  | *(panel equipment-detail)* Assigne cet équipement à un navire |
+| `unassign`                         | *(panel equipment-detail)* Retire cet équipement de son navire |
 
 ## Boutique
 
@@ -59,9 +66,11 @@
 |-----------------------------|------------------------------------------------------|
 | `shop list`                 | Liste des navires et équipements disponibles à l'achat |
 | `shop detail <id>`          | Détail d'un article : prix, stats, description       |
-| `shop buy <id>`             | *(panel shop-detail)* Achète un navire ou équipement |
+| `shop buy <id>`             | Achète un navire ou équipement (1 unité)             |
 | `wallet`                    | Affiche le solde crédit courant                       |
 | `detail <id>`               | *(panel shop-list)* Raccourci vers le détail         |
+| `buy <id> [quantité]`       | *(panel shop-list)* Achète un article par son ID     |
+| `buy [quantité]`            | *(panel shop-detail)* Achète cet article              |
 
 ## Missions
 
