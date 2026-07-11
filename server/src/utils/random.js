@@ -44,4 +44,30 @@ function sampleWithCoverage(array, count) {
   return result;
 }
 
-module.exports = { randInt, pickOne, pickN, rollWithVariance, sampleWithCoverage };
+/**
+ * Samples one value from a normal (Gaussian) distribution via the
+ * Box-Muller transform. Two independent Math.random() draws in, one
+ * normally-distributed float out.
+ */
+function randGaussian(mean, stdDev) {
+  let u = 0;
+  // Math.random() is [0, 1); Box-Muller needs u in (0, 1] to avoid log(0).
+  // v has no such restriction: v = 0 is a valid angle (cos(0) = 1).
+  while (u === 0) u = Math.random();
+  const v = Math.random();
+  return mean + stdDev * Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+
+/**
+ * Rolls a normally-distributed integer centered on `mean`, clamped to
+ * [min, max] and rounded to the nearest whole number. Values near the
+ * mean are common; values near the edges of the range are rare but not
+ * impossible. Used for planet stats so, e.g., a habitability roll
+ * centered on 4 mostly lands on 3-5 while an occasional 0 still shows up.
+ */
+function randGaussianInt(mean, min, max, stdDev = 1.3) {
+  const raw = randGaussian(mean, stdDev);
+  return Math.min(max, Math.max(min, Math.round(raw)));
+}
+
+module.exports = { randInt, pickOne, pickN, rollWithVariance, sampleWithCoverage, randGaussian, randGaussianInt };

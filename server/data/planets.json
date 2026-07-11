@@ -1,7 +1,7 @@
 [
   {
     "id": "arid_frontier",
-    "tags": ["arid", "frontier", "independent"],
+    "tags": ["arid", "frontier", "independent", "hot"],
     "provides": {
       "climate": "aride",
       "colonizationLevel": "avant-poste frontalier",
@@ -37,7 +37,7 @@
   },
   {
     "id": "ice_isolated",
-    "tags": ["ice", "isolated", "independent"],
+    "tags": ["ice", "isolated", "independent", "cold"],
     "provides": {
       "climate": "glacial",
       "colonizationLevel": "station isolée",
@@ -91,7 +91,7 @@
   },
   {
     "id": "volcanic_mining",
-    "tags": ["volcanic", "mining", "corporate"],
+    "tags": ["volcanic", "mining", "corporate", "hot"],
     "provides": {
       "climate": "étouffant et sulfureux",
       "colonizationLevel": "complexe minier industriel",

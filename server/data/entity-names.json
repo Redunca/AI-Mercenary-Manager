@@ -35,12 +35,12 @@
       { "value": "le Syndicat Rouge", "tags": ["corporate", "urban"] }
     ],
     "planet": [
-      { "value": "Kessar-9", "tags": ["arid", "frontier"] },
+      { "value": "Kessar-9", "tags": ["arid", "frontier", "hot"] },
       { "value": "Verdanth", "tags": ["jungle", "colonized"] },
-      { "value": "Nord-Kethar", "tags": ["ice", "isolated"] },
+      { "value": "Nord-Kethar", "tags": ["ice", "isolated", "cold"] },
       { "value": "Halyxion", "tags": ["urban", "megacity", "corporate"] },
       { "value": "Maren-Tal", "tags": ["ocean", "newcolony"] },
-      { "value": "Cendre-Vor", "tags": ["volcanic", "mining", "corporate"] }
+      { "value": "Cendre-Vor", "tags": ["volcanic", "mining", "corporate", "hot"] }
     ]
   }
 }
