@@ -1,6 +1,6 @@
 # 🛰️ AI Mercenary Manager
 ### *A console‑style real‑time management game where you play as a cold, efficient AI managing a guild of incompetent mercenaries.*
-
+[![Node.js CI Server Tests](https://github.com/Redunca/AI-Mercenary-Manager/actions/workflows/node.js.yml/badge.svg)](https://github.com/Redunca/AI-Mercenary-Manager/actions/workflows/node.js.yml)
 ---
 
 ## 📌 Overview
