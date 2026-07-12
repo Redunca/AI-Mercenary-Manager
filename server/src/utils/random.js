@@ -38,6 +38,18 @@ function resetSeed() {
   seededRng = null;
 }
 
+/**
+ * Returns a brand-new, independent seeded generator function (same
+ * mulberry32 algorithm as setSeed(), but not tied to the shared module
+ * state above). Use this when something needs its own private
+ * deterministic sequence — e.g. a planet name derived purely from that
+ * planet's system+position — without disturbing or being disturbed by
+ * the shared rng() stream used for mission/candidate generation.
+ */
+function createSeededRng(seed) {
+  return mulberry32(seed);
+}
+
 function randInt(min, max) {
   return Math.floor(rng() * (max - min + 1)) + min;
 }
@@ -110,5 +122,5 @@ function randGaussianInt(mean, min, max, stdDev = 1.3) {
 
 module.exports = {
   randInt, pickOne, pickN, rollWithVariance, sampleWithCoverage, randGaussian, randGaussianInt,
-  setSeed, resetSeed,
+  setSeed, resetSeed, createSeededRng,
 };

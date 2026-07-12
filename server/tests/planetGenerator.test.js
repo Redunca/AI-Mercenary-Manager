@@ -40,9 +40,7 @@ const FIXTURE_PLANETS = [
   },
 ];
 const FIXTURE_ENTITY_NAMES = {
-  categories: {
-    planet: [{ value: 'Fixtureholm', tags: ['desert'] }],
-  },
+  categories: {},
 };
 
 function mockRandomSequence(...values) {
@@ -229,7 +227,7 @@ describe('generatePlanet', () => {
       ...ROLL_MIN, // population -> 0 (clamped by habitability anyway)
       // technology: population is 0, so generateTechnology short-circuits
       // to 0 without consuming any Math.random calls.
-    ).mockReturnValue(0.5); // fallback for template/name pickOne calls
+    ).mockReturnValue(0.5); // fallback for template pickOne calls
 
     const context = new TagContext();
     const planet = generatePlanet(FIXTURE_PLANETS, FIXTURE_ENTITY_NAMES, context, {
@@ -250,12 +248,12 @@ describe('generatePlanet', () => {
     jest.restoreAllMocks();
   });
 
-  test('produces a quoted nickname once population and technology both exceed 3', () => {
+  test('produces a deterministic, sound-based nickname once population and technology both exceed 3', () => {
     mockRandomSequence(
       ...ROLL_MAX, // habitability -> 5
       ...ROLL_MAX, // population -> 5
       ...ROLL_MAX, // technology -> 5
-    ).mockReturnValue(0.5); // fallback for template/name pickOne calls
+    ).mockReturnValue(0.5); // fallback for template pickOne calls
 
     const context = new TagContext();
     const planet = generatePlanet(FIXTURE_PLANETS, FIXTURE_ENTITY_NAMES, context, {
@@ -266,10 +264,15 @@ describe('generatePlanet', () => {
     expect(planet.population).toBe(5);
     expect(planet.technology).toBe(5);
     expect(planet.identifier).toBe('W466875-2');
-    expect(planet.nickname).toBe('Fixtureholm');
-    expect(planet.name).toBe('W466875-2 "Fixtureholm"');
-    expect(context.get('planetName')).toBe('W466875-2 "Fixtureholm"');
-    expect(context.get('planetNickname')).toBe('Fixtureholm');
+    // Nicknames no longer come from a fixed list — they're procedurally
+    // built from sound syllables, deterministically seeded by
+    // systemId+position (see planetNameGenerator.test.js for generator-level
+    // coverage). This asserts the exact string generatePlanet wires through,
+    // not just "some string".
+    expect(planet.nickname).toBe('Moragmora');
+    expect(planet.name).toBe('W466875-2 "Moragmora"');
+    expect(context.get('planetName')).toBe('W466875-2 "Moragmora"');
+    expect(context.get('planetNickname')).toBe('Moragmora');
 
     jest.restoreAllMocks();
   });

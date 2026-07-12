@@ -1,7 +1,8 @@
 'use strict';
 
 const { pickOne, randInt, randGaussianInt } = require('../utils/random');
-const { pickName, resolveProvideValue } = require('./nameGenerator');
+const { resolveProvideValue } = require('./nameGenerator');
+const { generatePlanetName } = require('./planetNameGenerator');
 
 // --- Stat generation tuning -------------------------------------------------
 // All three stats are 0-5. Rolls cluster around MEAN via a Gaussian curve
@@ -150,7 +151,7 @@ function generatePlanet(planets, entityNames, context, options = {}) {
 
   const identifier = buildIdentifier(systemId, position);
   const nickname = qualifiesForNickname(population, technology)
-    ? pickName(entityNames, 'planet', mergedTags)
+    ? generatePlanetName(mergedTags, systemId, position)
     : null;
   const name = buildDisplayName(identifier, nickname);
 
