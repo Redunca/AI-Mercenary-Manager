@@ -1,0 +1,60 @@
+{
+  "COMBAT": {
+    "success": {
+      "resilient": {
+        "Analyst": [
+          "Cible neutralisée. J’avais projeté un échec probable après le premier coup encaissé. Erreur de calcul, apparemment.",
+          "Combat terminé. Sa capacité à absorber les dégâts dépasse toute norme physiologique connue.",
+          "Menace éliminée. Je note un seuil de résistance à la douleur statistiquement improbable.",
+          "Affrontement clos. Ce qui aurait dû l’immobiliser ne l’a même pas ralenti. Fascinant, en un sens."
+        ],
+        "Diplomat": [
+          "Le combat s’est terminé… il a tout encaissé sans jamais céder. Il y a quelque chose de touchant là-dedans.",
+          "La bataille est finie. Je crois que son corps a simplement refusé d’abandonner son esprit.",
+          "L’adversaire est tombé, et lui tient encore debout, contre toute logique. Je respecte ça profondément.",
+          "Le conflit s’est apaisé. Sa force intérieure a visiblement dépassé ce que son corps pouvait promettre."
+        ],
+        "Sentinel": [
+          "Engagement réussi. Note : l’opérateur a continué le combat malgré des dégâts jugés critiques.",
+          "Menace éliminée. Je recommande une étude de sa résistance physique pour les futurs protocoles.",
+          "Combat terminé. L’opérateur a dépassé les seuils de tolérance standards sans interruption d’activité.",
+          "Opposition neutralisée. Rapport signalant une endurance hors norme sur l’ensemble de l’engagement."
+        ],
+        "Explorer": [
+          "J’ai pris des coups que j’aurais jamais dû encaisser, et je suis toujours debout. Bizarre mais cool.",
+          "Franchement, ça aurait dû me mettre KO trois fois. Mais non. Je suis increvable, apparemment.",
+          "J’ai limite rien senti. Enfin si, mais bon, je suis encore là, donc ça compte.",
+          "Ils ont tout donné et je suis quand même debout. Je crois que je suis fait en pierre."
+        ]
+      }
+    },
+    "failure": {
+      "resilient": {
+        "Analyst": [
+          "Échec tactique. Même une endurance exceptionnelle a une limite, atteinte aujourd’hui.",
+          "Combat perdu. Je note que la résistance observée n’a fait que retarder l’issue, pas l’éviter.",
+          "Opposition non neutralisée. Le seuil de tolérance a été franchi malgré une capacité d’absorption élevée.",
+          "Affrontement défavorable. Je consigne : tenir plus longtemps n’a pas suffi à inverser l’issue."
+        ],
+        "Diplomat": [
+          "Le combat s’est mal terminé… mais il a tenu bien plus longtemps que quiconque ne l’aurait espéré.",
+          "La bataille est perdue. Je crois que même sa force n’a pas suffi, cette fois.",
+          "L’adversaire a eu le dessus, après un combat qu’il n’aurait jamais dû laisser durer si longtemps.",
+          "La confrontation a échoué. Il a tout donné jusqu’au bout, et ça, je ne l’oublierai pas."
+        ],
+        "Sentinel": [
+          "Engagement échoué. Le journal indique une résistance prolongée n’ayant finalement pas changé l’issue.",
+          "Combat perdu. Rapport : seuil d’endurance dépassé après une exposition prolongée aux dégâts.",
+          "Menace non éliminée. Je recommande un suivi médical malgré l’absence apparente de séquelles majeures.",
+          "Opposition non maîtrisée. La capacité d’encaissement de l’opérateur a retardé, sans empêcher, l’échec."
+        ],
+        "Explorer": [
+          "Ok là j’ai vraiment tout pris, et cette fois ça a suffi à m’arrêter. Même moi j’ai des limites.",
+          "J’ai tenu super longtemps, genre vraiment longtemps. Mais bon, à un moment faut céder.",
+          "Je pensais pouvoir tout encaisser. Apparemment y’a un plafond. Je l’ai trouvé aujourd’hui.",
+          "J’ai continué bien après que j’aurais dû arrêter. Résultat : ça a fini par me rattraper."
+        ]
+      }
+    }
+  }
+}

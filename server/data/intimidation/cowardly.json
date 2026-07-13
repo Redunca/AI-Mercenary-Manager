@@ -1,0 +1,60 @@
+{
+  "INTIMIDATION": {
+    "success": {
+      "cowardly": {
+        "Analyst": [
+          "Intimidation réussie, malgré une hésitation manifeste avant même de prendre la parole. Résultat conforme.",
+          "Menace perçue comme crédible, alors que l’opérateur redoutait visiblement plus la confrontation que la cible.",
+          "Autorité imposée. Je note que la voix tremblait légèrement, sans que la cible ne semble le percevoir.",
+          "Domination établie malgré une nervosité interne largement supérieure à celle affichée à l’extérieur."
+        ],
+        "Diplomat": [
+          "Ils ont cédé… sans jamais savoir à quel point il avait peur en le disant. Un courage discret, presque invisible.",
+          "La tension s’est apaisée. Je crois qu’il a puisé dans une force qu’il ne savait pas avoir.",
+          "Ils ont reculé devant quelqu’un qui tremblait intérieurement, mais qui a tenu bon jusqu’au bout.",
+          "Ils ont compris notre position, sans jamais deviner la peur que ça lui a coûté de la formuler."
+        ],
+        "Sentinel": [
+          "Intimidation validée. Note : stress interne élevé chez l’opérateur, sans impact visible sur la crédibilité perçue.",
+          "Menace perçue malgré une appréhension manifeste de l’opérateur avant l’engagement verbal.",
+          "Autorité imposée. Je recommande un renforcement de la confiance en soi avant les prochaines confrontations.",
+          "Domination établie. Rapport : opération réussie en dépit d’un stress opérationnel interne élevé."
+        ],
+        "Explorer": [
+          "J’avais la trouille de ma vie en le disant, mais apparemment ça s’est pas vu du tout.",
+          "Ok j’étais terrifié à l’intérieur, mais j’ai gardé la voix ferme. Et ça a marché.",
+          "J’ai bluffé à fond alors que je tremblais littéralement. Ils ont rien vu.",
+          "Sérieux j’avais peur d’eux plus qu’ils avaient peur de moi. Mais chut, ça marche quand même."
+        ]
+      }
+    },
+    "failure": {
+      "cowardly": {
+        "Analyst": [
+          "Intimidation échouée. L’hésitation de l’opérateur est devenue visible au moment critique, sapant la crédibilité de la menace.",
+          "Menace ignorée après une nervosité perceptible ayant trahi le manque d’assurance réel de l’opérateur.",
+          "Autorité non imposée. La peur sous-jacente a fini par transparaître, annulant l’effet recherché.",
+          "Domination non établie. Je consigne : la voix a flanché au pire moment possible."
+        ],
+        "Diplomat": [
+          "Ils n’ont pas cédé… je crois qu’ils ont vu la peur avant même d’entendre la menace.",
+          "La tension n’a pas bougé. Sa propre peur a fini par se voir, malgré tous ses efforts.",
+          "Ils ont tenu bon en sentant qu’il craignait la confrontation plus qu’eux ne la craignaient.",
+          "Ils n’ont pas reculé. Je crois que sa peur a parlé plus fort que ses mots, cette fois."
+        ],
+        "Sentinel": [
+          "Intimidation échouée. Je vais consigner : signes de stress visibles ayant compromis la crédibilité de la menace.",
+          "Menace ignorée. Rapport : nervosité de l’opérateur perçue par la cible, annulant l’effet de dissuasion.",
+          "Autorité non imposée. Je recommande une préparation spécifique avant toute future confrontation directe.",
+          "Domination non établie. La peur sous-jacente de l’opérateur a fini par transparaître."
+        ],
+        "Explorer": [
+          "Ma voix a tremblé au pire moment et ils l’ont clairement entendu. Grillé.",
+          "J’ai essayé de bluffer mais ma peur a fini par se voir. Zéro effet.",
+          "Ils ont vu que j’étais plus terrifié qu’eux. Fin de la menace, littéralement.",
+          "J’ai flanché en plein milieu. Pas ma meilleure performance."
+        ]
+      }
+    }
+  }
+}

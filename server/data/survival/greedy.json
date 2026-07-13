@@ -1,0 +1,60 @@
+{
+  "SURVIVAL": {
+    "success": {
+      "greedy": {
+        "Analyst": [
+          "Survie assurée. Un détour non planifié pour récupérer des ressources supplémentaires n’a finalement rien coûté.",
+          "Menace évitée malgré une prise de risque motivée par l’appât de matériel récupérable en zone dangereuse.",
+          "Situation stabilisée. Je note un comportement de collecte agressif ayant, contre toute attente, payé.",
+          "Zone sécurisée, avec un inventaire personnel visiblement enrichi au passage. Efficacité inattendue."
+        ],
+        "Diplomat": [
+          "Nous avons traversé l’épreuve… avec quelques poches un peu plus lourdes qu’au départ, je l’ai remarqué.",
+          "La nature s’est apaisée autour de nous. Je crois qu’il a vu là une occasion autant qu’un danger.",
+          "Le danger s’est dissipé, et il en a profité pour ramasser ce qu’il pouvait. J’espère qu’il en valait la peine.",
+          "Nous sommes en sécurité. Son regard n’a jamais quitté ce qu’il pouvait emporter, même dans le péril."
+        ],
+        "Sentinel": [
+          "Survie validée. Note : détour non autorisé pour collecte de ressources, sans impact négatif sur l’issue.",
+          "Situation stabilisée malgré une priorité donnée à la récupération de matériel plutôt qu’à la sécurité immédiate.",
+          "Péril contourné. Je recommande un encadrement des comportements de collecte en zone à risque.",
+          "Zone sécurisée. Rapport : gain matériel non prévu obtenu en marge de l’objectif principal."
+        ],
+        "Explorer": [
+          "J’ai vu un truc qui brillait au milieu du danger, et je l’ai pris. On est vivants ET plus riches.",
+          "Ok j’ai peut-être pris un petit détour pour du butin. Mais regarde, ça a payé !",
+          "Je pouvais pas laisser ça là. Et finalement, ça a pas compromis notre survie. Double victoire.",
+          "J’ai ramassé ce que je pouvais en chemin. Priorités, hein."
+        ]
+      }
+    },
+    "failure": {
+      "greedy": {
+        "Analyst": [
+          "Survie compromise. Un détour motivé par l’appât du gain a directement retardé l’échappée nécessaire.",
+          "Menace non évitée après une prise de risque injustifiée pour la récupération de matériel secondaire.",
+          "Situation instable. Je note que la priorité donnée aux ressources a affecté le temps de réaction disponible.",
+          "Péril non contourné. Je consigne : la cupidité a transformé un risque gérable en danger réel."
+        ],
+        "Diplomat": [
+          "Nous n’avons pas traversé l’épreuve… je crois qu’il en voulait plus que ce que la situation pouvait offrir.",
+          "La nature s’est refermée sur nous, pendant qu’il cherchait encore quelque chose à emporter.",
+          "Le danger n’a pas voulu se dissiper. Peut-être qu’il fallait choisir entre la sécurité et le profit.",
+          "Nous ne sommes pas en sécurité. Son envie d’en avoir plus nous a coûté un temps précieux."
+        ],
+        "Sentinel": [
+          "Survie échouée. Le journal indique un détour non autorisé pour collecte de ressources ayant retardé l’extraction.",
+          "Situation instable. Rapport : priorité donnée au gain matériel directement liée à l’échec de l’opération.",
+          "Péril non contourné après une prise de risque injustifiée motivée par l’appât du gain.",
+          "Zone non sécurisée. Je recommande une clarification des priorités opérationnelles en situation de survie."
+        ],
+        "Explorer": [
+          "J’ai voulu prendre un truc en plus, et ça nous a coûté un temps qu’on avait pas. Ma faute.",
+          "Ok, j’aurais peut-être dû laisser ce truc briller tranquillement là où il était.",
+          "Je pouvais pas résister. Et ça a fini par vraiment nous compliquer la vie.",
+          "J’ai priorisé le butin sur la sécurité. Mauvais calcul, clairement."
+        ]
+      }
+    }
+  }
+}

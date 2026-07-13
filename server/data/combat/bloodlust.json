@@ -1,0 +1,68 @@
+{
+  "COMBAT": {
+    "success": {
+      "bloodlust": {
+        "Analyst": [
+          "Cible neutralisée. Je note une accélération cardiaque nettement supérieure à la moyenne — enthousiasme confirmé.",
+          "Combat terminé. Statistiquement, il aurait pu s’arrêter plus tôt. Il a choisi de ne pas le faire.",
+          "Menace éliminée. J’observe une réticence manifeste à cesser l’engagement une fois l’objectif atteint.",
+          "Affrontement clos. Je consigne : dépense d’énergie largement supérieure au nécessaire.",
+          "Opposition neutralisée. Le sourire post-combat est, je le note, statistiquement anormal."
+        ],
+        "Diplomat": [
+          "Le combat s’est achevé… un peu tard, à mon goût. Il semblait vouloir prolonger l’instant.",
+          "La bataille est finie, mais je sens qu’il aurait continué si on l’avait laissé faire.",
+          "L’adversaire s’est incliné. Lui, en revanche, cherchait encore du regard un autre adversaire.",
+          "Le conflit s’est résolu. Je perçois chez lui une joie que je préfère ne pas trop questionner.",
+          "La confrontation est terminée. Il a l’air presque déçu que ça s’arrête."
+        ],
+        "Sentinel": [
+          "Engagement réussi. Je note un dépassement du seuil d’engagement recommandé de 40%.",
+          "Menace éliminée. Recommandation : encadrement renforcé lors du prochain engagement armé.",
+          "Combat terminé. L’opérateur a poursuivi l’affrontement au-delà de la neutralisation effective.",
+          "Opposition neutralisée. Rapport signalant un enthousiasme incompatible avec le protocole standard.",
+          "Affrontement clos. Consigne ajoutée au dossier : surveiller la propension au combat prolongé."
+        ],
+        "Explorer": [
+          "Ouais ! Encore un ! Qui est le suivant ?",
+          "J’ai adoré ça. Sérieusement, on peut en refaire un tout de suite ?",
+          "Je crois que j’ai crié de joie à un moment. Aucun regret.",
+          "Franchement ? Meilleur moment de la journée. On y retourne quand ?",
+          "Ils sont tombés et j’étais presque triste que ça s’arrête."
+        ]
+      }
+    },
+    "failure": {
+      "bloodlust": {
+        "Analyst": [
+          "Échec tactique. Je note qu’il a ignoré trois occasions de repli en faveur de l’engagement continu.",
+          "Combat perdu. L’analyse indique une escalade injustifiée du niveau d’agressivité.",
+          "Opposition non neutralisée. Le comportement observé relève davantage de l’instinct que de la stratégie.",
+          "Affrontement défavorable. Je consigne : la retraite était une option. Elle n’a pas été envisagée.",
+          "Engagement échoué. Statistiquement, continuer à ce stade réduisait les chances de survie."
+        ],
+        "Diplomat": [
+          "Le combat s’est mal terminé… je crois qu’il ne voulait tout simplement pas s’arrêter.",
+          "La bataille est perdue. Je sens qu’une partie de lui la regrette moins que moi.",
+          "L’adversaire a eu le dessus. Lui, semble déjà penser au prochain affrontement.",
+          "La confrontation a échoué. Peut-être qu’il faudrait apprendre à laisser un combat finir de lui-même.",
+          "Le conflit s’est terminé dans la douleur. Ce n’est pas la première fois que ça arrive avec lui."
+        ],
+        "Sentinel": [
+          "Engagement échoué. Le journal indique un refus de désengagement malgré l’ordre de repli.",
+          "Combat perdu. Rapport d’incident : comportement à risque, insubordination tactique mineure.",
+          "Menace non éliminée. Je recommande une évaluation du contrôle des impulsions avant la prochaine mission.",
+          "Opposition non maîtrisée. L’escalade délibérée du conflit a aggravé l’issue de l’engagement.",
+          "Affrontement défavorable. Consigne au dossier : troisième incident du même type ce trimestre."
+        ],
+        "Explorer": [
+          "Bon… j’aurais peut-être dû arrêter avant. Mais c’était trop tentant.",
+          "Ok, ça a mal tourné. Je referais pareil, en fait.",
+          "J’ai peut-être un peu trop insisté sur ce coup-là. Un peu.",
+          "Aïe. Bon, au moins c’était intense.",
+          "Je savais que je pouvais gagner. J’avais juste pas prévu… ça."
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "BREACH": {
+    "success": {
+      "cowardly": {
+        "Analyst": [
+          "Intrusion réussie. Je note trois arrêts complets par peur de déclencher une alarme. Le résultat reste conforme.",
+          "Accès obtenu malgré une hésitation quasi permanente devant chaque port. Efficace, si lent.",
+          "Connexion établie. La prudence excessive observée a, curieusement, évité toute erreur de manipulation.",
+          "Données récupérées. Je consigne : la peur de l’échec a peut-être empêché l’échec lui-même."
+        ],
+        "Diplomat": [
+          "Le système a cédé… malgré ses mains tremblantes. Je trouve ça courageux, à sa façon.",
+          "Accès accordé. Il avait peur à chaque clic, et pourtant il a continué. C’est ça, le vrai courage.",
+          "On est dedans. Je crois qu’il s’est surpassé, même terrifié à l’idée d’être découvert.",
+          "La porte numérique s’est ouverte. Sa peur ne l’a pas arrêté, elle l’a juste ralenti un peu."
+        ],
+        "Sentinel": [
+          "Intrusion validée. Note : hésitations multiples observées, sans impact sur le résultat final.",
+          "Accès obtenu. Je recommande un accompagnement pour réduire le temps d’exécution futur.",
+          "Le système a cédé, malgré une nervosité manifeste de l’opérateur tout au long de l’opération.",
+          "Connexion établie. Rapport : opération réussie en dépit d’un stress opérationnel élevé."
+        ],
+        "Explorer": [
+          "J’ai eu limite une crise cardiaque à chaque bip, mais on est dedans. Je compte ça comme une victoire.",
+          "Ok j’étais terrifié tout du long, mais apparemment ça a suffi pour pas se faire prendre.",
+          "J’ai failli tout lâcher genre cinq fois. Mais j’ai continué. Fier de moi, en fait.",
+          "Sérieux j’ai eu la trouille de ma vie, mais on a les données. C’est ça qui compte, non ?"
+        ]
+      }
+    },
+    "failure": {
+      "cowardly": {
+        "Analyst": [
+          "Échec d’intrusion. L’hésitation répétée a dépassé la fenêtre d’action disponible avant détection.",
+          "Le pare-feu a résisté. Je note un abandon prématuré face à un simple message d’avertissement.",
+          "Connexion bloquée. La peur de l’échec a directement précipité l’échec lui-même.",
+          "Tentative avortée. Je consigne : trois reculs consécutifs devant des risques mineurs."
+        ],
+        "Diplomat": [
+          "Le système m’a rejeté… et je crois qu’il a senti la peur avant même qu’on n’essaie vraiment.",
+          "Accès refusé. Il a hésité trop longtemps, paralysé par ce qui pourrait mal tourner.",
+          "La porte numérique est restée fermée. Sa peur, cette fois, l’a emporté sur sa détermination.",
+          "Les données ne se sont pas laissées approcher. Je crois qu’il avait besoin qu’on le rassure avant."
+        ],
+        "Sentinel": [
+          "Intrusion échouée. Je vais consigner : abandon anticipé sans justification technique claire.",
+          "Accès refusé. Rapport : l’opérateur a interrompu la procédure suite à un stress jugé excessif.",
+          "Le système a bloqué la tentative après un retrait précipité de l’opérateur.",
+          "Connexion impossible. Je recommande une préparation psychologique avant la prochaine intrusion."
+        ],
+        "Explorer": [
+          "J’ai eu trop peur et j’ai tout arrêté avant même que ça devienne vraiment dangereux. Désolé.",
+          "Bon, j’ai paniqué au premier bip et j’ai reculé. Fallait pas.",
+          "Je pouvais continuer, mais j’ai eu trop les jetons. Du coup, échec total.",
+          "J’ai vu un voyant rouge et j’ai tout lâché. C’était probablement rien, en fait."
+        ]
+      }
+    }
+  }
+}

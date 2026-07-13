@@ -1,0 +1,60 @@
+{
+  "NEGOTIATION": {
+    "success": {
+      "greedy": {
+        "Analyst": [
+          "Accord obtenu, après ajout de trois clauses supplémentaires clairement à notre avantage. Ils ont accepté quand même.",
+          "Négociation conclue avec une marge bénéficiaire nettement supérieure à l’estimation initiale.",
+          "Discussion réussie. Je note un intérêt personnel manifeste ayant guidé chaque contre-proposition.",
+          "Terrain d’entente trouvé. Statistiquement, une telle avidité aurait dû faire échouer les pourparlers."
+        ],
+        "Diplomat": [
+          "Ils ont accepté… même si je sens qu’il pensait surtout à ce que ça allait lui rapporter.",
+          "La négociation s’est harmonisée, portée par une ambition personnelle qui a, cette fois, servi tout le monde.",
+          "Nous avons trouvé un terrain d’entente, un peu plus généreux pour nous que prévu à l’origine.",
+          "Ils ont dit oui, sous le regard insistant de quelqu’un qui comptait déjà les bénéfices."
+        ],
+        "Sentinel": [
+          "Négociation validée. Note : clauses supplémentaires ajoutées en cours de discussion, non prévues au mandat initial.",
+          "Accord obtenu malgré un comportement intéressé de l’opérateur. Résultat conforme, méthode à surveiller.",
+          "Discussion réussie. Je recommande un encadrement des motivations personnelles lors des futures négociations.",
+          "Terrain d’entente trouvé. Rapport : intérêt financier de l’opérateur non aligné avec le mandat officiel."
+        ],
+        "Explorer": [
+          "J’ai négocié, et j’en ai profité pour ajouter un petit bonus pour nous. Ils ont dit oui !",
+          "Ok j’ai peut-être poussé un peu fort sur les termes. Mais ils ont mordu direct.",
+          "J’ai fait l’accord, et en plus j’ai réussi à gratter un extra au passage. Journée productive.",
+          "Je pensais surtout à ce qu’on allait y gagner, et bizarrement ça a rendu mon offre plus convaincante."
+        ]
+      }
+    },
+    "failure": {
+      "greedy": {
+        "Analyst": [
+          "Négociation échouée. La demande de clauses supplémentaires a éveillé une suspicion légitime chez la cible.",
+          "Accord refusé après une exigence jugée incohérente avec l’équilibre initial de l’offre.",
+          "Discussion infructueuse. Je note que l’avidité manifestée a directement compromis la crédibilité de l’offre.",
+          "Terrain d’entente non trouvé. Statistiquement, une telle cupidité affichée devait finir par bloquer l’accord."
+        ],
+        "Diplomat": [
+          "Ils n’ont pas accepté… je crois qu’ils ont senti qu’il pensait plus à lui qu’à un accord juste.",
+          "La négociation n’a pas pris. Son intérêt personnel s’est vu, malgré lui.",
+          "Ils ont rejeté l’offre. Peut-être qu’une once de désintéressement aurait changé les choses.",
+          "La conversation s’est bloquée sous le poids de ses propres exigences. C’est dommage, vraiment."
+        ],
+        "Sentinel": [
+          "Négociation échouée. Le journal indique une exigence supplémentaire incompatible avec le mandat établi.",
+          "Accord refusé. Rapport : comportement intéressé de l’opérateur directement lié à l’échec des pourparlers.",
+          "Discussion infructueuse. Je recommande une révision du profil d’opérateur pour les négociations sensibles.",
+          "Terrain d’entente non trouvé, compromis par une cupidité mal dissimulée au moment critique."
+        ],
+        "Explorer": [
+          "J’ai peut-être un peu trop demandé. Ils ont senti l’arnaque à des kilomètres.",
+          "Ok, j’ai poussé trop fort, trop vite. Ils se sont braqués direct.",
+          "Je pensais surtout à ce qu’on allait gagner, et ça s’est vu. Grosse erreur.",
+          "J’ai été gourmand, littéralement gourmand, et ça a fait capoter tout l’accord."
+        ]
+      }
+    }
+  }
+}

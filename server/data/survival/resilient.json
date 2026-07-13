@@ -1,0 +1,60 @@
+{
+  "SURVIVAL": {
+    "success": {
+      "resilient": {
+        "Analyst": [
+          "Survie assurée. Exposition prolongée à des conditions hostiles encaissée sans dégradation notable des performances.",
+          "Menace évitée malgré un épuisement qui aurait dû, statistiquement, ralentir considérablement la progression.",
+          "Situation stabilisée. Je note une capacité d’endurance dépassant largement les seuils physiologiques standards.",
+          "Zone sécurisée. Ce qui aurait dû l’arrêter net ne l’a même pas ralenti. Remarquable, en un sens."
+        ],
+        "Diplomat": [
+          "Nous avons traversé l’épreuve… il a tout encaissé sans jamais céder. Il y a une force tranquille en lui.",
+          "La nature s’est apaisée autour de nous. Je crois que son corps a simplement refusé d’abandonner son esprit.",
+          "Le danger s’est dissipé, et lui tient encore debout, contre toute logique. Je respecte ça profondément.",
+          "Nous sommes en sécurité. Sa force intérieure a visiblement dépassé ce que son corps pouvait promettre."
+        ],
+        "Sentinel": [
+          "Survie validée. Note : l’opérateur a maintenu son activité malgré des conditions jugées critiques.",
+          "Situation stabilisée. Je recommande une étude de sa résistance physique pour les futurs protocoles d’exposition.",
+          "Péril contourné. L’opérateur a dépassé les seuils de tolérance standards sans interruption de mission.",
+          "Zone sécurisée. Rapport signalant une endurance hors norme sur l’ensemble de l’épreuve."
+        ],
+        "Explorer": [
+          "J’ai encaissé des trucs qui auraient dû m’achever trois fois. Toujours debout, apparemment.",
+          "Franchement, ça aurait dû me mettre à terre. Mais non. Je suis increvable, on dirait.",
+          "J’ai limite rien senti. Enfin si, mais bon, je suis encore là, donc ça compte.",
+          "L’environnement a tout donné et je suis quand même debout. Je crois que je suis fait en pierre."
+        ]
+      }
+    },
+    "failure": {
+      "resilient": {
+        "Analyst": [
+          "Survie compromise. Même une endurance exceptionnelle a une limite, atteinte aujourd’hui.",
+          "Menace non évitée. Je note que la résistance observée n’a fait que retarder l’issue, pas l’éviter.",
+          "Situation instable. Le seuil de tolérance a été franchi malgré une capacité d’absorption élevée.",
+          "Péril non contourné. Je consigne : tenir plus longtemps n’a pas suffi à inverser l’issue."
+        ],
+        "Diplomat": [
+          "Nous n’avons pas traversé l’épreuve… mais il a tenu bien plus longtemps que quiconque ne l’aurait espéré.",
+          "La nature s’est refermée sur nous. Je crois que même sa force n’a pas suffi, cette fois.",
+          "Le danger a eu le dessus, après une résistance qu’il n’aurait jamais dû laisser durer si longtemps.",
+          "Nous ne sommes pas en sécurité. Il a tout donné jusqu’au bout, et ça, je ne l’oublierai pas."
+        ],
+        "Sentinel": [
+          "Survie échouée. Le journal indique une résistance prolongée n’ayant finalement pas changé l’issue.",
+          "Situation instable. Rapport : seuil d’endurance dépassé après une exposition prolongée aux conditions hostiles.",
+          "Péril non contourné. Je recommande un suivi médical malgré l’absence apparente de séquelles majeures.",
+          "Zone non sécurisée. La capacité d’encaissement de l’opérateur a retardé, sans empêcher, l’échec."
+        ],
+        "Explorer": [
+          "Ok là j’ai vraiment tout pris, et cette fois ça a suffi à m’arrêter. Même moi j’ai des limites.",
+          "J’ai tenu super longtemps, genre vraiment longtemps. Mais bon, à un moment faut céder.",
+          "Je pensais pouvoir tout encaisser. Apparemment y’a un plafond. Je l’ai trouvé aujourd’hui.",
+          "J’ai continué bien après que j’aurais dû arrêter. Résultat : ça a fini par me rattraper."
+        ]
+      }
+    }
+  }
+}

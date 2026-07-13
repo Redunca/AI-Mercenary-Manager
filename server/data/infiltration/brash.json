@@ -1,0 +1,60 @@
+{
+  "INFILTRATION": {
+    "success": {
+      "brash": {
+        "Analyst": [
+          "Entrée réussie sans phase de reconnaissance préalable. Statistiquement, ça n’aurait pas dû fonctionner.",
+          "Pénétration effectuée en ignorant délibérément trois procédures de prudence standards. Résultat conforme.",
+          "Accès discret obtenu via une approche que je qualifierais d’imprudente. Efficace, mais non reproductible sans risque.",
+          "Zone infiltrée. Je consigne : la précipitation a court-circuité l’analyse, sans conséquence cette fois."
+        ],
+        "Diplomat": [
+          "Je suis passé sans être vu… avant même d’avoir fini de réfléchir à comment m’y prendre. Étonnant.",
+          "L’infiltration s’est faite dans l’élan, sans hésiter. Parfois, l’audace suffit à elle seule.",
+          "Je suis passé, plus vite que prévu. Son impatience a, pour une fois, servi la cause.",
+          "Le passage s’est ouvert sous l’élan de sa précipitation. Risqué, mais beau à voir."
+        ],
+        "Sentinel": [
+          "Infiltration validée. Note : procédure de reconnaissance ignorée, résultat néanmoins conforme.",
+          "Accès obtenu via une méthode non planifiée. Je recommande fortement de ne pas généraliser cette approche.",
+          "Zone pénétrée par une tentative directe, sans préparation préalable. Succès malgré le risque encouru.",
+          "Passage sécurisé. Rapport : précipitation notable de l’opérateur, issue favorable par chance opérationnelle."
+        ],
+        "Explorer": [
+          "J’ai foncé sans réfléchir et ça a marché du premier coup. Qui a besoin d’un plan ?",
+          "Zéro préparation, cent pour cent d’action. Et apparemment ça suffit parfois.",
+          "J’ai avancé direct sans vérifier quoi que ce soit. Je suis dedans, donc tant mieux.",
+          "J’avais pas de plan, juste de l’élan. Et l’élan a payé."
+        ]
+      }
+    },
+    "failure": {
+      "brash": {
+        "Analyst": [
+          "Infiltration échouée. L’absence totale de reconnaissance a directement déclenché une contre-mesure évitable.",
+          "Accès refusé après une tentative précipitée ayant ignoré des signaux d’alerte évidents.",
+          "Zone non pénétrée. Je note qu’une préparation minimale aurait probablement changé l’issue.",
+          "Passage compromis. Je consigne : la précipitation a transformé un risque gérable en échec certain."
+        ],
+        "Diplomat": [
+          "Je n’ai pas réussi à passer… j’ai foncé sans prendre le temps d’écouter l’environnement d’abord.",
+          "L’environnement a semblé se refermer. Mon impatience a peut-être précipité ce que la patience aurait évité.",
+          "La zone n’a pas voulu s’ouvrir, claquée par une approche trop brusque.",
+          "Je n’ai pas pu entrer. Je crois qu’il fallait y aller plus doucement."
+        ],
+        "Sentinel": [
+          "Infiltration échouée. Je vais consigner : absence de reconnaissance préalable, contre-mesure déclenchée.",
+          "Accès refusé. Rapport : précipitation de l’opérateur directement liée au déclenchement de l’alerte.",
+          "Zone non pénétrée après une approche jugée non conforme au protocole minimal.",
+          "Passage compromis. Je recommande une phase de reconnaissance obligatoire avant toute prochaine tentative."
+        ],
+        "Explorer": [
+          "J’ai foncé sans réfléchir, comme d’habitude. Sauf que cette fois, ça a pas payé du tout.",
+          "Zéro plan, zéro résultat. Je vois le lien maintenant.",
+          "J’ai avancé trop vite et j’ai fait tomber un truc. Ils ont tout entendu.",
+          "Peut-être que j’aurais dû regarder avant de foncer. Peut-être."
+        ]
+      }
+    }
+  }
+}

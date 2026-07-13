@@ -1,0 +1,60 @@
+{
+  "COMBAT": {
+    "success": {
+      "cowardly": {
+        "Analyst": [
+          "Cible neutralisée malgré tout. Je note un retrait tactique à mi-combat — statistiquement, ça a limité les dégâts.",
+          "Combat terminé. Sa prudence excessive a, contre toute attente, évité une exposition inutile.",
+          "Menace éliminée. Le recul stratégique observé était irrationnel dans son intention, rationnel dans son effet.",
+          "Affrontement clos. Je consigne : hésitation notable, issue favorable malgré elle."
+        ],
+        "Diplomat": [
+          "Le combat s’est terminé… il a eu peur, et c’est humain. Je suis contente qu’il soit encore là.",
+          "La bataille est finie. Je crois qu’il a survécu en écoutant son instinct, même tremblant.",
+          "L’adversaire est tombé. Lui, il respire encore, et c’est déjà beaucoup après une telle frayeur.",
+          "Le conflit s’est apaisé. Sa peur ne l’a pas trahi, cette fois. Je m’en réjouis pour lui."
+        ],
+        "Sentinel": [
+          "Engagement réussi. Note : retrait tactique momentané conforme au protocole d’autoconservation.",
+          "Menace éliminée. La prudence excessive de l’opérateur n’a heureusement pas compromis l’issue.",
+          "Combat terminé. Comportement défensif marqué observé ; résultat conforme malgré tout.",
+          "Opposition neutralisée. Je recommande un renforcement de la confiance avant le prochain engagement."
+        ],
+        "Explorer": [
+          "Ok j’ai flippé, genre vraiment flippé. Mais on a gagné, donc je compte ça comme une victoire.",
+          "J’ai failli faire demi-tour trois fois. Trois. Mais bon, on est en vie.",
+          "Franchement j’étais terrifié. Je le cache pas. Mais ça a marché quand même.",
+          "J’ai fermé les yeux à un moment, sans mentir. Et apparemment c’était le bon moment."
+        ]
+      }
+    },
+    "failure": {
+      "cowardly": {
+        "Analyst": [
+          "Échec tactique. L’hésitation observée a coûté une fenêtre d’action déterminante.",
+          "Combat perdu. Je note un retrait prématuré ayant compromis la formation.",
+          "Opposition non neutralisée. Le recul répété a annulé tout avantage initial.",
+          "Affrontement défavorable. Je consigne : la peur a précédé la stratégie, avec les conséquences attendues."
+        ],
+        "Diplomat": [
+          "Le combat s’est mal terminé… sa peur l’a submergé, et je ne peux pas lui en vouloir.",
+          "La bataille est perdue. Je crois qu’il n’était simplement pas prêt à affronter ça de face.",
+          "L’adversaire a eu le dessus. Lui, il a reculé, et une partie de moi comprend pourquoi.",
+          "La confrontation a échoué. Peut-être qu’on aurait dû le protéger de cette peur plus tôt."
+        ],
+        "Sentinel": [
+          "Engagement échoué. Le journal indique un retrait non autorisé en plein affrontement.",
+          "Combat perdu. Rapport : comportement d’évitement ayant directement affecté l’issue.",
+          "Menace non éliminée. Je recommande un accompagnement psychologique avant réengagement.",
+          "Opposition non maîtrisée. La retenue excessive de l’opérateur a compromis la mission."
+        ],
+        "Explorer": [
+          "Ok j’ai eu trop peur et j’ai reculé au pire moment possible. Désolé.",
+          "Je voulais fuir, sérieux. Et du coup ça a foiré.",
+          "J’ai gelé sur place. Complètement gelé. Et voilà le résultat.",
+          "Honnêtement ? J’étais terrifié et ça s’est vu. Beaucoup."
+        ]
+      }
+    }
+  }
+}

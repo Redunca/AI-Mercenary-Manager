@@ -1,0 +1,60 @@
+{
+  "SURVIVAL": {
+    "success": {
+      "cowardly": {
+        "Analyst": [
+          "Survie assurée. Trois arrêts complets par panique observés, sans conséquence sur l’issue finale.",
+          "Menace évitée malgré une hésitation quasi permanente face à chaque obstacle rencontré.",
+          "Situation stabilisée. La prudence excessive née de la peur a, statistiquement, limité l’exposition au danger.",
+          "Zone sécurisée. Je consigne : la peur a ralenti la progression sans jamais la compromettre réellement."
+        ],
+        "Diplomat": [
+          "Nous avons traversé l’épreuve… il tremblait à chaque pas, mais il a continué. C’est ça, le vrai courage.",
+          "La nature s’est apaisée autour de nous. Je crois qu’il a survécu en écoutant sa peur plutôt qu’en l’ignorant.",
+          "Le danger s’est dissipé. Sa terreur ne l’a pas paralysé, elle l’a juste rendu plus prudent.",
+          "Nous sommes en sécurité. Il a eu peur tout du long, et pourtant, il est toujours là."
+        ],
+        "Sentinel": [
+          "Survie validée. Note : hésitations multiples liées au stress, sans impact sur le résultat final.",
+          "Situation stabilisée malgré une nervosité manifeste de l’opérateur tout au long de l’épreuve.",
+          "Péril contourné. Je recommande un accompagnement pour renforcer la confiance en situation hostile.",
+          "Zone sécurisée. Rapport : opération réussie en dépit d’un stress opérationnel élevé chez l’opérateur."
+        ],
+        "Explorer": [
+          "J’ai eu la trouille de ma vie à chaque bruit bizarre, mais je suis toujours là. Je compte ça comme une victoire.",
+          "Ok j’ai failli faire demi-tour genre cinq fois. Mais on est en sécurité, donc ça va.",
+          "Franchement j’étais terrifié tout du long. Je le cache pas. Mais ça a suffi pour survivre.",
+          "J’ai fermé les yeux à un moment, sans mentir. Et apparemment c’était le bon moment pour ça."
+        ]
+      }
+    },
+    "failure": {
+      "cowardly": {
+        "Analyst": [
+          "Survie compromise. L’hésitation répétée a dépassé la fenêtre d’action disponible avant l’aggravation du danger.",
+          "Menace non évitée. Je note un abandon prématuré face à un risque initialement gérable.",
+          "Situation instable. La peur de l’échec a directement précipité l’échec lui-même.",
+          "Péril non contourné. Je consigne : trois reculs consécutifs devant des obstacles pourtant surmontables."
+        ],
+        "Diplomat": [
+          "Nous n’avons pas traversé l’épreuve… je crois que la peur l’a submergé avant même qu’on ne commence vraiment.",
+          "La nature s’est refermée sur nous. Il a hésité trop longtemps, paralysé par ce qui pourrait mal tourner.",
+          "Le danger n’a pas voulu se dissiper. Sa terreur, cette fois, l’a emporté sur sa détermination.",
+          "Nous ne sommes pas en sécurité. Je crois qu’il avait besoin qu’on le rassure avant d’avancer."
+        ],
+        "Sentinel": [
+          "Survie échouée. Je vais consigner : abandon anticipé sans justification tactique claire.",
+          "Situation instable. Rapport : l’opérateur a interrompu la progression suite à un stress jugé excessif.",
+          "Péril non contourné après un retrait précipité de l’opérateur face à un obstacle mineur.",
+          "Zone non sécurisée. Je recommande une préparation psychologique avant la prochaine exposition au danger."
+        ],
+        "Explorer": [
+          "J’ai eu trop peur et j’ai tout arrêté avant même que ça devienne vraiment dangereux. Désolé.",
+          "Bon, j’ai paniqué au premier bruit et j’ai reculé. Fallait pas.",
+          "Je pouvais continuer, mais j’ai eu trop les jetons. Du coup, échec total.",
+          "J’ai vu une ombre bizarre et j’ai tout lâché. C’était probablement rien, en fait."
+        ]
+      }
+    }
+  }
+}

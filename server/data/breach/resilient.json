@@ -1,0 +1,60 @@
+{
+  "BREACH": {
+    "success": {
+      "resilient": {
+        "Analyst": [
+          "Intrusion réussie. Trois retours de choc électrique encaissés sans interruption de l’opération. Notable.",
+          "Accès obtenu malgré une contre-mesure physique qui aurait dû stopper toute tentative.",
+          "Connexion établie après une exposition à un verrou de sécurité actif. Aucun ralentissement observé.",
+          "Données récupérées. Je consigne : la résistance physique de l’opérateur a compensé un système hostile."
+        ],
+        "Diplomat": [
+          "Le système s’est ouvert… après avoir résisté de toutes ses forces. Il n’a jamais lâché non plus.",
+          "Accès accordé, malgré la douleur évidente qu’il a traversée pour y arriver. Une vraie détermination.",
+          "On est dedans. Ce système ne voulait vraiment pas, mais lui non plus n’allait pas abandonner.",
+          "La porte numérique s’est ouverte après un long combat silencieux. Il a tenu bon jusqu’au bout."
+        ],
+        "Sentinel": [
+          "Intrusion validée. Note : opérateur ayant subi une contre-mesure active sans interruption de tâche.",
+          "Accès obtenu malgré un mécanisme de défense physique. Endurance jugée hors norme.",
+          "Le système a cédé après une résistance prolongée que l’opérateur a su encaisser.",
+          "Connexion établie. Rapport : capacité de résistance directement responsable de la poursuite de l’opération."
+        ],
+        "Explorer": [
+          "Ça m’a électrocuté genre deux fois et j’ai continué comme si de rien n’était. On est dedans.",
+          "Le système s’est défendu sérieusement, mais j’encaisse plutôt bien apparemment.",
+          "J’ai pris une décharge qui aurait dû m’envoyer valser. Toujours debout, toujours en train de bosser.",
+          "Ça a fait mal, très mal. Mais j’ai continué, et voilà le résultat."
+        ]
+      }
+    },
+    "failure": {
+      "resilient": {
+        "Analyst": [
+          "Échec d’intrusion. Même une endurance élevée a une limite face à des contre-mesures répétées.",
+          "Le pare-feu a résisté. La résistance physique de l’opérateur a retardé l’échec, sans l’empêcher.",
+          "Connexion bloquée après une exposition prolongée à un système de défense actif.",
+          "Tentative avortée. Je consigne : la persévérance seule n’a pas suffi à contourner ce verrou."
+        ],
+        "Diplomat": [
+          "Le système m’a rejeté… mais il a tenu tête bien après que la plupart auraient abandonné.",
+          "Accès refusé, malgré tous ses efforts et toute sa résistance. Certains systèmes ne cèdent jamais.",
+          "La porte numérique est restée fermée. Il a tout donné, et ce n’était toujours pas assez.",
+          "Les données ne se sont pas laissées approcher, malgré une endurance remarquable de sa part."
+        ],
+        "Sentinel": [
+          "Intrusion échouée. Je vais consigner : résistance prolongée n’ayant finalement pas changé l’issue.",
+          "Accès refusé. Rapport : contre-mesures répétées ayant fini par dépasser le seuil de tolérance.",
+          "Le système a bloqué la tentative après une exposition prolongée du système de défense.",
+          "Connexion impossible. Je recommande un équipement de protection renforcé pour la prochaine tentative."
+        ],
+        "Explorer": [
+          "J’ai encaissé un paquet de décharges, mais à un moment le système a juste gagné. Aïe.",
+          "Je tiens bien le choc d’habitude. Là, c’était vraiment trop.",
+          "J’ai continué bien après que j’aurais dû arrêter. Résultat : ça a fini par avoir raison de moi.",
+          "Ça m’a mis à terre, littéralement. Bon combat quand même."
+        ]
+      }
+    }
+  }
+}

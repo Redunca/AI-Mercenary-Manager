@@ -1,0 +1,60 @@
+{
+  "RECON": {
+    "success": {
+      "observant": {
+        "Analyst": [
+          "Observation réussie. Un détail invisible au scan thermique a été repéré à l’œil nu en quelques secondes.",
+          "Zone analysée avec une précision dépassant largement les capacités des capteurs standards.",
+          "Reconnaissance complète grâce à un motif que seul un œil humain attentif pouvait déceler.",
+          "Repérage effectué. Je consigne : l’observation directe a surpassé l’analyse automatisée cette fois encore."
+        ],
+        "Diplomat": [
+          "La zone s’est révélée à lui… il a cette façon de voir ce que les autres laissent filer.",
+          "Reconnaissance harmonieuse. Il a su lire l’espace comme on lit un visage familier.",
+          "J’ai perçu ce qu’il fallait, mais lui a vu bien plus. Un vrai don d’attention.",
+          "Observation réussie. Je crois que cette zone n’avait aucun secret pour un regard aussi patient."
+        ],
+        "Sentinel": [
+          "Reconnaissance validée. Note : détail critique identifié par observation directe, non détecté par les capteurs.",
+          "Observation complète. Je recommande d’ajouter cette capacité au protocole de surveillance standard.",
+          "Analyse réussie grâce à une vigilance dépassant les seuils habituels d’attention requis.",
+          "Repérage effectué. Rapport : capacité d’observation de l’opérateur directement responsable du succès."
+        ],
+        "Explorer": [
+          "J’ai remarqué un truc bizarre dans un coin, genre vraiment discret. Et ça a tout changé.",
+          "Y’avait un détail chelou que personne aurait vu. Moi si. Voilà, c’est réglé.",
+          "J’ai regardé un peu plus longtemps que d’habitude, et j’ai vu LE truc important.",
+          "Un petit détail m’a sauté aux yeux, littéralement. Et ça a suffi pour tout comprendre."
+        ]
+      }
+    },
+    "failure": {
+      "observant": {
+        "Analyst": [
+          "Reconnaissance échouée. Même une observation minutieuse n’a révélé aucun élément exploitable cette fois.",
+          "Observation impossible. Je note l’absence de tout détail anormal détectable, malgré une inspection poussée.",
+          "Analyse infructueuse malgré un examen attentif de l’ensemble de la zone.",
+          "Repérage raté. Je consigne : parfois, il n’y a simplement rien à observer."
+        ],
+        "Diplomat": [
+          "La zone ne s’est pas révélée… même son regard aiguisé n’a rien trouvé cette fois. Ça arrive.",
+          "Reconnaissance bloquée. Il a cherché, vraiment cherché, mais certains lieux restent silencieux.",
+          "Je n’ai rien perçu, malgré toute son attention. Je ne lui en veux pas.",
+          "Observation impossible, malgré une patience à toute épreuve."
+        ],
+        "Sentinel": [
+          "Reconnaissance échouée. Je vais consigner : aucun élément détectable malgré une observation approfondie.",
+          "Analyse impossible. Rapport : capacité d’observation de l’opérateur sans effet sur cette zone précise.",
+          "Observation infructueuse malgré une vigilance jugée conforme aux standards les plus élevés.",
+          "Repérage non effectué. Je recommande de considérer cette zone comme sans anomalie observable connue."
+        ],
+        "Explorer": [
+          "J’ai tout regardé, genre vraiment tout, et j’ai rien vu d’utile. Ça arrive.",
+          "D’habitude je repère toujours un truc. Là, rien. Nada.",
+          "J’ai cherché le petit détail habituel. Il était pas là cette fois.",
+          "Bon, même moi j’ai des limites, apparemment. Rien à signaler."
+        ]
+      }
+    }
+  }
+}

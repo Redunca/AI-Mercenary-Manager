@@ -1,0 +1,60 @@
+{
+  "ENGINEERING": {
+    "success": {
+      "greedy": {
+        "Analyst": [
+          "Diagnostic terminé. Des pièces de récupération non autorisées ont été utilisées pour la réparation. Efficace malgré tout.",
+          "Système réparé avec des composants visiblement détournés d’un autre équipement. Résultat conforme.",
+          "Circuit stabilisé, accompagné du prélèvement discret de matériel excédentaire. Je note l’opportunisme.",
+          "Module opérationnel, et l’inventaire personnel de l’opérateur légèrement enrichi au passage."
+        ],
+        "Diplomat": [
+          "La machine s’est ouverte à lui… pendant qu’il évaluait déjà ce qu’il pourrait en tirer.",
+          "Le système fonctionne à nouveau, réparé avec des pièces dont l’origine reste floue.",
+          "Le circuit a accepté ses ajustements. J’espère que ce qu’il a gardé pour lui en valait la peine.",
+          "La réparation a pris, et son regard n’a jamais quitté ce qu’il pouvait garder pour lui."
+        ],
+        "Sentinel": [
+          "Réparation validée. Note : usage de pièces non répertoriées, origine à clarifier, résultat néanmoins conforme.",
+          "Système stabilisé avec des composants dont la provenance n’a pas été déclarée.",
+          "Circuit opérationnel. Je recommande un inventaire de vérification après cette intervention.",
+          "Module fonctionnel. Rapport : comportement opportuniste de l’opérateur sans impact négatif sur le résultat."
+        ],
+        "Explorer": [
+          "J’ai récupéré deux ou trois pièces au passage. Personne va s’en apercevoir, et ça remarche.",
+          "Ok j’ai peut-être piqué un composant sur un autre système. Mais regarde, ça a marché !",
+          "Je pouvais pas laisser ces pièces là sans les utiliser. Efficace ET rentable.",
+          "J’ai réparé le truc, et j’ai gardé le surplus pour moi. Priorités, hein."
+        ]
+      }
+    },
+    "failure": {
+      "greedy": {
+        "Analyst": [
+          "Diagnostic impossible. L’usage de pièces inadaptées, choisies pour leur valeur de revente, a aggravé la panne.",
+          "Réparation échouée après l’utilisation de composants incompatibles récupérés à des fins personnelles.",
+          "Circuit instable. Je note qu’un comportement opportuniste a directement affecté la qualité de l’intervention.",
+          "Problème non résolu. Je consigne : l’appât du gain a transformé une panne mineure en défaillance majeure."
+        ],
+        "Diplomat": [
+          "La machine n’a pas voulu coopérer… je crois qu’il pensait plus à ce qu’il pouvait en tirer qu’à la réparer vraiment.",
+          "Le système a rejeté ses ajustements, faits avec des pièces qui n’étaient pas les bonnes.",
+          "Le circuit n’a pas accepté son aide. Peut-être que la précipitation pour le profit y est pour quelque chose.",
+          "La réparation a échoué. Son envie d’en tirer profit a pris le pas sur la rigueur nécessaire."
+        ],
+        "Sentinel": [
+          "Réparation échouée. Le journal indique l’utilisation de pièces inadaptées choisies pour leur valeur marchande.",
+          "Système instable. Rapport : comportement opportuniste de l’opérateur directement lié à l’échec de l’intervention.",
+          "Circuit non opérationnel après l’usage de composants incompatibles récupérés à des fins personnelles.",
+          "Module hors service. Je recommande un contrôle strict des pièces utilisées lors des futures interventions."
+        ],
+        "Explorer": [
+          "J’ai utilisé une pièce que j’avais piquée ailleurs. Mauvaise idée, elle allait pas du tout.",
+          "Ok, j’ai voulu économiser en récupérant un truc pas fait pour ça. Ça a mal tourné.",
+          "Je pensais surtout à ce que j’allais y gagner, et ça s’est vu dans le résultat.",
+          "J’ai été gourmand, littéralement, et ça a cassé encore plus le système."
+        ]
+      }
+    }
+  }
+}

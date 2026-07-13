@@ -1,0 +1,60 @@
+{
+  "NEGOTIATION": {
+    "success": {
+      "proud": {
+        "Analyst": [
+          "Accord obtenu. Il a présenté notre position comme non négociable, et ils n’ont pas osé la contester.",
+          "Négociation conclue, portée par une assurance qui ne laissait littéralement aucune place au compromis apparent.",
+          "Discussion réussie. Son refus catégorique de céder du terrain a, curieusement, forcé leur adhésion.",
+          "Terrain d’entente trouvé. Je note que la fermeté excessive affichée a compensé une position pourtant fragile."
+        ],
+        "Diplomat": [
+          "Ils ont accepté… portés par une assurance qui, je dois l’admettre, était presque hypnotique.",
+          "La négociation s’est conclue, soutenue par une fierté qu’il n’a jamais laissé vaciller.",
+          "Ils ont dit oui, séduits par cette certitude qu’il projette sans jamais douter de sa position.",
+          "L’accord a tenu grâce à un aplomb inébranlable. Son ego, pour une fois, a servi la mission."
+        ],
+        "Sentinel": [
+          "Négociation validée. Note : posture inflexible affirmée sans concession, résultat conforme malgré tout.",
+          "Accord obtenu grâce à une fermeté excessive de l’opérateur. Méthode risquée, issue favorable.",
+          "Discussion réussie. Rapport : confiance en soi de l’opérateur ayant compensé une marge de négociation réduite.",
+          "Terrain d’entente trouvé. Je consigne : l’aplomb affiché a suffi à dissuader toute contre-proposition."
+        ],
+        "Explorer": [
+          "J’ai dit notre prix avec tellement d’assurance qu’ils ont pas osé négocier.",
+          "Je leur ai balancé nos conditions sans hésiter une seconde. Le doute, très peu pour moi.",
+          "J’ai bombé le torse et j’ai parlé fort. Apparemment, ça suffit à faire plier les gens.",
+          "Franchement, avec cette confiance-là, je pourrais négocier n’importe quoi."
+        ]
+      }
+    },
+    "failure": {
+      "proud": {
+        "Analyst": [
+          "Négociation échouée. Il a maintenu une position intenable plutôt que d’ajuster l’offre. Erreur d’ego.",
+          "Accord refusé après une insistance excessive sur des termes que la cible a fini par rejeter en bloc.",
+          "Discussion infructueuse. Je note un refus catégorique de tout compromis, jusqu’à l’échec complet des pourparlers.",
+          "Terrain d’entente non trouvé. Statistiquement, l’excès de fermeté a rendu l’accord plus fragile, pas moins."
+        ],
+        "Diplomat": [
+          "Ils n’ont pas accepté… je crois que sa fermeté a fini par sembler suspecte, à force.",
+          "La négociation n’a pas pris. Son assurance, cette fois, a semé la méfiance plutôt que la confiance.",
+          "Ils ont rejeté l’offre. Peut-être qu’un peu de souplesse aurait mieux servi cette négociation.",
+          "L’accord ne s’est pas fait, sous le poids de sa propre fierté, qui refusait de céder même un peu."
+        ],
+        "Sentinel": [
+          "Négociation échouée. Le journal indique un refus de compromis malgré des signaux de rupture évidents.",
+          "Accord refusé. Rapport : posture inflexible de l’opérateur ayant éveillé la méfiance de la partie adverse.",
+          "Discussion infructueuse. Je recommande un travail sur la flexibilité de position en situation de blocage.",
+          "Terrain d’entente non trouvé, compromis par un excès de fermeté ayant transformé un désaccord mineur en rupture."
+        ],
+        "Explorer": [
+          "J’ai refusé de céder même quand j’ai vu qu’ils allaient partir. Grosse erreur, avec le recul.",
+          "Je pensais que mon assurance suffirait à les faire plier. Apparemment, non.",
+          "J’ai insisté, insisté, insisté... et ils ont fini par tout annuler.",
+          "Mon ego a écrit un chèque que la négociation pouvait pas encaisser."
+        ]
+      }
+    }
+  }
+}

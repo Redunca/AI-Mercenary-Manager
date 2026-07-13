@@ -1,0 +1,68 @@
+{
+  "COMBAT": {
+    "success": {
+      "lucky": {
+        "Analyst": [
+          "Cible neutralisée. Je ne peux pas expliquer statistiquement cette issue. Je la consigne comme anomalie favorable.",
+          "Combat terminé. La probabilité de ce résultat frôlait l’improbable. Et pourtant.",
+          "Menace éliminée. Un facteur non quantifiable semble avoir influencé le déroulement de l’engagement.",
+          "Opposition neutralisée. Je note un enchaînement d’événements statistiquement peu plausible, en notre faveur.",
+          "Affrontement clos. Je révise mes modèles : la chance, apparemment, existe."
+        ],
+        "Diplomat": [
+          "Le combat s’est résolu… comme porté par une force qui n’était pas seulement la nôtre.",
+          "La bataille est finie. Je crois que l’univers a choisi de nous sourire, cette fois.",
+          "L’adversaire est tombé au moment précis où il ne fallait pas. Curieux hasard.",
+          "Le conflit s’est apaisé grâce à un enchaînement d’événements que je qualifierais de… providentiel.",
+          "La confrontation s’est terminée en notre faveur. Je préfère ne pas chercher à comprendre pourquoi."
+        ],
+        "Sentinel": [
+          "Engagement réussi. Facteur déterminant : un incident imprévu, favorable, non reproductible.",
+          "Menace éliminée. Je consigne l’issue comme ‘succès non attribuable à la procédure standard’.",
+          "Combat terminé. Rapport : intervention d’un élément extérieur inattendu ayant faussé l’issue prévue.",
+          "Opposition neutralisée. Aucun protocole ne peut expliquer cette séquence d’événements.",
+          "Affrontement clos. Je classe ce succès dans la catégorie ‘à ne pas prendre pour acquis’."
+        ],
+        "Explorer": [
+          "J’ai glissé, je suis tombé, et apparemment ça a suffi à gagner. Je prends !",
+          "Alors ça, j’y comprends rien, mais on a gagné, donc tant mieux !",
+          "Le truc m’est littéralement tombé dessus au bon moment. J’appelle ça de la chance pure.",
+          "J’ai fermé les yeux à un moment. Sérieux. Et ça a marché quand même.",
+          "Je sais pas ce qui s’est passé, mais je vais pas me plaindre."
+        ]
+      }
+    },
+    "failure": {
+      "lucky": {
+        "Analyst": [
+          "Échec tactique. Aucune anomalie favorable détectée cette fois. Résultat conforme aux probabilités de base.",
+          "Combat perdu. Je note l’absence du facteur chance habituellement observé chez ce sujet.",
+          "Opposition non neutralisée. Les statistiques, pour une fois, se sont appliquées sans exception.",
+          "Affrontement défavorable. Aucun événement imprévu n’est venu compenser le déficit tactique.",
+          "Engagement échoué. Je consigne : la chance n’est pas une stratégie fiable. Confirmé."
+        ],
+        "Diplomat": [
+          "Le combat s’est mal terminé. Cette fois, rien n’est venu nous porter.",
+          "La bataille est perdue. Je crois que l’univers avait d’autres projets aujourd’hui.",
+          "L’adversaire a eu le dessus, sans qu’aucun hasard ne vienne nous sauver.",
+          "La confrontation a échoué. Peut-être que la chance, elle aussi, a besoin de repos parfois.",
+          "Le conflit s’est terminé sans le petit miracle habituel. C’est arrivé, tout simplement."
+        ],
+        "Sentinel": [
+          "Engagement échoué. Aucun facteur externe favorable enregistré durant l’intervention.",
+          "Combat perdu. Rapport : l’issue correspond cette fois aux probabilités calculées initialement.",
+          "Menace non éliminée. Je recommande de ne pas compter sur la répétition d’événements exceptionnels.",
+          "Opposition non maîtrisée. Aucune anomalie favorable à consigner pour cet engagement.",
+          "Affrontement défavorable. Je classe cet échec comme ‘statistiquement attendu, pour une fois’."
+        ],
+        "Explorer": [
+          "Bon bah là, ça n’a pas marché. Fallait bien que ça arrive un jour.",
+          "J’ai attendu le miracle. Le miracle n’est pas venu.",
+          "Ok, la chance m’a lâché sur ce coup-là. Tant pis.",
+          "Je pensais que ça allait passer comme d’habitude. Raté.",
+          "Bah… même la chance a ses mauvais jours, apparemment."
+        ]
+      }
+    }
+  }
+}

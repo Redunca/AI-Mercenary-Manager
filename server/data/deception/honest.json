@@ -1,0 +1,60 @@
+{
+  "DECEPTION": {
+    "success": {
+      "honest": {
+        "Analyst": [
+          "Manipulation réussie sans mentir une seule fois. Techniquement remarquable : que des vérités, savamment ordonnées.",
+          "Leur esprit a cédé à une version incomplète de la réalité plutôt qu’à un mensonge. Distinction notable.",
+          "Couverture validée. Il n’a rien inventé — il a simplement omis. Je considère ça comme une prouesse rhétorique.",
+          "Illusion maintenue sans fausse déclaration. Je propose qu’on étudie cette méthode plus en détail."
+        ],
+        "Diplomat": [
+          "Il ne leur a rien caché… enfin, presque rien. Je crois qu’il a trouvé une façon d’être sincère et prudent à la fois.",
+          "La vérité alternative n’en était pas vraiment une — juste une vérité partielle. Je respecte cette limite qu’il s’impose.",
+          "Ils ont cru ce qu’il disait, parce que c’était vrai. Juste pas tout. Il y a une intégrité là-dedans.",
+          "La façade a tenu sans un seul mensonge. Je crois que sa sincérité a fini par devenir son meilleur atout."
+        ],
+        "Sentinel": [
+          "Déception réussie sans usage de fausses déclarations. Je consigne : méthode inhabituelle, résultat conforme.",
+          "Couverture maintenue par omission stratégique plutôt que par mensonge direct. Approche à documenter.",
+          "Manipulation validée. L’opérateur a strictement respecté son refus de mentir, sans compromettre l’objectif.",
+          "Illusion opérationnelle maintenue. Rapport : aucune fausse information transmise, résultat inchangé."
+        ],
+        "Explorer": [
+          "J’ai littéralement dit que la vérité, juste pas toute la vérité. Et apparemment ça marche aussi bien.",
+          "J’ai pas menti, je le jure. J’ai juste... beaucoup omis. Est-ce que ça compte ?",
+          "Ok, je suis nul en mensonges, mais je suis plutôt doué pour dire des vérités qui trompent quand même.",
+          "Je peux pas mentir, littéralement pas. Alors j’ai trouvé un autre chemin. Et ça a marché !"
+        ]
+      }
+    },
+    "failure": {
+      "honest": {
+        "Analyst": [
+          "Échec de manipulation. L’opérateur a corrigé sa propre couverture face à une question directe. Contre-productif.",
+          "Mensonge refusé. Je note qu’il a littéralement admis une partie de la vérité au pire moment possible.",
+          "Couverture brisée par un excès de sincérité au moment critique. Prévisible, statistiquement.",
+          "Manipulation ratée. Je vais considérer cet incident comme un conflit irréconciliable entre principe et objectif."
+        ],
+        "Diplomat": [
+          "Il n’a pas réussi à mentir… je crois que ça allait tout simplement contre qui il est.",
+          "La couverture s’est effondrée parce qu’il a refusé de trahir sa propre honnêteté, même pour la mission.",
+          "Ils ont vu la vérité dans ses yeux. Il ne sait pas cacher ce genre de chose, et c’est peut-être bien ainsi.",
+          "La façade s’est brisée. Je crois qu’il a préféré être découvert plutôt que de devenir quelqu’un d’autre."
+        ],
+        "Sentinel": [
+          "Déception échouée. Le journal indique une divulgation partielle de la vérité au moment critique.",
+          "Mensonge refusé. Rapport : l’opérateur a explicitement refusé de formuler une fausse déclaration requise.",
+          "Manipulation ratée. Je recommande de ne plus assigner ce profil à des opérations de dissimulation directe.",
+          "Couverture compromise par un refus catégorique de mentir, malgré les instructions de mission."
+        ],
+        "Explorer": [
+          "Ils m’ont demandé un truc direct et j’ai littéralement pas pu mentir. Grillé instantanément.",
+          "Je suis vraiment nul pour ça. Genre vraiment. Ma tête dit tout avant même que j’ouvre la bouche.",
+          "J’ai essayé de mentir, j’ai flanché, et j’ai fini par dire la vérité. Oups.",
+          "Je peux pas mentir, c’est physique chez moi. Et là, ça nous a coûté cher."
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "BREACH": {
+    "success": {
+      "brash": {
+        "Analyst": [
+          "Intrusion réussie. Aucune phase de reconnaissance préalable. Statistiquement, ça n’aurait pas dû fonctionner.",
+          "Accès obtenu en ignorant délibérément trois protocoles de prudence standards. Résultat conforme malgré tout.",
+          "Connexion établie via une approche que je qualifierais d’imprudente. Efficace, mais reproductible avec risque.",
+          "Données récupérées. Je consigne : la précipitation a court-circuité l’analyse, sans conséquence cette fois."
+        ],
+        "Diplomat": [
+          "Le système s’est ouvert… avant même qu’il n’ait fini de réfléchir à comment s’y prendre. Étonnant.",
+          "Accès accordé. Il a foncé sans hésiter, et parfois, l’audace suffit à elle seule.",
+          "On est dedans, plus vite que prévu. Son impatience a, pour une fois, servi la cause.",
+          "La porte numérique s’est ouverte sous l’élan de sa précipitation. Risqué, mais beau à voir."
+        ],
+        "Sentinel": [
+          "Intrusion validée. Note : procédure de reconnaissance ignorée, résultat néanmoins conforme.",
+          "Accès obtenu via une méthode non planifiée. Je recommande fortement de ne pas généraliser cette approche.",
+          "Le système a cédé à une tentative directe, sans préparation préalable. Succès malgré le risque encouru.",
+          "Connexion établie. Rapport : précipitation notable de l’opérateur, issue favorable par chance opérationnelle."
+        ],
+        "Explorer": [
+          "J’ai foncé sans réfléchir et ça a marché du premier coup. Qui a besoin d’un plan ?",
+          "Zéro préparation, cent pour cent d’action. Et apparemment ça suffit parfois.",
+          "J’ai cliqué sur tout direct, sans vérifier quoi que ce soit. On est dedans, donc tant mieux.",
+          "J’avais pas de plan, juste de l’élan. Et l’élan a payé."
+        ]
+      }
+    },
+    "failure": {
+      "brash": {
+        "Analyst": [
+          "Échec d’intrusion. L’absence totale de reconnaissance a directement déclenché une contre-mesure évitable.",
+          "Le pare-feu a résisté après une tentative précipitée ayant ignoré des signaux d’alerte évidents.",
+          "Connexion bloquée. Je note qu’une préparation minimale aurait probablement changé l’issue.",
+          "Tentative avortée. Je consigne : la précipitation a transformé un risque gérable en échec certain."
+        ],
+        "Diplomat": [
+          "Le système m’a rejeté… il a foncé sans prendre le temps de l’écouter d’abord.",
+          "Accès refusé. Son impatience a peut-être précipité ce que la patience aurait évité.",
+          "La porte numérique est restée fermée, claquée par une approche trop brusque.",
+          "Les données ne se sont pas laissées approcher. Je crois qu’il fallait y aller plus doucement."
+        ],
+        "Sentinel": [
+          "Intrusion échouée. Je vais consigner : absence de reconnaissance préalable, contre-mesure déclenchée.",
+          "Accès refusé. Rapport : précipitation de l’opérateur directement liée au déclenchement de l’alerte.",
+          "Le système a bloqué la tentative après une approche jugée non conforme au protocole minimal.",
+          "Connexion impossible. Je recommande une phase de reconnaissance obligatoire avant toute prochaine tentative."
+        ],
+        "Explorer": [
+          "J’ai foncé sans réfléchir, comme d’habitude. Sauf que cette fois, ça a pas payé du tout.",
+          "Zéro plan, zéro résultat. Je vois le lien maintenant.",
+          "J’ai cliqué sur tout d’un coup et j’ai déclenché une alarme. Oups.",
+          "Peut-être que j’aurais dû regarder avant de foncer. Peut-être."
+        ]
+      }
+    }
+  }
+}

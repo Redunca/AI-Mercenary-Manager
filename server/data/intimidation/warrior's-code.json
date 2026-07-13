@@ -1,0 +1,60 @@
+{
+  "INTIMIDATION": {
+    "success": {
+      "warrior's-code": {
+        "Analyst": [
+          "Intimidation réussie. Un seul avertissement formel, clair et sans ambiguïté, a suffi à obtenir la soumission.",
+          "Menace perçue comme crédible, appuyée par une posture d’honneur plutôt que par une simple démonstration de force.",
+          "Autorité imposée. Je note que la cible a cédé face à un cadre de conduite qu’elle a semblé reconnaître.",
+          "Domination établie sans recours à la brutalité. Efficace, et curieusement respecté des deux côtés."
+        ],
+        "Diplomat": [
+          "Ils ont cédé… il leur a offert une porte de sortie honorable, et ils l’ont saisie avec soulagement.",
+          "La tension s’est apaisée devant une menace posée avec dignité plutôt qu’avec cruauté.",
+          "Ils ont compris notre position parce qu’il leur a laissé le choix de partir la tête haute.",
+          "Ils ont reculé, non par peur seule, mais par respect pour la clarté et l’équité de l’ultimatum posé."
+        ],
+        "Sentinel": [
+          "Intimidation validée. Note : ultimatum formel et unique délivré, conforme à un code de conduite non standard.",
+          "Menace perçue via une posture d’autorité fondée sur l’honneur plutôt que sur la coercition brute.",
+          "Autorité imposée. Je recommande d’étudier ce protocole informel pour de futurs engagements similaires.",
+          "Domination établie. Rapport : issue favorable obtenue via un cadre tacite plutôt que réglementaire."
+        ],
+        "Explorer": [
+          "Je leur ai donné une seule chance de partir, clairement, sans détour. Ils l’ont prise direct.",
+          "J’ai posé les règles du jeu une fois, honnêtement. Et ça a suffi à les calmer.",
+          "Pas de cris, juste un avertissement ferme et honnête. Et ça a marché.",
+          "Je leur ai laissé une porte de sortie digne. Ils l’ont prise sans discuter."
+        ]
+      }
+    },
+    "failure": {
+      "warrior's-code": {
+        "Analyst": [
+          "Intimidation échouée. Le refus d’escalader au-delà d’un seul avertissement formel a limité l’effet de pression.",
+          "Menace ignorée après une approche jugée trop mesurée pour cette cible spécifique.",
+          "Autorité non imposée. Le cadre d’honneur suivi par l’opérateur n’était pas partagé par la cible.",
+          "Domination non établie. Je consigne : les règles suivies par l’opérateur n’ont pas été respectées en retour."
+        ],
+        "Diplomat": [
+          "Ils n’ont pas cédé… il leur a offert une porte de sortie honorable, qu’ils ont choisi d’ignorer.",
+          "La tension n’a pas bougé. Sa dignité n’a pas suffi face à une cible sans aucun sens de l’honneur.",
+          "Ils ont tenu bon, insensibles à un ultimatum posé avec tant de retenue et de respect.",
+          "Ils n’ont pas reculé. Son code personnel, pour une fois, ne lui a pas suffi."
+        ],
+        "Sentinel": [
+          "Intimidation échouée. Le journal indique un refus d’escalade malgré l’absence de réaction de la cible.",
+          "Menace ignorée. Rapport : cadre d’honneur suivi par l’opérateur sans effet sur une cible non conventionnelle.",
+          "Autorité non imposée. Je recommande de réévaluer l’usage d’un code de conduite face à des adversaires hostiles.",
+          "Domination non établie. Le respect d’un cadre tacite a directement limité l’efficacité de la dissuasion."
+        ],
+        "Explorer": [
+          "Je leur ai donné une chance honnête de partir. Ils s’en sont juste moqués.",
+          "J’ai posé les règles proprement. Ils avaient visiblement pas lu le même règlement.",
+          "Je voulais faire ça avec honneur. Ça a juste pas suffi cette fois.",
+          "J’ai respecté mon code. Eux, ils s’en fichaient royalement."
+        ]
+      }
+    }
+  }
+}

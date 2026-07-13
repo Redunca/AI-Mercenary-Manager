@@ -1,0 +1,92 @@
+{
+  "Analyst+Diplomat": {
+    "speaker": "A",
+    "lines": [
+      "{A} récite déjà trois statistiques que personne n'a demandées. {B} l'écoute patiemment."
+    ],
+    "reply": [
+      "Ce que tu dis est juste, {A}, mais on n'a peut-être pas besoin des chiffres pour le sentir."
+    ]
+  },
+  "Analyst+Sentinel": {
+    "speaker": "A",
+    "lines": [
+      "{A} corrige une donnée du rapport de {B} pour la deuxième fois."
+    ],
+    "reply": [
+      "Le protocole n'a pas besoin d'être plus précis, {A}, juste respecté."
+    ]
+  },
+  "Explorer+Analyst": {
+    "speaker": "A",
+    "lines": [
+      "{A} saute déjà à la conclusion suivante. {B} n'a pas fini son calcul."
+    ],
+    "reply": [
+      "Laisse-moi finir, {A}, j'y étais presque."
+    ]
+  },
+  "Diplomat+Sentinel": {
+    "speaker": "A",
+    "lines": [
+      "{A} propose d'écouter l'autre camp. {B} n'y voit aucun intérêt tactique."
+    ],
+    "reply": [
+      "On suit le protocole, {A}, pas les sentiments."
+    ]
+  },
+  "Explorer+Diplomat": {
+    "speaker": "A",
+    "lines": [
+      "{A} veut foncer sans en discuter. {B} préférerait qu'on en parle d'abord."
+    ],
+    "reply": [
+      "On peut au moins en parler avant, {A} ?"
+    ]
+  },
+  "Explorer+Sentinel": {
+    "speaker": "A",
+    "lines": [
+      "{A} improvise, encore. {B} note l'écart au protocole dans un coin de sa tête."
+    ],
+    "reply": [
+      "Ce n'était pas la procédure, {A}. Encore une fois."
+    ]
+  },
+  "Analyst+Analyst": {
+    "speaker": "A",
+    "lines": [
+      "{A} conteste l'interprétation des chiffres de {B}, poliment mais fermement."
+    ],
+    "reply": [
+      "Tes données sont bonnes, {A}, mais ta lecture est incomplète."
+    ]
+  },
+  "Diplomat+Diplomat": {
+    "speaker": "A",
+    "lines": [
+      "{A} laisse {B} parler en premier. {B} insiste pour que ce soit l'inverse."
+    ],
+    "reply": [
+      "Non non, vas-y toi, {A}, je t'en prie."
+    ]
+  },
+  "Sentinel+Sentinel": {
+    "speaker": "A",
+    "lines": [
+      "{A} et {B} ne sont pas d'accord sur qui, des deux, dirige réellement l'opération."
+    ],
+    "reply": [
+      "C'est moi qui ai le protocole à jour, {A}, pas toi."
+    ]
+  },
+  "Explorer+Explorer": {
+    "speaker": "A",
+    "lines": [
+      "{A} propose un plan de plus en plus douteux. {B} trouve ça génial."
+    ],
+    "reply": [
+      "Carrément, {A}, on tente le coup."
+    ]
+  }
+}

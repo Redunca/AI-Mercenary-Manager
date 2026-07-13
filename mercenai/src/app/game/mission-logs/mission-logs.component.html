@@ -1,7 +1,7 @@
 <div>TASK: [<span class="task-title">Mission logs #{{ id }}</span>] ******************************************</div>
 <div>ok ==> [</div>
 <div *ngFor="let entry of logs" class="indent-one log-entry">
-  <span class="tag">{{ entry.tag }}</span> {{ entry.message }}
+  <span class="tag" [class.tag-banter]="isBanterTag(entry.tag)">{{ entry.tag }}</span> {{ entry.message }}
 </div>
 <div *ngIf="logs.length === 0" class="indent-one muted">— aucun log pour cette mission —</div>
 <div>]</div>

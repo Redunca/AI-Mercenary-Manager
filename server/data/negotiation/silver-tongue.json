@@ -1,0 +1,60 @@
+{
+  "NEGOTIATION": {
+    "success": {
+      "silver-tongue": {
+        "Analyst": [
+          "Accord obtenu en un temps record, assorti de conditions plus favorables que le mandat initial ne l’exigeait.",
+          "Négociation conclue, puis prolongée en une conversation ayant révélé leurs marges réelles. Rendement exceptionnel.",
+          "Discussion réussie, et une information stratégique obtenue en prime. Rapport effort/résultat remarquable.",
+          "Terrain d’entente trouvé. Il a fait dire à la cible bien plus qu’elle n’avait l’intention de révéler."
+        ],
+        "Diplomat": [
+          "Ils ont accepté… et lui ont même confié bien plus qu’il n’en demandait. Une vraie alchimie de mots.",
+          "La conversation a glissé vers des concessions inattendues. Je crois qu’il inspire une confiance rare.",
+          "Ils se sont laissés convaincre, puis se sont laissés aller à être généreux. C’est un don, vraiment.",
+          "L’accord a été trouvé, et quelque chose de plus précieux encore en est ressorti : leur confiance, offerte librement."
+        ],
+        "Sentinel": [
+          "Négociation validée. Note : conditions obtenues dépassant largement le mandat initial de l’opération.",
+          "Accord obtenu, suivi de l’extraction d’une information commerciale exploitable. Approche à généraliser.",
+          "Discussion réussie. Rapport : capacité conversationnelle de l’opérateur ayant dépassé les objectifs de mission.",
+          "Terrain d’entente trouvé, avec un gain de renseignement non anticipé. Opération à classer en réussite exemplaire."
+        ],
+        "Explorer": [
+          "J’ai discuté cinq minutes et ils m’ont offert bien plus que ce que je demandais. Je sais pas comment je fais ça.",
+          "On papotait, et d’un coup ils ont accepté des conditions énormes. Je crois que je suis doué pour ça.",
+          "J’ai juste écouté et posé les bonnes questions, et hop, accord signé aux meilleures conditions.",
+          "Je leur ai parlé cinq minutes et maintenant on a un bien meilleur deal que prévu."
+        ]
+      }
+    },
+    "failure": {
+      "silver-tongue": {
+        "Analyst": [
+          "Négociation échouée. Même une conversation prolongée n’a débloqué aucune concession cette fois.",
+          "Accord refusé malgré une approche conversationnelle habituellement efficace. Cible atypique, probablement.",
+          "Discussion infructueuse. Je note que le charme verbal habituel de l’opérateur n’a eu aucun effet mesurable.",
+          "Terrain d’entente non trouvé. Statistiquement rare : la cible s’est montrée hermétique à toute conversation dirigée."
+        ],
+        "Diplomat": [
+          "Ils n’ont pas accepté… même sa voix, habituellement si convaincante, n’a pas suffi cette fois.",
+          "La conversation n’a mené nulle part. Je crois que certaines personnes restent simplement inflexibles.",
+          "Ils ont rejeté l’offre, malgré tous ses efforts pour créer un lien. C’est rare, et ça doit le toucher.",
+          "L’accord ne s’est pas fait. Même les mots les plus habiles ne trouvent pas toujours une oreille prête à écouter."
+        ],
+        "Sentinel": [
+          "Négociation échouée. Le journal indique une absence totale de concession malgré une approche conversationnelle avancée.",
+          "Accord refusé. Rapport : compétences conversationnelles de l’opérateur sans effet sur cette partie adverse spécifique.",
+          "Discussion infructueuse. Je recommande de documenter ce profil de cible comme résistant aux techniques verbales.",
+          "Terrain d’entente non trouvé malgré l’usage des méthodes habituelles de l’opérateur. Cas à étudier."
+        ],
+        "Explorer": [
+          "D’habitude je fais toujours plier les gens un peu. Là, rien. Mur total.",
+          "J’ai tout essayé, mes meilleurs arguments, mon meilleur sourire. Nada.",
+          "Cette fois, personne n’a rien lâché. Même moi j’ai des limites, apparemment.",
+          "J’ai discuté un bon moment, mais j’ai rien obtenu d’eux. Frustrant."
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "COMBAT": {
+    "success": {
+      "warrior's-code": {
+        "Analyst": [
+          "Cible neutralisée. Je note que l’adversaire a cessé toute résistance après un échange de regards. Curieux protocole.",
+          "Combat terminé. Un code tacite semble avoir régi cet affrontement plus que la force brute elle-même.",
+          "Menace éliminée sans escalade excessive. Je consigne : un cadre implicite a limité les dégâts collatéraux.",
+          "Affrontement clos. L’adversaire s’est incliné selon des règles que je ne maîtrise pas totalement. Efficace, cela dit."
+        ],
+        "Diplomat": [
+          "Le combat s’est terminé… dans un respect mutuel étrange, presque cérémoniel. J’ai trouvé ça beau.",
+          "La bataille est finie. Je crois qu’ils se sont reconnus comme égaux, avant même de se reconnaître comme ennemis.",
+          "L’adversaire s’est incliné devant quelque chose de plus grand qu’une simple victoire : un honneur partagé.",
+          "Le conflit s’est résolu avec une dignité inattendue des deux côtés. C’est rare, et précieux."
+        ],
+        "Sentinel": [
+          "Engagement réussi. Note : l’opérateur a suivi un code de conduite non standard, avec un résultat conforme.",
+          "Menace éliminée. Je recommande d’étudier ce protocole informel pour de futurs engagements.",
+          "Combat terminé. L’adversaire a cédé face à une posture d’honneur plutôt qu’à une supériorité brute.",
+          "Opposition neutralisée. Rapport : issue favorable obtenue via un cadre tacite plutôt que réglementaire."
+        ],
+        "Explorer": [
+          "On s’est regardés, on s’est compris, et ça s’est réglé sans que ça dégénère trop. Classe, non ?",
+          "J’ai proposé un genre de duel à l’ancienne et ils ont accepté. Ça a marché, honnêtement.",
+          "Y’a eu un truc genre code d’honneur entre nous. Je sais pas trop comment expliquer, mais ça a payé.",
+          "On s’est affrontés proprement, et à la fin ils ont juste... reconnu qu’ils avaient perdu. Respect."
+        ]
+      }
+    },
+    "failure": {
+      "warrior's-code": {
+        "Analyst": [
+          "Échec tactique. L’adhésion stricte à un code d’engagement a limité les options disponibles au moment critique.",
+          "Combat perdu. Je note un refus d’exploiter une ouverture jugée déloyale selon des critères non quantifiables.",
+          "Opposition non neutralisée. Le respect d’un cadre d’honneur a coûté un avantage tactique décisif.",
+          "Affrontement défavorable. Je consigne : les règles suivies par l’opérateur n’étaient pas partagées par l’adversaire."
+        ],
+        "Diplomat": [
+          "Le combat s’est mal terminé… il a respecté un code que l’autre n’a pas honoré en retour. C’est injuste.",
+          "La bataille est perdue. Je crois qu’il a préféré rester fidèle à lui-même plutôt que de gagner à tout prix.",
+          "L’adversaire a eu le dessus, en ignorant les règles que lui suivait scrupuleusement. Ça me pèse un peu.",
+          "La confrontation a échoué. Son honneur est resté intact, même si l’issue, elle, ne l’était pas."
+        ],
+        "Sentinel": [
+          "Engagement échoué. Le journal indique un refus d’exploiter une faille jugée contraire au code personnel de l’opérateur.",
+          "Combat perdu. Rapport : l’adversaire n’a suivi aucune règle comparable, créant une asymétrie tactique.",
+          "Menace non éliminée. Je recommande de réévaluer l’usage d’un code d’honneur face à des adversaires non conventionnels.",
+          "Opposition non maîtrisée. Le respect d’un cadre tacite a directement limité l’efficacité de l’engagement."
+        ],
+        "Explorer": [
+          "J’ai voulu faire ça proprement, à l’ancienne. Sauf qu’eux, ils avaient pas lu le même règlement.",
+          "Ok, j’ai laissé passer une occasion parce que ça me semblait pas honorable. Grosse erreur, apparemment.",
+          "Je voulais un combat loyal. J’ai eu un combat tout court. Ma faute.",
+          "J’ai respecté les règles. Ils s’en fichaient royalement. Leçon retenue."
+        ]
+      }
+    }
+  }
+}

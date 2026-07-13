@@ -1,0 +1,60 @@
+{
+  "INTIMIDATION": {
+    "success": {
+      "vengeful": {
+        "Analyst": [
+          "Intimidation réussie. Une rancune personnelle non résolue a alimenté une pression inhabituellement précise.",
+          "Menace perçue. Je note que la motivation de l’opérateur dépassait largement les objectifs de la mission.",
+          "Autorité imposée. L’intensité observée semblait viser bien plus que la cible assignée.",
+          "Domination établie grâce à une détermination presque obsessionnelle. Efficace, mais préoccupant."
+        ],
+        "Diplomat": [
+          "Ils ont cédé face à quelque chose de plus profond qu’une simple menace — une vieille blessure qui parlait.",
+          "La tension s’est brisée sous le poids d’une rancune qu’il portait depuis bien avant cette mission.",
+          "Ils ont compris notre position, portée par une colère qui n’était pas vraiment dirigée contre eux.",
+          "Ils ont reculé, mais je me demande à qui cette victoire appartient vraiment."
+        ],
+        "Sentinel": [
+          "Intimidation validée. Note : motivation personnelle non alignée avec les objectifs officiels de mission.",
+          "Menace perçue via une intensité émotionnelle liée à un contentieux antérieur non documenté.",
+          "Autorité imposée. Je recommande une évaluation de l’implication personnelle de l’opérateur.",
+          "Domination établie. Rapport : efficacité élevée, origine de la motivation à clarifier."
+        ],
+        "Explorer": [
+          "Honnêtement ? Je pensais à un truc totalement différent, une vieille histoire. Mais ça les a fait reculer aussi.",
+          "J’avais une revanche en tête, pas vraiment eux. Mais bon, le résultat est là.",
+          "Toute cette rage, c’était pas vraiment pour cette mission. Mais ça a suffi à les intimider quand même.",
+          "Je réglais mes comptes intérieurs, littéralement. Et ça a fonctionné sur eux par ricochet."
+        ]
+      }
+    },
+    "failure": {
+      "vengeful": {
+        "Analyst": [
+          "Intimidation échouée. La focalisation sur un grief personnel a détourné l’attention de l’objectif réel.",
+          "Menace ignorée. Je note que la cible n’a pas réagi à une intensité mal dirigée.",
+          "Autorité non imposée. L’émotion affichée visait manifestement autre chose que la cible présente.",
+          "Domination non établie. Je consigne : la rancune a pris le pas sur la stratégie, sans résultat."
+        ],
+        "Diplomat": [
+          "Ils n’ont pas cédé… je crois que sa colère parlait à quelqu’un d’autre, pas à eux.",
+          "La tension n’a pas bougé. Cette rancune ancienne n’avait pas sa place ici, et ça s’est senti.",
+          "Ils ont tenu bon. Il visait un fantôme, pas la personne devant lui.",
+          "Ils n’ont pas reculé. Je crois qu’il faudrait qu’il fasse la paix avec son propre passé d’abord."
+        ],
+        "Sentinel": [
+          "Intimidation échouée. Je vais consigner : implication personnelle de l’opérateur ayant nui à la mission.",
+          "Menace ignorée. Rapport : motivation mal alignée avec l’objectif tactique assigné.",
+          "Autorité non imposée. Je recommande de retirer ce profil des cibles liées à un contentieux personnel.",
+          "Domination non établie. L’intensité affichée n’était manifestement pas destinée à cette cible."
+        ],
+        "Explorer": [
+          "J’étais tellement dans ma tête à propos d’un vieux compte à régler que j’ai raté la cible, littéralement.",
+          "Toute cette colère, c’était pour quelqu’un d’autre. Ça a juste rendu la personne en face perplexe.",
+          "Je pensais à ma revanche, pas à la mission. Et ça a foiré complètement.",
+          "Bon, ma vieille rancune a pris toute la place, et il en restait plus pour la vraie menace."
+        ]
+      }
+    }
+  }
+}

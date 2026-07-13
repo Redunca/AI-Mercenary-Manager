@@ -1,0 +1,60 @@
+{
+  "NEGOTIATION": {
+    "success": {
+      "honest": {
+        "Analyst": [
+          "Accord obtenu sans une seule exagération. Techniquement remarquable : une négociation fondée sur des faits vérifiables.",
+          "Négociation conclue. Il n’a rien promis qu’il ne pouvait tenir, et ça a suffi à les convaincre.",
+          "Discussion réussie. Je note que la transparence totale a produit un effet de confiance mesurable.",
+          "Terrain d’entente trouvé sans une seule fausse déclaration. Je propose d’étudier cette approche plus avant."
+        ],
+        "Diplomat": [
+          "Ils ont accepté… parce qu’il ne leur a rien caché, même ce qui aurait pu jouer contre nous.",
+          "La négociation s’est harmonisée autour d’une sincérité rare, presque désarmante.",
+          "Nous avons trouvé un terrain d’entente parce qu’il a refusé de leur mentir, même un peu.",
+          "Ils ont dit oui à une vérité complète, pas à une belle histoire. Je trouve ça admirable."
+        ],
+        "Sentinel": [
+          "Négociation validée sans usage de fausses déclarations. Je consigne : méthode inhabituelle, résultat conforme.",
+          "Accord obtenu par transparence totale plutôt que par persuasion classique. Approche à documenter.",
+          "Discussion réussie. L’opérateur a strictement respecté son refus de mentir, sans compromettre l’objectif.",
+          "Terrain d’entente trouvé. Rapport : aucune fausse information transmise, résultat inchangé."
+        ],
+        "Explorer": [
+          "J’ai littéralement dit la vérité, toute la vérité, et ils ont accepté quand même. Qui l’aurait cru ?",
+          "Je peux pas mentir en négociation, alors j’ai juste été honnête à fond. Et ça a marché !",
+          "Ok, je suis nul en bluff, alors j’ai juste dit ce qui était vrai. Apparemment ça suffit parfois.",
+          "J’ai pas enjolivé, j’ai pas menti. Juste dit les choses. Et ils ont signé."
+        ]
+      }
+    },
+    "failure": {
+      "honest": {
+        "Analyst": [
+          "Négociation échouée. L’opérateur a révélé une faiblesse de notre position au pire moment possible.",
+          "Accord refusé. Je note qu’il a corrigé une exagération d’un partenaire, sapant sa propre offre.",
+          "Discussion infructueuse. L’excès de transparence a donné à la cible un avantage qu’elle a exploité.",
+          "Terrain d’entente non trouvé. Je vais considérer cet incident comme un conflit entre principe et objectif."
+        ],
+        "Diplomat": [
+          "Ils n’ont pas accepté… je crois qu’il ne pouvait tout simplement pas cacher nos propres doutes.",
+          "La négociation n’a pas pris parce qu’il a refusé de trahir sa propre honnêteté, même pour la mission.",
+          "Ils ont vu nos failles dans ses yeux. Il ne sait pas les cacher, et c’est peut-être bien ainsi.",
+          "La conversation s’est bloquée. Je crois qu’il a préféré la vérité à l’avantage tactique."
+        ],
+        "Sentinel": [
+          "Négociation échouée. Le journal indique une divulgation d’information sensible au moment critique.",
+          "Accord refusé. Rapport : l’opérateur a explicitement refusé de formuler une déclaration favorable mais inexacte.",
+          "Discussion infructueuse. Je recommande de ne plus assigner ce profil à des négociations à enjeu élevé.",
+          "Terrain d’entente non trouvé par refus catégorique de dissimuler une information défavorable."
+        ],
+        "Explorer": [
+          "Ils m’ont demandé un truc direct et j’ai littéralement pas pu mentir. Négociation ruinée instantanément.",
+          "Je suis vraiment nul pour bluffer. Ma tête dit tout avant même que j’ouvre la bouche.",
+          "J’ai essayé de rester vague, j’ai flanché, et j’ai fini par tout avouer. Oups.",
+          "Je peux pas mentir, c’est physique chez moi. Et là, ça nous a coûté l’accord."
+        ]
+      }
+    }
+  }
+}

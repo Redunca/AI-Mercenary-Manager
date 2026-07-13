@@ -1,0 +1,60 @@
+{
+  "INTIMIDATION": {
+    "success": {
+      "hot-tempered": {
+        "Analyst": [
+          "Intimidation réussie. Une explosion de colère non planifiée a produit l’effet recherché, par accident.",
+          "Menace perçue. Je note que la rage affichée a été plus efficace qu’une approche calculée.",
+          "Autorité imposée. L’intensité émotionnelle involontaire a créé une pression difficile à anticiper pour la cible.",
+          "Domination établie. Statistiquement, cette méthode aurait dû échouer. Elle a fonctionné malgré tout."
+        ],
+        "Diplomat": [
+          "Ils ont cédé face à une colère brute qu’il n’a même pas cherché à contrôler. C’est troublant, mais efficace.",
+          "La tension s’est apaisée sous un éclat de rage soudain. Je ne suis pas sûre d’approuver la méthode.",
+          "Ils ont compris notre position, presque malgré lui. Sa colère a parlé plus fort que ses mots.",
+          "Ils ont reculé face à une intensité qu’il ne maîtrisait pas vraiment lui-même."
+        ],
+        "Sentinel": [
+          "Intimidation validée. Note : perte de contrôle émotionnel de l’opérateur, résultat conforme malgré tout.",
+          "Menace perçue via une explosion de colère non autorisée par le protocole de dissuasion.",
+          "Autorité imposée. Je recommande néanmoins un encadrement de la gestion émotionnelle de l’opérateur.",
+          "Domination établie. Rapport : méthode instable, résultat favorable, risque à surveiller."
+        ],
+        "Explorer": [
+          "J’ai complètement pété un câble et ils ont flippé direct. Efficace, mais je contrôlais rien du tout.",
+          "J’ai crié tellement fort que même moi j’étais surpris. Et ça a marché.",
+          "Ma colère est sortie toute seule, et apparemment c’était exactement ce qu’il fallait.",
+          "Je me suis énervé pour de vrai, pas pour la stratégie. Et ça a suffi à les faire reculer."
+        ]
+      }
+    },
+    "failure": {
+      "hot-tempered": {
+        "Analyst": [
+          "Intimidation échouée. La perte de contrôle émotionnel a rendu la menace incohérente et inefficace.",
+          "Menace ignorée. Je note que la colère affichée a discrédité l’approche entière.",
+          "Autorité non imposée. L’explosion émotionnelle a été perçue comme une faiblesse, pas une force.",
+          "Domination non établie. Je consigne : l’instabilité de l’opérateur a compromis l’ensemble de la tentative."
+        ],
+        "Diplomat": [
+          "Ils n’ont pas cédé… sa colère les a surpris, mais pas de la bonne façon.",
+          "La tension n’a pas bougé. Je crois qu’ils ont vu de la fragilité derrière cette rage.",
+          "Ils ont tenu bon. Sa colère a créé une distance, pas une soumission.",
+          "Ils n’ont pas reculé, renforcés par un éclat qu’ils n’ont pas pris au sérieux."
+        ],
+        "Sentinel": [
+          "Intimidation échouée. Je vais consigner : perte de contrôle émotionnel ayant discrédité l’opération.",
+          "Menace ignorée. Rapport : instabilité de l’opérateur perçue comme une faiblesse par la cible.",
+          "Autorité non imposée. Je recommande un retrait de ce profil des opérations de dissuasion directe.",
+          "Domination non établie. L’explosion émotionnelle a compromis toute crédibilité de l’approche."
+        ],
+        "Explorer": [
+          "Je me suis énervé pour de vrai, et ils ont juste vu que j’avais perdu le contrôle. Pas convaincant du tout.",
+          "J’ai crié, et ils ont juste rigolé de moi. Ça a clairement pas marché.",
+          "Ma colère est sortie n’importe comment, et ça les a pas du tout impressionnés.",
+          "Bon, j’ai explosé pour rien cette fois. Zéro effet, beaucoup de honte."
+        ]
+      }
+    }
+  }
+}

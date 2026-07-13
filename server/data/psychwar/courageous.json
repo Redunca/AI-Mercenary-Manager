@@ -1,0 +1,60 @@
+{
+  "PSYCHWAR": {
+    "success": {
+      "courageous": {
+        "Analyst": [
+          "Influence mentale établie. Aucune trace de doute détectée chez l’opérateur durant toute la confrontation.",
+          "Pression psychologique réussie. Sa stabilité émotionnelle inébranlable a rendu la cible incapable de riposter.",
+          "Domination mentale obtenue. Je note une absence totale de réaction de peur, statistiquement remarquable.",
+          "Contrôle émotionnel acquis. L’assurance de l’opérateur n’a jamais vacillé, même face à une contre-attaque mentale."
+        ],
+        "Diplomat": [
+          "Ils ont cédé face à une présence si calme qu’elle en devenait presque inébranlable. Un vrai roc.",
+          "La tension intérieure s’est brisée devant son absence totale de peur. C’est rassurant à observer.",
+          "Nous avons touché quelque chose en eux, porté par un courage qui ne demandait rien en retour.",
+          "Leur résistance s’est dissoute face à quelqu’un qui n’avait visiblement rien à craindre de leur riposte."
+        ],
+        "Sentinel": [
+          "Pression mentale validée. Note : absence totale de réaction de stress chez l’opérateur, résultat optimal.",
+          "Influence psychologique obtenue. Stabilité émotionnelle de l’opérateur jugée exemplaire durant l’engagement.",
+          "Domination mentale établie sans aucune contre-réaction émotionnelle notable de l’opérateur.",
+          "Impact psychique confirmé. Rapport : résilience mentale de l’opérateur directement responsable du succès."
+        ],
+        "Explorer": [
+          "Ils ont essayé de me faire peur, sérieux ils ont tout tenté. Mais j’ai rien senti, pour de vrai.",
+          "J’étais juste là, calme, et ça les a complètement déstabilisés.",
+          "Aucune peur, aucun doute. Je crois que c’est exactement ce qui les a fait craquer.",
+          "Ils voulaient me briser mentalement. Raté. Je suis toujours aussi zen."
+        ]
+      }
+    },
+    "failure": {
+      "courageous": {
+        "Analyst": [
+          "Influence mentale échouée. Même une stabilité émotionnelle totale n’a pas suffi à ébranler cette cible.",
+          "Pression psychologique inefficace. Je note que l’absence de peur de l’opérateur n’a eu aucun effet mesurable.",
+          "Domination mentale impossible. La cible s’est révélée insensible à toute forme de pression, calme ou non.",
+          "Contrôle émotionnel non établi. Je consigne : le courage seul n’a pas suffi face à cette résistance particulière."
+        ],
+        "Diplomat": [
+          "Ils n’ont pas ouvert leur esprit… même face à un calme aussi inébranlable que le sien.",
+          "La tension intérieure n’a pas bougé. Parfois, même la plus grande sérénité ne suffit pas à toucher un cœur fermé.",
+          "Nous n’avons pas réussi à les atteindre, malgré une présence aussi solide et rassurante que la sienne.",
+          "Leur résistance est restée intacte. Certaines barrières ne cèdent devant rien, pas même le courage."
+        ],
+        "Sentinel": [
+          "Pression mentale échouée. Je vais consigner : stabilité émotionnelle de l’opérateur sans effet sur cette cible.",
+          "Influence psychologique refusée malgré une absence totale de réaction de stress de l’opérateur.",
+          "Domination mentale impossible. Je recommande d’étudier cette cible comme résistante aux approches directes.",
+          "Impact psychique nul, en dépit d’une performance émotionnelle jugée irréprochable de l’opérateur."
+        ],
+        "Explorer": [
+          "J’étais super calme, zéro peur, et ça a quand même pas marché. Bizarre.",
+          "Ils étaient juste... immunisés, on dirait. Rien à faire.",
+          "Mon calme légendaire a rien donné cette fois. Première fois, honnêtement.",
+          "J’ai tout donné niveau sang-froid, et ça a suffi à rien du tout."
+        ]
+      }
+    }
+  }
+}

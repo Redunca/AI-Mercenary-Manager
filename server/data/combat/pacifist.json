@@ -1,0 +1,60 @@
+{
+  "COMBAT": {
+    "success": {
+      "pacifist": {
+        "Analyst": [
+          "Cible neutralisée sans arme létale. Statistiquement moins efficace, mais le résultat final est identique.",
+          "Combat terminé. Je note un refus systématique du coup fatal, compensé par une précision inhabituelle.",
+          "Menace éliminée par immobilisation plutôt que destruction. Méthode inhabituelle, résultat conforme.",
+          "Affrontement clos. L’adversaire est neutralisé, pas détruit. Je consigne la distinction comme pertinente."
+        ],
+        "Diplomat": [
+          "Le combat s’est terminé sans qu’un seul coup mortel ne soit porté. Je respecte profondément ce choix.",
+          "La bataille est finie, et personne n’est mort par sa main. C’est une victoire d’une autre nature.",
+          "L’adversaire est tombé, mais vivant. Je crois que c’est exactement ce qu’il voulait.",
+          "Le conflit s’est résolu sans effusion de sang inutile. Je trouve ça profondément apaisant."
+        ],
+        "Sentinel": [
+          "Engagement réussi. Note : neutralisation non létale, conforme aux principes de l’opérateur.",
+          "Menace maîtrisée sans perte de vie adverse. Méthode atypique, résultat validé malgré tout.",
+          "Combat terminé. L’opérateur a maintenu sa ligne de conduite jusqu’au bout. Je le consigne favorablement.",
+          "Opposition neutralisée par immobilisation. Je recommande d’étudier cette approche pour d’autres cas."
+        ],
+        "Explorer": [
+          "Bon, j’ai pas tué personne, j’ai juste... ralenti les choses. Et ça a marché !",
+          "J’ai refusé le coup final et je les ai juste assommés. Meilleure décision de la journée.",
+          "Personne n’est mort, tout le monde va s’en sortir. Je préfère largement ça.",
+          "J’ai trouvé un moyen de gagner sans faire de mal pour de vrai. Fier de moi."
+        ]
+      }
+    },
+    "failure": {
+      "pacifist": {
+        "Analyst": [
+          "Échec tactique. Le refus d’infliger un coup décisif a directement compromis l’issue de l’engagement.",
+          "Combat perdu. Je note une hésitation systématique au moment critique, contraire à l’efficacité pure.",
+          "Opposition non neutralisée. La retenue observée a offert à l’adversaire des occasions répétées.",
+          "Affrontement défavorable. Je consigne : les principes ont primé sur la survie, avec un coût mesurable."
+        ],
+        "Diplomat": [
+          "Le combat s’est mal terminé… mais il n’a pas trahi ce en quoi il croit. Ça compte pour moi.",
+          "La bataille est perdue. Je crois qu’il a préféré perdre plutôt que devenir quelqu’un d’autre.",
+          "L’adversaire a eu le dessus, sans que lui n’ait cherché à vraiment blesser. C’est une forme de courage.",
+          "La confrontation a échoué. Ses convictions lui ont coûté cher, et pourtant je ne peux pas le blâmer."
+        ],
+        "Sentinel": [
+          "Engagement échoué. Le journal indique un refus répété d’engager une force létale suffisante.",
+          "Combat perdu. Rapport : la retenue de l’opérateur a directement affecté l’issue tactique.",
+          "Menace non éliminée. Je recommande une clarification des règles d’engagement avant la prochaine mission.",
+          "Opposition non maîtrisée. Le respect strict d’un code personnel a limité l’efficacité opérationnelle."
+        ],
+        "Explorer": [
+          "J’ai pas voulu vraiment leur faire mal, et du coup ça s’est retourné contre moi.",
+          "Ok, j’aurais peut-être dû frapper plus fort. Mais j’ai pas pu m’y résoudre.",
+          "Je préfère perdre comme ça plutôt que gagner autrement. Même si ça pique.",
+          "J’ai retenu mes coups jusqu’au bout. Résultat : je me suis pris les leurs en pleine face."
+        ]
+      }
+    }
+  }
+}

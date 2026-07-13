@@ -1,0 +1,60 @@
+{
+  "DECEPTION": {
+    "success": {
+      "greedy": {
+        "Analyst": [
+          "Manipulation réussie. Il a ajouté trois exigences financières supplémentaires. Ils ont accepté quand même.",
+          "Mensonge accepté, accompagné d’une demande de compensation clairement disproportionnée. Efficace malgré tout.",
+          "Couverture validée, mais je note un intérêt personnel manifeste ayant guidé chaque choix de mots.",
+          "Illusion maintenue. Statistiquement, la cupidité aurait dû trahir l’opération. Ce n’est pas le cas."
+        ],
+        "Diplomat": [
+          "Ils ont cru ce qu’il disait… même si je sens qu’il pensait surtout à ce qu’il allait en tirer.",
+          "La vérité alternative a trouvé sa place, motivée par un intérêt que je préfère ne pas trop analyser.",
+          "Ils ont accepté ses paroles. J’espère qu’il se souviendra que la confiance vaut plus que le profit.",
+          "La façade a tenu, portée par une ambition personnelle qui a, cette fois, servi la mission."
+        ],
+        "Sentinel": [
+          "Déception réussie. Note : demande de compensation non autorisée formulée en cours d’opération.",
+          "Mensonge accepté malgré un comportement intéressé de l’opérateur. Résultat conforme, méthode à surveiller.",
+          "Manipulation validée. Je recommande un encadrement des motivations personnelles lors des futures opérations.",
+          "Couverture confirmée. Rapport : intérêt financier de l’opérateur non aligné avec les objectifs officiels."
+        ],
+        "Explorer": [
+          "Je leur ai raconté mon histoire, et j’en ai profité pour négocier un petit bonus au passage. Ils ont dit oui !",
+          "Ok j’ai peut-être exagéré la valeur de ce que je proposais. Mais ils ont mordu direct.",
+          "J’ai menti, et en plus j’ai réussi à me faire un peu de blé au passage. Journée productive.",
+          "Je pensais surtout à ce que j’allais y gagner, et bizarrement ça a rendu mon mensonge plus convaincant."
+        ]
+      }
+    },
+    "failure": {
+      "greedy": {
+        "Analyst": [
+          "Échec de manipulation. La demande de compensation excessive a éveillé une suspicion légitime.",
+          "Mensonge refusé après une exigence financière jugée incohérente avec le récit présenté.",
+          "Couverture brisée. Je note que l’avidité manifestée a directement compromis la crédibilité du récit.",
+          "Manipulation ratée. Statistiquement, une telle cupidité affichée devait finir par éveiller les soupçons."
+        ],
+        "Diplomat": [
+          "Ils n’ont pas cru ce qu’il disait… je crois qu’ils ont senti qu’il pensait plus à lui qu’à eux.",
+          "La vérité alternative n’a pas pris. Son intérêt personnel s’est vu, malgré lui.",
+          "Ils ont rejeté ses paroles. Peut-être qu’une once de désintéressement aurait changé les choses.",
+          "La façade s’est effondrée sous le poids de ses propres exigences. C’est dommage, vraiment."
+        ],
+        "Sentinel": [
+          "Déception échouée. Le journal indique une exigence financière incompatible avec la couverture établie.",
+          "Mensonge refusé. Rapport : comportement intéressé de l’opérateur directement lié à l’échec de la mission.",
+          "Manipulation ratée. Je recommande une révision du profil d’opérateur pour les opérations de dissimulation.",
+          "Couverture compromise par une cupidité mal dissimulée au moment critique."
+        ],
+        "Explorer": [
+          "J’ai peut-être un peu trop insisté sur le bonus. Ça a éveillé leurs soupçons direct.",
+          "Ok, j’ai demandé trop, trop vite. Ils ont senti l’arnaque à des kilomètres.",
+          "Je pensais surtout à ce que j’allais gagner, et ça s’est vu. Grosse erreur.",
+          "J’ai été gourmand, littéralement gourmand, et ça m’a coûté toute la crédibilité de l’histoire."
+        ]
+      }
+    }
+  }
+}

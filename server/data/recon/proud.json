@@ -1,0 +1,60 @@
+{
+  "RECON": {
+    "success": {
+      "proud": {
+        "Analyst": [
+          "Observation réussie sans vérification secondaire, jugée inutile par l’opérateur. Résultat conforme malgré tout.",
+          "Zone analysée en un seul passage, effectué avec une assurance ne laissant aucune place au doute.",
+          "Reconnaissance complète. Je note un refus catégorique de demander confirmation, sans conséquence ici.",
+          "Repérage effectué. Statistiquement, cette confiance aurait dû produire une erreur. Ce n’est pas le cas."
+        ],
+        "Diplomat": [
+          "La zone s’est révélée à lui… porté par une assurance qui ne doutait jamais d’elle-même.",
+          "Reconnaissance harmonieuse, menée avec une certitude presque déconcertante.",
+          "J’ai perçu ce qu’il fallait, mais lui semblait déjà tout savoir avant même de regarder.",
+          "Observation réussie. Son aplomb, pour une fois, n’a fait qu’accompagner sa justesse."
+        ],
+        "Sentinel": [
+          "Reconnaissance validée. Note : absence de vérification secondaire, résultat néanmoins conforme.",
+          "Observation complète menée en un seul passage, sans consultation d’un second avis.",
+          "Analyse réussie malgré une confiance en soi que je qualifierais d’excessive au vu du contexte.",
+          "Repérage effectué. Rapport : assurance de l’opérateur ayant, cette fois, été justifiée."
+        ],
+        "Explorer": [
+          "J’ai regardé une fois, et j’ai su. Pas besoin de vérifier deux fois, je me trompe jamais.",
+          "Franchement, avec mon œil, une seule passe suffit. Et voilà, j’avais raison.",
+          "Je leur ai dit que j’avais tout vu du premier coup. Et bah oui, c’était vrai.",
+          "Pas besoin de perdre du temps à re-vérifier. Je sais ce que je vois."
+        ]
+      }
+    },
+    "failure": {
+      "proud": {
+        "Analyst": [
+          "Reconnaissance échouée. Le refus de vérifier une seconde fois a directement causé l’omission d’un élément clé.",
+          "Observation impossible après un refus catégorique de reconsidérer une première impression erronée.",
+          "Analyse infructueuse. Je note qu’un excès de confiance a empêché toute correction en cours d’opération.",
+          "Repérage raté. Je consigne : l’assurance affichée n’était pas corrélée à l’exactitude du jugement."
+        ],
+        "Diplomat": [
+          "La zone ne s’est pas révélée… je crois qu’il était trop certain de lui pour vraiment regarder.",
+          "Reconnaissance bloquée. Son assurance, cette fois, a fermé les yeux plutôt que de les ouvrir.",
+          "Je n’ai rien perçu. Peut-être qu’un peu de doute aurait mieux servi cette mission.",
+          "Observation impossible. Je crois qu’il avait besoin d’admettre qu’il pouvait se tromper."
+        ],
+        "Sentinel": [
+          "Reconnaissance échouée. Je vais consigner : refus de vérification secondaire malgré un doute raisonnable.",
+          "Analyse impossible. Rapport : excès de confiance de l’opérateur directement lié à l’échec de la mission.",
+          "Observation infructueuse après un jugement initial erroné maintenu sans remise en question.",
+          "Repérage non effectué correctement. Je recommande un protocole de double vérification obligatoire."
+        ],
+        "Explorer": [
+          "J’étais sûr de moi, tellement sûr. Et j’avais tort. Ça pique.",
+          "Je me trompe jamais, sauf que là, si.",
+          "J’ai pas voulu vérifier deux fois. Grosse erreur, avec le recul.",
+          "Mon assurance a écrit un chèque que la réalité a pas voulu encaisser."
+        ]
+      }
+    }
+  }
+}

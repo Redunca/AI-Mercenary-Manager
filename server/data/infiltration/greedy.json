@@ -1,0 +1,60 @@
+{
+  "INFILTRATION": {
+    "success": {
+      "greedy": {
+        "Analyst": [
+          "Entrée réussie, suivie d’un détour non planifié pour examiner un coffre visiblement hors mission.",
+          "Pénétration effectuée malgré une prise de risque motivée par du matériel de valeur repéré en chemin.",
+          "Accès discret obtenu. Je note un comportement de collecte opportuniste ayant, contre toute attente, payé.",
+          "Zone infiltrée, avec un inventaire personnel visiblement enrichi au passage. Efficacité inattendue."
+        ],
+        "Diplomat": [
+          "Je suis passé sans être vu… avec un petit détour pour ce qui brillait dans un coin. Je l’ai remarqué.",
+          "L’infiltration s’est faite en douceur, même si son regard s’est attardé sur ce qu’il pouvait emporter.",
+          "Le passage s’est ouvert à lui, et il en a profité pour ramasser ce qu’il pouvait au passage.",
+          "Je suis passé sans alerte, mais son regard n’a jamais quitté ce qui pouvait valoir quelque chose."
+        ],
+        "Sentinel": [
+          "Infiltration validée. Note : détour non autorisé pour collecte de matériel, sans impact négatif sur l’issue.",
+          "Accès obtenu malgré une priorité donnée à la récupération d’objets plutôt qu’à la discrétion stricte.",
+          "Zone pénétrée. Je recommande un encadrement des comportements de collecte en zone infiltrée.",
+          "Passage sécurisé. Rapport : gain matériel non prévu obtenu en marge de l’objectif principal."
+        ],
+        "Explorer": [
+          "J’ai vu un truc qui brillait en chemin, et je l’ai pris. On est dedans ET plus riches.",
+          "Ok j’ai peut-être pris un petit détour pour du butin. Mais regarde, ça a payé !",
+          "Je pouvais pas laisser ça là. Et finalement, ça a pas compromis la discrétion. Double victoire.",
+          "J’ai ramassé ce que je pouvais en chemin. Priorités, hein."
+        ]
+      }
+    },
+    "failure": {
+      "greedy": {
+        "Analyst": [
+          "Infiltration échouée. Un détour motivé par l’appât du gain a directement retardé la progression discrète.",
+          "Accès refusé après une prise de risque injustifiée pour la récupération de matériel secondaire.",
+          "Zone non pénétrée. Je note que la priorité donnée aux ressources a affecté le temps disponible pour rester discret.",
+          "Passage compromis. Je consigne : la cupidité a transformé un risque gérable en exposition certaine."
+        ],
+        "Diplomat": [
+          "Je n’ai pas réussi à passer… je crois qu’il en voulait plus que ce que la situation pouvait offrir.",
+          "L’environnement a semblé se refermer, pendant qu’il cherchait encore quelque chose à emporter.",
+          "La zone n’a pas voulu s’ouvrir. Peut-être qu’il fallait choisir entre la discrétion et le profit.",
+          "Je n’ai pas pu entrer. Son envie d’en avoir plus nous a coûté un temps précieux."
+        ],
+        "Sentinel": [
+          "Infiltration échouée. Le journal indique un détour non autorisé pour collecte de matériel ayant retardé l’opération.",
+          "Accès refusé. Rapport : priorité donnée au gain matériel directement liée à l’échec de la discrétion.",
+          "Zone non pénétrée après une prise de risque injustifiée motivée par l’appât du gain.",
+          "Passage compromis. Je recommande une clarification des priorités opérationnelles en infiltration."
+        ],
+        "Explorer": [
+          "J’ai voulu prendre un truc en plus, et ça nous a coûté la discrétion qu’on avait. Ma faute.",
+          "Ok, j’aurais peut-être dû laisser ce truc briller tranquillement là où il était.",
+          "Je pouvais pas résister. Et ça a fini par vraiment nous compliquer la sortie.",
+          "J’ai priorisé le butin sur la discrétion. Mauvais calcul, clairement."
+        ]
+      }
+    }
+  }
+}

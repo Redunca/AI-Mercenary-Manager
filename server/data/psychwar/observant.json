@@ -1,0 +1,60 @@
+{
+  "PSYCHWAR": {
+    "success": {
+      "observant": {
+        "Analyst": [
+          "Influence mentale établie. Un tressaillement à peine visible a révélé exactement où appliquer la pression.",
+          "Pression psychologique réussie grâce à un détail comportemental que personne d’autre n’avait remarqué.",
+          "Domination mentale obtenue. Je note une identification précise du point de rupture émotionnel de la cible.",
+          "Contrôle émotionnel acquis via l’exploitation d’un détail que l’analyse standard n’avait pas relevé."
+        ],
+        "Diplomat": [
+          "Ils ont cédé… il avait vu, avant même qu’ils ne le sachent eux-mêmes, où se cachait leur peur.",
+          "La tension intérieure s’est brisée parce qu’il a su regarder au-delà des mots, jusqu’au vrai malaise.",
+          "Nous avons touché quelque chose en eux qu’il avait repéré depuis le tout début. Un vrai don d’observation.",
+          "Leur résistance s’est dissoute face à quelqu’un qui avait déjà tout compris d’eux, en silence."
+        ],
+        "Sentinel": [
+          "Pression mentale validée. Note : point de rupture émotionnel identifié par observation comportementale directe.",
+          "Influence psychologique obtenue via l’exploitation d’un détail non répertorié par les méthodes standards.",
+          "Domination mentale établie grâce à une lecture précise du comportement de la cible avant intervention.",
+          "Impact psychique confirmé. Rapport : capacité d’observation de l’opérateur directement liée au succès."
+        ],
+        "Explorer": [
+          "J’ai remarqué un truc dans leur regard, genre un tic nerveux, et j’ai appuyé pile là-dessus.",
+          "Y’avait un petit signe que j’ai capté direct. Et ça a suffi à tout faire basculer.",
+          "J’ai juste observé un peu avant de parler, et j’ai vu exactement ce qui les inquiétait.",
+          "Un détail m’a sauté aux yeux, et j’ai su exactement quoi dire. Efficace."
+        ]
+      }
+    },
+    "failure": {
+      "observant": {
+        "Analyst": [
+          "Influence mentale échouée. Aucun signal comportemental exploitable n’a pu être identifié chez cette cible.",
+          "Pression psychologique inefficace malgré une observation approfondie du comportement de la cible.",
+          "Domination mentale impossible. L’absence de tout indice révélateur a limité toute approche ciblée.",
+          "Contrôle émotionnel non établi. Je consigne : même l’observation la plus fine n’a rien révélé cette fois."
+        ],
+        "Diplomat": [
+          "Ils n’ont pas ouvert leur esprit… même son regard attentif n’a rien trouvé à quoi se raccrocher.",
+          "La tension intérieure n’a pas bougé. Parfois, il n’y a simplement rien à voir, même pour lui.",
+          "Nous n’avons pas réussi à les atteindre, malgré toute son attention portée à chaque détail.",
+          "Leur résistance est restée intacte, insensible à une observation pourtant minutieuse."
+        ],
+        "Sentinel": [
+          "Pression mentale échouée. Je vais consigner : aucun point de rupture identifiable malgré une observation poussée.",
+          "Influence psychologique refusée. Rapport : capacité d’observation de l’opérateur sans effet sur cette cible.",
+          "Domination mentale impossible. Je recommande de documenter cette cible comme sans faille comportementale visible.",
+          "Impact psychique nul, en dépit d’une analyse comportementale jugée rigoureuse."
+        ],
+        "Explorer": [
+          "J’ai tout observé, vraiment tout, et j’ai rien vu d’exploitable. Ça arrive.",
+          "D’habitude je repère toujours un truc chez les gens. Là, rien du tout.",
+          "J’ai cherché le petit signe habituel. Il était juste pas là.",
+          "Même moi j’ai des limites niveau observation, apparemment."
+        ]
+      }
+    }
+  }
+}

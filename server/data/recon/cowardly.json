@@ -1,0 +1,60 @@
+{
+  "RECON": {
+    "success": {
+      "cowardly": {
+        "Analyst": [
+          "Observation réussie, effectuée à une distance de sécurité largement supérieure au nécessaire. Efficace malgré tout.",
+          "Zone analysée depuis une position de repli anticipée. La prudence excessive n’a pas nui à la précision.",
+          "Reconnaissance complète malgré trois arrêts par peur d’être repéré. Résultat conforme.",
+          "Repérage effectué. Je consigne : l’excès de prudence a peut-être évité une exposition inutile."
+        ],
+        "Diplomat": [
+          "La zone s’est révélée à lui… depuis loin, très loin, mais il a quand même tout vu. C’est déjà beaucoup.",
+          "Reconnaissance harmonieuse, malgré une peur palpable à chaque mouvement. Il a tenu bon.",
+          "J’ai perçu ce qu’il fallait, à distance respectueuse de son propre confort. Je comprends ce besoin.",
+          "Observation réussie. Sa peur ne l’a pas empêché d’accomplir sa tâche, juste de le faire différemment."
+        ],
+        "Sentinel": [
+          "Reconnaissance validée. Note : distance opérationnelle excessive observée, sans impact sur le résultat final.",
+          "Observation complète malgré une nervosité manifeste de l’opérateur tout au long de la mission.",
+          "Analyse réussie depuis une position de repli non planifiée mais efficace.",
+          "Repérage effectué. Rapport : opération réussie en dépit d’un stress opérationnel élevé."
+        ],
+        "Explorer": [
+          "J’ai regardé de super loin, genre vraiment loin, mais j’ai quand même tout vu. Ça compte, non ?",
+          "Ok j’étais terrifié à l’idée de m’approcher, mais les jumelles ont fait le travail.",
+          "J’ai failli faire demi-tour plein de fois. Mais j’ai vu ce qu’il fallait quand même.",
+          "Sérieux j’avais la trouille, mais j’ai la reconnaissance qu’il fallait. C’est le principal."
+        ]
+      }
+    },
+    "failure": {
+      "cowardly": {
+        "Analyst": [
+          "Reconnaissance échouée. La distance excessive maintenue par peur a rendu l’observation imprécise.",
+          "Observation impossible. Je note un recul prématuré ayant empêché toute analyse détaillée.",
+          "Analyse infructueuse. La peur de l’exposition a directement limité la qualité des données recueillies.",
+          "Repérage raté. Je consigne : trois reculs consécutifs devant des risques mineurs, résultat compromis."
+        ],
+        "Diplomat": [
+          "La zone ne s’est pas révélée… je crois qu’il n’a pas osé s’approcher assez pour vraiment voir.",
+          "Reconnaissance bloquée. Il a hésité trop longtemps, paralysé par ce qui pourrait mal tourner.",
+          "Je n’ai rien perçu. Sa peur, cette fois, l’a emporté sur sa curiosité pourtant nécessaire.",
+          "Observation impossible. Je crois qu’il avait besoin qu’on le rassure avant de s’approcher davantage."
+        ],
+        "Sentinel": [
+          "Reconnaissance échouée. Je vais consigner : distance opérationnelle excessive ayant compromis la mission.",
+          "Analyse impossible. Rapport : l’opérateur a interrompu l’approche suite à un stress jugé excessif.",
+          "Observation infructueuse après un retrait précipité de l’opérateur face à un risque limité.",
+          "Repérage non effectué. Je recommande une préparation psychologique avant la prochaine reconnaissance."
+        ],
+        "Explorer": [
+          "J’ai eu trop peur de m’approcher et j’ai rien vu d’utile. Désolé.",
+          "Bon, j’ai paniqué et je suis resté trop loin pour voir quoi que ce soit.",
+          "Je pouvais m’approcher, mais j’ai eu trop les jetons. Du coup, échec total.",
+          "J’ai vu une ombre bizarre et j’ai tout arrêté. C’était probablement rien, en fait."
+        ]
+      }
+    }
+  }
+}

@@ -4,7 +4,7 @@ const { pool } = require('../db/pool')
 const { rollAction, rollDie, rollInRange } = require('./dice.service')
 const { generateCandidate, rowToCandidate, rowToRecruit, computeMaxHp } = require('../domain/recruit')
 const { DURATION_PER_EVENT_MS, phaseFromProgress, progressFromElapsed } = require('../domain/mission')
-const { insertLogEntries, buildPhaseLogs, buildEventResultLogs } = require('./log.service')
+const { insertLogEntries, buildPhaseLogs, buildEventResultLogs, buildBanterLog } = require('./log.service')
 const { createStarterShip, validateCrewAssignment, calculateEffectiveTravelTime } = require('../domain/ship')
 const ShipService = require('./ship.service')
 const EquipmentService = require('./equipment.service')
@@ -28,6 +28,35 @@ function loadJson(name) {
   return JSON.parse(fs.readFileSync(path.join(DATA_DIR, name), 'utf8'))
 }
 
+// --- Log-building input helpers (see log.service.js's LogContext typedef) ---
+
+function toLogRecruit(recruit) {
+  if (!recruit) return null
+  return {
+    id: recruit.id,
+    name: recruit.name,
+    perks: recruit.perks,
+    flaws: recruit.flaws,
+    personality: recruit.personality,
+  }
+}
+
+function toLogPlanet(planet) {
+  if (!planet) return null
+  return { id: planet.id, name: planet.name, tags: planet.tags }
+}
+
+function buildLogContext({ template, crewMembers = [], actingRecruit = null }) {
+  return {
+    missionId: template.id,
+    missionName: template.name,
+    missionDifficulty: template.difficulty,
+    planet: toLogPlanet(template.planet),
+    actingRecruit: toLogRecruit(actingRecruit),
+    crew: crewMembers.map(toLogRecruit).filter(Boolean),
+  }
+}
+
 async function seedMissionTemplates(client) {
   const existing = await client.query('SELECT COUNT(*)::int AS count FROM mission_templates')
   if (existing.rows[0].count > 0) return
@@ -37,14 +66,18 @@ async function seedMissionTemplates(client) {
     const id = i + 1
     const mission = generateMission(data, { difficulty: SEED_DIFFICULTIES[i] })
     await client.query(
-      `INSERT INTO mission_templates (id, name, description, difficulty, events)
-       VALUES ($1, $2, $3, $4, $5)
+      `INSERT INTO mission_templates (id, name, description, difficulty, events, planet)
+       VALUES ($1, $2, $3, $4, $5, $6)
        ON CONFLICT (id) DO UPDATE SET
          name = EXCLUDED.name,
          description = EXCLUDED.description,
          difficulty = EXCLUDED.difficulty,
-         events = EXCLUDED.events`,
-      [id, mission.name, mission.description, mission.difficulty, JSON.stringify(mission.events)],
+         events = EXCLUDED.events,
+         planet = EXCLUDED.planet`,
+      [
+        id, mission.name, mission.description, mission.difficulty,
+        JSON.stringify(mission.events), JSON.stringify(mission.planet),
+      ],
     )
   }
 }
@@ -170,7 +203,6 @@ async function resolveEvents(client, playerId, instance, template, crewMembers) 
   let failed = instance.failed
   let rewardForfeited = instance.reward_forfeited
   let currentEventIndex = instance.current_event_index
-  const missionId = template.id
   const logs = []
   let crewDead = []
 
@@ -227,12 +259,7 @@ async function resolveEvents(client, playerId, instance, template, crewMembers) 
             eventResults.push(result)
             logs.push(buildEventResultLogs({
               eventResult: result,
-              missionId,
-              missionName: template.name,
-              recruitName: bestRecruit.name,
-              recruitPerks: bestRecruit.perks,
-              recruitFlaws: bestRecruit.flaws,
-              recruitPersonality: bestRecruit.personality,
+              context: buildLogContext({ template, crewMembers, actingRecruit: bestRecruit }),
             }))
             await insertLogEntries(client, playerId, [
               ...logs[logs.length - 1].mission,
@@ -247,12 +274,7 @@ async function resolveEvents(client, playerId, instance, template, crewMembers) 
         eventResults.push(result)
         logs.push(buildEventResultLogs({
           eventResult: result,
-          missionId,
-          missionName: template.name,
-          recruitName: bestRecruit.name,
-          recruitPerks: bestRecruit.perks,
-          recruitFlaws: bestRecruit.flaws,
-          recruitPersonality: bestRecruit.personality,
+          context: buildLogContext({ template, crewMembers, actingRecruit: bestRecruit }),
         }))
         await insertLogEntries(client, playerId, [
           ...logs[logs.length - 1].mission,
@@ -271,12 +293,7 @@ async function resolveEvents(client, playerId, instance, template, crewMembers) 
     eventResults.push(result)
     const eventLogs = buildEventResultLogs({
       eventResult: result,
-      missionId,
-      missionName: template.name,
-      recruitName: bestRecruit.name,
-      recruitPerks: bestRecruit.perks,
-      recruitFlaws: bestRecruit.flaws,
-      recruitPersonality: bestRecruit.personality,
+      context: buildLogContext({ template, crewMembers, actingRecruit: bestRecruit }),
     })
     await insertLogEntries(client, playerId, [...eventLogs.mission, ...eventLogs.global])
   }
@@ -308,23 +325,19 @@ async function completeMission(client, playerId, instance, template, failed, shi
   }
 
   const shipData = await ShipService.getShip(client, playerId, instance.ship_id)
+  const crewMembers = await Promise.all(
+    (shipData?.crew ?? []).map(id => getRecruit(client, playerId, id))
+  )
   const crewNames = shipData?.crew?.length > 0
-    ? (await Promise.all(
-        shipData.crew.map(id => client.query(
-          'SELECT name FROM recruits WHERE player_id = $1 AND id = $2',
-          [playerId, id]
-        ))
-      )).map(r => r.rows[0]?.name || `Recruit ${r.rows[0]?.id}`).join(', ')
+    ? crewMembers.map(r => r?.name || `Recruit ${r?.id}`).join(', ')
     : 'No crew'
 
   const termineeLogs = buildPhaseLogs({
     phase: 'TERMINEE',
     failed,
     rewardForfeited: instance.reward_forfeited,
-    missionId: template.id,
-    missionName: template.name,
-    missionDifficulty: template.difficulty,
     recruitName: crewNames,
+    context: buildLogContext({ template, crewMembers }),
   })
   await insertLogEntries(client, playerId, [...termineeLogs.mission, ...termineeLogs.global])
 }
@@ -364,39 +377,37 @@ async function advanceMission(client, playerId, instance, template, now) {
   const pastEventPhase = progress > 33 || phase === 'EVENEMENT' || phase === 'RETOUR' || phase === 'TERMINEE'
 
   if (pastEventPhase && currentEventIndex < events.length) {
+    const ship = await ShipService.getShip(client, playerId, instance.ship_id)
+    const crewMembers = await Promise.all(
+      ship.crew.map(id => getRecruit(client, playerId, id))
+    )
+    const logContext = buildLogContext({ template, crewMembers })
+
     if (storedPhase === 'EN_ROUTE') {
-      const ship = await ShipService.getShip(client, playerId, instance.ship_id)
       const crewNames = ship?.crew?.length > 0
-        ? (await Promise.all(
-            ship.crew.map(id => client.query(
-              'SELECT name FROM recruits WHERE player_id = $1 AND id = $2',
-              [playerId, id]
-            ))
-          )).map(r => r.rows[0]?.name).filter(Boolean).join(', ')
+        ? crewMembers.map(r => r?.name).filter(Boolean).join(', ')
         : 'No crew'
 
       const eventPhaseLogs = buildPhaseLogs({
         phase: 'EVENEMENT',
         failed: false,
         rewardForfeited,
-        missionId: template.id,
-        missionName: template.name,
-        missionDifficulty: template.difficulty,
         recruitName: crewNames,
+        context: logContext,
       })
       await insertLogEntries(client, playerId, eventPhaseLogs.mission)
     }
-
-    const ship = await ShipService.getShip(client, playerId, instance.ship_id)
-    const crewMembers = await Promise.all(
-      ship.crew.map(id => getRecruit(client, playerId, id))
-    )
 
     const resolution = await resolveEvents(client, playerId, instance, template, crewMembers)
     failed = resolution.failed
     rewardForfeited = resolution.rewardForfeited
     currentEventIndex = resolution.currentEventIndex
     eventResults = resolution.eventResults
+
+    // "Post-event resolution" banter trigger — fires once per tick that processed event(s),
+    // not once per individual event, to avoid noise.
+    const postEventBanter = await buildBanterLog(client, playerId, logContext)
+    if (postEventBanter) await insertLogEntries(client, playerId, postEventBanter.mission)
 
     if (resolution.forceReturn) {
       await client.query(
@@ -410,12 +421,14 @@ async function advanceMission(client, playerId, instance, template, now) {
         phase: 'RETOUR',
         failed: true,
         rewardForfeited,
-        missionId: template.id,
-        missionName: template.name,
-        missionDifficulty: template.difficulty,
         recruitName: 'Crew',
+        context: logContext,
       })
       await insertLogEntries(client, playerId, retourLogs.mission)
+
+      const retourBanter = await buildBanterLog(client, playerId, logContext)
+      if (retourBanter) await insertLogEntries(client, playerId, retourBanter.mission)
+
       return
     }
 
@@ -434,25 +447,25 @@ async function advanceMission(client, playerId, instance, template, now) {
 
   if (phase === 'RETOUR' && storedPhase !== 'RETOUR' && !instance.forced_return) {
     const ship = await ShipService.getShip(client, playerId, instance.ship_id)
+    const crewMembers = await Promise.all(
+      (ship?.crew ?? []).map(id => getRecruit(client, playerId, id))
+    )
     const crewNames = ship?.crew?.length > 0
-      ? (await Promise.all(
-          ship.crew.map(id => client.query(
-            'SELECT name FROM recruits WHERE player_id = $1 AND id = $2',
-            [playerId, id]
-          ))
-        )).map(r => r.rows[0]?.name).filter(Boolean).join(', ')
+      ? crewMembers.map(r => r?.name).filter(Boolean).join(', ')
       : 'No crew'
 
+    const logContext = buildLogContext({ template, crewMembers })
     const retourLogs = buildPhaseLogs({
       phase: 'RETOUR',
       failed,
       rewardForfeited,
-      missionId: template.id,
-      missionName: template.name,
-      missionDifficulty: template.difficulty,
       recruitName: crewNames,
+      context: logContext,
     })
     await insertLogEntries(client, playerId, retourLogs.mission)
+
+    const banterLogs = await buildBanterLog(client, playerId, logContext)
+    if (banterLogs) await insertLogEntries(client, playerId, banterLogs.mission)
   }
 
   if (phase === 'TERMINEE') {
@@ -491,6 +504,7 @@ async function syncMissions(client, playerId) {
     const template = {
       ...templateResult.rows[0],
       events: templateResult.rows[0].events,
+      planet: templateResult.rows[0].planet,
     }
     await advanceMission(client, playerId, instance, template, now)
   }
@@ -596,23 +610,23 @@ async function startMission(client, playerId, templateId, shipId) {
     [playerId, templateId, shipId],
   )
 
-  const crewNames = (await Promise.all(
-    ship.crew.map(id => client.query(
-      'SELECT name FROM recruits WHERE player_id = $1 AND id = $2',
-      [playerId, id]
-    ))
-  )).map(r => r.rows[0]?.name).filter(Boolean).join(', ')
+  const crewMembers = await Promise.all(
+    ship.crew.map(id => getRecruit(client, playerId, id))
+  )
+  const crewNames = crewMembers.map(r => r?.name).filter(Boolean).join(', ')
 
+  const logContext = buildLogContext({ template, crewMembers })
   const phaseLogs = buildPhaseLogs({
     phase: 'EN_ROUTE',
     failed: false,
     rewardForfeited: false,
-    missionId: templateId,
-    missionName: template.name,
-    missionDifficulty: template.difficulty,
     recruitName: crewNames,
+    context: logContext,
   })
   await insertLogEntries(client, playerId, [...phaseLogs.mission, ...phaseLogs.global])
+
+  const banterLogs = await buildBanterLog(client, playerId, logContext)
+  if (banterLogs) await insertLogEntries(client, playerId, banterLogs.mission)
 
   return { instance: inserted.rows[0] }
 }
@@ -656,25 +670,25 @@ async function forceReturnMission(client, playerId, templateId) {
   )).rows[0]
 
   const ship = await ShipService.getShip(client, playerId, instance.ship_id)
+  const crewMembers = await Promise.all(
+    (ship?.crew ?? []).map(id => getRecruit(client, playerId, id))
+  )
   const crewNames = ship?.crew?.length > 0
-    ? (await Promise.all(
-        ship.crew.map(id => client.query(
-          'SELECT name FROM recruits WHERE player_id = $1 AND id = $2',
-          [playerId, id]
-        ))
-      )).map(r => r.rows[0]?.name).filter(Boolean).join(', ')
+    ? crewMembers.map(r => r?.name).filter(Boolean).join(', ')
     : 'Équipage'
 
+  const logContext = buildLogContext({ template, crewMembers })
   const retourLogs = buildPhaseLogs({
     phase: 'RETOUR',
     failed: instance.failed,
     rewardForfeited: instance.reward_forfeited,
-    missionId: templateId,
-    missionName: template.name,
-    missionDifficulty: template.difficulty,
     recruitName: crewNames,
+    context: logContext,
   })
   await insertLogEntries(client, playerId, retourLogs.mission)
+
+  const banterLogs = await buildBanterLog(client, playerId, logContext)
+  if (banterLogs) await insertLogEntries(client, playerId, banterLogs.mission)
 
   await client.query(
     `UPDATE mission_instances SET
