@@ -24,9 +24,9 @@ export class CandidateDetailComponent {
 
   archetypeLabel(c: Candidate): string {
     switch (c.archetype) {
-      case 'specialized':        return 'Spécialisé';
-      case 'well-rounded':       return 'Polyvalent';
-      case 'jack-of-all-trades': return 'Touche-à-tout';
+      case 'specialized':        return 'Specialist';
+      case 'well-rounded':       return 'Versatile';
+      case 'jack-of-all-trades': return 'Jack-of-all-trades';
     }
   }
 
@@ -40,7 +40,7 @@ export class CandidateDetailComponent {
         if (!this.candidate) return;
         void this.candidateService.hireCandidate(this.candidate.id).then(result => {
           if (!result) {
-            this.hireError = `Effectif complet (max ${this.game.player$.value.maxNumberOfRecruits} recrues)`;
+            this.hireError = `Roster full (max ${this.game.player$.value.maxNumberOfRecruits} recruits)`;
           }
         });
       },

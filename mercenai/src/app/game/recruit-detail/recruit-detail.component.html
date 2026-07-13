@@ -9,7 +9,7 @@
   <div class="indent-one">"hp"       : {{ recruit.hp }}/{{ recruit.maxHp }},</div>
 
   <div class="indent-one">"attributes" : {{ '{' }}</div>
-  <div class="indent-two muted">// Physique</div>
+  <div class="indent-two muted">// Physical</div>
   <div class="indent-two">agility    {{ statBar(recruit.attributes.agility) }}  {{ recruit.attributes.agility }}</div>
   <div class="indent-two">fortitude  {{ statBar(recruit.attributes.fortitude) }}  {{ recruit.attributes.fortitude }}</div>
   <div class="indent-two">might      {{ statBar(recruit.attributes.might) }}  {{ recruit.attributes.might }}</div>
@@ -39,7 +39,7 @@
   <div class="indent-one">]</div>
 </ng-container>
 <ng-template #notFound>
-  <div class="indent-one muted">Recrue introuvable : {{ id }}</div>
+  <div class="indent-one muted">Recruit not found: {{ id }}</div>
 </ng-template>
 <div>{{ '}' }}</div>
-<div class="hint">[ rename &lt;nom&gt; ] pour renommer cette recrue</div>
+<div class="hint">[ rename &lt;name&gt; ] to rename this recruit</div>

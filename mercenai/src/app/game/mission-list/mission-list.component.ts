@@ -37,7 +37,7 @@ export class MissionListComponent implements OnInit, OnDestroy {
           console.warn('Usage: detail <id>');
           return;
         }
-        this.layout.addPanel(PanelModule.MissionDetail, { id: Number(id) });
+        this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.MissionDetail, { id: Number(id) });
       }
     };
   }

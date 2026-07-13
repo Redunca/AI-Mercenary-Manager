@@ -61,52 +61,60 @@ function pickPlanetTagQuote({ tags, channel }) {
 
 const POOL = {
   EN_ROUTE: {
-    sys: ["Unité en déplacement vers la zone d'opération.", "Départ confirmé. Aucun incident au départ."],
-    ia: ["Aucune anomalie détectée.", "Trajectoire nominale. Surveillance active."],
-    recruit: ["On est partis dans la mauvaise direction.", "J'ai oublié mes affaires.", "C'est loin ?"],
+    sys: ["Unit moving toward the operation zone.", "Departure confirmed. No incidents on launch."],
+    ia: ["No anomalies detected.", "Trajectory nominal. Monitoring active."],
+    recruit: ["We went the wrong way.", "I forgot my stuff.", "Is it far?"],
   },
-  EVENEMENT: {
-    sys: ["Contact établi avec la zone cible.", "Événement en cours. Issue indéterminée."],
-    ia: ["Analyse de situation en cours.", "Variables environnementales instables."],
-    recruit: ["C'est quoi ce truc ?!", "Personne m'a dit que ça serait comme ça."],
+  EVENT: {
+    sys: ["Contact established with target zone.", "Event in progress. Outcome undetermined."],
+    ia: ["Situation analysis in progress.", "Environmental variables unstable."],
+    recruit: ["What is that thing?!", "Nobody told me it would be like this."],
   },
-  RETOUR: {
-    sys: ["Phase de retour initiée.", "Mission accomplie. Retour en cours."],
-    ia: ["Unité en chemin de retour. Résultat nominal.", "Efficacité : acceptable."],
-    recruit: ["On rentre enfin.", "J'ai failli mourir mais bon.", "Je veux une prime."],
+  RETURN: {
+    sys: ["Return phase initiated.", "Mission accomplished. Returning."],
+    ia: ["Unit en route home. Nominal outcome.", "Efficiency: acceptable."],
+    recruit: ["We're finally heading back.", "Almost died but whatever.", "I want a bonus."],
   },
-  TERMINEE: {
-    sys: ["Mission terminée. Unité rentrée à la base.", "Objectif atteint."],
-    ia: ["Opération conclue.", "Performance dans les paramètres acceptables."],
-    recruit: ["On recommence quand ?", "Je vais dormir.", "Quelqu'un a de la nourriture ?"],
+  COMPLETED: {
+    sys: ["Mission complete. Unit returned to base.", "Objective achieved."],
+    ia: ["Operation concluded.", "Performance within acceptable parameters."],
+    recruit: ["When do we go again?", "I'm going to sleep.", "Anyone got food?"],
   },
 }
 
 const POOL_FAILED = {
-  RETOUR: {
-    sys: ["Extraction d'urgence. Mission avortée.", "Retour précipité. Objectif non atteint."],
-    ia: ["Protocole d'extraction activé.", "Échec opérationnel. Analyse des causes en cours."],
+  RETURN: {
+    sys: ["Emergency extraction. Mission aborted.", "Hasty retreat. Objective not achieved."],
+    ia: ["Extraction protocol activated.", "Operational failure. Root cause analysis in progress."],
   },
-  TERMINEE: {
-    sys: ["Mission échouée. Unité rentrée à la base.", "Opération avortée."],
-    ia: ["Bilan négatif. Aucun objectif atteint.", "Debriefing d'échec programmé."],
+  COMPLETED: {
+    sys: ["Mission failed. Unit returned to base.", "Operation aborted."],
+    ia: ["Negative outcome. No objective achieved.", "Failure debrief scheduled."],
   },
 }
 
 const EVENT_PHRASES = {
-  success_ia: ["Objectif intermédiaire validé.", "Résultat conforme aux projections.", "Exécution nominale."],
-  success_recruit: ["Trop facile.", "Je savais que j'allais y arriver.", "On continue ?"],
-  hp_loss_ia: ["Dommages enregistrés. Recrue toujours opérationnelle.", "Blessure non critique. Mission maintenue."],
-  hp_loss_recruit: ["Ça fait mal mais je tiens.", "J'ai pris cher.", "Ce n'est qu'une égratignure."],
-  abort_ia: ["Protocole d'extraction activé. Mission avortée.", "Situation incontrôlable. Retrait immédiat."],
-  abort_recruit: ["On fout le camp !", "C'est trop chaud, on se barre.", "J'ai pas signé pour ça."],
-  no_reward_ia: ["Objectif non atteint. Aucune rémunération versée.", "Contrat non honoré. Mission close sans paiement."],
-  no_reward_recruit: ["On rentre les mains vides.", "J'ai fait de mon mieux.", "Pas de crédit, mais on est entiers."],
-  death_ia: ["Signal vital perdu. Recrue neutralisée.", "Perte confirmée. Enregistrement du dossier."],
+  success_ia: ["Intermediate objective validated.", "Result matches projections.", "Nominal execution."],
+  success_recruit: ["Too easy.", "I knew I'd pull it off.", "Shall we continue?"],
+  hp_loss_ia: ["Damage recorded. Recruit still operational.", "Non-critical injury. Mission continues."],
+  hp_loss_recruit: ["That hurt but I'm holding up.", "That one stung.", "Just a scratch."],
+  abort_ia: ["Extraction protocol activated. Mission aborted.", "Situation uncontrollable. Immediate withdrawal."],
+  abort_recruit: ["We're getting out of here!", "Too hot, we're bailing.", "I didn't sign up for this."],
+  no_reward_ia: ["Objective not achieved. No payment issued.", "Contract not honored. Mission closed without payment."],
+  no_reward_recruit: ["We're coming back empty-handed.", "I did my best.", "No credits, but we're all in one piece."],
+  death_ia: ["Vital signs lost. Recruit neutralized.", "Loss confirmed. Filing the record."],
   last_words: [
-    "Transmettez mes salutations à personne.", "J'aurais dû demander une prime plus élevée.",
-    "...", "Je savais que ça finirait comme ça.", "Prenez soin du reste de l'équipe.",
+    "Give my regards to no one in particular.", "I should have asked for a bigger bonus.",
+    "...", "I knew it would end like this.", "Take care of the rest of the team.",
   ],
+  revived_ia: ["Flatline reversed. Nanite injection successful.", "Vital signs restored. Recruit stabilized."],
+  revived_recruit: ["I was gone for a second there.", "Remind me to thank whoever packed the medkit."],
+  ship_damage_ia: ["Hull integrity compromised.", "Structural damage sustained."],
+  ship_damage_recruit: ["That's coming out of the bonus.", "We're not landing softly after that."],
+  ship_broken_ia: ["Hull integrity critical. Vessel disabled.", "Ship inoperable. Grounding on return."],
+  ship_broken_recruit: ["We're not flying this thing again anytime soon.", "That's it, she's done."],
+  ship_repaired_ia: ["Auto-patch engaged. Hull integrity restored.", "Repair systems compensated for the damage."],
+  ship_repaired_recruit: ["Patched up and still flying.", "Good thing we packed spares."],
 }
 
 function pick(arr) {
@@ -155,7 +163,7 @@ function buildPhaseLogs({ context, phase, failed, rewardForfeited, recruitName }
     { tag: '[IA]', message: iaLine, missionId },
   ]
 
-  if (phase === 'EN_ROUTE' || phase === 'EVENEMENT') {
+  if (phase === 'EN_ROUTE' || phase === 'EVENT') {
     entries.push({
       tag: `[${recruitName.toUpperCase()}]`,
       message: `"${pick(pool.recruit)}"`,
@@ -167,14 +175,14 @@ function buildPhaseLogs({ context, phase, failed, rewardForfeited, recruitName }
   if (phase === 'EN_ROUTE') {
     global.push({
       tag: '[SYS]',
-      message: `Mission "${missionName}" lancée — Recrue : ${recruitName}`,
+      message: `Mission "${missionName}" launched — Recruit: ${recruitName}`,
     })
   }
-  if (phase === 'TERMINEE') {
-    const outcome = failed ? 'ÉCHEC' : rewardForfeited ? 'SANS RÉCOMPENSE' : 'SUCCÈS'
+  if (phase === 'COMPLETED') {
+    const outcome = failed ? 'FAILURE' : rewardForfeited ? 'NO REWARD' : 'SUCCESS'
     global.push({
       tag: '[SYS]',
-      message: `Mission "${missionName}" terminée [${outcome}] — Recrue : ${recruitName}`,
+      message: `Mission "${missionName}" completed [${outcome}] — Recruit: ${recruitName}`,
     })
   }
 
@@ -211,31 +219,47 @@ function buildEventResultLogs({ context, eventResult }) {
   }
 
   if (r.recruitDied) {
-    entries.push({ tag: '[SYS]', message: `${r.type}${r.attribute ? ` [${r.attribute}]` : ''} — ${rollStr} → MORT AU COMBAT`, missionId })
+    entries.push({ tag: '[SYS]', message: `${r.type}${r.attribute ? ` [${r.attribute}]` : ''} — ${rollStr} → KILLED IN ACTION`, missionId })
     entries.push({ tag: '[IA]', message: iaLine(EVENT_PHRASES.death_ia), missionId })
     entries.push({ tag, message: `"${pick(EVENT_PHRASES.last_words)}"`, missionId })
     return {
       mission: entries,
-      global: [{ tag: '[SYS]', message: `${recruitName} est mort(e) au cours de la mission "${missionName}".` }],
+      global: [{ tag: '[SYS]', message: `${recruitName} died during mission "${missionName}".` }],
     }
   }
 
   const typeLabel = `${r.type}${r.attribute ? ` [${r.attribute}]` : ''}`
-  if (!r.success && r.consequence === 'FORCED_DEPARTURE') {
-    entries.push({ tag: '[SYS]', message: `${typeLabel} — ${rollStr} → ÉCHEC — Extraction forcée`, missionId })
+  if (r.recruitRevived) {
+    entries.push({ tag: '[SYS]', message: `${typeLabel} — ${rollStr} → FAILURE — -${r.hpLost} HP → REVIVED`, missionId })
+    entries.push({ tag: '[IA]', message: pick(EVENT_PHRASES.revived_ia), missionId })
+    entries.push({ tag, message: recruitQuote(EVENT_PHRASES.revived_recruit), missionId })
+  } else if (!r.success && r.consequence === 'FORCED_DEPARTURE') {
+    entries.push({ tag: '[SYS]', message: `${typeLabel} — ${rollStr} → FAILURE — Forced extraction`, missionId })
     entries.push({ tag: '[IA]', message: iaLine(EVENT_PHRASES.abort_ia), missionId })
     entries.push({ tag, message: recruitQuote(EVENT_PHRASES.abort_recruit), missionId })
   } else if (!r.success && r.consequence === 'NO_REWARD') {
-    entries.push({ tag: '[SYS]', message: `${typeLabel} — ${rollStr} → ÉCHEC — aucune récompense`, missionId })
+    entries.push({ tag: '[SYS]', message: `${typeLabel} — ${rollStr} → FAILURE — no reward`, missionId })
     entries.push({ tag: '[IA]', message: iaLine(EVENT_PHRASES.no_reward_ia), missionId })
     entries.push({ tag, message: recruitQuote(EVENT_PHRASES.no_reward_recruit), missionId })
   } else if (!r.success && r.consequence === 'HP_LOSS') {
-    entries.push({ tag: '[SYS]', message: `${typeLabel} — ${rollStr} → ÉCHEC — -${r.hpLost} PV`, missionId })
+    entries.push({ tag: '[SYS]', message: `${typeLabel} — ${rollStr} → FAILURE — -${r.hpLost} HP`, missionId })
     entries.push({ tag: '[IA]', message: iaLine(EVENT_PHRASES.hp_loss_ia), missionId })
     entries.push({ tag, message: recruitQuote(EVENT_PHRASES.hp_loss_recruit), missionId })
+  } else if (!r.success && r.consequence === 'SHIP_DAMAGE' && r.shipBroken) {
+    entries.push({ tag: '[SYS]', message: `${typeLabel} — ${rollStr} → FAILURE — ship disabled, forced extraction`, missionId })
+    entries.push({ tag: '[IA]', message: pick(EVENT_PHRASES.ship_broken_ia), missionId })
+    entries.push({ tag, message: recruitQuote(EVENT_PHRASES.ship_broken_recruit), missionId })
+  } else if (!r.success && r.consequence === 'SHIP_DAMAGE' && r.shipAutoRepaired) {
+    entries.push({ tag: '[SYS]', message: `${typeLabel} — ${rollStr} → FAILURE — ship damaged, auto-repaired`, missionId })
+    entries.push({ tag: '[IA]', message: pick(EVENT_PHRASES.ship_repaired_ia), missionId })
+    entries.push({ tag, message: recruitQuote(EVENT_PHRASES.ship_repaired_recruit), missionId })
+  } else if (!r.success && r.consequence === 'SHIP_DAMAGE') {
+    entries.push({ tag: '[SYS]', message: `${typeLabel} — ${rollStr} → FAILURE — ship damaged, no reward`, missionId })
+    entries.push({ tag: '[IA]', message: pick(EVENT_PHRASES.ship_damage_ia), missionId })
+    entries.push({ tag, message: recruitQuote(EVENT_PHRASES.ship_damage_recruit), missionId })
   } else {
     const rewardStr = r.rewardEarned ? ` [+${r.rewardEarned.amount} ${r.rewardEarned.type}]` : ''
-    entries.push({ tag: '[SYS]', message: `${typeLabel} — ${rollStr} → SUCCÈS${rewardStr}`, missionId })
+    entries.push({ tag: '[SYS]', message: `${typeLabel} — ${rollStr} → SUCCESS${rewardStr}`, missionId })
     entries.push({ tag: '[IA]', message: iaLine(EVENT_PHRASES.success_ia), missionId })
     entries.push({ tag, message: recruitQuote(EVENT_PHRASES.success_recruit), missionId })
   }

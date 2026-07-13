@@ -22,9 +22,9 @@ export class CandidateListComponent {
 
   archetypeLabel(c: Candidate): string {
     switch (c.archetype) {
-      case 'specialized':        return 'Spécialisé';
-      case 'well-rounded':       return 'Polyvalent';
-      case 'jack-of-all-trades': return 'Touche-à-tout';
+      case 'specialized':        return 'Specialist';
+      case 'well-rounded':       return 'Versatile';
+      case 'jack-of-all-trades': return 'Jack-of-all-trades';
     }
   }
 
@@ -41,7 +41,7 @@ export class CandidateListComponent {
       'refresh': () => { void this.candidateService.generateCandidates(5); },
       'detail': (id: string) => {
         if (!id) { console.warn('Usage: detail <id>'); return; }
-        this.layout.addPanel(PanelModule.CandidateDetail, { id });
+        this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.CandidateDetail, { id });
       },
     };
   }

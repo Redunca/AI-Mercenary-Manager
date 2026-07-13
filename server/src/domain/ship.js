@@ -24,6 +24,7 @@ function createStarterShip(shipId, rollInRange) {
       capacity: 1,
       inventory_space: 0,
       durability: 10,
+      max_durability: 10,
       price: 0,
     },
     crew: [],

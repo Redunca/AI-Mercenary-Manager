@@ -1,7 +1,7 @@
 export interface LogEntry {
   tag: string;      // '[SYS]', '[IA]', '[BOB]', '[VEX→KADE]' (banter), etc.
   message: string;
-  missionId?: number; // absent = entrée globale uniquement
+  missionId?: number; // absent = global entry only
 }
 
 // Banter tags use the '[NAME_A→NAME_B]' format (see server's log.service.js buildBanterLog),

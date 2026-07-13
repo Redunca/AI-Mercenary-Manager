@@ -3,64 +3,64 @@
     "success": {
       "perk-and-flawless": {
         "Analyst": [
-          "Entrée réussie. Leur sécurité repose manifestement sur l’optimisme plutôt que sur la logique.",
-          "Pénétration effectuée. Je note que la surveillance était… conceptuellement décorative.",
-          "Accès discret obtenu. Statistiquement, ils auraient dû remarquer quelque chose.",
-          "Zone infiltrée. Je propose qu’on classe ce dispositif dans ‘illusion de protection’.",
-          "Passage validé. Leur protocole de sécurité est un hommage involontaire à l’improvisation."
+          "Entry successful. Their security clearly relies on optimism rather than logic.",
+          "Penetration accomplished. I note the surveillance was... conceptually decorative.",
+          "Discreet access obtained. Statistically, they should have noticed something.",
+          "Zone infiltrated. I propose we file this setup under 'illusion of protection'.",
+          "Passage validated. Their security protocol is an unintentional tribute to improvisation."
         ],
         "Diplomat": [
-          "Je suis passé sans être vu… je crois que l’environnement voulait nous accueillir.",
-          "L’infiltration s’est faite en douceur. Je ressens une belle harmonie dans ce silence.",
-          "La zone m’a laissé entrer. Peut‑être qu’elle sentait que nos intentions étaient pacifiques.",
-          "Le passage s’est ouvert à moi. Je crois que nous avons trouvé un équilibre discret.",
-          "Je suis passé sans alerte. Je sens que l’univers approuve cette approche délicate."
+          "I passed through unseen... I think the environment wanted to welcome us.",
+          "The infiltration went smoothly. I sense a beautiful harmony in this silence.",
+          "The zone let me in. Maybe it sensed our intentions were peaceful.",
+          "The passage opened up to me. I think we found a quiet balance.",
+          "I passed through without triggering an alert. I sense the universe approves of this delicate approach."
         ],
         "Sentinel": [
-          "Infiltration validée. Je vais consigner : passage discret conforme, aucune alarme.",
-          "Accès obtenu. Je recommande d’ajouter cette méthode au protocole d’approche silencieuse.",
-          "Zone pénétrée. Intervention réussie, surveillance contournée, rapport en cours.",
-          "Passage sécurisé. Je note que la procédure improvisée a été étonnamment efficace.",
-          "Infiltration complète. Je classe l’opération dans les actions discrètes exemplaires."
+          "Infiltration validated. I'll log it: discreet passage compliant, no alarms.",
+          "Access obtained. I recommend adding this method to the silent approach protocol.",
+          "Zone penetrated. Intervention successful, surveillance bypassed, report in progress.",
+          "Passage secured. I note the improvised procedure was surprisingly effective.",
+          "Infiltration complete. I'm filing this operation under exemplary covert actions."
         ],
         "Explorer": [
-          "Ok, j’ai glissé entre deux trucs et personne m’a vu. Je suis un ninja accidentel.",
-          "J’ai rampé, sauté, tourné… et ça a marché. Je sais pas comment, mais ça a marché.",
-          "Je suis passé juste derrière eux. Ils regardaient ailleurs. Timing parfait.",
-          "J’ai improvisé un chemin, et maintenant je suis dedans. Trop facile.",
-          "Je pensais que ça allait faire du bruit, mais finalement c’était super discret."
+          "Okay, I slipped between a couple things and nobody saw me. I'm an accidental ninja.",
+          "I crawled, jumped, turned around... and it worked. No idea how, but it worked.",
+          "I slipped right behind them. They were looking elsewhere. Perfect timing.",
+          "I improvised a path, and now I'm in. Too easy.",
+          "I thought this was going to be noisy, but it turned out super quiet."
         ]
       }
     },
     "failure": {
       "perk-and-flawless": {
         "Analyst": [
-          "Infiltration échouée. Leur système d’alerte s’est activé… par accident, probablement.",
-          "Accès refusé. Je note que même une sécurité médiocre peut dire ‘non’.",
-          "Zone non pénétrée. Statistiquement, ils n’auraient pas dû remarquer ma présence.",
-          "Passage compromis. Je suppose que leur vigilance s’est déclenchée par erreur.",
-          "Infiltration ratée. Je vais considérer cet incident comme une anomalie comportementale."
+          "Infiltration failed. Their alert system triggered... by accident, probably.",
+          "Access denied. I note that even mediocre security can say 'no'.",
+          "Zone not penetrated. Statistically, they shouldn't have noticed my presence.",
+          "Passage compromised. I suppose their vigilance triggered by mistake.",
+          "Infiltration failed. I'll file this incident as a behavioral anomaly."
         ],
         "Diplomat": [
-          "Je n’ai pas réussi à passer… je crois que la zone n’était pas prête à m’accueillir.",
-          "L’environnement a rejeté mon approche. Je ressens une grande tension silencieuse.",
-          "La zone n’a pas voulu s’ouvrir. Peut‑être qu’elle avait besoin de plus de douceur.",
-          "Le passage s’est fermé devant moi. Je sens que l’univers voulait qu’on attende.",
-          "Je n’ai pas pu entrer. Je crois que l’endroit traverse une période de méfiance."
+          "I couldn't get through... I don't think the zone was ready to welcome me.",
+          "The environment rejected my approach. I sense a great, quiet tension.",
+          "The zone refused to open up. Maybe it just needed more gentleness.",
+          "The passage closed in front of me. I sense the universe wanted us to wait.",
+          "I couldn't get in. I think this place is going through a period of distrust."
         ],
         "Sentinel": [
-          "Infiltration échouée. Je vais consigner : passage discret non conforme, incident majeur.",
-          "Accès refusé. Je recommande une révision complète du protocole d’approche silencieuse.",
-          "Zone non pénétrée. Intervention ratée, surveillance active, rapport d’échec en préparation.",
-          "Passage compromis. Je note que la procédure improvisée n’a pas été efficace.",
-          "Infiltration non opérationnelle. Je classe l’action dans les échecs à risque élevé."
+          "Infiltration failed. I'll log it: discreet passage non-compliant, major incident.",
+          "Access denied. I recommend a full review of the silent approach protocol.",
+          "Zone not penetrated. Intervention failed, surveillance active, failure report in preparation.",
+          "Passage compromised. I note the improvised procedure was not effective.",
+          "Infiltration non-operational. I'm filing this action under high-risk failures."
         ],
         "Explorer": [
-          "Bon, j’ai essayé de passer… et ils m’ont vu direct. Pas très discret.",
-          "J’ai rampé, sauté, tourné… et j’ai fait tomber un truc. Ils ont tout entendu.",
-          "Je suis passé juste derrière eux… mais ils se sont retournés. Mauvais timing.",
-          "J’ai improvisé un chemin, et maintenant je suis coincé. Oups.",
-          "Je pensais que ça allait être discret, mais j’ai fait un bruit énorme. Je prends note."
+          "Well, I tried to sneak past... and they spotted me instantly. Not very stealthy.",
+          "I crawled, jumped, turned around... and knocked something over. They heard everything.",
+          "I slipped right behind them... but they turned around. Bad timing.",
+          "I improvised a path, and now I'm stuck. Oops.",
+          "I thought this was going to be quiet, but I made an enormous racket. Noted."
         ]
       }
     }

@@ -3,64 +3,64 @@
     "success": {
       "perk-and-flawless": {
         "Analyst": [
-          "Diagnostic terminé. Leur technologie repose sur des choix… conceptuellement douteux.",
-          "Système réparé. Je note que la panne provenait d’une décision humaine prévisible.",
-          "Circuit stabilisé. Statistiquement, il aurait dû exploser, mais je suppose que j’ai compensé.",
-          "Problème résolu. Je propose qu’on classe cet appareil dans ‘archaïsme fonctionnel’.",
-          "Module opérationnel. Leur conception défie la logique, mais j’ai réussi à la dompter."
+          "Diagnostic complete. Their technology rests on choices... conceptually questionable ones.",
+          "System repaired. I note the failure stemmed from a predictable human decision.",
+          "Circuit stabilized. Statistically, it should have exploded, but I suppose I compensated.",
+          "Problem solved. I propose we file this device under 'functional archaism'.",
+          "Module operational. Their design defies logic, but I managed to tame it."
         ],
         "Diplomat": [
-          "La machine s’est ouverte à moi… je crois qu’elle voulait juste qu’on l’écoute.",
-          "Le système fonctionne à nouveau. Je ressens une belle harmonie mécanique.",
-          "Le circuit a accepté mes ajustements. Peut‑être qu’il avait besoin d’un peu de douceur.",
-          "La réparation a pris. Je sens que cette machine cherchait à retrouver sa place.",
-          "Le module s’est stabilisé. Je crois que nous avons trouvé un équilibre ensemble."
+          "The machine opened up to me... I think it just wanted to be listened to.",
+          "The system is working again. I feel a beautiful mechanical harmony.",
+          "The circuit accepted my adjustments. Maybe it just needed a little gentleness.",
+          "The repair took. I sense this machine was searching for its place again.",
+          "The module has stabilized. I think we found a balance together."
         ],
         "Sentinel": [
-          "Réparation validée. Je vais consigner : diagnostic conforme, incident résolu.",
-          "Système stabilisé. Je recommande d’ajouter cette procédure au manuel technique.",
-          "Circuit opérationnel. Intervention réussie, aucune anomalie persistante.",
-          "Problème corrigé. Je note que la méthode improvisée a été étonnamment efficace.",
-          "Module fonctionnel. Je classe l’opération dans les réparations exemplaires."
+          "Repair validated. I'll log it: diagnostic compliant, incident resolved.",
+          "System stabilized. I recommend adding this procedure to the technical manual.",
+          "Circuit operational. Intervention successful, no persisting anomaly.",
+          "Problem corrected. I note the improvised method was surprisingly effective.",
+          "Module functional. I'm filing this operation under exemplary repairs."
         ],
         "Explorer": [
-          "Ok, j’ai touché un truc, et maintenant ça marche. Je suis un génie accidentel.",
-          "J’ai bidouillé au hasard et la machine a arrêté de faire des bruits bizarres.",
-          "J’ai tapé dessus, et ça a fonctionné. Comme quoi, la technique c’est simple.",
-          "Je pensais avoir tout cassé, mais en fait ça a réparé le problème. Incroyable.",
-          "J’ai tourné un bouton au hasard, et maintenant tout est stable. Magie ? Talent ? Oui."
+          "Okay, I touched something, and now it works. I'm an accidental genius.",
+          "I fiddled with random stuff and the machine stopped making weird noises.",
+          "I hit it, and it worked. Turns out engineering is easy.",
+          "I thought I'd broken everything, but it actually fixed the problem. Unbelievable.",
+          "I turned a random knob, and now everything's stable. Magic? Talent? Yes."
         ]
       }
     },
     "failure": {
       "perk-and-flawless": {
         "Analyst": [
-          "Diagnostic impossible. Leur technologie est si primitive qu’elle résiste même à mes efforts.",
-          "Réparation échouée. Je note que la machine a choisi la voie de l’autodestruction conceptuelle.",
-          "Circuit instable. Statistiquement, il ne devrait pas exister dans cet état.",
-          "Problème non résolu. Je suppose que la logique a abandonné ce dispositif depuis longtemps.",
-          "Module hors service. Je vais considérer cet échec comme une étude anthropologique."
+          "Diagnostic impossible. Their technology is so primitive it resists even my efforts.",
+          "Repair failed. I note the machine chose the path of conceptual self-destruction.",
+          "Circuit unstable. Statistically, it shouldn't exist in this state.",
+          "Problem unresolved. I suppose logic abandoned this device a long time ago.",
+          "Module out of service. I'll file this failure as an anthropological study."
         ],
         "Diplomat": [
-          "La machine n’a pas voulu coopérer… je crois qu’elle traverse une période difficile.",
-          "Le système a rejeté mes ajustements. Je ressens beaucoup de tension mécanique.",
-          "Le circuit n’a pas accepté mon aide. Peut‑être qu’il avait besoin de plus de temps.",
-          "La réparation a échoué. Je sens que cette machine porte un lourd passé.",
-          "Le module s’est fermé à moi. Je crois qu’il n’était pas prêt à changer."
+          "The machine refused to cooperate... I think it's going through a hard time.",
+          "The system rejected my adjustments. I sense a lot of mechanical tension.",
+          "The circuit didn't accept my help. Maybe it just needed more time.",
+          "The repair failed. I sense this machine carries a heavy past.",
+          "The module closed itself off to me. I don't think it was ready to change."
         ],
         "Sentinel": [
-          "Réparation échouée. Je vais consigner : diagnostic non conforme, incident majeur.",
-          "Système instable. Je recommande une révision complète du protocole technique.",
-          "Circuit non opérationnel. Intervention ratée, risque accru, rapport d’échec en préparation.",
-          "Problème non corrigé. Je note que la méthode improvisée n’a pas été efficace.",
-          "Module hors service. Je classe l’opération dans les réparations à risque élevé."
+          "Repair failed. I'll log it: diagnostic non-compliant, major incident.",
+          "System unstable. I recommend a full review of the technical protocol.",
+          "Circuit non-operational. Intervention failed, increased risk, failure report in preparation.",
+          "Problem uncorrected. I note the improvised method was not effective.",
+          "Module out of service. I'm filing this operation under high-risk repairs."
         ],
         "Explorer": [
-          "Bon, j’ai touché un truc, et maintenant ça fait encore plus de bruits bizarres.",
-          "J’ai bidouillé au hasard, et la machine a décidé de mourir. Oups.",
-          "J’ai tapé dessus, et ça a empiré. Je pensais que ça marchait toujours.",
-          "Je pensais avoir réparé, mais en fait j’ai juste tout dérangé.",
-          "J’ai tourné un bouton au hasard, et maintenant ça fume. Je prends note : ne plus toucher."
+          "Well, I touched something, and now it's making even weirder noises.",
+          "I fiddled with random stuff, and the machine decided to die. Oops.",
+          "I hit it, and it got worse. I thought that always worked.",
+          "I thought I'd fixed it, but I actually just messed everything up.",
+          "I turned a random knob, and now it's smoking. Noted: stop touching things."
         ]
       }
     }

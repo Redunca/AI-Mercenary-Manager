@@ -3,5 +3,5 @@
 <div *ngFor="let entry of logs" class="indent-one log-entry">
   <span class="tag" [class.tag-banter]="isBanterTag(entry.tag)">{{ entry.tag }}</span> {{ entry.message }}
 </div>
-<div *ngIf="logs.length === 0" class="indent-one muted">— aucun événement —</div>
+<div *ngIf="logs.length === 0" class="indent-one muted">— no events —</div>
 <div>]</div>

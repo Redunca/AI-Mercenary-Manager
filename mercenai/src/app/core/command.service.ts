@@ -14,7 +14,6 @@ export class CommandService {
     this.registerGlobalCommands('focus', this.handleFocus.bind(this));
     this.registerGlobalCommands('mission', this.handleMission.bind(this));
     this.registerGlobalCommands('ship', this.handleShip.bind(this));
-    this.registerGlobalCommands('equipment', this.handleEquipment.bind(this));
     this.registerGlobalCommands('logs', this.handleLogs.bind(this));
     this.registerGlobalCommands('home', this.handleHome.bind(this));
     this.registerGlobalCommands('help', this.handleHelp.bind(this));
@@ -87,7 +86,7 @@ export class CommandService {
   routeCommand(input: string, panelId: number) {
     const { command, args } = this.parse(input);
 
-    // 1. commandes locales
+    // 1. local commands
     const panel = this.layout.getPanelById(panelId);
     if (panel?.terminal?.localCommands[command]) {
       panel.terminal.localCommands[command](...args);
@@ -95,14 +94,14 @@ export class CommandService {
       return;
     }
 
-    // 2. commandes globales
+    // 2. global commands
     if (this.globalCommands[command]) {
       this.globalCommands[command](...args);
       panel?.terminal?.setInput('');
       return;
     }
 
-    console.warn("Commande inconnue :", command);
+    console.warn("Unknown command:", command);
   }
 
 
@@ -137,17 +136,17 @@ export class CommandService {
       return;
     }
 
-    console.warn("Option inconnue :", opt);
+    console.warn("Unknown option:", opt);
   }
   private handleFocus(arg: string) {
-    // focus par ID
+    // focus by ID
   const id = Number(arg);
   if (!isNaN(id)) {
     this.layout.setActivePanel(id);
     return;
   }
 
-  // focus directionnel
+  // directional focus
   const dir = arg as 'left' | 'right' | 'up' | 'down';
   this.layout.focus(dir);
   }
@@ -269,43 +268,6 @@ export class CommandService {
     }
   }
 
-  private handleEquipment(action: string, ...args: string[]) {
-    switch (action) {
-      case 'list':
-      case '-l':
-      case '--list':
-        this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.EquipmentList);
-        break;
-
-      case 'detail':
-      case '-d':
-      case '--detail':
-        if (args[0]) {
-          this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.EquipmentDetail, { id: args[0] });
-        }
-        break;
-
-      case 'assign':
-        if (args[0] && args[1]) {
-          void this.shipService.assignEquipmentToShip(Number(args[0]), Number(args[1])).then(() => {
-            this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.EquipmentDetail, { id: args[0] });
-          });
-        }
-        break;
-
-      case 'unassign':
-        if (args[0]) {
-          void this.shipService.unassignEquipmentFromShip(Number(args[0])).then(() => {
-            this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.EquipmentDetail, { id: args[0] });
-          });
-        }
-        break;
-
-      default:
-        console.warn('Usage: equipment list | equipment detail <id> | equipment assign <equipmentId> <shipId> | equipment unassign <equipmentId>');
-    }
-  }
-
   private handleShop(action: string, ...args: string[]) {
     switch (action) {
       case 'list':
@@ -326,7 +288,7 @@ export class CommandService {
         if (args[0]) {
           void this.shopService.buyItem(Number(args[0])).then(result => {
             if (result?.error) {
-              console.warn('Achat échoué :', result.error);
+              console.warn('Purchase failed:', result.error);
               return;
             }
             void this.gameSync.sync().then(() => {
@@ -343,7 +305,7 @@ export class CommandService {
 
   private handleWallet() {
     this.shopService.getWallet().subscribe(wallet => {
-      console.log(`💰 Crédit actuel: ${wallet} ₹`);
+      console.log(`💰 Current credit: ${wallet} ₹`);
     });
   }
 

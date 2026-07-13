@@ -14,8 +14,6 @@ export enum PanelModule{
   CandidateDetail = "candidate-detail",
   ShipList = "ship-list",
   ShipDetail = "ship-detail",
-  EquipmentList = "equipment-list",
-  EquipmentDetail = "equipment-detail",
   ShopList = "shop-list",
   ShopDetail = "shop-detail",
 }

@@ -3,64 +3,64 @@
     "success": {
       "perk-and-flawless": {
         "Analyst": [
-          "Accord obtenu. Leur logique interne est si fragile qu’un souffle aurait suffi à la convaincre.",
-          "Négociation conclue. Statistiquement, ils auraient dû demander au moins une contre‑proposition.",
-          "Discussion réussie. Je note que leur argumentation repose principalement sur l’enthousiasme naïf.",
-          "Terrain d’entente trouvé. Je propose qu’on classe leur stratégie dans ‘optimisme irrationnel’.",
-          "Accord signé. Leur capacité de décision semble fortement corrélée à la fatigue mentale."
+          "Deal reached. Their internal logic is so fragile a single breath would have convinced it.",
+          "Negotiation concluded. Statistically, they should have asked for at least one counter-offer.",
+          "Discussion successful. I note their argument rests mainly on naive enthusiasm.",
+          "Common ground found. I propose we file their strategy under 'irrational optimism'.",
+          "Deal signed. Their decision-making ability appears strongly correlated with mental fatigue."
         ],
         "Diplomat": [
-          "Ils ont accepté… je crois qu’ils avaient besoin d’un peu de douceur dans cette discussion.",
-          "La négociation s’est harmonisée. Je ressens une belle énergie dans cet accord.",
-          "Nous avons trouvé un terrain d’entente. Peut‑être que l’univers voulait nous rapprocher.",
-          "La conversation a porté ses fruits. Je sens que nos intentions ont touché leur cœur.",
-          "Ils ont dit oui. Je crois que cette entente apporte une paix subtile à tout le monde."
+          "They agreed... I think they just needed a bit of gentleness in this discussion.",
+          "The negotiation fell into harmony. I sense a lovely energy in this agreement.",
+          "We found common ground. Maybe the universe wanted to bring us closer.",
+          "The conversation bore fruit. I feel like our intentions touched their heart.",
+          "They said yes. I think this understanding brings a subtle peace to everyone."
         ],
         "Sentinel": [
-          "Négociation validée. Je vais consigner : accord conforme, aucune déviation majeure.",
-          "Accord obtenu. Je recommande d’ajouter cette méthode au protocole de médiation.",
-          "Discussion réussie. Situation stabilisée, compromis atteint, rapport en cours.",
-          "Terrain d’entente trouvé. Je note que la procédure improvisée a été étonnamment efficace.",
-          "Accord signé. Je classe l’opération dans les médiations exemplaires."
+          "Negotiation confirmed. Logging: agreement within parameters, no major deviation.",
+          "Deal reached. I recommend adding this method to the mediation protocol.",
+          "Discussion successful. Situation stabilized, compromise reached, report in progress.",
+          "Common ground found. I note that the improvised procedure was surprisingly effective.",
+          "Deal signed. Filing this operation under exemplary mediations."
         ],
         "Explorer": [
-          "Ok, j’ai dit un truc au hasard et ils ont accepté. Je suis trop fort.",
-          "J’ai improvisé une idée, et ils ont dit oui direct. Incroyable.",
-          "Je pensais que ça allait être compliqué, mais finalement c’était super simple.",
-          "J’ai parlé sans réfléchir, et ça a marché. Je devrais négocier plus souvent.",
-          "Ils ont accepté tout ce que j’ai proposé. Je crois que j’ai un talent caché."
+          "Okay, I said something random and they agreed. I'm too good at this.",
+          "I improvised an idea, and they said yes right away. Incredible.",
+          "I thought it'd be complicated, but it turned out to be super simple.",
+          "I spoke without thinking, and it worked. I should negotiate more often.",
+          "They agreed to everything I proposed. I think I have a hidden talent."
         ]
       }
     },
     "failure": {
       "perk-and-flawless": {
         "Analyst": [
-          "Négociation échouée. Leur raisonnement est si chaotique qu’il défie toute tentative de persuasion.",
-          "Accord refusé. Statistiquement, ils auraient dû au moins considérer l’offre.",
-          "Discussion infructueuse. Je note que leur logique interne est… conceptuellement absente.",
-          "Terrain d’entente non trouvé. Je suppose que leur esprit a décidé de ne rien comprendre.",
-          "Accord impossible. Je vais considérer cet incident comme une anomalie cognitive."
+          "Negotiation failed. Their reasoning is so chaotic it defies any attempt at persuasion.",
+          "Deal rejected. Statistically, they should have at least considered the offer.",
+          "Discussion fruitless. I note their internal logic is... conceptually absent.",
+          "No common ground found. I assume their mind decided to understand nothing.",
+          "Deal impossible. I will file this incident as a cognitive anomaly."
         ],
         "Diplomat": [
-          "Ils n’ont pas accepté… je crois qu’ils traversent une période de grande confusion.",
-          "La négociation n’a pas pris. Je ressens beaucoup de tension dans leurs réponses.",
-          "Nous n’avons pas trouvé d’accord. Peut‑être que leur cœur n’était pas prêt.",
-          "La conversation s’est bloquée. Je sens que l’univers voulait qu’on soit patients.",
-          "Ils ont dit non. Je crois qu’ils avaient besoin d’un autre type d’énergie."
+          "They didn't agree... I think they're going through a period of real confusion.",
+          "The negotiation didn't take. I sense a lot of tension in their responses.",
+          "We couldn't reach an agreement. Maybe their heart wasn't ready.",
+          "The conversation stalled. I feel like the universe wanted us to be patient.",
+          "They said no. I think they needed a different kind of energy."
         ],
         "Sentinel": [
-          "Négociation échouée. Je vais consigner : accord non conforme, incident majeur.",
-          "Accord refusé. Je recommande une révision complète du protocole de médiation.",
-          "Discussion infructueuse. Situation instable, compromis impossible, rapport d’échec en préparation.",
-          "Terrain d’entente non trouvé. Je note que la procédure improvisée n’a pas été productive.",
-          "Accord impossible. Je classe l’opération dans les médiations à risque élevé."
+          "Negotiation failed. Logging: agreement out of parameters, major incident.",
+          "Deal rejected. I recommend a full review of the mediation protocol.",
+          "Discussion fruitless. Situation unstable, compromise impossible, failure report in progress.",
+          "No common ground found. I note that the improvised procedure was not productive.",
+          "Deal impossible. Filing this operation under high-risk mediations."
         ],
         "Explorer": [
-          "Bon, j’ai dit un truc, et ils ont juste fait ‘non’. Pas super.",
-          "J’ai improvisé une idée, mais elle était vraiment trop nulle pour marcher.",
-          "Je pensais que ça allait être simple, mais ils ont tout refusé.",
-          "J’ai parlé sans réfléchir, et ça a empiré la situation. Oups.",
-          "Wow, ils sont beaucoup plus têtus que prévu. Je vais devoir parler mieux."
+          "Well, I said something, and they just went 'no'. Not great.",
+          "I improvised an idea, but it was really too lame to work.",
+          "I thought it'd be simple, but they refused everything.",
+          "I spoke without thinking, and it made things worse. Oops.",
+          "Wow, they're way more stubborn than expected. I'm going to have to talk better."
         ]
       }
     }

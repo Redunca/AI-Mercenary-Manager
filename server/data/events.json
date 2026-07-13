@@ -6,10 +6,10 @@
     "beat": "INFILTRATION",
     "consumes": ["targetName", "planetName"],
     "descriptionTemplates": [
-      "L'équipage étudie la route la plus sûre pour amener {targetName} jusqu'à {planetName}.",
-      "Une reconnaissance rapide des axes de transit de {planetName} permet d'esquisser un itinéraire pour {targetName}."
+      "The crew studies the safest route to bring {targetName} to {planetName}.",
+      "A quick recon of {planetName}'s transit corridors sketches out a route for {targetName}."
     ],
-    "rewardDescriptions": ["Prime de préparation d'itinéraire"]
+    "rewardDescriptions": ["Route Planning Bounty"]
   },
   {
     "id": "AMBUSH",
@@ -18,10 +18,10 @@
     "beat": "EXECUTION",
     "consumes": ["enemyGroupName", "planetName"],
     "descriptionTemplates": [
-      "{enemyGroupName} tend une embuscade au convoi non loin de {planetName}.",
-      "Le convoi essuie le feu de {enemyGroupName}, embusqués sur la route de {planetName}."
+      "{enemyGroupName} springs an ambush on the convoy not far from {planetName}.",
+      "The convoy takes fire from {enemyGroupName}, lying in wait along the road to {planetName}."
     ],
-    "rewardDescriptions": ["Prime de repoussement d'embuscade"]
+    "rewardDescriptions": ["Ambush Repulsion Bounty"]
   },
   {
     "id": "FIELD_MEDICINE",
@@ -30,10 +30,10 @@
     "beat": "EXTRACTION",
     "consumes": ["targetName"],
     "descriptionTemplates": [
-      "Blessé pendant l'accrochage, {targetName} doit être stabilisé avant l'arrivée du vaisseau.",
-      "L'équipage improvise des soins de fortune pour maintenir {targetName} en vie jusqu'au décollage."
+      "Wounded in the skirmish, {targetName} must be stabilized before the ship arrives.",
+      "The crew improvises makeshift care to keep {targetName} alive until liftoff."
     ],
-    "rewardDescriptions": ["Prime de stabilisation"]
+    "rewardDescriptions": ["Stabilization Bounty"]
   },
 
   {
@@ -43,10 +43,10 @@
     "beat": "INFILTRATION",
     "consumes": ["targetCorpName", "securityGroupName"],
     "descriptionTemplates": [
-      "Repérer les rotations de {securityGroupName} avant l'assaut du coffre de {targetCorpName}.",
-      "L'équipage cartographie les défenses de {targetCorpName}, sous l'œil vigilant de {securityGroupName}."
+      "Scout {securityGroupName}'s patrol rotations before the assault on {targetCorpName}'s vault.",
+      "The crew maps out {targetCorpName}'s defenses, under the watchful eye of {securityGroupName}."
     ],
-    "rewardDescriptions": ["Prime de repérage"]
+    "rewardDescriptions": ["Scouting Bounty"]
   },
   {
     "id": "CRACK_THE_VAULT",
@@ -55,10 +55,10 @@
     "beat": "EXECUTION",
     "consumes": ["targetCorpName"],
     "descriptionTemplates": [
-      "Forcer le chiffrement du coffre de {targetCorpName} avant le déclenchement de l'alarme.",
-      "Contourner les protocoles de sécurité de {targetCorpName} pour atteindre le cœur du coffre."
+      "Crack {targetCorpName}'s vault encryption before the alarm trips.",
+      "Bypass {targetCorpName}'s security protocols to reach the heart of the vault."
     ],
-    "rewardDescriptions": ["Prime d'effraction"]
+    "rewardDescriptions": ["Break-In Bounty"]
   },
   {
     "id": "CLEAN_GETAWAY",
@@ -67,10 +67,10 @@
     "beat": "EXTRACTION",
     "consumes": ["securityGroupName", "planetName"],
     "descriptionTemplates": [
-      "Semer les agents de {securityGroupName} lancés à la poursuite du convoi de fuite sur {planetName}.",
-      "L'équipage se fond dans la foule de {planetName} pour échapper à {securityGroupName}."
+      "Shake off {securityGroupName}'s agents chasing the getaway convoy across {planetName}.",
+      "The crew melts into the crowds of {planetName} to escape {securityGroupName}."
     ],
-    "rewardDescriptions": ["Prime de fuite propre"]
+    "rewardDescriptions": ["Clean Getaway Bounty"]
   },
 
   {
@@ -80,10 +80,10 @@
     "beat": "INFILTRATION",
     "consumes": ["planetName"],
     "descriptionTemplates": [
-      "Neutraliser en silence le réseau de capteurs de l'installation sur {planetName}.",
-      "Court-circuiter les capteurs périmétriques avant qu'ils n'alertent l'installation de {planetName}."
+      "Silently disable the sensor network of the facility on {planetName}.",
+      "Short out the perimeter sensors before they alert the facility on {planetName}."
     ],
-    "rewardDescriptions": ["Prime de neutralisation des capteurs"]
+    "rewardDescriptions": ["Sensor Disabling Bounty"]
   },
   {
     "id": "PLANT_CHARGES",
@@ -92,10 +92,10 @@
     "beat": "EXECUTION",
     "consumes": ["enemyGroupName"],
     "descriptionTemplates": [
-      "Placer les charges au cœur de l'installation sans alerter les gardes de {enemyGroupName}.",
-      "Miner les points structurels critiques pendant que {enemyGroupName} patrouille à proximité."
+      "Plant the charges at the heart of the facility without alerting {enemyGroupName}'s guards.",
+      "Rig the critical structural points while {enemyGroupName} patrols nearby."
     ],
-    "rewardDescriptions": ["Prime de sabotage"]
+    "rewardDescriptions": ["Sabotage Bounty"]
   },
   {
     "id": "ESCAPE_BLAST",
@@ -104,10 +104,10 @@
     "beat": "EXTRACTION",
     "consumes": ["planetName"],
     "descriptionTemplates": [
-      "Fuir l'installation de {planetName} avant que l'explosion ne ravage le secteur.",
-      "Courir vers le point d'exfiltration alors que {planetName} tremble sous l'onde de choc."
+      "Flee the facility on {planetName} before the blast tears through the sector.",
+      "Run for the extraction point as {planetName} shakes under the shockwave."
     ],
-    "rewardDescriptions": ["Prime d'exfiltration"]
+    "rewardDescriptions": ["Extraction Bounty"]
   },
 
   {
@@ -117,10 +117,10 @@
     "beat": "INFILTRATION",
     "consumes": ["enemyGroupName", "planetName"],
     "descriptionTemplates": [
-      "Franchir le périmètre tenu par {enemyGroupName} sur {planetName} sans déclencher d'alerte.",
-      "Se glisser entre les patrouilles de {enemyGroupName} pour atteindre le cœur de la zone."
+      "Breach the perimeter held by {enemyGroupName} on {planetName} without triggering an alert.",
+      "Slip between {enemyGroupName}'s patrols to reach the heart of the zone."
     ],
-    "rewardDescriptions": ["Prime de franchissement"]
+    "rewardDescriptions": ["Breach Bounty"]
   },
   {
     "id": "GATHER_INTEL",
@@ -129,10 +129,10 @@
     "beat": "EXECUTION",
     "consumes": ["enemyGroupName"],
     "descriptionTemplates": [
-      "Collecter des preuves sur les activités de {enemyGroupName} sans se faire repérer.",
-      "Intercepter les communications de {enemyGroupName} pour en tirer un dossier complet."
+      "Gather evidence on {enemyGroupName}'s activities without being spotted.",
+      "Intercept {enemyGroupName}'s communications to build a complete file."
     ],
-    "rewardDescriptions": ["Prime de renseignement"]
+    "rewardDescriptions": ["Intelligence Bounty"]
   },
   {
     "id": "AVOID_PATROL",
@@ -141,10 +141,10 @@
     "beat": "EXTRACTION",
     "consumes": ["enemyGroupName", "planetName"],
     "descriptionTemplates": [
-      "Se fondre dans le décor de {planetName} pour échapper aux dernières patrouilles de {enemyGroupName}.",
-      "Improviser une couverture crédible face aux hommes de {enemyGroupName} postés à la sortie."
+      "Blend into the scenery of {planetName} to evade {enemyGroupName}'s last patrols.",
+      "Improvise a convincing cover story against {enemyGroupName}'s men posted at the exit."
     ],
-    "rewardDescriptions": ["Prime de couverture"]
+    "rewardDescriptions": ["Cover Bounty"]
   },
 
   {
@@ -154,10 +154,10 @@
     "beat": "INFILTRATION",
     "consumes": ["targetName"],
     "descriptionTemplates": [
-      "Obtenir une audience avec {targetName} malgré les protocoles diplomatiques rigides.",
-      "Approcher {targetName} par les canaux officieux avant l'ouverture des négociations."
+      "Secure an audience with {targetName} despite the rigid diplomatic protocols.",
+      "Approach {targetName} through unofficial channels before negotiations open."
     ],
-    "rewardDescriptions": ["Prime de prise de contact"]
+    "rewardDescriptions": ["First Contact Bounty"]
   },
   {
     "id": "NEGOTIATE_TERMS",
@@ -166,10 +166,10 @@
     "beat": "EXECUTION",
     "consumes": ["targetName", "enemyGroupName"],
     "descriptionTemplates": [
-      "Négocier des termes acceptables avec {targetName} face aux pressions de {enemyGroupName}.",
-      "Trouver un compromis avec {targetName} avant que {enemyGroupName} ne fasse échouer les pourparlers."
+      "Negotiate acceptable terms with {targetName} under pressure from {enemyGroupName}.",
+      "Find common ground with {targetName} before {enemyGroupName} derails the talks."
     ],
-    "rewardDescriptions": ["Prime de négociation"]
+    "rewardDescriptions": ["Negotiation Bounty"]
   },
   {
     "id": "WITHSTAND_PRESSURE",
@@ -178,10 +178,10 @@
     "beat": "EXTRACTION",
     "consumes": ["enemyGroupName"],
     "descriptionTemplates": [
-      "Résister aux manœuvres d'intimidation de {enemyGroupName} jusqu'à la signature finale.",
-      "Tenir bon face aux dernières manipulations de {enemyGroupName} avant de clore l'accord."
+      "Withstand {enemyGroupName}'s intimidation tactics until the final signature.",
+      "Hold firm against {enemyGroupName}'s last manipulations before closing the deal."
     ],
-    "rewardDescriptions": ["Prime de résistance psychologique"]
+    "rewardDescriptions": ["Psychological Resistance Bounty"]
   },
 
   {
@@ -191,10 +191,10 @@
     "beat": "INFILTRATION",
     "consumes": ["targetName", "enemyGroupName"],
     "descriptionTemplates": [
-      "Localiser {targetName}, détenu quelque part dans les installations de {enemyGroupName}.",
-      "Recouper les indices pour retrouver la cellule où {enemyGroupName} retient {targetName}."
+      "Locate {targetName}, held somewhere within {enemyGroupName}'s facilities.",
+      "Cross-reference the clues to find the cell where {enemyGroupName} is holding {targetName}."
     ],
-    "rewardDescriptions": ["Prime de localisation"]
+    "rewardDescriptions": ["Location Bounty"]
   },
   {
     "id": "BREACH_HOLDING",
@@ -203,10 +203,10 @@
     "beat": "EXECUTION",
     "consumes": ["targetName", "enemyGroupName"],
     "descriptionTemplates": [
-      "Percer les défenses de {enemyGroupName} pour atteindre la cellule de {targetName}.",
-      "Neutraliser les gardes de {enemyGroupName} avant qu'ils n'exécutent {targetName}."
+      "Break through {enemyGroupName}'s defenses to reach {targetName}'s cell.",
+      "Take down {enemyGroupName}'s guards before they execute {targetName}."
     ],
-    "rewardDescriptions": ["Prime de percée"]
+    "rewardDescriptions": ["Breakthrough Bounty"]
   },
   {
     "id": "FIGHTING_RETREAT",
@@ -215,9 +215,9 @@
     "beat": "EXTRACTION",
     "consumes": ["targetName", "enemyGroupName"],
     "descriptionTemplates": [
-      "Couvrir la retraite de {targetName} alors que {enemyGroupName} lance ses renforts.",
-      "Se frayer un chemin jusqu'au vaisseau avec {targetName}, {enemyGroupName} sur les talons."
+      "Cover {targetName}'s retreat as {enemyGroupName} throws in reinforcements.",
+      "Fight a path back to the ship with {targetName}, {enemyGroupName} hot on their heels."
     ],
-    "rewardDescriptions": ["Prime d'extraction sous le feu"]
+    "rewardDescriptions": ["Extraction Under Fire Bounty"]
   }
 ]

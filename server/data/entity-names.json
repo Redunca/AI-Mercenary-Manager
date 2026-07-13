@@ -4,21 +4,21 @@
       { "value": "Kael Voss", "tags": ["human", "neutral"] },
       { "value": "Mira Sten", "tags": ["human", "neutral"] },
       { "value": "Dr. Anouk Reyes", "tags": ["human", "scientist"] },
-      { "value": "l'Ambassadeur Tolven", "tags": ["human", "diplomat"] },
+      { "value": "Ambassador Tolven", "tags": ["human", "diplomat"] },
       { "value": "Juro Halden", "tags": ["human", "criminal"] },
       { "value": "Sera Wick", "tags": ["human", "neutral"] },
-      { "value": "l'Émissaire Vashti", "tags": ["alien", "diplomat"] },
-      { "value": "le Contremaître Obeng", "tags": ["human", "worker"] },
+      { "value": "Envoy Vashti", "tags": ["alien", "diplomat"] },
+      { "value": "Foreman Obeng", "tags": ["human", "worker"] },
       { "value": "Ilyana Korr", "tags": ["human", "scientist"] },
-      { "value": "Petit Rasko", "tags": ["human", "criminal"] }
+      { "value": "Little Rasko", "tags": ["human", "criminal"] }
     ],
     "gang": [
-      { "value": "les Chiens Rouges", "tags": ["hostile", "criminal", "urban"] },
-      { "value": "la Fraternité du Vide", "tags": ["hostile", "criminal", "frontier"] },
-      { "value": "les Cendres Noires", "tags": ["hostile", "criminal", "arid"] },
-      { "value": "le Cartel Sylvain", "tags": ["hostile", "criminal", "jungle"] },
-      { "value": "les Loups de Kethar", "tags": ["hostile", "criminal", "ice"] },
-      { "value": "la Main Grise", "tags": ["hostile", "criminal", "corporate"] }
+      { "value": "the Red Dogs", "tags": ["hostile", "criminal", "urban"] },
+      { "value": "the Void Brotherhood", "tags": ["hostile", "criminal", "frontier"] },
+      { "value": "the Black Ashes", "tags": ["hostile", "criminal", "arid"] },
+      { "value": "the Sylvain Cartel", "tags": ["hostile", "criminal", "jungle"] },
+      { "value": "the Wolves of Kethar", "tags": ["hostile", "criminal", "ice"] },
+      { "value": "the Grey Hand", "tags": ["hostile", "criminal", "corporate"] }
     ],
     "corporation": [
       { "value": "Aurelian Dynamics", "tags": ["corporate", "megacorp"] },
@@ -28,11 +28,11 @@
       { "value": "Halcyon Systems", "tags": ["corporate", "megacorp"] }
     ],
     "faction": [
-      { "value": "le Directoire Kessarien", "tags": ["independent", "frontier"] },
-      { "value": "l'Alliance des Confins", "tags": ["independent", "frontier"] },
-      { "value": "le Conclave Jade", "tags": ["independent", "jungle"] },
-      { "value": "la Garde Polaire", "tags": ["independent", "ice"] },
-      { "value": "le Syndicat Rouge", "tags": ["corporate", "urban"] }
+      { "value": "the Kessarien Directorate", "tags": ["independent", "frontier"] },
+      { "value": "the Frontier Alliance", "tags": ["independent", "frontier"] },
+      { "value": "the Jade Conclave", "tags": ["independent", "jungle"] },
+      { "value": "the Polar Guard", "tags": ["independent", "ice"] },
+      { "value": "the Red Syndicate", "tags": ["corporate", "urban"] }
     ]
   }
 }

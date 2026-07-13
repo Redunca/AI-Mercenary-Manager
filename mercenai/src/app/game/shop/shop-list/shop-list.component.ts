@@ -21,24 +21,26 @@ export class ShopListComponent implements OnInit {
 
   ngOnInit() {
     this.shopService.getShopItems().subscribe(items => { this.items = items; });
-    this.shopService.getWallet().subscribe(wallet => { this.wallet = wallet; });
+    this.shopService.wallet$.subscribe(wallet => { this.wallet = wallet; });
+    this.shopService.refreshWallet();
   }
 
   registerCommands() {
     return {
       'detail': (id: string) => {
         if (!id) { console.warn('Usage: detail <id>'); return; }
-        this.layout.addPanel(PanelModule.ShopDetail, { id });
+        this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShopDetail, { id });
       },
       'buy': (id: string, qtyStr?: string) => {
-        if (!id) { console.warn('Usage: buy <id> [quantité]'); return; }
+        if (!id) { console.warn('Usage: buy <id> [quantity]'); return; }
         const qty = qtyStr ? Number(qtyStr) : 1;
         void this.shopService.buyItem(Number(id), qty).then(result => {
-          if (result?.error) { console.warn('Achat échoué :', result.error); return; }
+          if (result?.error) { console.warn('Purchase failed:', result.error); return; }
           const item = this.items.find(i => i.id === Number(id));
           void this.gameSync.sync().then(() => {
-            const target = item?.type === 'equipment' ? PanelModule.EquipmentList : PanelModule.ShipList;
-            this.layout.setPanelModule(this.layout.activePanelId!, target);
+            if (item?.type === 'ship') {
+              this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShipList);
+            }
           });
         });
       },

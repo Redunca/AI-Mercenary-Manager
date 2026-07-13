@@ -3,36 +3,36 @@
     "id": "arid_frontier",
     "tags": ["arid", "frontier", "independent", "hot"],
     "provides": {
-      "climate": "aride",
-      "colonizationLevel": "avant-poste frontalier",
+      "climate": "arid",
+      "colonizationLevel": "frontier outpost",
       "faction": { "category": "faction", "tags": ["frontier"] },
-      "distance": "en bordure du secteur, à plusieurs jours de saut"
+      "distance": "at the edge of the sector, several jump-days out"
     },
     "approachTemplates": [
-      "Le vaisseau quitte les voies commerciales et plonge vers {planetName}, {distance}, sous un ciel {climate} balayé par les vents de poussière.",
-      "L'équipage repère {planetName} à l'horizon, un {colonizationLevel} isolé sous la tutelle de {faction}."
+      "The ship leaves the trade lanes and dives toward {planetName}, {distance}, under an {climate} sky swept by dust winds.",
+      "The crew spots {planetName} on the horizon, an isolated {colonizationLevel} under the watch of {faction}."
     ],
     "aftermathTemplates": [
-      "De retour à bord, l'équipage regarde {planetName} rapetisser derrière eux, indifférente et {climate} comme toujours.",
-      "Le vaisseau reprend son cap, laissant {faction} gérer les conséquences sur {planetName}."
+      "Back aboard, the crew watches {planetName} shrink behind them, indifferent and {climate} as ever.",
+      "The ship resumes its course, leaving {faction} to deal with the fallout on {planetName}."
     ]
   },
   {
     "id": "jungle_colonized",
     "tags": ["jungle", "colonized", "independent"],
     "provides": {
-      "climate": "tropical et humide",
-      "colonizationLevel": "colonie établie",
+      "climate": "tropical and humid",
+      "colonizationLevel": "established colony",
       "faction": { "category": "faction", "tags": ["jungle"] },
-      "distance": "à l'intérieur du secteur, sous couverture nuageuse permanente"
+      "distance": "within the sector, under permanent cloud cover"
     },
     "approachTemplates": [
-      "Le vaisseau perce la canopée électromagnétique de {planetName}, {distance}, {colonizationLevel} administrée par {faction}.",
-      "L'équipage descend vers {planetName}, où le climat {climate} colle déjà aux hublots."
+      "The ship pushes through {planetName}'s electromagnetic canopy, {distance}, an {colonizationLevel} run by {faction}.",
+      "The crew descends toward {planetName}, where the {climate} climate already clings to the viewports."
     ],
     "aftermathTemplates": [
-      "Le vaisseau s'arrache à l'atmosphère {climate} de {planetName}, laissant {faction} refermer les dossiers.",
-      "L'équipage quitte {planetName}, {colonizationLevel} qui retourne déjà à son silence végétal."
+      "The ship tears free of {planetName}'s {climate} atmosphere, leaving {faction} to close the files.",
+      "The crew leaves {planetName}, an {colonizationLevel} already sinking back into its green silence."
     ]
   },
   {
@@ -40,71 +40,71 @@
     "tags": ["ice", "isolated", "independent", "cold"],
     "provides": {
       "climate": "glacial",
-      "colonizationLevel": "station isolée",
+      "colonizationLevel": "isolated station",
       "faction": { "category": "faction", "tags": ["ice"] },
-      "distance": "aux confins gelés du secteur"
+      "distance": "at the frozen edge of the sector"
     },
     "approachTemplates": [
-      "Le vaisseau se pose sur {planetName}, {distance}, où {faction} maintient tant bien que mal une {colonizationLevel}.",
-      "L'équipage enfile ses combinaisons thermiques en approchant {planetName}, {climate} et silencieuse."
+      "The ship touches down on {planetName}, {distance}, where {faction} barely keeps an {colonizationLevel} running.",
+      "The crew zips into thermal suits as they approach {planetName}, {climate} and silent."
     ],
     "aftermathTemplates": [
-      "Le vaisseau décolle de {planetName}, laissant derrière lui le froid {climate} et les patrouilles de {faction}.",
-      "L'équipage se réchauffe en quittant {planetName}, {colonizationLevel} qu'ils espèrent ne jamais revoir."
+      "The ship lifts off from {planetName}, leaving behind the {climate} cold and {faction}'s patrols.",
+      "The crew thaws out as they leave {planetName}, an {colonizationLevel} they hope never to see again."
     ]
   },
   {
     "id": "urban_corporate",
     "tags": ["urban", "megacity", "corporate"],
     "provides": {
-      "climate": "climatisé en permanence",
-      "colonizationLevel": "mégapole verticale",
+      "climate": "permanently climate-controlled",
+      "colonizationLevel": "vertical megacity",
       "faction": { "category": "corporation", "tags": ["megacorp"] },
-      "distance": "en orbite basse, au cœur du trafic commercial"
+      "distance": "in low orbit, amid heavy commercial traffic"
     },
     "approachTemplates": [
-      "Le vaisseau s'insère dans les couloirs aériens de {planetName}, {distance}, {colonizationLevel} sous contrôle de {faction}.",
-      "L'équipage plonge vers les niveaux inférieurs de {planetName}, où l'air {climate} sent le métal et la publicité."
+      "The ship merges into {planetName}'s air corridors, {distance}, a {colonizationLevel} under {faction}'s control.",
+      "The crew dives toward {planetName}'s lower levels, where the {climate} air smells of metal and advertising."
     ],
     "aftermathTemplates": [
-      "Le vaisseau se fond dans le trafic en quittant {planetName}, laissant {faction} gérer les caméras.",
-      "L'équipage s'éloigne de {planetName}, {colonizationLevel} qui ne remarquera jamais leur passage."
+      "The ship blends into traffic as it leaves {planetName}, leaving {faction} to deal with the cameras.",
+      "The crew pulls away from {planetName}, a {colonizationLevel} that will never notice they were there."
     ]
   },
   {
     "id": "ocean_newcolony",
     "tags": ["ocean", "newcolony", "independent"],
     "provides": {
-      "climate": "humide et salin",
-      "colonizationLevel": "nouvelle colonie flottante",
+      "climate": "humid and saline",
+      "colonizationLevel": "new floating colony",
       "faction": { "category": "faction", "tags": ["frontier"] },
-      "distance": "à la limite des routes de ravitaillement"
+      "distance": "at the edge of the supply routes"
     },
     "approachTemplates": [
-      "Le vaisseau se pose sur les plateformes de {planetName}, {distance}, {colonizationLevel} tenue à bout de bras par {faction}.",
-      "L'équipage sent l'air {climate} de {planetName} s'infiltrer dans le sas avant même l'ouverture complète."
+      "The ship sets down on {planetName}'s platforms, {distance}, a {colonizationLevel} held together by {faction}'s sheer effort.",
+      "The crew feels {planetName}'s {climate} air seep into the airlock before it's even fully open."
     ],
     "aftermathTemplates": [
-      "Le vaisseau décolle des plateformes de {planetName}, laissant {faction} continuer sa lutte contre les marées.",
-      "L'équipage quitte {planetName}, {colonizationLevel} qui survivra, une fois de plus, un jour de plus."
+      "The ship lifts off from {planetName}'s platforms, leaving {faction} to keep fighting the tides.",
+      "The crew leaves {planetName}, a {colonizationLevel} that will survive, once again, one more day."
     ]
   },
   {
     "id": "volcanic_mining",
     "tags": ["volcanic", "mining", "corporate", "hot"],
     "provides": {
-      "climate": "étouffant et sulfureux",
-      "colonizationLevel": "complexe minier industriel",
+      "climate": "stifling and sulfurous",
+      "colonizationLevel": "industrial mining complex",
       "faction": { "category": "corporation", "tags": ["mining"] },
-      "distance": "près des failles actives du secteur"
+      "distance": "near the sector's active fault lines"
     },
     "approachTemplates": [
-      "Le vaisseau se stabilise au-dessus de {planetName}, {distance}, {colonizationLevel} exploité par {faction}.",
-      "L'équipage voit les foreuses de {faction} strier la surface {climate} de {planetName}."
+      "The ship stabilizes above {planetName}, {distance}, an {colonizationLevel} operated by {faction}.",
+      "The crew watches {faction}'s drills scar {planetName}'s {climate} surface."
     ],
     "aftermathTemplates": [
-      "Le vaisseau s'arrache à la gravité de {planetName}, laissant {faction} reprendre l'extraction.",
-      "L'équipage quitte {planetName}, {colonizationLevel} qui continuera de fumer longtemps après leur départ."
+      "The ship breaks free of {planetName}'s gravity, leaving {faction} to resume the extraction.",
+      "The crew leaves {planetName}, an {colonizationLevel} that will keep smoking long after they're gone."
     ]
   }
 ]

@@ -75,6 +75,82 @@ describe('Ship Service', () => {
     );
   });
 
+  describe('damageShip', () => {
+    test('reduces durability and keeps the ship docked when it survives', async () => {
+      const ship = { id: 1, status: 'docked', stats: { durability: 10, max_durability: 10 } };
+      mockClient.query
+        .mockResolvedValueOnce({ rows: [ship] }) // SELECT ... FOR UPDATE
+        .mockResolvedValueOnce({ rows: [{ ...ship, stats: { ...ship.stats, durability: 6 } }] });
+
+      const result = await ShipService.damageShip(mockClient, 1, 1, 4);
+
+      expect(mockClient.query).toHaveBeenLastCalledWith(
+        expect.stringContaining('UPDATE ships SET stats'),
+        [JSON.stringify({ durability: 6, max_durability: 10 }), 'docked', 1, 1]
+      );
+      expect(result.stats.durability).toBe(6);
+    });
+
+    test('marks the ship broken once durability reaches 0', async () => {
+      const ship = { id: 1, status: 'docked', stats: { durability: 3, max_durability: 10 } };
+      mockClient.query
+        .mockResolvedValueOnce({ rows: [ship] })
+        .mockResolvedValueOnce({ rows: [{ ...ship, status: 'broken', stats: { ...ship.stats, durability: 0 } }] });
+
+      const result = await ShipService.damageShip(mockClient, 1, 1, 5);
+
+      expect(mockClient.query).toHaveBeenLastCalledWith(
+        expect.stringContaining('UPDATE ships SET stats'),
+        [JSON.stringify({ durability: 0, max_durability: 10 }), 'broken', 1, 1]
+      );
+      expect(result.status).toBe('broken');
+    });
+
+    test('returns null when the ship cannot be found', async () => {
+      mockClient.query.mockResolvedValueOnce({ rows: [] });
+      const result = await ShipService.damageShip(mockClient, 1, 999, 5);
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('repairShip', () => {
+    test('restores durability to its ceiling and un-breaks the ship', async () => {
+      const ship = { id: 1, status: 'broken', stats: { durability: 0, max_durability: 10 } };
+      mockClient.query
+        .mockResolvedValueOnce({ rows: [ship] })
+        .mockResolvedValueOnce({ rows: [{ ...ship, status: 'docked', stats: { ...ship.stats, durability: 10 } }] });
+
+      const result = await ShipService.repairShip(mockClient, 1, 1);
+
+      expect(mockClient.query).toHaveBeenLastCalledWith(
+        expect.stringContaining('UPDATE ships SET stats'),
+        [JSON.stringify({ durability: 10, max_durability: 10 }), 'docked', 1, 1]
+      );
+      expect(result.status).toBe('docked');
+      expect(result.stats.durability).toBe(10);
+    });
+
+    test('leaves other statuses untouched (repairing a docked ship is a no-op status-wise)', async () => {
+      const ship = { id: 1, status: 'docked', stats: { durability: 4, max_durability: 10 } };
+      mockClient.query
+        .mockResolvedValueOnce({ rows: [ship] })
+        .mockResolvedValueOnce({ rows: [{ ...ship, stats: { ...ship.stats, durability: 10 } }] });
+
+      await ShipService.repairShip(mockClient, 1, 1);
+
+      expect(mockClient.query).toHaveBeenLastCalledWith(
+        expect.stringContaining('UPDATE ships SET stats'),
+        [JSON.stringify({ durability: 10, max_durability: 10 }), 'docked', 1, 1]
+      );
+    });
+
+    test('returns null when the ship cannot be found', async () => {
+      mockClient.query.mockResolvedValueOnce({ rows: [] });
+      const result = await ShipService.repairShip(mockClient, 1, 999);
+      expect(result).toBeNull();
+    });
+  });
+
   test('createHangar creates player hangar', async () => {
     mockClient.query.mockResolvedValue({ rows: [{ player_id: 1, max_ships: 5 }] });
 

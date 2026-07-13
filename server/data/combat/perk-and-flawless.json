@@ -3,64 +3,64 @@
     "success": {
       "perk-and-flawless": {
         "Analyst": [
-          "Cible neutralisée. Je note que leur stratégie reposait principalement sur l’espoir.",
-          "Engagement terminé. Statistiquement, ils n’avaient aucune chance… et ils l’ont prouvé.",
-          "Combat clos. Leur approche tactique était si primitive que j’en suis presque déçu.",
-          "Menace éliminée. Je propose qu’on classe cet affrontement dans la catégorie ‘erreur de jugement adverse’.",
-          "Opposition réduite à zéro. Je suppose que la physique a encore fait son travail."
+          "Target neutralized. I note their strategy relied mainly on hope.",
+          "Engagement concluded. Statistically, they had no chance... and they proved it.",
+          "Combat closed. Their tactical approach was so primitive it's almost disappointing.",
+          "Threat eliminated. I propose we file this clash under 'enemy error in judgment'.",
+          "Opposition reduced to zero. I suppose physics did its job again."
         ],
         "Diplomat": [
-          "Le conflit s’est résolu… d’une manière un peu brutale, mais harmonieuse au final.",
-          "La bataille est finie. Je ressens une étrange paix dans ce silence soudain.",
-          "L’adversaire s’est incliné. Peut‑être qu’au fond, il voulait juste qu’on le comprenne.",
-          "Le combat s’est apaisé. Je crois que nous avons trouvé une forme d’équilibre… musclé.",
-          "La confrontation s’est dissipée. Je sens que l’univers approuve cette résolution énergique."
+          "The conflict resolved itself... a bit brutally, but harmoniously in the end.",
+          "The battle is over. I feel a strange peace in this sudden silence.",
+          "The enemy bowed out. Maybe deep down, they just wanted to be understood.",
+          "The fight has settled. I think we found a kind of balance... a forceful one.",
+          "The confrontation has dissipated. I sense the universe approves of this vigorous resolution."
         ],
         "Sentinel": [
-          "Engagement réussi. Je vais consigner : neutralisation conforme, aucune déviation majeure.",
-          "Menace éliminée. Je recommande une mise à jour du protocole pour refléter cette méthode.",
-          "Combat terminé. Incident maîtrisé, situation stabilisée, rapport en cours de rédaction.",
-          "Opposition neutralisée. Je note que la procédure improvisée a néanmoins porté ses fruits.",
-          "Affrontement clos. Je classe l’opération dans les interventions réussies malgré le chaos."
+          "Engagement successful. I'll log it: neutralization compliant, no major deviation.",
+          "Threat eliminated. I recommend updating the protocol to reflect this method.",
+          "Combat concluded. Incident contained, situation stabilized, report in progress.",
+          "Opposition neutralized. I note the improvised procedure nonetheless paid off.",
+          "Clash closed. I'm filing this operation under successful interventions, despite the chaos."
         ],
         "Explorer": [
-          "Wouhou, on les a eu ! J’ai aucune idée de ce que j’ai fait, mais ça a marché.",
-          "Ok, c’était stylé. Je crois que j’ai inventé un nouveau mouvement sans le vouloir.",
-          "Ils sont tombés avant que je comprenne ce qui se passait. J’appelle ça du talent instinctif.",
-          "Bon, j’ai foncé, j’ai crié, j’ai tapé… et ça a super bien fonctionné.",
-          "Je pensais que ça allait mal tourner, mais finalement c’était plutôt fun."
+          "Woohoo, we got 'em! No idea what I did, but it worked.",
+          "Okay, that was stylish. I think I just invented a new move without meaning to.",
+          "They went down before I even understood what was happening. I call that instinctive talent.",
+          "Well, I charged in, I yelled, I hit stuff... and it worked out great.",
+          "I thought this was going to go badly, but it turned out to be pretty fun."
         ]
       }
     },
     "failure": {
       "perk-and-flawless": {
         "Analyst": [
-          "Échec tactique. Je note que l’adversaire a gagné par pure probabilité… ou par chance.",
-          "Engagement perdu. Leur stratégie était médiocre, mais manifestement suffisante aujourd’hui.",
-          "Combat raté. Je suppose que même les erreurs statistiques arrivent parfois.",
-          "Opposition non neutralisée. Je vais considérer cet incident comme un cas d’étude regrettable.",
-          "Affrontement défavorable. Je note que la physique n’était pas de notre côté cette fois."
+          "Tactical failure. I note the enemy won through pure probability... or plain luck.",
+          "Engagement lost. Their strategy was mediocre, but apparently good enough today.",
+          "Combat failed. I suppose even statistical anomalies happen sometimes.",
+          "Opposition not neutralized. I'll file this incident as a regrettable case study.",
+          "Unfavorable clash. I note physics was not on our side this time."
         ],
         "Diplomat": [
-          "Le conflit n’a pas trouvé de résolution… je crois que l’adversaire était émotionnellement fermé.",
-          "La bataille s’est mal passée. Je ressens beaucoup de tension dans l’air.",
-          "L’adversaire n’a pas voulu s’apaiser… c’est triste, quelque part.",
-          "La confrontation a échoué. Peut‑être que nous n’étions pas alignés avec l’énergie du moment.",
-          "Le combat s’est terminé abruptement… et pas dans le sens que j’espérais."
+          "The conflict found no resolution... I think the enemy was emotionally closed off.",
+          "The battle went poorly. I sense a lot of tension in the air.",
+          "The enemy refused to calm down... it's a little sad, honestly.",
+          "The confrontation failed. Maybe we just weren't aligned with the energy of the moment.",
+          "The fight ended abruptly... and not the way I was hoping."
         ],
         "Sentinel": [
-          "Engagement échoué. Je vais consigner : neutralisation non atteinte, incident majeur.",
-          "Menace non éliminée. Je recommande une révision complète du protocole d’intervention.",
-          "Combat perdu. Situation instable, retrait nécessaire, rapport d’échec en préparation.",
-          "Opposition non maîtrisée. Je note que la procédure improvisée n’a pas été efficace.",
-          "Affrontement défavorable. Je classe l’opération dans les interventions à risque élevé."
+          "Engagement failed. I'll log it: neutralization not achieved, major incident.",
+          "Threat not eliminated. I recommend a full review of the intervention protocol.",
+          "Combat lost. Situation unstable, withdrawal necessary, failure report in preparation.",
+          "Opposition not contained. I note the improvised procedure was not effective.",
+          "Unfavorable clash. I'm filing this operation under high-risk interventions."
         ],
         "Explorer": [
-          "Ok, j’ai essayé un truc… et ça n’a pas du tout marché.",
-          "Bon, j’ai foncé, j’ai crié, j’ai tapé… et ça a super mal fonctionné.",
-          "Je pensais que ça allait être fun, mais c’était surtout douloureux.",
-          "J’ai tenté une manœuvre stylée, mais je crois que je me suis juste étalé.",
-          "Wow, ils étaient beaucoup plus énervés que prévu. Je prends note : courir plus vite."
+          "Okay, I tried a thing... and it didn't work at all.",
+          "Well, I charged in, I yelled, I hit stuff... and it went terribly.",
+          "I thought this was going to be fun, but mostly it just hurt.",
+          "I attempted a stylish maneuver, but I think I just face-planted.",
+          "Wow, they were way angrier than expected. Noted: run faster next time."
         ]
       }
     }

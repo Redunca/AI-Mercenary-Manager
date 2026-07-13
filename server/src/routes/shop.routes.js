@@ -22,7 +22,7 @@ router.get('/items/:id', async (req, res, next) => {
   try {
     const item = await shop.getShopItem(client, Number(req.params.id))
     if (!item) {
-      res.status(404).json({ error: 'Article introuvable' })
+      res.status(404).json({ error: 'Item not found' })
       return
     }
     res.json(item)
@@ -52,13 +52,13 @@ router.post('/buy/:itemId', async (req, res, next) => {
     const item = await shop.getShopItem(client, Number(req.params.itemId))
     if (!item) {
       await client.query('ROLLBACK')
-      res.status(404).json({ error: 'Article introuvable' })
+      res.status(404).json({ error: 'Item not found' })
       return
     }
     const quantity = Number(req.body?.quantity ?? 1)
     const result = item.type === 'ship'
       ? await shop.buyShip(client, PLAYER_ID, Number(req.params.itemId))
-      : await shop.buyEquipment(client, PLAYER_ID, Number(req.params.itemId), quantity)
+      : await shop.buyConsumable(client, PLAYER_ID, Number(req.params.itemId), quantity)
     if (result.error) {
       await client.query('ROLLBACK')
       res.status(400).json(result)
@@ -94,12 +94,12 @@ router.post('/buy/ship/:itemId', async (req, res, next) => {
   }
 })
 
-router.post('/buy/equipment/:itemId', async (req, res, next) => {
+router.post('/buy/consumable/:itemId', async (req, res, next) => {
   const client = await pool.connect()
   try {
     await client.query('BEGIN')
     const quantity = Number(req.body?.quantity ?? 1)
-    const result = await shop.buyEquipment(client, PLAYER_ID, Number(req.params.itemId), quantity)
+    const result = await shop.buyConsumable(client, PLAYER_ID, Number(req.params.itemId), quantity)
     if (result.error) {
       await client.query('ROLLBACK')
       res.status(400).json(result)

@@ -3,64 +3,64 @@
     "success": {
       "perk-and-flawless": {
         "Analyst": [
-          "Influence mentale établie. Leur structure cognitive ressemble à un château de cartes… en papier mouillé.",
-          "Pression psychologique réussie. Statistiquement, leur esprit aurait dû tenir plus longtemps.",
-          "Domination mentale obtenue. Je note que leur résistance repose sur des illusions… très fragiles.",
-          "Impact psychique confirmé. Je propose qu’on classe leur réaction dans ‘effondrement prévisible’.",
-          "Contrôle émotionnel acquis. Leur volonté s’est dissoute avec une efficacité presque mathématique."
+          "Mental influence established. Their cognitive structure resembles a house of cards... made of wet paper.",
+          "Psychological pressure successful. Statistically, their mind should have held out longer.",
+          "Mental dominance achieved. I note their resistance rests on illusions... very fragile ones.",
+          "Psychic impact confirmed. I propose we file their reaction under 'predictable collapse'.",
+          "Emotional control acquired. Their will dissolved with almost mathematical efficiency."
         ],
         "Diplomat": [
-          "Ils ont ouvert leur esprit… je crois qu’ils avaient besoin d’être entendus, même dans le chaos.",
-          "La tension intérieure s’est apaisée. Je ressens une étrange harmonie dans leur capitulation mentale.",
-          "Nous avons touché quelque chose en eux. Peut‑être que l’univers voulait qu’ils lâchent prise.",
-          "Leur résistance s’est dissoute. Je crois que cette énergie profonde a apporté une forme de paix.",
-          "Ils ont cédé. Je sens que cette connexion psychique a éclairé un coin sombre de leur cœur."
+          "They opened their mind... I think they just needed to be heard, even amid the chaos.",
+          "The inner tension eased. I sense a strange harmony in their mental surrender.",
+          "We touched something in them. Maybe the universe wanted them to let go.",
+          "Their resistance dissolved. I think that deep energy brought a kind of peace.",
+          "They gave in. I feel like that psychic connection lit up a dark corner of their heart."
         ],
         "Sentinel": [
-          "Pression mentale validée. Je vais consigner : résistance brisée, situation stabilisée.",
-          "Influence psychologique obtenue. Je recommande d’ajouter cette méthode au protocole de persuasion avancée.",
-          "Domination mentale établie. Intervention réussie, aucun contrecoup notable.",
-          "Impact psychique confirmé. Je note que la procédure improvisée a été étonnamment efficace.",
-          "Contrôle émotionnel acquis. Je classe l’opération dans les actions psychologiques exemplaires."
+          "Mental pressure confirmed. Logging: resistance broken, situation stabilized.",
+          "Psychological influence obtained. I recommend adding this method to the advanced persuasion protocol.",
+          "Mental dominance established. Intervention successful, no notable backlash.",
+          "Psychic impact confirmed. I note that the improvised procedure was surprisingly effective.",
+          "Emotional control acquired. Filing this operation under exemplary psychological actions."
         ],
         "Explorer": [
-          "Ok, j’ai dit un truc bizarre, et ils ont complètement paniqué. Trop puissant.",
-          "J’ai juste regardé intensément, et ils ont flanché. Je suis un genre de sorcier.",
-          "Je pensais que ça allait être compliqué, mais ils ont craqué direct.",
-          "J’ai improvisé une phrase chelou, et ça a marché. Je devrais faire ça plus souvent.",
-          "Je sais pas ce que j’ai fait, mais ça les a retournés. Talent naturel, j’imagine."
+          "Okay, I said something weird, and they completely panicked. Too powerful.",
+          "I just stared intensely, and they crumbled. I'm some kind of wizard.",
+          "I thought it'd be complicated, but they cracked instantly.",
+          "I improvised a weird line, and it worked. I should do that more often.",
+          "No idea what I did, but it flipped them out. Natural talent, I guess."
         ]
       }
     },
     "failure": {
       "perk-and-flawless": {
         "Analyst": [
-          "Influence mentale échouée. Leur esprit est si chaotique qu’il défie toute tentative de pression.",
-          "Pression psychologique inefficace. Statistiquement, ils auraient dû au moins vaciller.",
-          "Domination mentale impossible. Je note que leur résistance repose sur une confusion tenace.",
-          "Impact psychique nul. Je suppose que leur esprit a décidé de ne rien comprendre.",
-          "Contrôle émotionnel non établi. Je vais considérer cet incident comme une anomalie cognitive."
+          "Mental influence failed. Their mind is so chaotic it defies any attempt at pressure.",
+          "Psychological pressure ineffective. Statistically, they should have at least wavered.",
+          "Mental dominance impossible. I note their resistance rests on a stubborn confusion.",
+          "Psychic impact nil. I assume their mind decided to understand nothing.",
+          "Emotional control not established. I will file this incident as a cognitive anomaly."
         ],
         "Diplomat": [
-          "Ils n’ont pas ouvert leur esprit… je crois qu’ils traversent une période de grande turbulence.",
-          "La tension intérieure n’a pas bougé. Je ressens beaucoup de résistance émotionnelle.",
-          "Nous n’avons pas réussi à les toucher. Peut‑être que leur cœur n’était pas prêt.",
-          "Leur résistance est restée intacte. Je sens que l’univers voulait qu’on soit plus doux.",
-          "Ils n’ont pas cédé. Je crois qu’ils avaient besoin d’un autre type d’énergie."
+          "They didn't open their mind... I think they're going through a period of real turbulence.",
+          "The inner tension didn't shift. I sense a lot of emotional resistance.",
+          "We couldn't reach them. Maybe their heart wasn't ready.",
+          "Their resistance stayed intact. I feel like the universe wanted us to be gentler.",
+          "They didn't give in. I think they needed a different kind of energy."
         ],
         "Sentinel": [
-          "Pression mentale échouée. Je vais consigner : résistance intacte, incident majeur.",
-          "Influence psychologique refusée. Je recommande une révision complète du protocole de persuasion avancée.",
-          "Domination mentale impossible. Intervention ratée, situation instable, rapport d’échec en préparation.",
-          "Impact psychique nul. Je note que la procédure improvisée n’a pas été productive.",
-          "Contrôle émotionnel non établi. Je classe l’action dans les échecs à risque élevé."
+          "Mental pressure failed. Logging: resistance intact, major incident.",
+          "Psychological influence rejected. I recommend a full review of the advanced persuasion protocol.",
+          "Mental dominance impossible. Intervention failed, situation unstable, failure report in progress.",
+          "Psychic impact nil. I note that the improvised procedure was not productive.",
+          "Emotional control not established. Filing this action under high-risk failures."
         ],
         "Explorer": [
-          "Bon, j’ai dit un truc bizarre, et ils ont juste haussé les épaules.",
-          "J’ai essayé de les perturber, mais ils m’ont regardé comme si j’étais étrange.",
-          "Je pensais que ça allait les retourner, mais ça les a juste confus… un peu.",
-          "J’ai improvisé une phrase chelou, mais elle était vraiment trop nulle pour marcher.",
-          "Wow, ils sont beaucoup plus solides que prévu. Je vais devoir être encore plus bizarre."
+          "Well, I said something weird, and they just shrugged.",
+          "I tried to unsettle them, but they looked at me like I was the weird one.",
+          "I thought it would shake them up, but it just confused them... a little.",
+          "I improvised a weird line, but it was really too lame to work.",
+          "Wow, they're way tougher than expected. I'm going to have to be even weirder."
         ]
       }
     }

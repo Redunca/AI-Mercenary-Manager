@@ -26,7 +26,7 @@ export class CandidateService {
   async hireCandidate(candidateId: string): Promise<Recruit | null> {
     const result = await this.api.hireCandidate(candidateId);
     if (result.error || !result.recruit) {
-      console.warn(result.error ?? `Candidat ${candidateId} introuvable`);
+      console.warn(result.error ?? `Candidate ${candidateId} not found`);
       return null;
     }
     if (result.state) {

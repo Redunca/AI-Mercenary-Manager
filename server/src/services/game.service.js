@@ -3,11 +3,11 @@ const path = require('path')
 const { pool } = require('../db/pool')
 const { rollAction, rollDie, rollInRange } = require('./dice.service')
 const { generateCandidate, rowToCandidate, rowToRecruit, computeMaxHp } = require('../domain/recruit')
-const { DURATION_PER_EVENT_MS, phaseFromProgress, progressFromElapsed } = require('../domain/mission')
+const { DURATION_PER_EVENT_MS, travelSegmentMs, eventsSegmentMs, phaseAndProgressFromElapsed } = require('../domain/mission')
 const { insertLogEntries, buildPhaseLogs, buildEventResultLogs, buildBanterLog } = require('./log.service')
-const { createStarterShip, validateCrewAssignment, calculateEffectiveTravelTime } = require('../domain/ship')
+const { createStarterShip, validateCrewAssignment } = require('../domain/ship')
 const ShipService = require('./ship.service')
-const EquipmentService = require('./equipment.service')
+const ConsumableService = require('./consumable.service')
 
 
 const { loadData } = require('../dataLoader')
@@ -173,20 +173,36 @@ async function getRecruit(client, playerId, recruitId) {
   return result.rows[0] ? rowToRecruit(result.rows[0]) : null
 }
 
-async function damageRecruit(client, playerId, recruitId, amount) {
+// `shipId` lets a fatal hit be intercepted by a HEAL consumable sitting in
+// that ship's inventory: the recruit is revived to full HP instead of dying,
+// and the item is spent. Without a matching item, death is permanent.
+async function damageRecruit(client, playerId, recruitId, amount, shipId) {
   const row = await client.query(
     'SELECT * FROM recruits WHERE player_id = $1 AND id = $2 FOR UPDATE',
     [playerId, recruitId],
   )
   if (row.rows.length === 0 || row.rows[0].status === 'dead') return null
 
-  const hp = Math.max(0, row.rows[0].hp - amount)
-  const status = hp === 0 ? 'dead' : row.rows[0].status
+  let hp = Math.max(0, row.rows[0].hp - amount)
+  let status = row.rows[0].status
+  let revived = false
+
+  if (hp === 0) {
+    const healed = shipId ? await ConsumableService.consumeFromShipInventory(client, shipId, 'HEAL') : null
+    if (healed) {
+      hp = row.rows[0].max_hp
+      revived = true
+    } else {
+      status = 'dead'
+    }
+  }
+
   await client.query(
     'UPDATE recruits SET hp = $1, status = $2 WHERE player_id = $3 AND id = $4',
     [hp, status, playerId, recruitId],
   )
-  return getRecruit(client, playerId, recruitId)
+  const updated = await getRecruit(client, playerId, recruitId)
+  return updated ? { ...updated, revived } : updated
 }
 
 async function setRecruitStatus(client, playerId, recruitId, status) {
@@ -203,6 +219,8 @@ async function resolveEvents(client, playerId, instance, template, crewMembers) 
   let failed = instance.failed
   let rewardForfeited = instance.reward_forfeited
   let currentEventIndex = instance.current_event_index
+  const missionId = template.id
+  const shipId = instance.ship_id
   const logs = []
   let crewDead = []
 
@@ -210,7 +228,7 @@ async function resolveEvents(client, playerId, instance, template, crewMembers) 
     if (failed || crewMembers.filter(r => r.status !== 'dead').length === 0) break
 
     const event = events[i]
-    
+
     // Find crew member with highest stat for this event
     const activeCrew = crewMembers.filter(r => r.status !== 'dead')
     if (activeCrew.length === 0) {
@@ -224,7 +242,14 @@ async function resolveEvents(client, playerId, instance, template, crewMembers) 
       return currentStat > bestStat ? current : best
     })
 
-    const roll = rollAction(bestRecruit.attributes[event.attribute])
+    // An ATTRIBUTE_BOOST consumable sitting in the ship's own inventory grants
+    // Advantage on the one roll it matches, then is spent regardless of outcome.
+    const boost = await ConsumableService.consumeFromShipInventory(
+      client, shipId, 'ATTRIBUTE_BOOST', data => data?.attribute === event.attribute,
+    )
+    const advantage = boost ? (boost.effect_data?.advantage ?? 1) : 0
+
+    const roll = rollAction(bestRecruit.attributes[event.attribute], advantage)
     const success = roll.total >= event.dc
 
     const result = {
@@ -240,6 +265,7 @@ async function resolveEvents(client, playerId, instance, template, crewMembers) 
       dc: event.dc,
       success,
     }
+    if (advantage > 0) result.advantageUsed = advantage
 
     if (success) {
       result.rewardEarned = event.reward
@@ -249,8 +275,10 @@ async function resolveEvents(client, playerId, instance, template, crewMembers) 
       if (event.failureConsequence === 'HP_LOSS') {
         const hpLost = rollDie(6)
         result.hpLost = hpLost
-        const updated = await damageRecruit(client, playerId, bestRecruit.id, hpLost)
-        if (!updated || updated.status === 'dead') {
+        const updated = await damageRecruit(client, playerId, bestRecruit.id, hpLost, shipId)
+        if (updated?.revived) {
+          result.recruitRevived = true
+        } else if (!updated || updated.status === 'dead') {
           result.recruitDied = true
           crewDead.push(bestRecruit.id)
           if (crewMembers.filter(r => r.status !== 'dead').length === 1) {
@@ -274,7 +302,12 @@ async function resolveEvents(client, playerId, instance, template, crewMembers) 
         eventResults.push(result)
         logs.push(buildEventResultLogs({
           eventResult: result,
-          context: buildLogContext({ template, crewMembers, actingRecruit: bestRecruit }),
+          missionId,
+          missionName: template.name,
+          recruitName: bestRecruit.name,
+          recruitPerks: bestRecruit.perks,
+          recruitFlaws: bestRecruit.flaws,
+          recruitPersonality: bestRecruit.personality,
         }))
         await insertLogEntries(client, playerId, [
           ...logs[logs.length - 1].mission,
@@ -284,6 +317,32 @@ async function resolveEvents(client, playerId, instance, template, crewMembers) 
       } else if (event.failureConsequence === 'SHIP_DAMAGE') {
         rewardForfeited = true
         result.shipDamaged = true
+        const damaged = await ShipService.damageShip(client, playerId, shipId, rollDie(6))
+        if (damaged?.status === 'broken') {
+          const repaired = await ConsumableService.consumeFromShipInventory(client, shipId, 'REPAIR')
+          if (repaired) {
+            await ShipService.repairShip(client, playerId, shipId)
+            result.shipAutoRepaired = true
+          } else {
+            result.shipBroken = true
+            currentEventIndex = i + 1
+            eventResults.push(result)
+            logs.push(buildEventResultLogs({
+              eventResult: result,
+              missionId,
+              missionName: template.name,
+              recruitName: bestRecruit.name,
+              recruitPerks: bestRecruit.perks,
+              recruitFlaws: bestRecruit.flaws,
+              recruitPersonality: bestRecruit.personality,
+            }))
+            await insertLogEntries(client, playerId, [
+              ...logs[logs.length - 1].mission,
+              ...logs[logs.length - 1].global,
+            ])
+            return { failed, rewardForfeited, currentEventIndex, eventResults, forceReturn: true, completed: false, shipDestroyed: false }
+          }
+        }
       } else {
         rewardForfeited = true
       }
@@ -314,7 +373,7 @@ async function completeMission(client, playerId, instance, template, failed, shi
     }
     await ShipService.destroyShip(client, playerId, instance.ship_id)
   } else {
-    // Ship survived (mission réussie ou échouée sans destruction) : équipage et vaisseau rentrent à la base
+    // Ship survived (mission succeeded or failed without destruction): crew and ship return to base
     const ship = await ShipService.getShip(client, playerId, instance.ship_id)
     if (ship && ship.crew) {
       for (const recruitId of ship.crew) {
@@ -322,6 +381,23 @@ async function completeMission(client, playerId, instance, template, failed, shi
       }
     }
     await ShipService.updateShipStatus(client, playerId, instance.ship_id, 'docked')
+  }
+
+  if (!failed && !instance.reward_forfeited) {
+    const creditsWon = instance.event_results
+      .filter(r => r.rewardEarned?.type === 'CREDITS')
+      .reduce((sum, r) => sum + r.rewardEarned.amount, 0)
+
+    if (creditsWon > 0) {
+      const player = await client.query(
+        'SELECT wallet FROM players WHERE id = $1 FOR UPDATE',
+        [playerId],
+      )
+      await client.query(
+        'UPDATE players SET wallet = $1 WHERE id = $2',
+        [player.rows[0].wallet + creditsWon, playerId],
+      )
+    }
   }
 
   const shipData = await ShipService.getShip(client, playerId, instance.ship_id)
@@ -332,19 +408,23 @@ async function completeMission(client, playerId, instance, template, failed, shi
     ? crewMembers.map(r => r?.name || `Recruit ${r?.id}`).join(', ')
     : 'No crew'
 
-  const termineeLogs = buildPhaseLogs({
-    phase: 'TERMINEE',
+  const completedLogs = buildPhaseLogs({
+    phase: 'COMPLETED',
     failed,
     rewardForfeited: instance.reward_forfeited,
     recruitName: crewNames,
     context: buildLogContext({ template, crewMembers }),
   })
-  await insertLogEntries(client, playerId, [...termineeLogs.mission, ...termineeLogs.global])
+  await insertLogEntries(client, playerId, [...completedLogs.mission, ...completedLogs.global])
 }
 
 async function advanceMission(client, playerId, instance, template, now) {
   const events = template.events
   const durationMs = events.length * DURATION_PER_EVENT_MS
+  // Older instances predate the travel/events segment columns; fall back to
+  // the original fixed thirds (equivalent to speed 100, no boost).
+  const travelMs = instance.travel_segment_ms ?? Math.round(durationMs / 3)
+  const eventsMs = instance.events_segment_ms ?? Math.round(durationMs / 3)
   let progress
   let phase
 
@@ -352,18 +432,17 @@ async function advanceMission(client, playerId, instance, template, now) {
     const returnElapsed = now - new Date(instance.return_started_at).getTime()
     const returnDurationMs = (instance.progress_at_return ?? 0) <= 33
       ? ((instance.progress_at_return ?? 0) / 100) * durationMs
-      : durationMs / 3
+      : travelMs
     const returnTicks = Math.max(1, returnDurationMs)
     const delta = Math.min(
       100 - instance.progress_at_return,
       Math.round((returnElapsed / returnTicks) * (100 - instance.progress_at_return)),
     )
     progress = Math.min(100, instance.progress_at_return + delta)
-    phase = progress >= 100 ? 'TERMINEE' : 'RETOUR'
+    phase = progress >= 100 ? 'COMPLETED' : 'RETURN'
   } else {
     const elapsed = now - new Date(instance.started_at).getTime()
-    progress = progressFromElapsed(events.length, elapsed)
-    phase = phaseFromProgress(progress)
+    ;({ phase, progress } = phaseAndProgressFromElapsed(elapsed, travelMs, eventsMs))
   }
 
   let {
@@ -374,7 +453,7 @@ async function advanceMission(client, playerId, instance, template, now) {
     phase: storedPhase,
   } = instance
 
-  const pastEventPhase = progress > 33 || phase === 'EVENEMENT' || phase === 'RETOUR' || phase === 'TERMINEE'
+  const pastEventPhase = progress > 33 || phase === 'EVENT' || phase === 'RETURN' || phase === 'COMPLETED'
 
   if (pastEventPhase && currentEventIndex < events.length) {
     const ship = await ShipService.getShip(client, playerId, instance.ship_id)
@@ -389,7 +468,7 @@ async function advanceMission(client, playerId, instance, template, now) {
         : 'No crew'
 
       const eventPhaseLogs = buildPhaseLogs({
-        phase: 'EVENEMENT',
+        phase: 'EVENT',
         failed: false,
         rewardForfeited,
         recruitName: crewNames,
@@ -413,18 +492,18 @@ async function advanceMission(client, playerId, instance, template, now) {
       await client.query(
         `UPDATE mission_instances SET
           failed = $1, reward_forfeited = $2, current_event_index = $3, event_results = $4,
-          forced_return = TRUE, return_started_at = NOW(), progress_at_return = $5, phase = 'RETOUR', progress = $5
+          forced_return = TRUE, return_started_at = NOW(), progress_at_return = $5, phase = 'RETURN', progress = $5
          WHERE id = $6`,
         [failed, rewardForfeited, currentEventIndex, JSON.stringify(eventResults), progress, instance.id],
       )
-      const retourLogs = buildPhaseLogs({
-        phase: 'RETOUR',
+      const returnLogs = buildPhaseLogs({
+        phase: 'RETURN',
         failed: true,
         rewardForfeited,
         recruitName: 'Crew',
         context: logContext,
       })
-      await insertLogEntries(client, playerId, retourLogs.mission)
+      await insertLogEntries(client, playerId, returnLogs.mission)
 
       const retourBanter = await buildBanterLog(client, playerId, logContext)
       if (retourBanter) await insertLogEntries(client, playerId, retourBanter.mission)
@@ -436,16 +515,16 @@ async function advanceMission(client, playerId, instance, template, now) {
       await client.query(
         `UPDATE mission_instances SET
           failed = $1, reward_forfeited = $2, current_event_index = $3, event_results = $4,
-          phase = 'TERMINEE', progress = 100, status = 'failed'
+          phase = 'COMPLETED', progress = 100, status = 'failed'
          WHERE id = $5`,
         [failed, rewardForfeited, currentEventIndex, JSON.stringify(eventResults), instance.id],
       )
-      await completeMission(client, playerId, { ...instance, failed, reward_forfeited: rewardForfeited }, template, true, resolution.shipDestroyed)
+      await completeMission(client, playerId, { ...instance, failed, reward_forfeited: rewardForfeited, event_results: eventResults }, template, true, resolution.shipDestroyed)
       return
     }
   }
 
-  if (phase === 'RETOUR' && storedPhase !== 'RETOUR' && !instance.forced_return) {
+  if (phase === 'RETURN' && storedPhase !== 'RETURN' && !instance.forced_return) {
     const ship = await ShipService.getShip(client, playerId, instance.ship_id)
     const crewMembers = await Promise.all(
       (ship?.crew ?? []).map(id => getRecruit(client, playerId, id))
@@ -455,28 +534,28 @@ async function advanceMission(client, playerId, instance, template, now) {
       : 'No crew'
 
     const logContext = buildLogContext({ template, crewMembers })
-    const retourLogs = buildPhaseLogs({
-      phase: 'RETOUR',
+    const returnLogs = buildPhaseLogs({
+      phase: 'RETURN',
       failed,
       rewardForfeited,
       recruitName: crewNames,
       context: logContext,
     })
-    await insertLogEntries(client, playerId, retourLogs.mission)
+    await insertLogEntries(client, playerId, returnLogs.mission)
 
     const banterLogs = await buildBanterLog(client, playerId, logContext)
     if (banterLogs) await insertLogEntries(client, playerId, banterLogs.mission)
   }
 
-  if (phase === 'TERMINEE') {
+  if (phase === 'COMPLETED') {
     await client.query(
       `UPDATE mission_instances SET
-        phase = 'TERMINEE', progress = 100, failed = $1, reward_forfeited = $2,
+        phase = 'COMPLETED', progress = 100, failed = $1, reward_forfeited = $2,
         current_event_index = $3, event_results = $4, status = $5
        WHERE id = $6`,
       [failed, rewardForfeited, currentEventIndex, JSON.stringify(eventResults), failed ? 'failed' : 'success', instance.id],
     )
-    await completeMission(client, playerId, { ...instance, failed, reward_forfeited: rewardForfeited }, template, failed, false)
+    await completeMission(client, playerId, { ...instance, failed, reward_forfeited: rewardForfeited, event_results: eventResults }, template, failed, false)
     return
   }
 
@@ -552,12 +631,12 @@ async function hireCandidate(client, playerId, candidateId) {
   return getRecruit(client, playerId, recruitId)
 }
 
-async function startMission(client, playerId, templateId, shipId) {
+async function startMission(client, playerId, templateId, shipId, speedConsumableId = null) {
   const templateResult = await client.query(
     'SELECT * FROM mission_templates WHERE id = $1',
     [templateId],
   )
-  if (templateResult.rows.length === 0) return { error: 'Mission introuvable' }
+  if (templateResult.rows.length === 0) return { error: 'Mission not found' }
 
   const existing = await client.query(
     'SELECT * FROM mission_instances WHERE player_id = $1 AND template_id = $2',
@@ -565,20 +644,20 @@ async function startMission(client, playerId, templateId, shipId) {
   )
   if (existing.rows.length > 0) {
     const s = existing.rows[0].status
-    return { error: s === 'in_progress' ? 'Mission déjà en cours' : 'Mission déjà effectuée' }
+    return { error: s === 'in_progress' ? 'Mission already in progress' : 'Mission already completed' }
   }
 
   const ship = await ShipService.getShip(client, playerId, shipId)
   if (!ship || ship.deleted_at) {
-    return { error: 'Navire introuvable' }
+    return { error: 'Ship not found' }
   }
 
   if (ship.status !== 'docked') {
-    return { error: 'Le navire n\'est pas amarré' }
+    return { error: 'The ship is not docked' }
   }
 
   if (ship.crew.length === 0) {
-    return { error: 'Le navire n\'a pas d\'équipage' }
+    return { error: 'The ship has no crew' }
   }
 
   // Validate all crew members are available
@@ -590,7 +669,19 @@ async function startMission(client, playerId, templateId, shipId) {
   )
   const unavailable = crewResults.filter(r => r.rows.length === 0 || r.rows[0].status !== 'available')
   if (unavailable.length > 0) {
-    return { error: 'Au moins un membre de l\'équipage n\'est pas disponible' }
+    return { error: 'At least one crew member is not available' }
+  }
+
+  // A speed-boost consumable must already be sitting in this ship's own
+  // inventory; it's spent here, once, at launch.
+  let speedMultiplier = 1
+  if (speedConsumableId) {
+    const item = await ConsumableService.getConsumable(client, speedConsumableId)
+    if (!item || item.assigned_to_ship !== shipId || item.effect !== 'SPEED_BOOST') {
+      return { error: 'Speed-boost item not found in this ship\'s inventory' }
+    }
+    speedMultiplier = item.effect_data?.multiplier ?? 1
+    await ConsumableService.consumeFromShipInventory(client, shipId, 'SPEED_BOOST')
   }
 
   // Update crew status to in_mission
@@ -602,12 +693,16 @@ async function startMission(client, playerId, templateId, shipId) {
   await ShipService.updateShipStatus(client, playerId, shipId, 'in_mission')
 
   const template = templateResult.rows[0]
+  const eventCount = template.events.length
+  const effectiveSpeed = (ship.stats?.speed ?? 100) * speedMultiplier
+  const travelMs = travelSegmentMs(eventCount, effectiveSpeed)
+  const eventsMs = eventsSegmentMs(eventCount)
   const inserted = await client.query(
     `INSERT INTO mission_instances
-      (player_id, template_id, ship_id, status, phase, progress, started_at)
-     VALUES ($1, $2, $3, 'in_progress', 'EN_ROUTE', 0, NOW())
+      (player_id, template_id, ship_id, status, phase, progress, started_at, travel_segment_ms, events_segment_ms)
+     VALUES ($1, $2, $3, 'in_progress', 'EN_ROUTE', 0, NOW(), $4, $5)
      RETURNING *`,
-    [playerId, templateId, shipId],
+    [playerId, templateId, shipId, travelMs, eventsMs],
   )
 
   const crewMembers = await Promise.all(
@@ -636,7 +731,7 @@ async function stopMission(client, playerId, templateId) {
     'SELECT * FROM mission_instances WHERE player_id = $1 AND template_id = $2',
     [playerId, templateId],
   )
-  if (instance.rows.length === 0) return { error: 'Aucune mission active' }
+  if (instance.rows.length === 0) return { error: 'No active mission' }
 
   const row = instance.rows[0]
   const ship = await ShipService.getShip(client, playerId, row.ship_id)
@@ -657,11 +752,11 @@ async function forceReturnMission(client, playerId, templateId) {
     'SELECT * FROM mission_instances WHERE player_id = $1 AND template_id = $2',
     [playerId, templateId],
   )
-  if (instanceResult.rows.length === 0) return { error: 'Aucune mission active' }
+  if (instanceResult.rows.length === 0) return { error: 'No active mission' }
 
   const instance = instanceResult.rows[0]
-  if (instance.phase === 'TERMINEE' || instance.phase === 'RETOUR') {
-    return { error: 'Retour déjà en cours ou mission terminée' }
+  if (instance.phase === 'COMPLETED' || instance.phase === 'RETURN') {
+    return { error: 'Return already in progress or mission completed' }
   }
 
   const template = (await client.query(
@@ -675,24 +770,24 @@ async function forceReturnMission(client, playerId, templateId) {
   )
   const crewNames = ship?.crew?.length > 0
     ? crewMembers.map(r => r?.name).filter(Boolean).join(', ')
-    : 'Équipage'
+    : 'Crew'
 
   const logContext = buildLogContext({ template, crewMembers })
-  const retourLogs = buildPhaseLogs({
-    phase: 'RETOUR',
+  const returnLogs = buildPhaseLogs({
+    phase: 'RETURN',
     failed: instance.failed,
     rewardForfeited: instance.reward_forfeited,
     recruitName: crewNames,
     context: logContext,
   })
-  await insertLogEntries(client, playerId, retourLogs.mission)
+  await insertLogEntries(client, playerId, returnLogs.mission)
 
   const banterLogs = await buildBanterLog(client, playerId, logContext)
   if (banterLogs) await insertLogEntries(client, playerId, banterLogs.mission)
 
   await client.query(
     `UPDATE mission_instances SET
-      forced_return = TRUE, return_started_at = NOW(), progress_at_return = progress, phase = 'RETOUR'
+      forced_return = TRUE, return_started_at = NOW(), progress_at_return = progress, phase = 'RETURN'
      WHERE id = $1`,
     [instance.id],
   )
@@ -871,13 +966,13 @@ module.exports = {
   hireCandidate: (candidateId) => withTransaction(async (client) => {
     await bootstrapPlayer(client)
     const recruit = await hireCandidate(client, DEFAULT_PLAYER_ID, candidateId)
-    if (!recruit) return { error: 'Recrutement impossible' }
+    if (!recruit) return { error: 'Recruitment failed' }
     await syncMissions(client, DEFAULT_PLAYER_ID)
     return { recruit, state: await buildGameState(client, DEFAULT_PLAYER_ID) }
   }),
-  startMission: (templateId, shipId) => withTransaction(async (client) => {
+  startMission: (templateId, shipId, speedConsumableId) => withTransaction(async (client) => {
     await bootstrapPlayer(client)
-    const result = await startMission(client, DEFAULT_PLAYER_ID, templateId, shipId)
+    const result = await startMission(client, DEFAULT_PLAYER_ID, templateId, shipId, speedConsumableId)
     if (result.error) return result
     await syncMissions(client, DEFAULT_PLAYER_ID)
     return { state: await buildGameState(client, DEFAULT_PLAYER_ID) }
@@ -900,7 +995,7 @@ module.exports = {
   }),
   renameRecruit: (recruitId, newName) => withTransaction(async (client) => {
     const recruit = await renameRecruit(client, DEFAULT_PLAYER_ID, recruitId, newName)
-    if (!recruit) return { error: 'Recrue introuvable' }
+    if (!recruit) return { error: 'Recruit not found' }
     return { recruit, state: await buildGameState(client, DEFAULT_PLAYER_ID) }
   }),
 }

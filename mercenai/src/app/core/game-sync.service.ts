@@ -5,6 +5,7 @@ import { CandidateService } from './candidate.service';
 import { MissionService } from './mission.service';
 import { LogService } from './log.service';
 import { ShipService } from './ship.service';
+import { ShopService } from './shop.service';
 import { GameSnapshot } from '../models/game-state';
 
 const POLL_INTERVAL_MS = 2000;
@@ -18,6 +19,7 @@ export class GameSyncService implements OnDestroy {
   private missions = inject(MissionService);
   private logs = inject(LogService);
   private ships = inject(ShipService);
+  private shop = inject(ShopService);
 
   private pollTimer: ReturnType<typeof setInterval> | null = null;
   private watchCount = 0;
@@ -58,6 +60,7 @@ export class GameSyncService implements OnDestroy {
     this.missions.applyState(state);
     this.logs.applyState(state);
     this.ships.applyState(state);
+    this.shop.refreshWallet();
     this.lastState = state;
     this.reconcilePolling();
   }
@@ -70,7 +73,7 @@ export class GameSyncService implements OnDestroy {
   private hasActiveMissions(): boolean {
     if (!this.lastState) return false;
     return Object.values(this.lastState.missionStates)
-      .some(s => s.phase !== 'TERMINEE');
+      .some(s => s.phase !== 'COMPLETED');
   }
 
   private pollIntervalMs(): number | null {

@@ -1,92 +1,92 @@
-# Commandes disponibles
+# Available commands
 
-> Les sous-commandes `list` et `detail` (recruit, candidate, ship, equipment, shop, mission) acceptent aussi les raccourcis `-l` / `--list` et `-d` / `--detail`, ex. `recruit list` ≡ `recruit -l`.
+> The `list` and `detail` sub-commands (recruit, candidate, ship, equipment, shop, mission) also accept the shortcuts `-l` / `--list` and `-d` / `--detail`, e.g. `recruit list` ≡ `recruit -l`.
 
 ## Navigation
 
-| Commande              | Description                                      |
+| Command               | Description                                      |
 |-----------------------|--------------------------------------------------|
-| `home`                | Ouvre le dashboard (vue globale)                 |
-| `split-h`             | Divise le panel courant horizontalement          |
-| `split-v`             | Divise le panel courant verticalement            |
-| `close`               | Ferme le panel courant                           |
-| `focus <id>`          | Donne le focus au panel numéro `<id>`            |
-| `focus left/right/up/down` | Navigation directionnelle entre panels      |
-| `help`                | Affiche cette aide                               |
+| `home`                | Opens the dashboard (overview)                   |
+| `split-h`             | Splits the current panel horizontally            |
+| `split-v`             | Splits the current panel vertically              |
+| `close`               | Closes the current panel                         |
+| `focus <id>`          | Gives focus to panel number `<id>`               |
+| `focus left/right/up/down` | Directional navigation between panels       |
+| `help`                | Shows this help                                  |
 
-## Recrutement
+## Recruitment
 
-| Commande                    | Description                                                    |
-|-----------------------------|----------------------------------------------------------------|
-| `candidate list`            | Liste des candidats disponibles au recrutement                 |
-| `candidate detail <id>`     | Détail d'un candidat : stats, personnalité, perks/flaws        |
-| `recruit hire <id>`         | Recrute un candidat par son ID                                 |
-| `refresh`                   | *(panel candidate-list)* Génère de nouveaux candidats          |
-| `hire`                      | *(panel candidate-detail)* Recrute ce candidat                 |
-| `detail <id>`               | *(panel candidate-list)* Raccourci vers le détail              |
+| Command                     | Description                                                    |
+|------------------------------|----------------------------------------------------------------|
+| `candidate list`            | List of candidates available for recruitment                   |
+| `candidate detail <id>`     | Detail of a candidate: stats, personality, perks/flaws          |
+| `recruit hire <id>`         | Recruits a candidate by their ID                                |
+| `refresh`                   | *(candidate-list panel)* Generates new candidates               |
+| `hire`                      | *(candidate-detail panel)* Recruits this candidate              |
+| `detail <id>`               | *(candidate-list panel)* Shortcut to detail                     |
 
-## Recrues
+## Recruits
 
-| Commande                  | Description                                             |
-|---------------------------|---------------------------------------------------------|
-| `recruit list`            | Liste des recrues avec statut                           |
-| `recruit detail <id>`     | Détail d'une recrue : stats PHY / MEN / SOC             |
-| `rename <nom>`            | *(panel recruit-detail)* Renomme la recrue              |
-| `detail <id>`             | *(panel recruit-list)* Raccourci vers le détail         |
+| Command                   | Description                                              |
+|----------------------------|-----------------------------------------------------------|
+| `recruit list`            | List of recruits with status                             |
+| `recruit detail <id>`     | Detail of a recruit: PHY / MEN / SOC stats                |
+| `rename <name>`           | *(recruit-detail panel)* Renames the recruit              |
+| `detail <id>`             | *(recruit-list panel)* Shortcut to detail                 |
 
-## Navires
+## Ships
 
-| Commande                             | Description                                              |
-|---------------------------------------|----------------------------------------------------------|
-| `ship list`                           | Liste des navires avec statut (amarré/en mission)        |
-| `ship detail <id>`                    | Détail d'un navire : stats, équipage, équipement         |
-| `ship assign <shipId> <recruitId>`    | Assigne une recrue à l'équipage d'un navire               |
-| `ship unassign <shipId> <recruitId>`  | Retire une recrue de l'équipage d'un navire               |
-| `ship rename <shipId> <nom>`          | Renomme un navire                                         |
-| `detail <id>`                         | *(panel ship-list)* Raccourci vers le détail              |
-| `assign <recruitId>`                  | *(panel ship-detail)* Assigne une recrue à ce navire      |
-| `unassign <recruitId>`                | *(panel ship-detail)* Retire une recrue de ce navire      |
-| `rename <nom>`                        | *(panel ship-detail)* Renomme ce navire                   |
+| Command                               | Description                                              |
+|-----------------------------------------|------------------------------------------------------------|
+| `ship list`                           | List of ships with status (docked/on mission)             |
+| `ship detail <id>`                    | Detail of a ship: stats, crew, equipment                  |
+| `ship assign <shipId> <recruitId>`    | Assigns a recruit to a ship's crew                         |
+| `ship unassign <shipId> <recruitId>`  | Removes a recruit from a ship's crew                       |
+| `ship rename <shipId> <name>`         | Renames a ship                                             |
+| `detail <id>`                         | *(ship-list panel)* Shortcut to detail                     |
+| `assign <recruitId>`                  | *(ship-detail panel)* Assigns a recruit to this ship       |
+| `unassign <recruitId>`                | *(ship-detail panel)* Removes a recruit from this ship     |
+| `rename <name>`                       | *(ship-detail panel)* Renames this ship                    |
 
-## Équipement
+## Equipment
 
-| Commande                           | Description                                               |
-|------------------------------------|-----------------------------------------------------------|
-| `equipment list`                   | Liste de l'équipement en inventaire                       |
-| `equipment detail <id>`            | Détail d'un équipement : effet, rareté, prix             |
-| `equipment assign <equipmentId> <shipId>` | Assigne un équipement à un navire                    |
-| `equipment unassign <equipmentId>`  | Retire un équipement de son navire                         |
-| `detail <id>`                      | *(panel equipment-list)* Raccourci vers le détail        |
-| `assign <shipId>`                  | *(panel equipment-detail)* Assigne cet équipement à un navire |
-| `unassign`                         | *(panel equipment-detail)* Retire cet équipement de son navire |
+| Command                             | Description                                                |
+|---------------------------------------|--------------------------------------------------------------|
+| `equipment list`                    | List of equipment in inventory                              |
+| `equipment detail <id>`             | Detail of an equipment item: effect, rarity, price           |
+| `equipment assign <equipmentId> <shipId>` | Assigns an equipment item to a ship                    |
+| `equipment unassign <equipmentId>`  | Removes an equipment item from its ship                      |
+| `detail <id>`                       | *(equipment-list panel)* Shortcut to detail                  |
+| `assign <shipId>`                   | *(equipment-detail panel)* Assigns this equipment to a ship  |
+| `unassign`                          | *(equipment-detail panel)* Removes this equipment from its ship |
 
-## Boutique
+## Shop
 
-| Commande                    | Description                                          |
-|-----------------------------|------------------------------------------------------|
-| `shop list`                 | Liste des navires et équipements disponibles à l'achat |
-| `shop detail <id>`          | Détail d'un article : prix, stats, description       |
-| `shop buy <id>`             | Achète un navire ou équipement (1 unité)             |
-| `wallet`                    | Affiche le solde crédit courant                       |
-| `detail <id>`               | *(panel shop-list)* Raccourci vers le détail         |
-| `buy <id> [quantité]`       | *(panel shop-list)* Achète un article par son ID     |
-| `buy [quantité]`            | *(panel shop-detail)* Achète cet article              |
+| Command                     | Description                                            |
+|-------------------------------|----------------------------------------------------------|
+| `shop list`                 | List of ships and equipment available for purchase       |
+| `shop detail <id>`          | Detail of an item: price, stats, description             |
+| `shop buy <id>`             | Buys a ship or equipment item (1 unit)                    |
+| `wallet`                    | Shows the current credit balance                          |
+| `detail <id>`               | *(shop-list panel)* Shortcut to detail                    |
+| `buy <id> [quantity]`       | *(shop-list panel)* Buys an item by its ID                |
+| `buy [quantity]`            | *(shop-detail panel)* Buys this item                       |
 
 ## Missions
 
-| Commande                            | Description                                          |
-|-------------------------------------|------------------------------------------------------|
-| `mission list`                      | Liste des missions avec statut et progression        |
-| `mission detail <id>`               | Détail d'une mission : phase et barre de progression |
-| `mission start <missionId> <shipId>` | Lance une mission avec un navire                    |
-| `mission stop <missionId>`          | Annule une mission et remet l'équipage disponible    |
-| `mission logs <id>`                 | Logs détaillés d'une mission                         |
-| `stop`                              | *(panel mission-detail)* Déclenche un retour forcé   |
-| `detail <id>`                       | *(panel mission-list)* Raccourci vers le détail      |
+| Command                              | Description                                          |
+|----------------------------------------|----------------------------------------------------------|
+| `mission list`                       | List of missions with status and progress             |
+| `mission detail <id>`                | Detail of a mission: phase and progress bar            |
+| `mission start <missionId> <shipId>` | Launches a mission with a ship                         |
+| `mission stop <missionId>`           | Cancels a mission and frees up the crew                |
+| `mission logs <id>`                  | Detailed logs of a mission                             |
+| `stop`                               | *(mission-detail panel)* Triggers a forced return      |
+| `detail <id>`                        | *(mission-list panel)* Shortcut to detail              |
 
 ## Logs
 
-| Commande        | Description                                                   |
-|-----------------|---------------------------------------------------------------|
-| `logs`          | Log global : lancements et fins de mission                    |
-| `mission logs <id>` | Logs détaillés d'une mission ([SYS] / [IA] / [RECRUE])   |
+| Command         | Description                                                   |
+|-------------------|-----------------------------------------------------------------|
+| `logs`          | Global log: mission launches and endings                       |
+| `mission logs <id>` | Detailed logs of a mission ([SYS] / [AI] / [RECRUIT])       |

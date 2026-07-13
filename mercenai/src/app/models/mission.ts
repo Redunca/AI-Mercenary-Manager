@@ -1,6 +1,6 @@
 import { AttributeKey } from './recruit';
 
-export type MissionPhase = 'EN_ROUTE' | 'EVENEMENT' | 'RETOUR' | 'TERMINEE';
+export type MissionPhase = 'EN_ROUTE' | 'EVENT' | 'RETURN' | 'COMPLETED';
 
 export type EventType =
   | 'COMBAT'
