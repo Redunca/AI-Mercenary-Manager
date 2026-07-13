@@ -31,7 +31,7 @@ describe('createStarterShip', () => {
       rarity: 'common',
       crew: [],
       status: 'docked',
-      stats: { speed: 100, capacity: 1, inventory_space: 0, durability: 10, price: 0 },
+      stats: { speed: 100, capacity: 1, inventory_space: 0, durability: 10, max_durability: 10, price: 0 },
     })
     expect(ship.galactic_id).toMatch(/^SHIP-/)
   })

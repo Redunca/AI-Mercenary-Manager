@@ -6,11 +6,12 @@ export interface ShopItem {
   id: number;
   name: string;
   description: string;
-  type: 'ship' | 'equipment';
+  type: 'ship' | 'consumable';
   rarity: string;
   price: number;
   stats?: any;
   effect?: string;
+  effect_data?: Record<string, unknown>;
   quantity?: number;
   available: boolean;
 }
@@ -46,7 +47,7 @@ export class ShopService {
     return this.http.post(`/api/shop/buy/ship/${itemId}`, {}).toPromise() as Promise<any>;
   }
 
-  buyEquipment(itemId: number, quantity: number = 1): Promise<any> {
-    return this.http.post(`/api/shop/buy/equipment/${itemId}`, { quantity }).toPromise() as Promise<any>;
+  buyConsumable(itemId: number, quantity: number = 1): Promise<any> {
+    return this.http.post(`/api/shop/buy/consumable/${itemId}`, { quantity }).toPromise() as Promise<any>;
   }
 }

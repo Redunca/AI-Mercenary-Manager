@@ -3,7 +3,7 @@
 <div class="indent-one">"credit" : {{ wallet }},</div>
 <div class="indent-one">"items" : [</div>
 <div *ngFor="let item of items" class="indent-two item-entry">
-  <div>[{{ item.id }}] <span class="item-name">{{ item.name }}</span> — <span class="muted">{{ item.type === 'ship' ? 'SHIP' : 'EQUIPMENT' }}</span> <span [class]="'rarity-' + item.rarity">({{ item.rarity }})</span> — {{ item.price }} ¥</div>
+  <div>[{{ item.id }}] <span class="item-name">{{ item.name }}</span> — <span class="muted">{{ item.type === 'ship' ? 'SHIP' : 'CONSUMABLE' }}</span> <span [class]="'rarity-' + item.rarity">({{ item.rarity }})</span> — {{ item.price }} ¥</div>
   <div class="indent-three muted">{{ item.description }}</div>
 </div>
 <div *ngIf="items.length === 0" class="indent-two muted">— shop empty —</div>

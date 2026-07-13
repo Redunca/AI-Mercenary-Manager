@@ -3,11 +3,11 @@ const path = require('path')
 const { pool } = require('../db/pool')
 const { rollAction, rollDie, rollInRange } = require('./dice.service')
 const { generateCandidate, rowToCandidate, rowToRecruit, computeMaxHp } = require('../domain/recruit')
-const { DURATION_PER_EVENT_MS, phaseFromProgress, progressFromElapsed } = require('../domain/mission')
+const { DURATION_PER_EVENT_MS, travelSegmentMs, eventsSegmentMs, phaseAndProgressFromElapsed } = require('../domain/mission')
 const { insertLogEntries, buildPhaseLogs, buildEventResultLogs } = require('./log.service')
-const { createStarterShip, validateCrewAssignment, calculateEffectiveTravelTime } = require('../domain/ship')
+const { createStarterShip, validateCrewAssignment } = require('../domain/ship')
 const ShipService = require('./ship.service')
-const EquipmentService = require('./equipment.service')
+const ConsumableService = require('./consumable.service')
 
 
 const { loadData } = require('../dataLoader')
@@ -140,20 +140,36 @@ async function getRecruit(client, playerId, recruitId) {
   return result.rows[0] ? rowToRecruit(result.rows[0]) : null
 }
 
-async function damageRecruit(client, playerId, recruitId, amount) {
+// `shipId` lets a fatal hit be intercepted by a HEAL consumable sitting in
+// that ship's inventory: the recruit is revived to full HP instead of dying,
+// and the item is spent. Without a matching item, death is permanent.
+async function damageRecruit(client, playerId, recruitId, amount, shipId) {
   const row = await client.query(
     'SELECT * FROM recruits WHERE player_id = $1 AND id = $2 FOR UPDATE',
     [playerId, recruitId],
   )
   if (row.rows.length === 0 || row.rows[0].status === 'dead') return null
 
-  const hp = Math.max(0, row.rows[0].hp - amount)
-  const status = hp === 0 ? 'dead' : row.rows[0].status
+  let hp = Math.max(0, row.rows[0].hp - amount)
+  let status = row.rows[0].status
+  let revived = false
+
+  if (hp === 0) {
+    const healed = shipId ? await ConsumableService.consumeFromShipInventory(client, shipId, 'HEAL') : null
+    if (healed) {
+      hp = row.rows[0].max_hp
+      revived = true
+    } else {
+      status = 'dead'
+    }
+  }
+
   await client.query(
     'UPDATE recruits SET hp = $1, status = $2 WHERE player_id = $3 AND id = $4',
     [hp, status, playerId, recruitId],
   )
-  return getRecruit(client, playerId, recruitId)
+  const updated = await getRecruit(client, playerId, recruitId)
+  return updated ? { ...updated, revived } : updated
 }
 
 async function setRecruitStatus(client, playerId, recruitId, status) {
@@ -171,6 +187,7 @@ async function resolveEvents(client, playerId, instance, template, crewMembers) 
   let rewardForfeited = instance.reward_forfeited
   let currentEventIndex = instance.current_event_index
   const missionId = template.id
+  const shipId = instance.ship_id
   const logs = []
   let crewDead = []
 
@@ -178,7 +195,7 @@ async function resolveEvents(client, playerId, instance, template, crewMembers) 
     if (failed || crewMembers.filter(r => r.status !== 'dead').length === 0) break
 
     const event = events[i]
-    
+
     // Find crew member with highest stat for this event
     const activeCrew = crewMembers.filter(r => r.status !== 'dead')
     if (activeCrew.length === 0) {
@@ -192,7 +209,14 @@ async function resolveEvents(client, playerId, instance, template, crewMembers) 
       return currentStat > bestStat ? current : best
     })
 
-    const roll = rollAction(bestRecruit.attributes[event.attribute])
+    // An ATTRIBUTE_BOOST consumable sitting in the ship's own inventory grants
+    // Advantage on the one roll it matches, then is spent regardless of outcome.
+    const boost = await ConsumableService.consumeFromShipInventory(
+      client, shipId, 'ATTRIBUTE_BOOST', data => data?.attribute === event.attribute,
+    )
+    const advantage = boost ? (boost.effect_data?.advantage ?? 1) : 0
+
+    const roll = rollAction(bestRecruit.attributes[event.attribute], advantage)
     const success = roll.total >= event.dc
 
     const result = {
@@ -208,6 +232,7 @@ async function resolveEvents(client, playerId, instance, template, crewMembers) 
       dc: event.dc,
       success,
     }
+    if (advantage > 0) result.advantageUsed = advantage
 
     if (success) {
       result.rewardEarned = event.reward
@@ -217,8 +242,10 @@ async function resolveEvents(client, playerId, instance, template, crewMembers) 
       if (event.failureConsequence === 'HP_LOSS') {
         const hpLost = rollDie(6)
         result.hpLost = hpLost
-        const updated = await damageRecruit(client, playerId, bestRecruit.id, hpLost)
-        if (!updated || updated.status === 'dead') {
+        const updated = await damageRecruit(client, playerId, bestRecruit.id, hpLost, shipId)
+        if (updated?.revived) {
+          result.recruitRevived = true
+        } else if (!updated || updated.status === 'dead') {
           result.recruitDied = true
           crewDead.push(bestRecruit.id)
           if (crewMembers.filter(r => r.status !== 'dead').length === 1) {
@@ -262,6 +289,32 @@ async function resolveEvents(client, playerId, instance, template, crewMembers) 
       } else if (event.failureConsequence === 'SHIP_DAMAGE') {
         rewardForfeited = true
         result.shipDamaged = true
+        const damaged = await ShipService.damageShip(client, playerId, shipId, rollDie(6))
+        if (damaged?.status === 'broken') {
+          const repaired = await ConsumableService.consumeFromShipInventory(client, shipId, 'REPAIR')
+          if (repaired) {
+            await ShipService.repairShip(client, playerId, shipId)
+            result.shipAutoRepaired = true
+          } else {
+            result.shipBroken = true
+            currentEventIndex = i + 1
+            eventResults.push(result)
+            logs.push(buildEventResultLogs({
+              eventResult: result,
+              missionId,
+              missionName: template.name,
+              recruitName: bestRecruit.name,
+              recruitPerks: bestRecruit.perks,
+              recruitFlaws: bestRecruit.flaws,
+              recruitPersonality: bestRecruit.personality,
+            }))
+            await insertLogEntries(client, playerId, [
+              ...logs[logs.length - 1].mission,
+              ...logs[logs.length - 1].global,
+            ])
+            return { failed, rewardForfeited, currentEventIndex, eventResults, forceReturn: true, completed: false, shipDestroyed: false }
+          }
+        }
       } else {
         rewardForfeited = true
       }
@@ -349,6 +402,10 @@ async function completeMission(client, playerId, instance, template, failed, shi
 async function advanceMission(client, playerId, instance, template, now) {
   const events = template.events
   const durationMs = events.length * DURATION_PER_EVENT_MS
+  // Older instances predate the travel/events segment columns; fall back to
+  // the original fixed thirds (equivalent to speed 100, no boost).
+  const travelMs = instance.travel_segment_ms ?? Math.round(durationMs / 3)
+  const eventsMs = instance.events_segment_ms ?? Math.round(durationMs / 3)
   let progress
   let phase
 
@@ -356,7 +413,7 @@ async function advanceMission(client, playerId, instance, template, now) {
     const returnElapsed = now - new Date(instance.return_started_at).getTime()
     const returnDurationMs = (instance.progress_at_return ?? 0) <= 33
       ? ((instance.progress_at_return ?? 0) / 100) * durationMs
-      : durationMs / 3
+      : travelMs
     const returnTicks = Math.max(1, returnDurationMs)
     const delta = Math.min(
       100 - instance.progress_at_return,
@@ -366,8 +423,7 @@ async function advanceMission(client, playerId, instance, template, now) {
     phase = progress >= 100 ? 'COMPLETED' : 'RETURN'
   } else {
     const elapsed = now - new Date(instance.started_at).getTime()
-    progress = progressFromElapsed(events.length, elapsed)
-    phase = phaseFromProgress(progress)
+    ;({ phase, progress } = phaseAndProgressFromElapsed(elapsed, travelMs, eventsMs))
   }
 
   let {
@@ -555,7 +611,7 @@ async function hireCandidate(client, playerId, candidateId) {
   return getRecruit(client, playerId, recruitId)
 }
 
-async function startMission(client, playerId, templateId, shipId) {
+async function startMission(client, playerId, templateId, shipId, speedConsumableId = null) {
   const templateResult = await client.query(
     'SELECT * FROM mission_templates WHERE id = $1',
     [templateId],
@@ -596,6 +652,18 @@ async function startMission(client, playerId, templateId, shipId) {
     return { error: 'At least one crew member is not available' }
   }
 
+  // A speed-boost consumable must already be sitting in this ship's own
+  // inventory; it's spent here, once, at launch.
+  let speedMultiplier = 1
+  if (speedConsumableId) {
+    const item = await ConsumableService.getConsumable(client, speedConsumableId)
+    if (!item || item.assigned_to_ship !== shipId || item.effect !== 'SPEED_BOOST') {
+      return { error: 'Speed-boost item not found in this ship\'s inventory' }
+    }
+    speedMultiplier = item.effect_data?.multiplier ?? 1
+    await ConsumableService.consumeFromShipInventory(client, shipId, 'SPEED_BOOST')
+  }
+
   // Update crew status to in_mission
   for (const recruitId of ship.crew) {
     await setRecruitStatus(client, playerId, recruitId, 'in_mission')
@@ -605,12 +673,16 @@ async function startMission(client, playerId, templateId, shipId) {
   await ShipService.updateShipStatus(client, playerId, shipId, 'in_mission')
 
   const template = templateResult.rows[0]
+  const eventCount = template.events.length
+  const effectiveSpeed = (ship.stats?.speed ?? 100) * speedMultiplier
+  const travelMs = travelSegmentMs(eventCount, effectiveSpeed)
+  const eventsMs = eventsSegmentMs(eventCount)
   const inserted = await client.query(
     `INSERT INTO mission_instances
-      (player_id, template_id, ship_id, status, phase, progress, started_at)
-     VALUES ($1, $2, $3, 'in_progress', 'EN_ROUTE', 0, NOW())
+      (player_id, template_id, ship_id, status, phase, progress, started_at, travel_segment_ms, events_segment_ms)
+     VALUES ($1, $2, $3, 'in_progress', 'EN_ROUTE', 0, NOW(), $4, $5)
      RETURNING *`,
-    [playerId, templateId, shipId],
+    [playerId, templateId, shipId, travelMs, eventsMs],
   )
 
   const crewNames = (await Promise.all(
@@ -878,9 +950,9 @@ module.exports = {
     await syncMissions(client, DEFAULT_PLAYER_ID)
     return { recruit, state: await buildGameState(client, DEFAULT_PLAYER_ID) }
   }),
-  startMission: (templateId, shipId) => withTransaction(async (client) => {
+  startMission: (templateId, shipId, speedConsumableId) => withTransaction(async (client) => {
     await bootstrapPlayer(client)
-    const result = await startMission(client, DEFAULT_PLAYER_ID, templateId, shipId)
+    const result = await startMission(client, DEFAULT_PLAYER_ID, templateId, shipId, speedConsumableId)
     if (result.error) return result
     await syncMissions(client, DEFAULT_PLAYER_ID)
     return { state: await buildGameState(client, DEFAULT_PLAYER_ID) }

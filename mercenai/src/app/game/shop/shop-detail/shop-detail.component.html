@@ -3,7 +3,7 @@
 <ng-container *ngIf="item; else notFound">
   <div class="indent-one">"id"          : {{ item.id }},</div>
   <div class="indent-one">"name"        : "{{ item.name }}",</div>
-  <div class="indent-one">"type"        : "{{ item.type === 'ship' ? 'SHIP' : 'EQUIPMENT' }}",</div>
+  <div class="indent-one">"type"        : "{{ item.type === 'ship' ? 'SHIP' : 'CONSUMABLE' }}",</div>
   <div class="indent-one">"rarity"      : <span [class]="'rarity-' + item.rarity">"{{ item.rarity }}"</span>,</div>
   <div class="indent-one">"price"       : {{ item.price }},</div>
   <div class="indent-one">"description" : "{{ item.description }}",</div>
@@ -17,7 +17,7 @@
     <div class="indent-one">{{ '}' }}</div>
   </ng-container>
 
-  <div class="indent-one" *ngIf="item.type === 'equipment'">"effect" : "{{ item.effect }}"</div>
+  <div class="indent-one" *ngIf="item.type === 'consumable'">"effect" : "{{ item.effect }}"</div>
 </ng-container>
 <ng-template #notFound>
   <div class="indent-one muted">Item not found.</div>

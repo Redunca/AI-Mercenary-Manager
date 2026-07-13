@@ -25,13 +25,13 @@
     "dcVariance": 5,
     "eventCount": 5,
     "rewardRange": { "min": 820, "max": 1150 },
-    "failureConsequences": ["HP_LOSS", "FORCED_DEPARTURE"]
+    "failureConsequences": ["HP_LOSS", "FORCED_DEPARTURE", "SHIP_DAMAGE"]
   },
   "EPIC": {
     "dcBase": 30,
     "dcVariance": 5,
     "eventCount": 7,
     "rewardRange": { "min": 1150, "max": 1900 },
-    "failureConsequences": ["HP_LOSS", "FORCED_DEPARTURE"]
+    "failureConsequences": ["HP_LOSS", "FORCED_DEPARTURE", "SHIP_DAMAGE"]
   }
 }

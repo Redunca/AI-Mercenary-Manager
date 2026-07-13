@@ -14,8 +14,6 @@ import { CandidateListComponent } from '../../game/candidate-list/candidate-list
 import { CandidateDetailComponent } from '../../game/candidate-detail/candidate-detail.component';
 import { ShipListComponent } from '../../game/ship/ship-list/ship-list.component';
 import { ShipDetailComponent } from '../../game/ship/ship-detail/ship-detail.component';
-import { EquipmentListComponent } from '../../game/equipment/equipment-list/equipment-list.component';
-import { EquipmentDetailComponent } from '../../game/equipment/equipment-detail/equipment-detail.component';
 import { TerminalController } from '../../core/terminal-controller';
 import { LayoutService } from '../../core/layout.service';
 import { LayoutNodeComponent } from '../layout-node/layout-node.component';
@@ -39,8 +37,6 @@ import { ShopDetailComponent } from '../../game/shop/shop-detail/shop-detail.com
     CandidateDetailComponent,
     ShipListComponent,
     ShipDetailComponent,
-    EquipmentListComponent,
-    EquipmentDetailComponent,
     LayoutNodeComponent,
     ShopListComponent,
     ShopDetailComponent
@@ -154,10 +150,6 @@ export class TerminalPanelComponent implements OnInit, AfterViewChecked, AfterVi
         return ShipListComponent;
       case PanelModule.ShipDetail:
         return ShipDetailComponent;
-      case PanelModule.EquipmentList:
-        return EquipmentListComponent;
-      case PanelModule.EquipmentDetail:
-        return EquipmentDetailComponent;
       case PanelModule.ShopList:
         return ShopListComponent;
       case PanelModule.ShopDetail:

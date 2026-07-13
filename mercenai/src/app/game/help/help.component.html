@@ -1,4 +1,4 @@
-<div class="legend">The <span class="cmd">list</span> and <span class="cmd">detail</span> subcommands (recruit, candidate, ship, equipment, shop, mission) also accept <span class="cmd">-l</span>/<span class="cmd">--list</span> and <span class="cmd">-d</span>/<span class="cmd">--detail</span>.</div>
+<div class="legend">The <span class="cmd">list</span> and <span class="cmd">detail</span> subcommands (recruit, candidate, ship, shop, mission) also accept <span class="cmd">-l</span>/<span class="cmd">--list</span> and <span class="cmd">-d</span>/<span class="cmd">--detail</span>.</div>
 
 <div>&nbsp;</div>
 <div class="section-title">NAVIGATION</div>
@@ -29,7 +29,7 @@
 <div>&nbsp;</div>
 <div class="section-title">SHIPS</div>
 <div class="row"><span class="cmd">ship list</span><span class="desc">Lists ships with status (docked/on mission)</span></div>
-<div class="row"><span class="cmd">ship detail &lt;id&gt;</span><span class="desc">Ship detail: stats, crew, equipment</span></div>
+<div class="row"><span class="cmd">ship detail &lt;id&gt;</span><span class="desc">Ship detail: stats, crew</span></div>
 <div class="row"><span class="cmd">ship assign &lt;shipId&gt; &lt;recruitId&gt;</span><span class="desc">Assigns a recruit to a ship's crew</span></div>
 <div class="row"><span class="cmd">ship unassign &lt;shipId&gt; &lt;recruitId&gt;</span><span class="desc">Removes a recruit from a ship's crew</span></div>
 <div class="row"><span class="cmd">ship rename &lt;shipId&gt; &lt;name&gt;</span><span class="desc">Renames a ship</span></div>
@@ -39,20 +39,10 @@
 <div class="row"><span class="cmd">rename &lt;name&gt;</span><span class="desc">(ship-detail panel) Renames this ship</span></div>
 
 <div>&nbsp;</div>
-<div class="section-title">EQUIPMENT</div>
-<div class="row"><span class="cmd">equipment list</span><span class="desc">Lists equipment in inventory</span></div>
-<div class="row"><span class="cmd">equipment detail &lt;id&gt;</span><span class="desc">Equipment detail: effect, rarity, price</span></div>
-<div class="row"><span class="cmd">equipment assign &lt;equipmentId&gt; &lt;shipId&gt;</span><span class="desc">Assigns equipment to a ship</span></div>
-<div class="row"><span class="cmd">equipment unassign &lt;equipmentId&gt;</span><span class="desc">Removes equipment from its ship</span></div>
-<div class="row"><span class="cmd">detail &lt;id&gt;</span><span class="desc">(equipment-list panel) Shortcut to detail view</span></div>
-<div class="row"><span class="cmd">assign &lt;shipId&gt;</span><span class="desc">(equipment-detail panel) Assigns this equipment to a ship</span></div>
-<div class="row"><span class="cmd">unassign</span><span class="desc">(equipment-detail panel) Removes this equipment from its ship</span></div>
-
-<div>&nbsp;</div>
 <div class="section-title">SHOP</div>
-<div class="row"><span class="cmd">shop list</span><span class="desc">Lists ships and equipment available for purchase</span></div>
+<div class="row"><span class="cmd">shop list</span><span class="desc">Lists ships and consumables available for purchase</span></div>
 <div class="row"><span class="cmd">shop detail &lt;id&gt;</span><span class="desc">Item detail: price, stats, description</span></div>
-<div class="row"><span class="cmd">shop buy &lt;id&gt;</span><span class="desc">Buys a ship or equipment (1 unit)</span></div>
+<div class="row"><span class="cmd">shop buy &lt;id&gt;</span><span class="desc">Buys a ship or consumable (1 unit)</span></div>
 <div class="row"><span class="cmd">wallet</span><span class="desc">Shows the current credit balance</span></div>
 <div class="row"><span class="cmd">detail &lt;id&gt;</span><span class="desc">(shop-list panel) Shortcut to detail view</span></div>
 <div class="row"><span class="cmd">buy &lt;id&gt; [quantity]</span><span class="desc">(shop-list panel) Buys an item by ID</span></div>

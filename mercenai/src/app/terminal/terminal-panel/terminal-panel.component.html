@@ -71,18 +71,7 @@
         [id]="panel.data?.id">
       </app-ship-detail>
 
-      <app-equipment-list 
-        #moduleInstance 
-        *ngSwitchCase="'equipment-list'">
-      </app-equipment-list>
-
-      <app-equipment-detail 
-        #moduleInstance 
-        *ngSwitchCase="'equipment-detail'"
-        [id]="panel.data?.id">
-      </app-equipment-detail>
-
-      <app-shop-list 
+      <app-shop-list
         #moduleInstance 
         *ngSwitchCase="'shop-list'">
       </app-shop-list>

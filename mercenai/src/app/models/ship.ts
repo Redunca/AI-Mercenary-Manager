@@ -8,22 +8,24 @@ export interface Ship {
     capacity: number;
     inventory_space: number;
     durability: number;
+    max_durability: number;
     price: number;
   };
   crew: number[];
-  status: 'docked' | 'in_mission' | 'destroyed';
+  status: 'docked' | 'in_mission' | 'broken' | 'destroyed';
   created_at: string;
   deleted_at?: string;
 }
 
-export interface Equipment {
+export interface Consumable {
   id: number;
   name: string;
   description: string;
   rarity: string;
   price: number;
-  effect: string;
+  effect: 'ATTRIBUTE_BOOST' | 'HEAL' | 'REPAIR' | 'SPEED_BOOST';
+  effect_data: Record<string, unknown>;
   quantity: number;
-  assigned_to_ship?: number;
+  assigned_to_ship?: number | null;
   created_at: string;
 }

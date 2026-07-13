@@ -54,13 +54,53 @@ async function updateShipStatus(client, playerId, shipId, status) {
 
 async function destroyShip(client, playerId, shipId) {
   const result = await client.query(
-    `UPDATE ships 
-     SET status = 'destroyed', deleted_at = NOW() 
+    `UPDATE ships
+     SET status = 'destroyed', deleted_at = NOW()
      WHERE player_id = $1 AND id = $2
      RETURNING *`,
     [playerId, shipId]
   )
   return result.rows[0]
+}
+
+// Reduces durability by `amount`; the ship becomes 'broken' (and unusable for
+// missions) once durability hits 0. Returns null if the ship can't be found.
+async function damageShip(client, playerId, shipId, amount) {
+  const row = await client.query(
+    'SELECT * FROM ships WHERE player_id = $1 AND id = $2 AND deleted_at IS NULL FOR UPDATE',
+    [playerId, shipId]
+  )
+  if (row.rows.length === 0) return null
+
+  const ship = row.rows[0]
+  const durability = Math.max(0, ship.stats.durability - amount)
+  const stats = { ...ship.stats, durability }
+  const status = durability === 0 ? 'broken' : ship.status
+
+  const updated = await client.query(
+    'UPDATE ships SET stats = $1, status = $2 WHERE player_id = $3 AND id = $4 RETURNING *',
+    [JSON.stringify(stats), status, playerId, shipId]
+  )
+  return updated.rows[0]
+}
+
+// Restores durability to its ceiling and clears a 'broken' status.
+async function repairShip(client, playerId, shipId) {
+  const row = await client.query(
+    'SELECT * FROM ships WHERE player_id = $1 AND id = $2 AND deleted_at IS NULL FOR UPDATE',
+    [playerId, shipId]
+  )
+  if (row.rows.length === 0) return null
+
+  const ship = row.rows[0]
+  const stats = { ...ship.stats, durability: ship.stats.max_durability ?? ship.stats.durability }
+  const status = ship.status === 'broken' ? 'docked' : ship.status
+
+  const updated = await client.query(
+    'UPDATE ships SET stats = $1, status = $2 WHERE player_id = $3 AND id = $4 RETURNING *',
+    [JSON.stringify(stats), status, playerId, shipId]
+  )
+  return updated.rows[0]
 }
 
 async function getHangar(client, playerId) {
@@ -143,6 +183,8 @@ module.exports = {
   renameShip,
   updateShipStatus,
   destroyShip,
+  damageShip,
+  repairShip,
   getHangar,
   createHangar,
   getDockingStations,

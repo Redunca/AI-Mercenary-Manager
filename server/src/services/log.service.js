@@ -83,6 +83,14 @@ const EVENT_PHRASES = {
     "Give my regards to no one in particular.", "I should have asked for a bigger bonus.",
     "...", "I knew it would end like this.", "Take care of the rest of the team.",
   ],
+  revived_ia: ["Flatline reversed. Nanite injection successful.", "Vital signs restored. Recruit stabilized."],
+  revived_recruit: ["I was gone for a second there.", "Remind me to thank whoever packed the medkit."],
+  ship_damage_ia: ["Hull integrity compromised.", "Structural damage sustained."],
+  ship_damage_recruit: ["That's coming out of the bonus.", "We're not landing softly after that."],
+  ship_broken_ia: ["Hull integrity critical. Vessel disabled.", "Ship inoperable. Grounding on return."],
+  ship_broken_recruit: ["We're not flying this thing again anytime soon.", "That's it, she's done."],
+  ship_repaired_ia: ["Auto-patch engaged. Hull integrity restored.", "Repair systems compensated for the damage."],
+  ship_repaired_recruit: ["Patched up and still flying.", "Good thing we packed spares."],
 }
 
 function pick(arr) {
@@ -166,7 +174,11 @@ function buildEventResultLogs({ eventResult, missionId, missionName, recruitName
   }
 
   const typeLabel = `${r.type}${r.attribute ? ` [${r.attribute}]` : ''}`
-  if (!r.success && r.consequence === 'FORCED_DEPARTURE') {
+  if (r.recruitRevived) {
+    entries.push({ tag: '[SYS]', message: `${typeLabel} — ${rollStr} → FAILURE — -${r.hpLost} HP → REVIVED`, missionId })
+    entries.push({ tag: '[IA]', message: pick(EVENT_PHRASES.revived_ia), missionId })
+    entries.push({ tag, message: recruitQuote(EVENT_PHRASES.revived_recruit), missionId })
+  } else if (!r.success && r.consequence === 'FORCED_DEPARTURE') {
     entries.push({ tag: '[SYS]', message: `${typeLabel} — ${rollStr} → FAILURE — Forced extraction`, missionId })
     entries.push({ tag: '[IA]', message: pick(EVENT_PHRASES.abort_ia), missionId })
     entries.push({ tag, message: recruitQuote(EVENT_PHRASES.abort_recruit), missionId })
@@ -178,6 +190,18 @@ function buildEventResultLogs({ eventResult, missionId, missionName, recruitName
     entries.push({ tag: '[SYS]', message: `${typeLabel} — ${rollStr} → FAILURE — -${r.hpLost} HP`, missionId })
     entries.push({ tag: '[IA]', message: pick(EVENT_PHRASES.hp_loss_ia), missionId })
     entries.push({ tag, message: recruitQuote(EVENT_PHRASES.hp_loss_recruit), missionId })
+  } else if (!r.success && r.consequence === 'SHIP_DAMAGE' && r.shipBroken) {
+    entries.push({ tag: '[SYS]', message: `${typeLabel} — ${rollStr} → FAILURE — ship disabled, forced extraction`, missionId })
+    entries.push({ tag: '[IA]', message: pick(EVENT_PHRASES.ship_broken_ia), missionId })
+    entries.push({ tag, message: recruitQuote(EVENT_PHRASES.ship_broken_recruit), missionId })
+  } else if (!r.success && r.consequence === 'SHIP_DAMAGE' && r.shipAutoRepaired) {
+    entries.push({ tag: '[SYS]', message: `${typeLabel} — ${rollStr} → FAILURE — ship damaged, auto-repaired`, missionId })
+    entries.push({ tag: '[IA]', message: pick(EVENT_PHRASES.ship_repaired_ia), missionId })
+    entries.push({ tag, message: recruitQuote(EVENT_PHRASES.ship_repaired_recruit), missionId })
+  } else if (!r.success && r.consequence === 'SHIP_DAMAGE') {
+    entries.push({ tag: '[SYS]', message: `${typeLabel} — ${rollStr} → FAILURE — ship damaged, no reward`, missionId })
+    entries.push({ tag: '[IA]', message: pick(EVENT_PHRASES.ship_damage_ia), missionId })
+    entries.push({ tag, message: recruitQuote(EVENT_PHRASES.ship_damage_recruit), missionId })
   } else {
     const rewardStr = r.rewardEarned ? ` [+${r.rewardEarned.amount} ${r.rewardEarned.type}]` : ''
     entries.push({ tag: '[SYS]', message: `${typeLabel} — ${rollStr} → SUCCESS${rewardStr}`, missionId })

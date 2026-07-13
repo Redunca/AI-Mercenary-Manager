@@ -38,8 +38,9 @@ export class ShopListComponent implements OnInit {
           if (result?.error) { console.warn('Purchase failed:', result.error); return; }
           const item = this.items.find(i => i.id === Number(id));
           void this.gameSync.sync().then(() => {
-            const target = item?.type === 'equipment' ? PanelModule.EquipmentList : PanelModule.ShipList;
-            this.layout.setPanelModule(this.layout.activePanelId!, target);
+            if (item?.type === 'ship') {
+              this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShipList);
+            }
           });
         });
       },

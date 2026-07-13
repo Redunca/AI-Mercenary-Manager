@@ -1,8 +1,0 @@
-<div>TASK: [<span class="task-title">List equipment</span>] ******************************************</div>
-<div>ok ==> {{ '{' }}</div>
-<div *ngFor="let item of equipment" class="indent-one equipment-entry">
-  [{{ item.id }}] <span class="item-name">{{ item.name }}</span> <span [class]="'rarity-' + item.rarity">({{ item.rarity }})</span> — Qty {{ item.quantity }} — {{ item.price }} ¥
-</div>
-<div *ngIf="equipment.length === 0" class="indent-one muted">— no equipment —</div>
-<div>{{ '}' }}</div>
-<div class="hint">[ detail &lt;id&gt; ] for more info</div>

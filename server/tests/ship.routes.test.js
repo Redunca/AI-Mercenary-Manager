@@ -1,9 +1,11 @@
 const request = require('supertest')
 const { app } = require('../index')
 const ShipService = require('../src/services/ship.service')
+const ConsumableService = require('../src/services/consumable.service')
 
 jest.mock('../src/services/game.service')
 jest.mock('../src/services/ship.service')
+jest.mock('../src/services/consumable.service')
 jest.mock('../src/db/pool', () => {
   const mockClient = { query: jest.fn(), release: jest.fn() }
   return { pool: { connect: jest.fn().mockResolvedValue(mockClient) } }
@@ -156,6 +158,65 @@ describe('Ship Routes', () => {
         .send({ name: 'Test' })
 
       expect(res.status).toBe(404)
+    })
+  })
+
+  describe('GET /api/ships/:id/inventory', () => {
+    test('lists the consumables assigned to a ship', async () => {
+      ConsumableService.getShipInventory.mockResolvedValue([{ id: 1, name: 'Hull Auto-Patch' }])
+
+      const res = await request(app).get('/api/ships/1/inventory')
+
+      expect(res.status).toBe(200)
+      expect(res.body).toHaveLength(1)
+      expect(ConsumableService.getShipInventory).toHaveBeenCalledWith(expect.anything(), 1)
+    })
+  })
+
+  describe('POST /api/ships/:id/inventory', () => {
+    test('moves a consumable from the stash onto the ship', async () => {
+      ConsumableService.assignToShip.mockResolvedValue({ id: 5, assigned_to_ship: 1, quantity: 1 })
+
+      const res = await request(app)
+        .post('/api/ships/1/inventory')
+        .send({ consumableId: 5 })
+
+      expect(res.status).toBe(200)
+      expect(ConsumableService.assignToShip).toHaveBeenCalledWith(expect.anything(), 1, 5, 1, 1)
+    })
+
+    test('returns 400 when consumableId is missing', async () => {
+      const res = await request(app).post('/api/ships/1/inventory').send({})
+      expect(res.status).toBe(400)
+    })
+
+    test('returns 400 when the consumable cannot be moved', async () => {
+      ConsumableService.assignToShip.mockResolvedValue(null)
+
+      const res = await request(app)
+        .post('/api/ships/1/inventory')
+        .send({ consumableId: 5 })
+
+      expect(res.status).toBe(400)
+    })
+  })
+
+  describe('DELETE /api/ships/:id/inventory/:consumableId', () => {
+    test('moves a consumable back to the stash', async () => {
+      ConsumableService.unassignFromShip.mockResolvedValue({ id: 5, assigned_to_ship: null })
+
+      const res = await request(app).delete('/api/ships/1/inventory/5')
+
+      expect(res.status).toBe(200)
+      expect(ConsumableService.unassignFromShip).toHaveBeenCalledWith(expect.anything(), 1, 5, 1)
+    })
+
+    test('returns 400 when the consumable cannot be moved', async () => {
+      ConsumableService.unassignFromShip.mockResolvedValue(null)
+
+      const res = await request(app).delete('/api/ships/1/inventory/5')
+
+      expect(res.status).toBe(400)
     })
   })
 })

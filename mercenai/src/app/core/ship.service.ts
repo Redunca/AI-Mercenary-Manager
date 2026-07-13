@@ -1,20 +1,17 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Ship, Equipment } from '../models/ship';
+import { Ship, Consumable } from '../models/ship';
 import { GameSnapshot } from '../models/game-state';
 
-export { Ship, Equipment };
+export { Ship, Consumable };
 
 @Injectable({ providedIn: 'root' })
 export class ShipService {
   private http = inject(HttpClient);
-  
+
   private shipsSubject = new BehaviorSubject<Ship[]>([]);
   public ships$ = this.shipsSubject.asObservable();
-  
-  private equipmentSubject = new BehaviorSubject<Equipment[]>([]);
-  public equipment$ = this.equipmentSubject.asObservable();
 
   getShips(): Observable<Ship[]> {
     return this.http.get<Ship[]>('/api/ships');
@@ -24,12 +21,8 @@ export class ShipService {
     return this.http.get<Ship>(`/api/ships/${id}`);
   }
 
-  getEquipment(): Observable<Equipment[]> {
-    return this.http.get<Equipment[]>('/api/equipment');
-  }
-
-  getEquipmentById(id: number): Observable<Equipment> {
-    return this.http.get<Equipment>(`/api/equipment/${id}`);
+  getShipInventory(shipId: number): Observable<Consumable[]> {
+    return this.http.get<Consumable[]>(`/api/ships/${shipId}/inventory`);
   }
 
   applyState(state: GameSnapshot): void {
@@ -56,11 +49,11 @@ export class ShipService {
     return this.http.patch<Ship>(`/api/ships/${shipId}`, { name: newName }).toPromise() as Promise<Ship>;
   }
 
-  assignEquipmentToShip(equipmentId: number, shipId: number): Promise<Equipment> {
-    return this.http.post<Equipment>(`/api/equipment/${equipmentId}/assign`, { shipId }).toPromise() as Promise<Equipment>;
+  loadConsumableOntoShip(shipId: number, consumableId: number, quantity = 1): Promise<Consumable> {
+    return this.http.post<Consumable>(`/api/ships/${shipId}/inventory`, { consumableId, quantity }).toPromise() as Promise<Consumable>;
   }
 
-  unassignEquipmentFromShip(equipmentId: number): Promise<Equipment> {
-    return this.http.post<Equipment>(`/api/equipment/${equipmentId}/unassign`, {}).toPromise() as Promise<Equipment>;
+  unloadConsumableFromShip(shipId: number, consumableId: number, quantity = 1): Promise<Consumable> {
+    return this.http.delete<Consumable>(`/api/ships/${shipId}/inventory/${consumableId}`, { body: { quantity } }).toPromise() as Promise<Consumable>;
   }
 }
