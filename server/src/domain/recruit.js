@@ -11,9 +11,9 @@ const ATTRIBUTE_TABLES = {
 }
 
 const JOB_TITLES = {
-  specialized:        ['Assassin', 'Soldat d\'élite', 'Hacker', 'Franc-tireur', 'Berserk', 'Saboteur', 'Infiltrateur'],
-  'well-rounded':     ['Opérateur', 'Éclaireur', 'Tacticien', 'Agent de terrain', 'Commando', 'Ranger'],
-  'jack-of-all-trades': ['Freelance', 'Mercenaire', 'Contractuel', 'Survivant', 'Drifter', 'Généraliste'],
+  specialized:        ['Assassin', 'Elite Soldier', 'Hacker', 'Sharpshooter', 'Berserker', 'Saboteur', 'Infiltrator'],
+  'well-rounded':     ['Operative', 'Scout', 'Tactician', 'Field Agent', 'Commando', 'Ranger'],
+  'jack-of-all-trades': ['Freelancer', 'Mercenary', 'Contractor', 'Survivor', 'Drifter', 'Generalist'],
 }
 
 const CANDIDATE_NAMES = [

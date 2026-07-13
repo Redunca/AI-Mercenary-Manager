@@ -70,7 +70,7 @@ export class GameSyncService implements OnDestroy {
   private hasActiveMissions(): boolean {
     if (!this.lastState) return false;
     return Object.values(this.lastState.missionStates)
-      .some(s => s.phase !== 'TERMINEE');
+      .some(s => s.phase !== 'COMPLETED');
   }
 
   private pollIntervalMs(): number | null {

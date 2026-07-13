@@ -43,7 +43,7 @@ export class MissionDetailComponent implements OnInit, OnDestroy {
 
   get progressBar(): string {
     const progress = this.state?.progress ?? 0;
-    const filled = Math.round(progress / 5); // barre sur 20 caractères
+    const filled = Math.round(progress / 5); // bar over 20 characters
     return '[' + '█'.repeat(filled) + '░'.repeat(20 - filled) + ']';
   }
 

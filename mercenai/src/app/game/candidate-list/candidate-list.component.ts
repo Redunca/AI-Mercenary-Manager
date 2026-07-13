@@ -22,9 +22,9 @@ export class CandidateListComponent {
 
   archetypeLabel(c: Candidate): string {
     switch (c.archetype) {
-      case 'specialized':        return 'Spécialisé';
-      case 'well-rounded':       return 'Polyvalent';
-      case 'jack-of-all-trades': return 'Touche-à-tout';
+      case 'specialized':        return 'Specialist';
+      case 'well-rounded':       return 'Versatile';
+      case 'jack-of-all-trades': return 'Jack-of-all-trades';
     }
   }
 

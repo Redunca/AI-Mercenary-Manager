@@ -31,15 +31,15 @@ async function buyShip(client, playerId, shopItemId) {
     'SELECT wallet FROM players WHERE id = $1 FOR UPDATE',
     [playerId]
   )
-  if (player.rows.length === 0) return { error: 'Joueur introuvable' }
+  if (player.rows.length === 0) return { error: 'Player not found' }
 
   const item = await getShopItem(client, shopItemId)
   if (!item || item.type !== 'ship') {
-    return { error: 'Navire introuvable' }
+    return { error: 'Ship not found' }
   }
 
   if (player.rows[0].wallet < item.price) {
-    return { error: 'Crédit insuffisant' }
+    return { error: 'Insufficient credit' }
   }
 
   // Create ship from shop item
@@ -84,16 +84,16 @@ async function buyEquipment(client, playerId, shopItemId, quantity = 1) {
     'SELECT wallet FROM players WHERE id = $1 FOR UPDATE',
     [playerId]
   )
-  if (player.rows.length === 0) return { error: 'Joueur introuvable' }
+  if (player.rows.length === 0) return { error: 'Player not found' }
 
   const item = await getShopItem(client, shopItemId)
   if (!item || item.type !== 'equipment') {
-    return { error: 'Équipement introuvable' }
+    return { error: 'Equipment not found' }
   }
 
   const totalCost = item.price * quantity
   if (player.rows[0].wallet < totalCost) {
-    return { error: 'Crédit insuffisant' }
+    return { error: 'Insufficient credit' }
   }
 
   // Create or update equipment
@@ -141,24 +141,24 @@ async function buyEquipment(client, playerId, shopItemId, quantity = 1) {
 async function seedShopItems(client) {
   const ships = [
     {
-      name: 'Corsaire',
-      description: 'Un navire léger et rapide',
+      name: 'Corsair',
+      description: 'A light, fast ship',
       type: 'ship',
       rarity: 'common',
       price: 5000,
       stats: { speed: 120, capacity: 2, inventory_space: 10, durability: 8, price: 5000 }
     },
     {
-      name: 'Frégate',
-      description: 'Un navire équilibré avec bonne capacité',
+      name: 'Frigate',
+      description: 'A balanced ship with good capacity',
       type: 'ship',
       rarity: 'rare',
       price: 12000,
       stats: { speed: 100, capacity: 4, inventory_space: 20, durability: 15, price: 12000 }
     },
     {
-      name: 'Croiseur',
-      description: 'Un navire lourd et puissant',
+      name: 'Cruiser',
+      description: 'A heavy, powerful ship',
       type: 'ship',
       rarity: 'epic',
       price: 25000,
@@ -168,24 +168,24 @@ async function seedShopItems(client) {
 
   const equipment = [
     {
-      name: 'Blindage Renforcé',
-      description: 'Augmente la durabilité du navire',
+      name: 'Reinforced Armor',
+      description: 'Increases the ship\'s durability',
       type: 'equipment',
       rarity: 'common',
       price: 1000,
       effect: 'DURABILITY_BOOST'
     },
     {
-      name: 'Moteur Turbo',
-      description: 'Augmente la vitesse du navire',
+      name: 'Turbo Engine',
+      description: 'Increases the ship\'s speed',
       type: 'equipment',
       rarity: 'rare',
       price: 3000,
       effect: 'SPEED_BOOST'
     },
     {
-      name: 'Augmentation de Stockage',
-      description: 'Augmente l\'espace d\'inventaire',
+      name: 'Storage Expansion',
+      description: 'Increases inventory space',
       type: 'equipment',
       rarity: 'common',
       price: 500,

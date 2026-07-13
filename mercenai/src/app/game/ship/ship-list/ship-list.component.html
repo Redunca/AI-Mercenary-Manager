@@ -2,8 +2,8 @@
 <div>ok ==> {{ '{' }}</div>
 <div *ngFor="let s of ships" class="indent-one ship-entry">
   <div>[{{ s.id }}] <span class="ship-name">{{ s.name }}</span> — <span [class]="'status-' + s.status">{{ s.status }}</span></div>
-  <div class="indent-two muted">Équipage {{ s.crew.length }}/{{ s.stats.capacity }}</div>
+  <div class="indent-two muted">Crew {{ s.crew.length }}/{{ s.stats.capacity }}</div>
 </div>
-<div *ngIf="ships.length === 0" class="indent-one muted">— aucun navire —</div>
+<div *ngIf="ships.length === 0" class="indent-one muted">— no ships —</div>
 <div>{{ '}' }}</div>
-<div class="hint">[ detail &lt;id&gt; ] pour plus d'informations</div>
+<div class="hint">[ detail &lt;id&gt; ] for more info</div>

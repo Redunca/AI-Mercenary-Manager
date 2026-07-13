@@ -22,7 +22,7 @@ router.get('/items/:id', async (req, res, next) => {
   try {
     const item = await shop.getShopItem(client, Number(req.params.id))
     if (!item) {
-      res.status(404).json({ error: 'Article introuvable' })
+      res.status(404).json({ error: 'Item not found' })
       return
     }
     res.json(item)
@@ -52,7 +52,7 @@ router.post('/buy/:itemId', async (req, res, next) => {
     const item = await shop.getShopItem(client, Number(req.params.itemId))
     if (!item) {
       await client.query('ROLLBACK')
-      res.status(404).json({ error: 'Article introuvable' })
+      res.status(404).json({ error: 'Item not found' })
       return
     }
     const quantity = Number(req.body?.quantity ?? 1)

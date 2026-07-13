@@ -20,39 +20,39 @@ describe('Shop Routes', () => {
   })
 
   describe('GET /api/shop/items', () => {
-    test('retourne le catalogue et libère la connexion', async () => {
-      shop.getShopItems.mockResolvedValue([{ id: 1, name: 'Corsaire' }])
+    test('returns the catalog and releases the connection', async () => {
+      shop.getShopItems.mockResolvedValue([{ id: 1, name: 'Corsair' }])
 
       const res = await request(app).get('/api/shop/items')
 
       expect(res.status).toBe(200)
-      expect(res.body).toEqual([{ id: 1, name: 'Corsaire' }])
+      expect(res.body).toEqual([{ id: 1, name: 'Corsair' }])
       expect(mockClient.release).toHaveBeenCalledTimes(1)
     })
   })
 
   describe('GET /api/shop/items/:id', () => {
-    test("retourne l'article demandé", async () => {
-      shop.getShopItem.mockResolvedValue({ id: 1, name: 'Corsaire' })
+    test("returns the requested item", async () => {
+      shop.getShopItem.mockResolvedValue({ id: 1, name: 'Corsair' })
 
       const res = await request(app).get('/api/shop/items/1')
 
       expect(res.status).toBe(200)
-      expect(res.body).toEqual({ id: 1, name: 'Corsaire' })
+      expect(res.body).toEqual({ id: 1, name: 'Corsair' })
     })
 
-    test('retourne 404 si introuvable', async () => {
+    test('returns 404 if not found', async () => {
       shop.getShopItem.mockResolvedValue(null)
 
       const res = await request(app).get('/api/shop/items/999')
 
       expect(res.status).toBe(404)
-      expect(res.body.error).toBe('Article introuvable')
+      expect(res.body.error).toBe('Item not found')
     })
   })
 
   describe('GET /api/shop/wallet', () => {
-    test('retourne le solde du joueur par défaut', async () => {
+    test('returns the default player balance', async () => {
       shop.getPlayerWallet.mockResolvedValue(8000)
 
       const res = await request(app).get('/api/shop/wallet')
@@ -64,7 +64,7 @@ describe('Shop Routes', () => {
   })
 
   describe('POST /api/shop/buy/:itemId', () => {
-    test('délègue à buyShip quand l\'article est un navire', async () => {
+    test('delegates to buyShip when the item is a ship', async () => {
       shop.getShopItem.mockResolvedValue({ id: 1, type: 'ship' })
       shop.buyShip.mockResolvedValue({ success: true, wallet: 5000 })
 
@@ -77,7 +77,7 @@ describe('Shop Routes', () => {
       expect(mockClient.query).toHaveBeenCalledWith('COMMIT')
     })
 
-    test('délègue à buyEquipment avec la quantité fournie quand ce n\'est pas un navire', async () => {
+    test('delegates to buyEquipment with the provided quantity when it is not a ship', async () => {
       shop.getShopItem.mockResolvedValue({ id: 2, type: 'equipment' })
       shop.buyEquipment.mockResolvedValue({ success: true, wallet: 9500 })
 
@@ -87,7 +87,7 @@ describe('Shop Routes', () => {
       expect(shop.buyEquipment).toHaveBeenCalledWith(mockClient, 1, 2, 3)
     })
 
-    test('utilise une quantité de 1 par défaut', async () => {
+    test('uses a default quantity of 1', async () => {
       shop.getShopItem.mockResolvedValue({ id: 2, type: 'equipment' })
       shop.buyEquipment.mockResolvedValue({ success: true })
 
@@ -96,7 +96,7 @@ describe('Shop Routes', () => {
       expect(shop.buyEquipment).toHaveBeenCalledWith(mockClient, 1, 2, 1)
     })
 
-    test('retourne 404 et annule la transaction si l\'article est introuvable', async () => {
+    test('returns 404 and rolls back the transaction if the item cannot be found', async () => {
       shop.getShopItem.mockResolvedValue(null)
 
       const res = await request(app).post('/api/shop/buy/999').send({})
@@ -106,19 +106,19 @@ describe('Shop Routes', () => {
       expect(mockClient.release).toHaveBeenCalledTimes(1)
     })
 
-    test('retourne 400 et annule la transaction quand le crédit est insuffisant', async () => {
+    test('returns 400 and rolls back the transaction when credit is insufficient', async () => {
       shop.getShopItem.mockResolvedValue({ id: 1, type: 'ship' })
-      shop.buyShip.mockResolvedValue({ error: 'Crédit insuffisant' })
+      shop.buyShip.mockResolvedValue({ error: 'Insufficient credit' })
 
       const res = await request(app).post('/api/shop/buy/1').send({})
 
       expect(res.status).toBe(400)
-      expect(res.body.error).toBe('Crédit insuffisant')
+      expect(res.body.error).toBe('Insufficient credit')
       expect(mockClient.query).toHaveBeenCalledWith('ROLLBACK')
     })
 
-    test('annule la transaction et libère la connexion si le service lève une exception', async () => {
-      shop.getShopItem.mockRejectedValue(new Error('DB indisponible'))
+    test('rolls back the transaction and releases the connection if the service throws', async () => {
+      shop.getShopItem.mockRejectedValue(new Error('DB unavailable'))
 
       const res = await request(app).post('/api/shop/buy/1').send({})
 
@@ -129,7 +129,7 @@ describe('Shop Routes', () => {
   })
 
   describe('POST /api/shop/buy/ship/:itemId', () => {
-    test('achète directement un navire', async () => {
+    test('directly buys a ship', async () => {
       shop.buyShip.mockResolvedValue({ success: true, wallet: 5000 })
 
       const res = await request(app).post('/api/shop/buy/ship/1').send({})
@@ -139,8 +139,8 @@ describe('Shop Routes', () => {
       expect(mockClient.query).toHaveBeenCalledWith('COMMIT')
     })
 
-    test('retourne 400 et annule la transaction en cas d\'erreur', async () => {
-      shop.buyShip.mockResolvedValue({ error: 'Navire introuvable' })
+    test('returns 400 and rolls back the transaction on error', async () => {
+      shop.buyShip.mockResolvedValue({ error: 'Ship not found' })
 
       const res = await request(app).post('/api/shop/buy/ship/999').send({})
 
@@ -150,7 +150,7 @@ describe('Shop Routes', () => {
   })
 
   describe('POST /api/shop/buy/equipment/:itemId', () => {
-    test('achète directement un équipement avec la quantité fournie', async () => {
+    test('directly buys equipment with the provided quantity', async () => {
       shop.buyEquipment.mockResolvedValue({ success: true, wallet: 9000 })
 
       const res = await request(app).post('/api/shop/buy/equipment/2').send({ quantity: 2 })
@@ -159,8 +159,8 @@ describe('Shop Routes', () => {
       expect(shop.buyEquipment).toHaveBeenCalledWith(mockClient, 1, 2, 2)
     })
 
-    test('retourne 400 et annule la transaction en cas d\'erreur', async () => {
-      shop.buyEquipment.mockResolvedValue({ error: 'Crédit insuffisant' })
+    test('returns 400 and rolls back the transaction on error', async () => {
+      shop.buyEquipment.mockResolvedValue({ error: 'Insufficient credit' })
 
       const res = await request(app).post('/api/shop/buy/equipment/2').send({})
 

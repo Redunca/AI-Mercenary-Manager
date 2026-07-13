@@ -16,13 +16,13 @@
 
   <div class="indent-one">"crew" ({{ ship.crew.length }}/{{ ship.stats.capacity }}) : [</div>
   <ng-container *ngFor="let recruitId of ship.crew">
-    <div class="indent-two crew-member">{{ getRecruit(recruitId)?.name ?? 'Recrue #' + recruitId }}</div>
+    <div class="indent-two crew-member">{{ getRecruit(recruitId)?.name ?? 'Recruit #' + recruitId }}</div>
   </ng-container>
-  <div *ngIf="ship.crew.length === 0" class="indent-two muted">— pas d'équipage assigné —</div>
+  <div *ngIf="ship.crew.length === 0" class="indent-two muted">— no crew assigned —</div>
   <div class="indent-one">]</div>
 </ng-container>
 <ng-template #notFound>
-  <div class="indent-one muted">Navire introuvable : {{ id }}</div>
+  <div class="indent-one muted">Ship not found: {{ id }}</div>
 </ng-template>
 <div>{{ '}' }}</div>
-<div class="hint">[ assign &lt;recruitId&gt; ] [ unassign &lt;recruitId&gt; ] [ rename &lt;nom&gt; ]</div>
+<div class="hint">[ assign &lt;recruitId&gt; ] [ unassign &lt;recruitId&gt; ] [ rename &lt;name&gt; ]</div>

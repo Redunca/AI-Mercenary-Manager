@@ -30,10 +30,10 @@ async function migrate() {
       await client.query(sql)
       await client.query('INSERT INTO schema_migrations (version) VALUES ($1)', [file])
       await client.query('COMMIT')
-      console.log(`Migration appliquée : ${file}`)
+      console.log(`Migration applied: ${file}`)
     } catch (err) {
       await client.query('ROLLBACK')
-      throw new Error(`Échec migration ${file} : ${err.message}`)
+      throw new Error(`Migration failed ${file}: ${err.message}`)
     } finally {
       client.release()
     }

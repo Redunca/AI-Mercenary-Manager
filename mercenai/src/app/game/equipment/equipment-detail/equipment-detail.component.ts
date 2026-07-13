@@ -35,7 +35,7 @@ export class EquipmentDetailComponent implements OnInit {
           .catch(err => console.error('[equipment assign]', err?.error?.error ?? err?.message ?? err));
       },
       'unassign': () => {
-        if (!this.equipment) { console.warn('Aucun équipement chargé'); return; }
+        if (!this.equipment) { console.warn('No equipment loaded'); return; }
         void this.shipService.unassignEquipmentFromShip(this.equipment.id)
           .then(() => this.refresh())
           .catch(err => console.error('[equipment unassign]', err?.error?.error ?? err?.message ?? err));

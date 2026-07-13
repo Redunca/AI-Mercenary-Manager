@@ -8,11 +8,11 @@ import { of } from 'rxjs';
 
 const MOCK_MISSIONS: Mission[] = [
   {
-    id: 1, name: 'Patrouille de couloir', description: 'Desc 1',
+    id: 1, name: 'Corridor Patrol', description: 'Desc 1',
     difficulty: 'ROUTINE', events: [], assignedShipId: null, status: 'available',
   },
   {
-    id: 2, name: 'Livraison express', description: 'Desc 2',
+    id: 2, name: 'Express Delivery', description: 'Desc 2',
     difficulty: 'STANDARD', events: [], assignedShipId: null, status: 'available',
   },
 ];
@@ -54,28 +54,28 @@ describe('MissionDetailComponent', () => {
     component = fixture.componentInstance;
   });
 
-  it('retourne la mission avec id=1', () => {
+  it('returns the mission with id=1', () => {
     component.id = 1;
     expect(component.mission).not.toBeNull();
     expect(component.mission?.id).toBe(1);
-    expect(component.mission?.name).toBe('Patrouille de couloir');
+    expect(component.mission?.name).toBe('Corridor Patrol');
   });
 
-  it('retourne la mission avec id=2', () => {
+  it('returns the mission with id=2', () => {
     component.id = 2;
     expect(component.mission).not.toBeNull();
     expect(component.mission?.id).toBe(2);
-    expect(component.mission?.name).toBe('Livraison express');
+    expect(component.mission?.name).toBe('Express Delivery');
   });
 
-  it('retourne null pour un id inexistant', () => {
+  it('returns null for a nonexistent id', () => {
     component.id = 999;
     expect(component.mission).toBeNull();
   });
 
-  it('utilise find() et non l\'accès par index — id=2 n\'est pas missions[2]', () => {
-    // Avec l'ancien bug missions[2] retournait undefined (hors bornes sur 2 éléments)
-    // Avec le fix missions.find(m => m.id === 2) retourne la bonne mission
+  it('uses find() and not index access — id=2 is not missions[2]', () => {
+    // With the old bug, missions[2] returned undefined (out of bounds for 2 elements)
+    // With the fix, missions.find(m => m.id === 2) returns the correct mission
     component.id = 2;
     expect(component.mission?.id).toBe(2);
   });

@@ -15,7 +15,7 @@ describe('Shop Service', () => {
   });
 
   describe('getShopItems', () => {
-    test('retourne les articles disponibles', async () => {
+    test('returns the available items', async () => {
       mockClient.query.mockResolvedValue({ rows: [] });
       await shop.getShopItems(mockClient);
       expect(mockClient.query).toHaveBeenCalledWith(
@@ -25,14 +25,14 @@ describe('Shop Service', () => {
   });
 
   describe('getShopItem', () => {
-    test('retourne null si l\'article est introuvable', async () => {
+    test('returns null if the item cannot be found', async () => {
       mockClient.query.mockResolvedValue({ rows: [] });
       const result = await shop.getShopItem(mockClient, 999);
       expect(result).toBeNull();
     });
 
-    test('retourne l\'article s\'il existe', async () => {
-      const item = { id: 1, name: 'Corsaire', type: 'ship', price: 5000 };
+    test('returns the item if it exists', async () => {
+      const item = { id: 1, name: 'Corsair', type: 'ship', price: 5000 };
       mockClient.query.mockResolvedValue({ rows: [item] });
       const result = await shop.getShopItem(mockClient, 1);
       expect(result).toEqual(item);
@@ -40,13 +40,13 @@ describe('Shop Service', () => {
   });
 
   describe('getPlayerWallet', () => {
-    test('retourne le solde du joueur', async () => {
+    test('returns the player balance', async () => {
       mockClient.query.mockResolvedValue({ rows: [{ wallet: 8000 }] });
       const result = await shop.getPlayerWallet(mockClient, 1);
       expect(result).toBe(8000);
     });
 
-    test('retourne 0 si le joueur est introuvable', async () => {
+    test('returns 0 if the player cannot be found', async () => {
       mockClient.query.mockResolvedValue({ rows: [] });
       const result = await shop.getPlayerWallet(mockClient, 99);
       expect(result).toBe(0);
@@ -54,7 +54,7 @@ describe('Shop Service', () => {
   });
 
   describe('buyShip', () => {
-    test('retourne une erreur si le navire est introuvable', async () => {
+    test('returns an error if the ship cannot be found', async () => {
       mockClient.query
         .mockResolvedValueOnce({ rows: [{ wallet: 10000 }] }) // SELECT wallet FOR UPDATE
         .mockResolvedValueOnce({ rows: [] });                  // getShopItem → not found
@@ -63,19 +63,19 @@ describe('Shop Service', () => {
       expect(result.error).toBeDefined();
     });
 
-    test('retourne une erreur si les crédits sont insuffisants', async () => {
-      const item = { id: 1, type: 'ship', price: 5000, name: 'Corsaire', rarity: 'common', stats: {} };
+    test('returns an error if credit is insufficient', async () => {
+      const item = { id: 1, type: 'ship', price: 5000, name: 'Corsair', rarity: 'common', stats: {} };
       mockClient.query
         .mockResolvedValueOnce({ rows: [{ wallet: 100 }] })   // SELECT wallet FOR UPDATE
         .mockResolvedValueOnce({ rows: [item] });              // getShopItem
 
       const result = await shop.buyShip(mockClient, 1, 1);
-      expect(result.error).toBe('Crédit insuffisant');
+      expect(result.error).toBe('Insufficient credit');
     });
 
-    test('achète un navire avec succès et déduit le prix du portefeuille', async () => {
-      const item = { id: 1, type: 'ship', price: 5000, name: 'Corsaire', rarity: 'common', stats: { speed: 120 } };
-      const createdShip = { id: 2, name: 'Corsaire' };
+    test('buys a ship successfully and deducts the price from the wallet', async () => {
+      const item = { id: 1, type: 'ship', price: 5000, name: 'Corsair', rarity: 'common', stats: { speed: 120 } };
+      const createdShip = { id: 2, name: 'Corsair' };
       mockClient.query
         .mockResolvedValueOnce({ rows: [{ wallet: 10000 }] })       // SELECT wallet FOR UPDATE
         .mockResolvedValueOnce({ rows: [item] })                     // getShopItem
@@ -91,8 +91,8 @@ describe('Shop Service', () => {
       expect(result.ship).toEqual(createdShip);
     });
 
-    test('appelle createShip avec les bonnes données', async () => {
-      const item = { id: 1, type: 'ship', price: 5000, name: 'Corsaire', rarity: 'common', stats: { speed: 120 } };
+    test('calls createShip with the correct data', async () => {
+      const item = { id: 1, type: 'ship', price: 5000, name: 'Corsair', rarity: 'common', stats: { speed: 120 } };
       mockClient.query
         .mockResolvedValueOnce({ rows: [{ wallet: 10000 }] })
         .mockResolvedValueOnce({ rows: [item] })
@@ -107,13 +107,13 @@ describe('Shop Service', () => {
       expect(ShipService.createShip).toHaveBeenCalledWith(
         mockClient,
         1,
-        expect.objectContaining({ id: 3, name: 'Corsaire', rarity: 'common' }),
+        expect.objectContaining({ id: 3, name: 'Corsair', rarity: 'common' }),
       );
     });
   });
 
   describe('buyEquipment', () => {
-    test('retourne une erreur si l\'équipement est introuvable', async () => {
+    test('returns an error if the equipment cannot be found', async () => {
       mockClient.query
         .mockResolvedValueOnce({ rows: [{ wallet: 10000 }] })
         .mockResolvedValueOnce({ rows: [] }); // getShopItem → not found
@@ -122,22 +122,22 @@ describe('Shop Service', () => {
       expect(result.error).toBeDefined();
     });
 
-    test('retourne une erreur si les crédits sont insuffisants', async () => {
-      const item = { id: 2, type: 'equipment', price: 1000, name: 'Blindage Renforcé', rarity: 'common', effect: 'DURABILITY_BOOST' };
+    test('returns an error if credit is insufficient', async () => {
+      const item = { id: 2, type: 'equipment', price: 1000, name: 'Reinforced Armor', rarity: 'common', effect: 'DURABILITY_BOOST' };
       mockClient.query
         .mockResolvedValueOnce({ rows: [{ wallet: 100 }] })
         .mockResolvedValueOnce({ rows: [item] });
 
       const result = await shop.buyEquipment(mockClient, 1, 2);
-      expect(result.error).toBe('Crédit insuffisant');
+      expect(result.error).toBe('Insufficient credit');
     });
 
-    test('crée un nouvel équipement quand le joueur n\'en possède pas', async () => {
-      const item = { id: 2, type: 'equipment', price: 500, name: 'Blindage Renforcé', rarity: 'common', effect: 'DURABILITY_BOOST' };
+    test('creates new equipment when the player does not own any', async () => {
+      const item = { id: 2, type: 'equipment', price: 500, name: 'Reinforced Armor', rarity: 'common', effect: 'DURABILITY_BOOST' };
       mockClient.query
         .mockResolvedValueOnce({ rows: [{ wallet: 10000 }] }) // SELECT wallet FOR UPDATE
         .mockResolvedValueOnce({ rows: [item] })              // getShopItem
-        .mockResolvedValueOnce({ rows: [] })                  // SELECT existing equipment → aucun
+        .mockResolvedValueOnce({ rows: [] })                  // SELECT existing equipment → none
         .mockResolvedValue({ rows: [] });                     // INSERT equipment + UPDATE wallet + INSERT purchase
 
       EquipmentService.getPlayerEquipment.mockResolvedValue([]);
@@ -151,13 +151,13 @@ describe('Shop Service', () => {
       );
     });
 
-    test('incrémente la quantité si l\'équipement existe déjà', async () => {
-      const item = { id: 2, type: 'equipment', price: 500, name: 'Blindage Renforcé', rarity: 'common', effect: 'DURABILITY_BOOST' };
-      const existing = { id: 10, name: 'Blindage Renforcé', quantity: 1 };
+    test('increments the quantity if the equipment already exists', async () => {
+      const item = { id: 2, type: 'equipment', price: 500, name: 'Reinforced Armor', rarity: 'common', effect: 'DURABILITY_BOOST' };
+      const existing = { id: 10, name: 'Reinforced Armor', quantity: 1 };
       mockClient.query
         .mockResolvedValueOnce({ rows: [{ wallet: 10000 }] }) // SELECT wallet FOR UPDATE
         .mockResolvedValueOnce({ rows: [item] })              // getShopItem
-        .mockResolvedValueOnce({ rows: [existing] })          // SELECT existing equipment → trouvé
+        .mockResolvedValueOnce({ rows: [existing] })          // SELECT existing equipment → found
         .mockResolvedValue({ rows: [] });                     // UPDATE quantity + UPDATE wallet + INSERT purchase
 
       const result = await shop.buyEquipment(mockClient, 1, 2);
@@ -168,8 +168,8 @@ describe('Shop Service', () => {
       );
     });
 
-    test('respecte la quantité demandée pour le coût total', async () => {
-      const item = { id: 2, type: 'equipment', price: 500, name: 'Blindage Renforcé', rarity: 'common', effect: 'DURABILITY_BOOST' };
+    test('honors the requested quantity for the total cost', async () => {
+      const item = { id: 2, type: 'equipment', price: 500, name: 'Reinforced Armor', rarity: 'common', effect: 'DURABILITY_BOOST' };
       mockClient.query
         .mockResolvedValueOnce({ rows: [{ wallet: 10000 }] })
         .mockResolvedValueOnce({ rows: [item] })
@@ -184,7 +184,7 @@ describe('Shop Service', () => {
   });
 
   describe('seedShopItems', () => {
-    test('insère les 3 navires et les 3 équipements du catalogue par défaut', async () => {
+    test('inserts the 3 default ships and 3 default equipment items from the catalog', async () => {
       mockClient.query.mockResolvedValue({ rows: [] });
 
       await shop.seedShopItems(mockClient);
@@ -198,7 +198,7 @@ describe('Shop Service', () => {
       expect(equipmentCalls).toHaveLength(3);
     });
 
-    test('utilise ON CONFLICT DO NOTHING pour rester idempotent', async () => {
+    test('uses ON CONFLICT DO NOTHING to remain idempotent', async () => {
       mockClient.query.mockResolvedValue({ rows: [] });
 
       await shop.seedShopItems(mockClient);

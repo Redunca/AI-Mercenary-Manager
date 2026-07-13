@@ -11,7 +11,7 @@ describe('Game Routes', () => {
   })
 
   describe('GET /api/game/state', () => {
-    test("retourne l'état courant de la partie", async () => {
+    test("returns the current game state", async () => {
       const mockState = { recruits: [], candidates: [], missions: [] }
       GameService.getGameState.mockResolvedValue(mockState)
 
@@ -21,8 +21,8 @@ describe('Game Routes', () => {
       expect(res.body).toEqual(mockState)
     })
 
-    test('renvoie 500 si le service échoue', async () => {
-      GameService.getGameState.mockRejectedValue(new Error('DB indisponible'))
+    test('returns 500 if the service fails', async () => {
+      GameService.getGameState.mockRejectedValue(new Error('DB unavailable'))
 
       const res = await request(app).get('/api/game/state')
 
@@ -31,7 +31,7 @@ describe('Game Routes', () => {
   })
 
   describe('POST /api/game/sync', () => {
-    test("déclenche la synchronisation et retourne l'état à jour", async () => {
+    test("triggers the sync and returns the updated state", async () => {
       const mockState = { recruits: [], candidates: [], missions: [] }
       GameService.syncGame.mockResolvedValue(mockState)
 
@@ -44,7 +44,7 @@ describe('Game Routes', () => {
   })
 
   describe('POST /api/game/candidates/refresh', () => {
-    test('renouvelle les candidats avec le nombre fourni', async () => {
+    test('refreshes the candidates with the provided count', async () => {
       GameService.refreshCandidates.mockResolvedValue({ state: { candidates: [] } })
 
       const res = await request(app)
@@ -55,7 +55,7 @@ describe('Game Routes', () => {
       expect(GameService.refreshCandidates).toHaveBeenCalledWith(3)
     })
 
-    test('utilise 5 par défaut quand aucun compte n\'est fourni', async () => {
+    test('uses 5 by default when no count is provided', async () => {
       GameService.refreshCandidates.mockResolvedValue({ state: {} })
 
       await request(app).post('/api/game/candidates/refresh').send({})
@@ -65,33 +65,33 @@ describe('Game Routes', () => {
   })
 
   describe('PATCH /api/game/recruits/:id', () => {
-    test('renomme la recrue', async () => {
-      const recruit = { id: '1', name: 'Nouveau Nom' }
+    test('renames the recruit', async () => {
+      const recruit = { id: '1', name: 'New Name' }
       GameService.renameRecruit.mockResolvedValue({ recruit, state: {} })
 
       const res = await request(app)
         .patch('/api/game/recruits/1')
-        .send({ name: 'Nouveau Nom' })
+        .send({ name: 'New Name' })
 
       expect(res.status).toBe(200)
       expect(res.body.recruit).toEqual(recruit)
-      expect(GameService.renameRecruit).toHaveBeenCalledWith('1', 'Nouveau Nom')
+      expect(GameService.renameRecruit).toHaveBeenCalledWith('1', 'New Name')
     })
 
-    test('retourne 400 si la recrue est introuvable', async () => {
-      GameService.renameRecruit.mockResolvedValue({ error: 'Recrue introuvable' })
+    test('returns 400 if the recruit cannot be found', async () => {
+      GameService.renameRecruit.mockResolvedValue({ error: 'Recruit not found' })
 
       const res = await request(app)
         .patch('/api/game/recruits/999')
         .send({ name: 'X' })
 
       expect(res.status).toBe(400)
-      expect(res.body.error).toBe('Recrue introuvable')
+      expect(res.body.error).toBe('Recruit not found')
     })
   })
 
   describe('POST /api/game/candidates/:id/hire', () => {
-    test('recrute le candidat', async () => {
+    test('recruits the candidate', async () => {
       const recruit = { id: '2', status: 'available' }
       GameService.hireCandidate.mockResolvedValue({ recruit, state: {} })
 
@@ -102,18 +102,18 @@ describe('Game Routes', () => {
       expect(GameService.hireCandidate).toHaveBeenCalledWith('2')
     })
 
-    test('retourne 400 quand le recrutement est impossible', async () => {
-      GameService.hireCandidate.mockResolvedValue({ error: 'Recrutement impossible' })
+    test('returns 400 when recruitment fails', async () => {
+      GameService.hireCandidate.mockResolvedValue({ error: 'Recruitment failed' })
 
       const res = await request(app).post('/api/game/candidates/2/hire')
 
       expect(res.status).toBe(400)
-      expect(res.body.error).toBe('Recrutement impossible')
+      expect(res.body.error).toBe('Recruitment failed')
     })
   })
 
   describe('POST /api/game/missions/:templateId/start', () => {
-    test('démarre une mission avec un vaisseau valide', async () => {
+    test('starts a mission with a valid ship', async () => {
       GameService.startMission.mockResolvedValue({ state: {} })
 
       const res = await request(app)
@@ -124,7 +124,7 @@ describe('Game Routes', () => {
       expect(GameService.startMission).toHaveBeenCalledWith(1, 1)
     })
 
-    test('convertit templateId et shipId en nombres', async () => {
+    test('converts templateId and shipId to numbers', async () => {
       GameService.startMission.mockResolvedValue({ state: {} })
 
       await request(app).post('/api/game/missions/7/start').send({ shipId: '3' })
@@ -132,20 +132,20 @@ describe('Game Routes', () => {
       expect(GameService.startMission).toHaveBeenCalledWith(7, 3)
     })
 
-    test('retourne 400 quand le service signale une erreur', async () => {
-      GameService.startMission.mockResolvedValue({ error: 'Mission introuvable' })
+    test('returns 400 when the service reports an error', async () => {
+      GameService.startMission.mockResolvedValue({ error: 'Mission not found' })
 
       const res = await request(app)
         .post('/api/game/missions/999/start')
         .send({ shipId: 1 })
 
       expect(res.status).toBe(400)
-      expect(res.body.error).toBe('Mission introuvable')
+      expect(res.body.error).toBe('Mission not found')
     })
   })
 
   describe('POST /api/game/missions/:templateId/stop', () => {
-    test('arrête la mission en cours', async () => {
+    test('stops the mission in progress', async () => {
       GameService.stopMission.mockResolvedValue({ state: {} })
 
       const res = await request(app).post('/api/game/missions/1/stop')
@@ -154,8 +154,8 @@ describe('Game Routes', () => {
       expect(GameService.stopMission).toHaveBeenCalledWith(1)
     })
 
-    test('retourne 400 si aucune mission active ne correspond', async () => {
-      GameService.stopMission.mockResolvedValue({ error: 'Aucune mission active' })
+    test('returns 400 if no active mission matches', async () => {
+      GameService.stopMission.mockResolvedValue({ error: 'No active mission' })
 
       const res = await request(app).post('/api/game/missions/1/stop')
 
@@ -164,10 +164,10 @@ describe('Game Routes', () => {
   })
 
   describe('GET /api/game/missions/:templateId/logs', () => {
-    test('retourne les logs de la mission', async () => {
+    test('returns the mission logs', async () => {
       const mockLogs = [
-        { tag: '[SYS]', message: 'Départ en mission' },
-        { tag: '[COMBAT]', message: 'Victoire au combat' },
+        { tag: '[SYS]', message: 'Mission departure' },
+        { tag: '[COMBAT]', message: 'Combat victory' },
       ]
       GameService.getMissionLogs.mockResolvedValue(mockLogs)
 
@@ -178,7 +178,7 @@ describe('Game Routes', () => {
       expect(GameService.getMissionLogs).toHaveBeenCalledWith(1)
     })
 
-    test('retourne un tableau vide si aucun log', async () => {
+    test('returns an empty array if there are no logs', async () => {
       GameService.getMissionLogs.mockResolvedValue([])
 
       const res = await request(app).get('/api/game/missions/99/logs')
@@ -189,7 +189,7 @@ describe('Game Routes', () => {
   })
 
   describe('POST /api/game/missions/:templateId/force-return', () => {
-    test('déclenche le retour forcé', async () => {
+    test('triggers the forced return', async () => {
       GameService.forceReturnMission.mockResolvedValue({ state: {} })
 
       const res = await request(app).post('/api/game/missions/1/force-return')
@@ -198,8 +198,8 @@ describe('Game Routes', () => {
       expect(GameService.forceReturnMission).toHaveBeenCalledWith(1)
     })
 
-    test('retourne une erreur si la mission est introuvable', async () => {
-      GameService.forceReturnMission.mockResolvedValue({ error: 'Mission introuvable' })
+    test('returns an error if the mission cannot be found', async () => {
+      GameService.forceReturnMission.mockResolvedValue({ error: 'Mission not found' })
 
       const res = await request(app).post('/api/game/missions/99/force-return')
 

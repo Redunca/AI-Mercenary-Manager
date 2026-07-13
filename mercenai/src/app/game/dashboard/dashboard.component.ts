@@ -28,7 +28,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   get activeMissions() {
     return Object.values(this.missionService.missionStates)
-      .filter(s => s.phase !== 'TERMINEE');
+      .filter(s => s.phase !== 'COMPLETED');
   }
 
   get availableRecruits() {

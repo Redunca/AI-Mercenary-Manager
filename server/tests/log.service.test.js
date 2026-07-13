@@ -4,8 +4,8 @@ describe('insertLogEntries', () => {
   test('inserts one row per entry, defaulting missionId to null', async () => {
     const client = { query: jest.fn().mockResolvedValue({ rows: [] }) }
     const entries = [
-      { tag: '[SYS]', message: 'Un message', missionId: 5 },
-      { tag: '[IA]', message: 'Un autre message' },
+      { tag: '[SYS]', message: 'A message', missionId: 5 },
+      { tag: '[IA]', message: 'Another message' },
     ]
 
     await insertLogEntries(client, 1, entries)
@@ -14,12 +14,12 @@ describe('insertLogEntries', () => {
     expect(client.query).toHaveBeenNthCalledWith(
       1,
       expect.stringContaining('INSERT INTO log_entries'),
-      [1, '[SYS]', 'Un message', 5],
+      [1, '[SYS]', 'A message', 5],
     )
     expect(client.query).toHaveBeenNthCalledWith(
       2,
       expect.stringContaining('INSERT INTO log_entries'),
-      [1, '[IA]', 'Un autre message', null],
+      [1, '[IA]', 'Another message', null],
     )
   })
 })
@@ -29,7 +29,7 @@ describe('buildPhaseLogs', () => {
     failed: false,
     rewardForfeited: false,
     missionId: 1,
-    missionName: 'Patrouille de couloir',
+    missionName: 'Corridor Patrol',
     missionDifficulty: 'ROUTINE',
     recruitName: 'Kade',
   }
@@ -39,65 +39,65 @@ describe('buildPhaseLogs', () => {
 
     expect(mission).toHaveLength(3)
     expect(mission[0].tag).toBe('[SYS]')
-    expect(mission[0].message).toContain('[Patrouille de couloir · ROUTINE]')
+    expect(mission[0].message).toContain('[Corridor Patrol · ROUTINE]')
     expect(mission[1].tag).toBe('[IA]')
     expect(mission[2].tag).toBe('[KADE]')
     expect(mission[2].message).toMatch(/^".*"$/)
     expect(mission.every(e => e.missionId === 1)).toBe(true)
 
     expect(global).toHaveLength(1)
-    expect(global[0].message).toContain('Mission "Patrouille de couloir" lancée')
+    expect(global[0].message).toContain('Mission "Corridor Patrol" launched')
     expect(global[0].message).toContain('Kade')
   })
 
-  test('EVENEMENT includes a recruit line but no global log', () => {
-    const { mission, global } = buildPhaseLogs({ ...base, phase: 'EVENEMENT' })
+  test('EVENT includes a recruit line but no global log', () => {
+    const { mission, global } = buildPhaseLogs({ ...base, phase: 'EVENT' })
 
     expect(mission).toHaveLength(3)
     expect(mission[2].tag).toBe('[KADE]')
     expect(global).toHaveLength(0)
   })
 
-  test('RETOUR has no recruit line and no global log when not failed', () => {
-    const { mission, global } = buildPhaseLogs({ ...base, phase: 'RETOUR' })
+  test('RETURN has no recruit line and no global log when not failed', () => {
+    const { mission, global } = buildPhaseLogs({ ...base, phase: 'RETURN' })
 
     expect(mission).toHaveLength(2)
     expect(global).toHaveLength(0)
   })
 
-  test('RETOUR when failed uses the failure phrase pool', () => {
-    const { mission } = buildPhaseLogs({ ...base, phase: 'RETOUR', failed: true })
+  test('RETURN when failed uses the failure phrase pool', () => {
+    const { mission } = buildPhaseLogs({ ...base, phase: 'RETURN', failed: true })
 
     expect(mission).toHaveLength(2)
     expect(mission[0].tag).toBe('[SYS]')
-    expect(mission[0].message).toContain('[Patrouille de couloir · ROUTINE]')
+    expect(mission[0].message).toContain('[Corridor Patrol · ROUTINE]')
   })
 
-  test('TERMINEE reports SUCCÈS in the global log when not failed and reward kept', () => {
-    const { global } = buildPhaseLogs({ ...base, phase: 'TERMINEE' })
+  test('COMPLETED reports SUCCESS in the global log when not failed and reward kept', () => {
+    const { global } = buildPhaseLogs({ ...base, phase: 'COMPLETED' })
 
     expect(global).toHaveLength(1)
-    expect(global[0].message).toContain('[SUCCÈS]')
-    expect(global[0].message).toContain('Patrouille de couloir')
+    expect(global[0].message).toContain('[SUCCESS]')
+    expect(global[0].message).toContain('Corridor Patrol')
     expect(global[0].message).toContain('Kade')
   })
 
-  test('TERMINEE reports SANS RÉCOMPENSE when reward was forfeited without failure', () => {
-    const { global } = buildPhaseLogs({ ...base, phase: 'TERMINEE', rewardForfeited: true })
+  test('COMPLETED reports NO REWARD when reward was forfeited without failure', () => {
+    const { global } = buildPhaseLogs({ ...base, phase: 'COMPLETED', rewardForfeited: true })
 
-    expect(global[0].message).toContain('[SANS RÉCOMPENSE]')
+    expect(global[0].message).toContain('[NO REWARD]')
   })
 
-  test('TERMINEE reports ÉCHEC when the mission failed', () => {
-    const { global } = buildPhaseLogs({ ...base, phase: 'TERMINEE', failed: true })
+  test('COMPLETED reports FAILURE when the mission failed', () => {
+    const { global } = buildPhaseLogs({ ...base, phase: 'COMPLETED', failed: true })
 
-    expect(global[0].message).toContain('[ÉCHEC]')
+    expect(global[0].message).toContain('[FAILURE]')
   })
 
   test('omits the difficulty segment when missionDifficulty is absent', () => {
     const { mission } = buildPhaseLogs({ ...base, phase: 'EN_ROUTE', missionDifficulty: undefined })
 
-    expect(mission[0].message).toContain('[Patrouille de couloir] ')
+    expect(mission[0].message).toContain('[Corridor Patrol] ')
     expect(mission[0].message).not.toContain('·')
   })
 })
@@ -105,7 +105,7 @@ describe('buildPhaseLogs', () => {
 describe('buildEventResultLogs', () => {
   const baseArgs = {
     missionId: 1,
-    missionName: 'Patrouille de couloir',
+    missionName: 'Corridor Patrol',
     recruitName: 'Kade',
     recruitPerks: [],
     recruitFlaws: [],
@@ -134,12 +134,12 @@ describe('buildEventResultLogs', () => {
     const { mission, global } = buildEventResultLogs({ ...baseArgs, eventResult: eventResultDied })
 
     expect(mission).toHaveLength(3)
-    expect(mission[0].message).toContain('MORT AU COMBAT')
+    expect(mission[0].message).toContain('KILLED IN ACTION')
     expect(mission[0].message).toContain('RECON [perception]')
     expect(mission[1].tag).toBe('[IA]')
     expect(mission[2].tag).toBe('[KADE]')
     expect(global).toEqual([
-      { tag: '[SYS]', message: 'Kade est mort(e) au cours de la mission "Patrouille de couloir".' },
+      { tag: '[SYS]', message: 'Kade died during mission "Corridor Patrol".' },
     ])
   })
 
@@ -148,7 +148,7 @@ describe('buildEventResultLogs', () => {
     const { mission, global } = buildEventResultLogs({ ...baseArgs, eventResult: result })
 
     expect(mission).toHaveLength(3)
-    expect(mission[0].message).toContain('ÉCHEC — Extraction forcée')
+    expect(mission[0].message).toContain('FAILURE — Forced extraction')
     expect(global).toEqual([])
   })
 
@@ -156,21 +156,21 @@ describe('buildEventResultLogs', () => {
     const result = eventResult({ success: false, consequence: 'NO_REWARD' })
     const { mission } = buildEventResultLogs({ ...baseArgs, eventResult: result })
 
-    expect(mission[0].message).toContain('ÉCHEC — aucune récompense')
+    expect(mission[0].message).toContain('FAILURE — no reward')
   })
 
   test('HP_LOSS failure reports the amount of HP lost', () => {
     const result = eventResult({ success: false, consequence: 'HP_LOSS', hpLost: 4 })
     const { mission } = buildEventResultLogs({ ...baseArgs, eventResult: result })
 
-    expect(mission[0].message).toContain('ÉCHEC — -4 PV')
+    expect(mission[0].message).toContain('FAILURE — -4 HP')
   })
 
-  test('success without a reward reports SUCCÈS with no reward suffix', () => {
+  test('success without a reward reports SUCCESS with no reward suffix', () => {
     const result = eventResult({ success: true })
     const { mission } = buildEventResultLogs({ ...baseArgs, eventResult: result })
 
-    expect(mission[0].message).toContain('SUCCÈS')
+    expect(mission[0].message).toContain('SUCCESS')
     expect(mission[0].message).not.toContain('[+')
   })
 
@@ -178,7 +178,7 @@ describe('buildEventResultLogs', () => {
     const result = eventResult({ success: true, rewardEarned: { type: 'CREDITS', amount: 300 } })
     const { mission } = buildEventResultLogs({ ...baseArgs, eventResult: result })
 
-    expect(mission[0].message).toContain('SUCCÈS [+300 CREDITS]')
+    expect(mission[0].message).toContain('SUCCESS [+300 CREDITS]')
   })
 
   test('formats the roll as 1d20(d20) + notation(bonus) = total vs DC dc', () => {

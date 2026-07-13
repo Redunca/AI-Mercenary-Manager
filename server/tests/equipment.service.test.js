@@ -88,7 +88,7 @@ describe('Equipment Service', () => {
   });
 
   test('getEquipment retrieves a single equipment item by id', async () => {
-    const equipment = { id: 5, name: 'Blindage Renforcé' };
+    const equipment = { id: 5, name: 'Reinforced Armor' };
     mockClient.query.mockResolvedValue({ rows: [equipment] });
 
     const result = await EquipmentService.getEquipment(mockClient, 5);

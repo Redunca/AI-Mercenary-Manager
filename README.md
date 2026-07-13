@@ -73,7 +73,7 @@ The MVP includes:
 
 ### **Logs**
 - AI voice: neutral, cold, factual
-- Recrue voice: absurd, dramatic, incompetent
+- Recruit voice: absurd, dramatic, incompetent
 - Logs reconstructed from structured data
 
 ### **UI**
@@ -165,7 +165,7 @@ AI-Mercenary-Manager/
 
 The roadmap is divided into two major parts:
 
-### **1. MVP – Base du jeu**
+### **1. MVP – Game Foundation**
 All tasks required for the first playable version.
 Already imported into GitHub Issues under the milestone **“MVP – Base du jeu”**.
 

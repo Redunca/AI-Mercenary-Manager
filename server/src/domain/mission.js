@@ -2,9 +2,9 @@ const DURATION_PER_EVENT_MS = 15_000
 
 function phaseFromProgress(progress) {
   if (progress <= 33) return 'EN_ROUTE'
-  if (progress <= 66) return 'EVENEMENT'
-  if (progress < 100) return 'RETOUR'
-  return 'TERMINEE'
+  if (progress <= 66) return 'EVENT'
+  if (progress < 100) return 'RETURN'
+  return 'COMPLETED'
 }
 
 function progressFromElapsed(eventCount, elapsedMs) {

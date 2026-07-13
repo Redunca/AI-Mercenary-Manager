@@ -4,11 +4,11 @@ describe('phaseFromProgress', () => {
   test.each([
     [0, 'EN_ROUTE'],
     [33, 'EN_ROUTE'],
-    [34, 'EVENEMENT'],
-    [66, 'EVENEMENT'],
-    [67, 'RETOUR'],
-    [99, 'RETOUR'],
-    [100, 'TERMINEE'],
+    [34, 'EVENT'],
+    [66, 'EVENT'],
+    [67, 'RETURN'],
+    [99, 'RETURN'],
+    [100, 'COMPLETED'],
   ])('progress %i maps to phase %s', (progress, expected) => {
     expect(phaseFromProgress(progress)).toBe(expected)
   })

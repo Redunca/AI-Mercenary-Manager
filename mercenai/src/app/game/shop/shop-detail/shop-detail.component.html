@@ -1,9 +1,9 @@
-<div>TASK: [<span class="task-title">Détail article</span>] ******************************************</div>
+<div>TASK: [<span class="task-title">Item Detail</span>] ******************************************</div>
 <div>ok ==> {{ '{' }}</div>
 <ng-container *ngIf="item; else notFound">
   <div class="indent-one">"id"          : {{ item.id }},</div>
   <div class="indent-one">"name"        : "{{ item.name }}",</div>
-  <div class="indent-one">"type"        : "{{ item.type === 'ship' ? 'NAVIRE' : 'EQUIPEMENT' }}",</div>
+  <div class="indent-one">"type"        : "{{ item.type === 'ship' ? 'SHIP' : 'EQUIPMENT' }}",</div>
   <div class="indent-one">"rarity"      : <span [class]="'rarity-' + item.rarity">"{{ item.rarity }}"</span>,</div>
   <div class="indent-one">"price"       : {{ item.price }},</div>
   <div class="indent-one">"description" : "{{ item.description }}",</div>
@@ -20,7 +20,7 @@
   <div class="indent-one" *ngIf="item.type === 'equipment'">"effect" : "{{ item.effect }}"</div>
 </ng-container>
 <ng-template #notFound>
-  <div class="indent-one muted">Article introuvable.</div>
+  <div class="indent-one muted">Item not found.</div>
 </ng-template>
 <div>{{ '}' }}</div>
-<div class="hint">Usage terminal : buy | buy &lt;quantité&gt;</div>
+<div class="hint">Terminal usage: buy | buy &lt;quantity&gt;</div>

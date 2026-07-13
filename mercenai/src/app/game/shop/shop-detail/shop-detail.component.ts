@@ -28,10 +28,10 @@ export class ShopDetailComponent implements OnInit {
   registerCommands() {
     return {
       'buy': (qtyStr?: string) => {
-        if (!this.item) { console.warn('Article non chargé'); return; }
+        if (!this.item) { console.warn('Item not loaded'); return; }
         const qty = qtyStr ? Number(qtyStr) : 1;
         void this.shopService.buyItem(this.item.id, qty).then(result => {
-          if (result?.error) { console.warn('Achat échoué :', result.error); return; }
+          if (result?.error) { console.warn('Purchase failed:', result.error); return; }
           const target = this.item?.type === 'equipment' ? PanelModule.EquipmentList : PanelModule.ShipList;
           void this.gameSync.sync().then(() => {
             this.layout.setPanelModule(this.layout.activePanelId!, target);

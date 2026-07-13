@@ -1,26 +1,26 @@
 {
   "ESCORT": [
-    { "template": "Escorter {targetName} jusqu'à {planetName} en évitant les hommes de {enemyGroupName}.", "tags": [] },
-    { "template": "{clientName} engage l'équipage pour amener {targetName} sain et sauf sur {planetName}, malgré la menace de {enemyGroupName}.", "tags": [] }
+    { "template": "Escort {targetName} to {planetName} while avoiding {enemyGroupName}'s men.", "tags": [] },
+    { "template": "{clientName} hires the crew to bring {targetName} safely to {planetName}, despite the threat from {enemyGroupName}.", "tags": [] }
   ],
   "HEIST": [
-    { "template": "S'introduire dans les installations de {targetCorpName} sur {planetName} pour y dérober des données sensibles.", "tags": [] },
-    { "template": "{clientName} paie grassement pour vider le coffre de {targetCorpName}, sous le nez de {securityGroupName}.", "tags": [] }
+    { "template": "Break into {targetCorpName}'s facilities on {planetName} to steal sensitive data.", "tags": [] },
+    { "template": "{clientName} pays handsomely to empty {targetCorpName}'s vault, right under {securityGroupName}'s nose.", "tags": [] }
   ],
   "SABOTAGE": [
-    { "template": "Neutraliser une installation appartenant à {enemyGroupName} sur {planetName} avant qu'elle ne devienne opérationnelle.", "tags": [] },
-    { "template": "{clientName} veut voir les infrastructures de {enemyGroupName} réduites au silence, sur {planetName}.", "tags": [] }
+    { "template": "Neutralize a facility belonging to {enemyGroupName} on {planetName} before it becomes operational.", "tags": [] },
+    { "template": "{clientName} wants {enemyGroupName}'s infrastructure silenced for good, on {planetName}.", "tags": [] }
   ],
   "RECON": [
-    { "template": "Rassembler des renseignements sur les activités de {enemyGroupName} dans le secteur de {planetName}.", "tags": [] },
-    { "template": "{clientName} a besoin d'un dossier complet sur {enemyGroupName} avant de risquer un mouvement sur {planetName}.", "tags": [] }
+    { "template": "Gather intelligence on {enemyGroupName}'s activities in the {planetName} sector.", "tags": [] },
+    { "template": "{clientName} needs a full dossier on {enemyGroupName} before risking a move on {planetName}.", "tags": [] }
   ],
   "DIPLOMACY": [
-    { "template": "Négocier un accord avec {targetName} au nom de {clientName}, malgré la pression de {enemyGroupName}.", "tags": [] },
-    { "template": "Représenter les intérêts de {clientName} face à {targetName} sur {planetName}, une planète sous tension.", "tags": [] }
+    { "template": "Negotiate a deal with {targetName} on behalf of {clientName}, despite pressure from {enemyGroupName}.", "tags": [] },
+    { "template": "Represent {clientName}'s interests before {targetName} on {planetName}, a planet on edge.", "tags": [] }
   ],
   "EXTRACTION_OP": [
-    { "template": "Récupérer {targetName}, retenu par {enemyGroupName} sur {planetName}, avant qu'il ne soit trop tard.", "tags": [] },
-    { "template": "{clientName} exige l'extraction de {targetName} des mains de {enemyGroupName}, sur {planetName}.", "tags": [] }
+    { "template": "Recover {targetName}, held by {enemyGroupName} on {planetName}, before it's too late.", "tags": [] },
+    { "template": "{clientName} demands the extraction of {targetName} from {enemyGroupName}'s hands, on {planetName}.", "tags": [] }
   ]
 }

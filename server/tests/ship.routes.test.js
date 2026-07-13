@@ -15,13 +15,13 @@ const EMPTY_SHIP = { ...SHIP, crew: [] }
 describe('Ship Routes', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    // Rétablir l'implémentation du mock pool après clearAllMocks
+    // Restore the mock pool implementation after clearAllMocks
     const { pool } = require('../src/db/pool')
     pool.connect.mockResolvedValue({ query: jest.fn(), release: jest.fn() })
   })
 
   describe('GET /api/ships', () => {
-    test('retourne la liste des navires', async () => {
+    test('returns the list of ships', async () => {
       ShipService.getShips.mockResolvedValue([EMPTY_SHIP])
 
       const res = await request(app).get('/api/ships')
@@ -32,7 +32,7 @@ describe('Ship Routes', () => {
   })
 
   describe('GET /api/ships/:id', () => {
-    test('retourne le navire correspondant', async () => {
+    test('returns the matching ship', async () => {
       ShipService.getShip.mockResolvedValue(EMPTY_SHIP)
 
       const res = await request(app).get('/api/ships/1')
@@ -41,7 +41,7 @@ describe('Ship Routes', () => {
       expect(res.body.id).toBe(1)
     })
 
-    test('retourne 404 si le navire est introuvable', async () => {
+    test('returns 404 if the ship cannot be found', async () => {
       ShipService.getShip.mockResolvedValue(null)
 
       const res = await request(app).get('/api/ships/999')
@@ -51,7 +51,7 @@ describe('Ship Routes', () => {
   })
 
   describe('POST /api/ships/:id/crew', () => {
-    test('assigne une recrue à un navire avec équipage vide', async () => {
+    test('assigns a recruit to a ship with an empty crew', async () => {
       ShipService.appendCrewMember.mockResolvedValue(SHIP)
 
       const res = await request(app)
@@ -65,7 +65,7 @@ describe('Ship Routes', () => {
       )
     })
 
-    test('retourne 400 si recruitIds est absent', async () => {
+    test('returns 400 if recruitIds is missing', async () => {
       const res = await request(app)
         .post('/api/ships/1/crew')
         .send({})
@@ -73,7 +73,7 @@ describe('Ship Routes', () => {
       expect(res.status).toBe(400)
     })
 
-    test('retourne 400 si recruitIds est un tableau vide', async () => {
+    test('returns 400 if recruitIds is an empty array', async () => {
       const res = await request(app)
         .post('/api/ships/1/crew')
         .send({ recruitIds: [] })
@@ -81,11 +81,11 @@ describe('Ship Routes', () => {
       expect(res.status).toBe(400)
     })
 
-    // Reproduit le bug : la recrue est déjà dans l'équipage → appendCrewMember retourne undefined
-    // → la route répond 404 "Navire introuvable" alors que le navire existe
-    test('retourne 200 si la recrue est déjà dans l\'équipage (idempotent)', async () => {
-      ShipService.appendCrewMember.mockResolvedValue(undefined) // déjà présente
-      ShipService.getShip.mockResolvedValue(SHIP)               // navire existe quand même
+    // Reproduces the bug: the recruit is already in the crew → appendCrewMember returns undefined
+    // → the route responds 404 "Ship not found" even though the ship exists
+    test('returns 200 if the recruit is already in the crew (idempotent)', async () => {
+      ShipService.appendCrewMember.mockResolvedValue(undefined) // already present
+      ShipService.getShip.mockResolvedValue(SHIP)               // ship still exists
 
       const res = await request(app)
         .post('/api/ships/1/crew')
@@ -95,7 +95,7 @@ describe('Ship Routes', () => {
       expect(res.body.crew).toContain(1)
     })
 
-    test('retourne 404 si le navire n\'existe pas', async () => {
+    test('returns 404 if the ship does not exist', async () => {
       ShipService.appendCrewMember.mockResolvedValue(undefined)
       ShipService.getShip.mockResolvedValue(null)
 
@@ -108,7 +108,7 @@ describe('Ship Routes', () => {
   })
 
   describe('DELETE /api/ships/:id/crew/:recruitId', () => {
-    test('retire une recrue de l\'équipage', async () => {
+    test('removes a recruit from the crew', async () => {
       ShipService.removeCrewMember.mockResolvedValue(EMPTY_SHIP)
 
       const res = await request(app).delete('/api/ships/1/crew/1')
@@ -119,7 +119,7 @@ describe('Ship Routes', () => {
       )
     })
 
-    test('retourne 404 si le navire est introuvable', async () => {
+    test('returns 404 if the ship cannot be found', async () => {
       ShipService.removeCrewMember.mockResolvedValue(undefined)
 
       const res = await request(app).delete('/api/ships/999/crew/1')
@@ -129,18 +129,18 @@ describe('Ship Routes', () => {
   })
 
   describe('PATCH /api/ships/:id', () => {
-    test('renomme un navire', async () => {
-      ShipService.renameShip.mockResolvedValue({ ...EMPTY_SHIP, name: 'Nouveau Nom' })
+    test('renames a ship', async () => {
+      ShipService.renameShip.mockResolvedValue({ ...EMPTY_SHIP, name: 'New Name' })
 
       const res = await request(app)
         .patch('/api/ships/1')
-        .send({ name: 'Nouveau Nom' })
+        .send({ name: 'New Name' })
 
       expect(res.status).toBe(200)
-      expect(res.body.name).toBe('Nouveau Nom')
+      expect(res.body.name).toBe('New Name')
     })
 
-    test('retourne 400 si le nom est absent', async () => {
+    test('returns 400 if the name is missing', async () => {
       const res = await request(app)
         .patch('/api/ships/1')
         .send({})
@@ -148,7 +148,7 @@ describe('Ship Routes', () => {
       expect(res.status).toBe(400)
     })
 
-    test('retourne 404 si le navire est introuvable', async () => {
+    test('returns 404 if the ship cannot be found', async () => {
       ShipService.renameShip.mockResolvedValue(undefined)
 
       const res = await request(app)

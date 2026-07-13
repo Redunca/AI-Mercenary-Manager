@@ -28,9 +28,9 @@ jest.mock('../src/services/equipment.service')
 const { pool } = require('../src/db/pool')
 const GameService = require('../src/services/game.service')
 
-// Faux client Postgres en mémoire : chaque test obtient une connexion "fraîche"
-// (bootstrapPlayer part d'un état vide), mais l'état est partagé entre tous les
-// appels d'un même test pour permettre d'enchaîner startMission -> syncGame etc.
+// Fake in-memory Postgres client: each test gets a "fresh" connection
+// (bootstrapPlayer starts from an empty state), but the state is shared between all
+// calls of a same test to allow chaining startMission -> syncGame etc.
 function createFakeClient() {
   const state = {
     players: [],
@@ -42,8 +42,8 @@ function createFakeClient() {
     logEntries: [],
   }
   let nextInstanceId = 1000
-  // Postgres cast implicitement les paramètres texte vers le type de colonne (int) ;
-  // les id de recrue transitent parfois en string via rowToRecruit, donc on compare en relâchant le typage.
+  // Postgres implicitly casts text parameters to the column type (int);
+  // recruit ids sometimes pass through as strings via rowToRecruit, so we compare with relaxed typing.
   const sameId = (a, b) => String(a) === String(b)
 
   const query = jest.fn(async (sql, params = []) => {
@@ -201,7 +201,7 @@ function createFakeClient() {
     }
     if (s.includes('forced_return = TRUE, return_started_at = NOW(), progress_at_return = progress')) {
       const i = state.missionInstances.find(i => i.id === params[0])
-      Object.assign(i, { forced_return: true, return_started_at: new Date(), progress_at_return: i.progress, phase: 'RETOUR' })
+      Object.assign(i, { forced_return: true, return_started_at: new Date(), progress_at_return: i.progress, phase: 'RETURN' })
       return { rows: [] }
     }
     if (s === 'SELECT * FROM mission_instances WHERE player_id = $1 AND status = $2') {
@@ -213,24 +213,24 @@ function createFakeClient() {
       Object.assign(i, {
         failed, reward_forfeited: rewardForfeited, current_event_index: currentEventIndex,
         event_results: JSON.parse(eventResults), forced_return: true, return_started_at: new Date(),
-        progress_at_return: progress, phase: 'RETOUR', progress,
+        progress_at_return: progress, phase: 'RETURN', progress,
       })
       return { rows: [] }
     }
-    if (s.includes("phase = 'TERMINEE', progress = 100, status = 'failed'")) {
+    if (s.includes("phase = 'COMPLETED', progress = 100, status = 'failed'")) {
       const [failed, rewardForfeited, currentEventIndex, eventResults, id] = params
       const i = state.missionInstances.find(i => i.id === id)
       Object.assign(i, {
         failed, reward_forfeited: rewardForfeited, current_event_index: currentEventIndex,
-        event_results: JSON.parse(eventResults), phase: 'TERMINEE', progress: 100, status: 'failed',
+        event_results: JSON.parse(eventResults), phase: 'COMPLETED', progress: 100, status: 'failed',
       })
       return { rows: [] }
     }
-    if (s.includes("UPDATE mission_instances SET phase = 'TERMINEE', progress = 100, failed = $1")) {
+    if (s.includes("UPDATE mission_instances SET phase = 'COMPLETED', progress = 100, failed = $1")) {
       const [failed, rewardForfeited, currentEventIndex, eventResults, status, id] = params
       const i = state.missionInstances.find(i => i.id === id)
       Object.assign(i, {
-        phase: 'TERMINEE', progress: 100, failed, reward_forfeited: rewardForfeited,
+        phase: 'COMPLETED', progress: 100, failed, reward_forfeited: rewardForfeited,
         current_event_index: currentEventIndex, event_results: JSON.parse(eventResults), status,
       })
       return { rows: [] }
@@ -248,17 +248,17 @@ function createFakeClient() {
       return { rows: state.missionInstances.filter(i => i.player_id === params[0]) }
     }
 
-    // ships (uniquement la lecture brute utilisée par buildGameState — le reste passe par ShipService, mocké)
+    // ships (only the raw read used by buildGameState — the rest goes through ShipService, mocked)
     if (s === 'SELECT * FROM ships WHERE player_id = $1 AND deleted_at IS NULL ORDER BY id') {
       return { rows: state.ships.filter(sh => sh.player_id === params[0]) }
     }
 
-    // log_entries (les écritures passent par log.service, mocké ; seule la lecture est directe)
+    // log_entries (writes go through log.service, mocked; only the read is direct)
     if (s.includes('SELECT tag, message, mission_id AS "missionId" FROM log_entries')) {
       return { rows: state.logEntries.filter(l => l.player_id === params[0]) }
     }
 
-    throw new Error(`Requête non gérée par le faux client de test : ${s}`)
+    throw new Error(`Query not handled by the fake test client: ${s}`)
   })
 
   return { client: { query, release: jest.fn() }, state }
@@ -293,7 +293,7 @@ describe('GameService', () => {
   })
 
   describe('initGame / bootstrapPlayer', () => {
-    test('crée un joueur, amarre un vaisseau de départ, génère 5 candidats puis en recrute un', async () => {
+    test('creates a player, docks a starter ship, generates 5 candidates then recruits one', async () => {
       await GameService.initGame()
 
       expect(state.players).toHaveLength(1)
@@ -307,12 +307,12 @@ describe('GameService', () => {
       expect(state.recruits[0].status).toBe('available')
     })
 
-    test('seede les 25 modèles de mission depuis missions.json', async () => {
+    test('seeds the 25 mission templates from missions.json', async () => {
       await GameService.initGame()
       expect(state.missionTemplates).toHaveLength(25)
     })
 
-    test('est idempotent : un second appel ne recrée ni joueur ni recrue supplémentaire', async () => {
+    test('is idempotent: a second call does not recreate a player nor an extra recruit', async () => {
       await GameService.initGame()
       await GameService.initGame()
 
@@ -323,7 +323,7 @@ describe('GameService', () => {
   })
 
   describe('getGameState', () => {
-    test('expose les recrues, candidats, missions disponibles et limites du joueur', async () => {
+    test('exposes the recruits, candidates, available missions and player limits', async () => {
       const result = await GameService.getGameState()
 
       expect(result.player).toEqual({ maxNumberOfRecruits: 5, maxAvailableMissions: 5 })
@@ -335,7 +335,7 @@ describe('GameService', () => {
   })
 
   describe('hireCandidate', () => {
-    test('transforme un candidat en recrue disponible et le retire des candidats', async () => {
+    test('turns a candidate into an available recruit and removes it from the candidates', async () => {
       await GameService.initGame()
       const candidateId = state.candidates[0].id
 
@@ -347,23 +347,23 @@ describe('GameService', () => {
       expect(state.recruits).toHaveLength(2)
     })
 
-    test("échoue quand le nombre maximum de recrues est atteint", async () => {
+    test("fails when the maximum number of recruits is reached", async () => {
       await GameService.initGame()
       state.players[0].max_recruits = 1
       const candidateId = state.candidates[0].id
 
       const result = await GameService.hireCandidate(String(candidateId))
 
-      expect(result.error).toBe('Recrutement impossible')
+      expect(result.error).toBe('Recruitment failed')
       expect(state.recruits).toHaveLength(1)
     })
 
-    test('échoue quand le candidat est introuvable', async () => {
+    test('fails when the candidate cannot be found', async () => {
       await GameService.initGame()
 
       const result = await GameService.hireCandidate('99999')
 
-      expect(result.error).toBe('Recrutement impossible')
+      expect(result.error).toBe('Recruitment failed')
     })
   })
 
@@ -376,9 +376,9 @@ describe('GameService', () => {
       return { recruitId, ship }
     }
 
-    test("lance la mission, passe l'équipage en in_mission et le vaisseau en in_mission", async () => {
+    test("launches the mission, switches the crew to in_mission and the ship to in_mission", async () => {
       const { recruitId } = await bootstrapWithDockedShip()
-      state.recruits[0].id = 1 // aligne avec le crew du vaisseau simulé
+      state.recruits[0].id = 1 // aligns with the crew of the simulated ship
 
       const result = await GameService.startMission(1, 1)
 
@@ -389,56 +389,56 @@ describe('GameService', () => {
       expect(state.missionInstances[0]).toMatchObject({ template_id: 1, ship_id: 1, phase: 'EN_ROUTE', progress: 0 })
     })
 
-    test('refuse une mission inconnue', async () => {
+    test('refuses an unknown mission', async () => {
       await bootstrapWithDockedShip()
       const result = await GameService.startMission(9999, 1)
-      expect(result.error).toBe('Mission introuvable')
+      expect(result.error).toBe('Mission not found')
     })
 
-    test('refuse de relancer une mission déjà en cours', async () => {
+    test('refuses to relaunch a mission that is already in progress', async () => {
       await bootstrapWithDockedShip()
       state.recruits[0].id = 1
       await GameService.startMission(1, 1)
 
       const result = await GameService.startMission(1, 1)
-      expect(result.error).toBe('Mission déjà en cours')
+      expect(result.error).toBe('Mission already in progress')
     })
 
-    test('refuse un vaisseau introuvable', async () => {
+    test('refuses a ship that cannot be found', async () => {
       await GameService.initGame()
       ShipService.getShip.mockResolvedValue(null)
 
       const result = await GameService.startMission(1, 1)
-      expect(result.error).toBe('Navire introuvable')
+      expect(result.error).toBe('Ship not found')
     })
 
-    test("refuse un vaisseau qui n'est pas amarré", async () => {
+    test("refuses a ship that is not docked", async () => {
       await GameService.initGame()
       ShipService.getShip.mockResolvedValue({ id: 1, crew: [1], status: 'in_mission', deleted_at: null })
 
       const result = await GameService.startMission(1, 1)
-      expect(result.error).toBe("Le navire n'est pas amarré")
+      expect(result.error).toBe("The ship is not docked")
     })
 
-    test('refuse un vaisseau sans équipage', async () => {
+    test('refuses a ship with no crew', async () => {
       await GameService.initGame()
       ShipService.getShip.mockResolvedValue({ id: 1, crew: [], status: 'docked', deleted_at: null })
 
       const result = await GameService.startMission(1, 1)
-      expect(result.error).toBe("Le navire n'a pas d'équipage")
+      expect(result.error).toBe("The ship has no crew")
     })
 
-    test("refuse si un membre de l'équipage n'est pas disponible", async () => {
+    test("refuses if a crew member is not available", async () => {
       await bootstrapWithDockedShip()
       state.recruits[0].id = 1
       state.recruits[0].status = 'in_mission'
 
       const result = await GameService.startMission(1, 1)
-      expect(result.error).toBe("Au moins un membre de l'équipage n'est pas disponible")
+      expect(result.error).toBe("At least one crew member is not available")
     })
   })
 
-  describe('syncGame — résolution de mission', () => {
+  describe('syncGame — mission resolution', () => {
     async function launchMission(templateId, crewId = 1) {
       await GameService.initGame()
       state.recruits[0].id = crewId
@@ -447,26 +447,26 @@ describe('GameService', () => {
       return state.missionInstances[0]
     }
 
-    test('une mission réussie renvoie équipage et vaisseau à la base une fois le temps écoulé', async () => {
-      const instance = await launchMission(1) // template ROUTINE (seed 15) : 2 événements, consequence NO_REWARD uniquement (fixé par difficulty-tables.json)
-      instance.started_at = new Date(Date.now() - 10 * 60 * 1000) // largement > 2 * 15s
+    test('a successful mission returns the crew and the ship to base once time has elapsed', async () => {
+      const instance = await launchMission(1) // template ROUTINE (seed 15): 2 events, NO_REWARD consequence only (fixed by difficulty-tables.json)
+      instance.started_at = new Date(Date.now() - 10 * 60 * 1000) // well past 2 * 15s
       rollAction.mockReturnValue({ d20: 20, bonus: 0, diceNotation: '—', total: 20 })
 
       await GameService.syncGame()
       const updated = state.missionInstances[0]
 
       expect(updated.status).toBe('success')
-      expect(updated.phase).toBe('TERMINEE')
+      expect(updated.phase).toBe('COMPLETED')
       expect(updated.event_results).toHaveLength(2)
       expect(updated.event_results.every(r => r.success)).toBe(true)
       expect(state.recruits.find(r => r.id === 1).status).toBe('available')
       expect(ShipService.updateShipStatus).toHaveBeenCalledWith(expect.anything(), 1, 1, 'docked')
     })
 
-    test('un échec HP_LOSS blesse la recrue mais renvoie quand même équipage et vaisseau à la base', async () => {
-      const instance = await launchMission(6) // template STANDARD (seed 15) : RECON, COMBAT, SURVIVAL(HP_LOSS)
+    test('an HP_LOSS failure hurts the recruit but still returns the crew and the ship to base', async () => {
+      const instance = await launchMission(6) // template STANDARD (seed 15): RECON, COMBAT, SURVIVAL(HP_LOSS)
       instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
-      rollAction.mockReturnValue({ d20: 1, bonus: 0, diceNotation: '—', total: 1 }) // échec systématique
+      rollAction.mockReturnValue({ d20: 1, bonus: 0, diceNotation: '—', total: 1 }) // systematic failure
       rollDie.mockReturnValue(4)
 
       await GameService.syncGame()
@@ -475,17 +475,17 @@ describe('GameService', () => {
 
       expect(recruit.hp).toBeLessThan(recruit.max_hp)
       expect(updated.event_results.some(r => r.consequence === 'HP_LOSS' && r.hpLost === 4)).toBe(true)
-      // aucun événement de cette mission ne positionne `failed`, la recrue survit : la mission se termine en succès
+      // no event of this mission sets `failed`, the recruit survives: the mission ends in success
       expect(updated.status).toBe('success')
       expect(recruit.status).toBe('available')
       expect(ShipService.updateShipStatus).toHaveBeenCalledWith(expect.anything(), 1, 1, 'docked')
     })
 
-    test('la mort de la recrue dans le dernier événement HP_LOSS termine la mission en échec', async () => {
+    test('the recruit dying on the last HP_LOSS event ends the mission in failure', async () => {
       const instance = await launchMission(6)
       instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
       rollAction.mockReturnValue({ d20: 1, bonus: 0, diceNotation: '—', total: 1 })
-      state.recruits.find(r => r.id === 1).hp = 3 // meurt au premier échec HP_LOSS (rollDie -> 3)
+      state.recruits.find(r => r.id === 1).hp = 3 // dies on the first HP_LOSS failure (rollDie -> 3)
       rollDie.mockReturnValue(3)
 
       await GameService.syncGame()
@@ -496,43 +496,43 @@ describe('GameService', () => {
       expect(recruit.hp).toBe(0)
       expect(updated.status).toBe('failed')
       expect(updated.event_results.at(-1).recruitDied).toBe(true)
-      // mission échouée sans destruction du vaisseau : celui-ci doit quand même rentrer au port
+      // failed mission without destruction of the ship: it should still return to port
       expect(ShipService.updateShipStatus).toHaveBeenCalledWith(expect.anything(), 1, 1, 'docked')
     })
 
-    test('un échec FORCED_DEPARTURE bascule immédiatement la mission en phase RETOUR', async () => {
-      const instance = await launchMission(11) // template HARD (seed 15) : RECON(dc18),RECON(dc17),COMBAT(dc18,FORCED_DEPARTURE),SURVIVAL
+    test('a FORCED_DEPARTURE failure immediately switches the mission to RETURN phase', async () => {
+      const instance = await launchMission(11) // template HARD (seed 15): RECON(dc18),RECON(dc17),COMBAT(dc18,FORCED_DEPARTURE),SURVIVAL
       instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
       rollAction
-        .mockReturnValueOnce({ d20: 20, bonus: 0, diceNotation: '—', total: 20 }) // 1er RECON succès (dc18)
-        .mockReturnValueOnce({ d20: 20, bonus: 0, diceNotation: '—', total: 20 }) // 2e RECON succès (dc17)
-        .mockReturnValueOnce({ d20: 1, bonus: 0, diceNotation: '—', total: 1 })   // COMBAT échec -> FORCED_DEPARTURE
+        .mockReturnValueOnce({ d20: 20, bonus: 0, diceNotation: '—', total: 20 }) // 1st RECON success (dc18)
+        .mockReturnValueOnce({ d20: 20, bonus: 0, diceNotation: '—', total: 20 }) // 2nd RECON success (dc17)
+        .mockReturnValueOnce({ d20: 1, bonus: 0, diceNotation: '—', total: 1 })   // COMBAT failure -> FORCED_DEPARTURE
 
       await GameService.syncGame()
       const updated = state.missionInstances[0]
 
-      expect(updated.phase).toBe('RETOUR')
+      expect(updated.phase).toBe('RETURN')
       expect(updated.forced_return).toBe(true)
       expect(updated.failed).toBe(true)
-      expect(updated.current_event_index).toBe(3) // s'arrête après le 3e événement (index 2 + 1)
+      expect(updated.current_event_index).toBe(3) // stops after the 3rd event (index 2 + 1)
       expect(updated.event_results).toHaveLength(3)
       expect(ShipService.updateShipStatus).not.toHaveBeenCalledWith(expect.anything(), 1, 1, 'docked')
     })
 
-    test('une fois le trajet retour écoulé, un échec FORCED_DEPARTURE renvoie le vaisseau et la recrue survivante à la base', async () => {
+    test('once the return trip has elapsed, a FORCED_DEPARTURE failure returns the ship and the surviving recruit to base', async () => {
       await launchMission(11)
       state.missionInstances[0].started_at = new Date(Date.now() - 10 * 60 * 1000)
       rollAction
-        .mockReturnValueOnce({ d20: 20, bonus: 0, diceNotation: '—', total: 20 }) // RECON succès
-        .mockReturnValueOnce({ d20: 20, bonus: 0, diceNotation: '—', total: 20 }) // INFILTRATION succès
-        .mockReturnValueOnce({ d20: 1, bonus: 0, diceNotation: '—', total: 1 })   // COMBAT échec -> FORCED_DEPARTURE
-      await GameService.syncGame() // bascule en RETOUR
+        .mockReturnValueOnce({ d20: 20, bonus: 0, diceNotation: '—', total: 20 }) // RECON success
+        .mockReturnValueOnce({ d20: 20, bonus: 0, diceNotation: '—', total: 20 }) // INFILTRATION success
+        .mockReturnValueOnce({ d20: 1, bonus: 0, diceNotation: '—', total: 1 })   // COMBAT failure -> FORCED_DEPARTURE
+      await GameService.syncGame() // switches to RETURN
 
-      await GameService.syncGame() // le trajet retour est immédiatement écoulé (progress_at_return déjà à 100)
+      await GameService.syncGame() // the return trip has already elapsed (progress_at_return already at 100)
       const updated = state.missionInstances[0]
       const recruit = state.recruits.find(r => r.id === 1)
 
-      expect(updated.phase).toBe('TERMINEE')
+      expect(updated.phase).toBe('COMPLETED')
       expect(updated.status).toBe('failed')
       expect(recruit.status).toBe('available')
       expect(ShipService.destroyShip).not.toHaveBeenCalled()
@@ -541,7 +541,7 @@ describe('GameService', () => {
   })
 
   describe('stopMission', () => {
-    test('libère équipage et vaisseau puis supprime la mission en cours', async () => {
+    test('releases crew and ship then deletes the mission in progress', async () => {
       await GameService.initGame()
       state.recruits[0].id = 1
       ShipService.getShip.mockResolvedValue({ id: 1, player_id: 1, crew: [1], status: 'docked', deleted_at: null })
@@ -555,15 +555,15 @@ describe('GameService', () => {
       expect(ShipService.updateShipStatus).toHaveBeenCalledWith(expect.anything(), 1, 1, 'docked')
     })
 
-    test('signale une erreur quand aucune mission active ne correspond', async () => {
+    test('reports an error when no active mission matches', async () => {
       await GameService.initGame()
       const result = await GameService.stopMission(1)
-      expect(result.error).toBe('Aucune mission active')
+      expect(result.error).toBe('No active mission')
     })
   })
 
   describe('forceReturnMission', () => {
-    test('déclenche un retour forcé sur une mission en cours', async () => {
+    test('triggers a forced return on a mission in progress', async () => {
       await GameService.initGame()
       state.recruits[0].id = 1
       ShipService.getShip.mockResolvedValue({ id: 1, player_id: 1, crew: [1], status: 'docked', deleted_at: null })
@@ -573,16 +573,16 @@ describe('GameService', () => {
 
       expect(result.error).toBeUndefined()
       expect(state.missionInstances[0].forced_return).toBe(true)
-      expect(state.missionInstances[0].phase).toBe('RETOUR')
+      expect(state.missionInstances[0].phase).toBe('RETURN')
     })
 
-    test('refuse si aucune mission active ne correspond', async () => {
+    test('refuses if no active mission matches', async () => {
       await GameService.initGame()
       const result = await GameService.forceReturnMission(1)
-      expect(result.error).toBe('Aucune mission active')
+      expect(result.error).toBe('No active mission')
     })
 
-    test('refuse un second retour forcé une fois la phase RETOUR atteinte', async () => {
+    test('refuses a second forced return once RETURN phase is reached', async () => {
       await GameService.initGame()
       state.recruits[0].id = 1
       ShipService.getShip.mockResolvedValue({ id: 1, player_id: 1, crew: [1], status: 'docked', deleted_at: null })
@@ -590,12 +590,12 @@ describe('GameService', () => {
       await GameService.forceReturnMission(1)
 
       const result = await GameService.forceReturnMission(1)
-      expect(result.error).toBe('Retour déjà en cours ou mission terminée')
+      expect(result.error).toBe('Return already in progress or mission completed')
     })
   })
 
   describe('refreshCandidates', () => {
-    test('remplace tous les candidats existants par un nouveau lot', async () => {
+    test('replaces all existing candidates with a new batch', async () => {
       await GameService.initGame()
       const previousIds = state.candidates.map(c => c.id)
 
@@ -608,29 +608,29 @@ describe('GameService', () => {
   })
 
   describe('renameRecruit', () => {
-    test('renomme une recrue existante', async () => {
+    test('renames an existing recruit', async () => {
       await GameService.initGame()
       const recruitId = state.recruits[0].id
 
-      const result = await GameService.renameRecruit(String(recruitId), 'Nouveau Nom')
+      const result = await GameService.renameRecruit(String(recruitId), 'New Name')
 
       expect(result.error).toBeUndefined()
-      expect(result.recruit.name).toBe('Nouveau Nom')
-      expect(state.recruits[0].name).toBe('Nouveau Nom')
+      expect(result.recruit.name).toBe('New Name')
+      expect(state.recruits[0].name).toBe('New Name')
     })
 
-    test('signale une erreur quand la recrue est introuvable', async () => {
+    test('reports an error when the recruit cannot be found', async () => {
       await GameService.initGame()
-      const result = await GameService.renameRecruit('99999', 'Nouveau Nom')
-      expect(result.error).toBe('Recrue introuvable')
+      const result = await GameService.renameRecruit('99999', 'New Name')
+      expect(result.error).toBe('Recruit not found')
     })
   })
 
   describe('getMissionLogs', () => {
-    test('renvoie les logs de la mission demandée pour le joueur par défaut', async () => {
+    test('returns the logs of the requested mission for the default player', async () => {
       state.logEntries.push(
-        { player_id: 1, mission_id: 1, tag: '[SYS]', message: 'Départ' },
-        { player_id: 1, mission_id: 2, tag: '[SYS]', message: 'Autre mission' },
+        { player_id: 1, mission_id: 1, tag: '[SYS]', message: 'Departure' },
+        { player_id: 1, mission_id: 2, tag: '[SYS]', message: 'Other mission' },
       )
       pool.query.mockImplementation(async (sql, params) => {
         if (sql.includes('FROM log_entries') && sql.includes('mission_id = $2')) {
@@ -640,12 +640,12 @@ describe('GameService', () => {
               .map(({ tag, message }) => ({ tag, message })),
           }
         }
-        throw new Error(`Requête non gérée : ${sql}`)
+        throw new Error(`Query not handled: ${sql}`)
       })
 
       const logs = await GameService.getMissionLogs(1)
 
-      expect(logs).toEqual([{ tag: '[SYS]', message: 'Départ' }])
+      expect(logs).toEqual([{ tag: '[SYS]', message: 'Departure' }])
     })
   })
 })

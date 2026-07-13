@@ -3,64 +3,64 @@
     "success": {
       "perk-and-flawless": {
         "Analyst": [
-          "Observation réussie. Leur camouflage repose sur l’idée que personne ne regarde jamais vraiment.",
-          "Zone analysée. Statistiquement, ils auraient dû cacher au moins un détail.",
-          "Reconnaissance complète. Je note que leur discrétion est… conceptuellement théorique.",
-          "Rien d’anormal détecté. Je propose qu’on classe leur stratégie dans ‘invisibilité par naïveté’.",
-          "Repérage effectué. Leur capacité à se fondre dans le décor est un hommage involontaire au hasard."
+          "Observation successful. Their camouflage relies on the idea that no one ever really looks.",
+          "Zone analyzed. Statistically, they should have hidden at least one detail.",
+          "Reconnaissance complete. I note their discretion is... conceptually theoretical.",
+          "Nothing abnormal detected. I propose we file their strategy under 'invisibility through naivety'.",
+          "Scouting complete. Their ability to blend into the scenery is an unintentional tribute to chance."
         ],
         "Diplomat": [
-          "La zone s’est révélée à moi… je crois qu’elle voulait qu’on la comprenne.",
-          "Reconnaissance harmonieuse. Je ressens une belle énergie dans cet espace silencieux.",
-          "J’ai perçu ce qu’il fallait. Peut‑être que l’environnement voulait nous guider.",
-          "Rien d’inquiétant. Je sens que l’univers nous offre un moment de clarté.",
-          "Observation réussie. Je crois que cette zone cherchait simplement à être vue."
+          "The area revealed itself to me... I think it wanted to be understood.",
+          "Harmonious reconnaissance. I sense a lovely energy in this silent space.",
+          "I perceived what was needed. Maybe the environment wanted to guide us.",
+          "Nothing worrying. I feel like the universe is offering us a moment of clarity.",
+          "Observation successful. I think this place simply wanted to be seen."
         ],
         "Sentinel": [
-          "Reconnaissance validée. Je vais consigner : zone stable, aucune anomalie.",
-          "Observation complète. Je recommande d’ajouter cette méthode au protocole de surveillance.",
-          "Analyse réussie. Situation conforme, périmètre sécurisé, rapport en cours.",
-          "Rien à signaler. Je note que la procédure improvisée a été étonnamment efficace.",
-          "Repérage effectué. Je classe l’opération dans les inspections exemplaires."
+          "Reconnaissance confirmed. Logging: zone stable, no anomalies.",
+          "Observation complete. I recommend adding this method to the surveillance protocol.",
+          "Analysis successful. Situation within parameters, perimeter secured, report in progress.",
+          "Nothing to report. I note that the improvised procedure was surprisingly effective.",
+          "Scouting complete. Filing this operation under exemplary inspections."
         ],
         "Explorer": [
-          "Ok, j’ai regardé partout et j’ai rien vu. Donc c’est bon, non ?",
-          "J’ai fait un tour, j’ai regardé derrière les trucs… tout est clean.",
-          "Je pensais voir un truc bizarre, mais finalement c’était juste un caillou.",
-          "J’ai exploré un peu au hasard, et ça a marché. Zone tranquille.",
-          "J’ai failli tomber, mais j’ai vu ce qu’il fallait. Recon réussie."
+          "Okay, I looked everywhere and saw nothing. So we're good, right?",
+          "I took a walk, checked behind stuff... all clean.",
+          "I thought I saw something weird, but it turned out to be just a rock.",
+          "I explored around at random, and it worked out. Quiet zone.",
+          "I almost fell, but I saw what mattered. Recon successful."
         ]
       }
     },
     "failure": {
       "perk-and-flawless": {
         "Analyst": [
-          "Reconnaissance échouée. Leur camouflage est si chaotique qu’il défie toute analyse.",
-          "Observation impossible. Statistiquement, j’aurais dû voir quelque chose… n’importe quoi.",
-          "Analyse infructueuse. Je note que leur discrétion repose sur une confusion tenace.",
-          "Rien détecté. Je suppose que l’environnement a décidé de ne rien montrer.",
-          "Repérage raté. Je vais considérer cet incident comme une anomalie perceptive."
+          "Reconnaissance failed. Their camouflage is so chaotic it defies analysis.",
+          "Observation impossible. Statistically, I should have seen something... anything.",
+          "Analysis fruitless. I note their discretion rests on a stubborn confusion.",
+          "Nothing detected. I assume the environment decided to show nothing.",
+          "Scouting failed. I will file this incident as a perceptual anomaly."
         ],
         "Diplomat": [
-          "La zone ne s’est pas révélée… je crois qu’elle traverse une période de fermeture.",
-          "Reconnaissance bloquée. Je ressens beaucoup de tension dans cet espace silencieux.",
-          "Je n’ai rien perçu. Peut‑être que l’environnement n’était pas prêt à s’ouvrir.",
-          "Rien d’inquiétant… ou peut‑être que je n’ai pas su écouter correctement.",
-          "Observation impossible. Je crois que cette zone avait besoin de plus de douceur."
+          "The area didn't reveal itself... I think it's going through a closed-off phase.",
+          "Reconnaissance blocked. I sense a lot of tension in this silent space.",
+          "I perceived nothing. Maybe the environment wasn't ready to open up.",
+          "Nothing worrying... or maybe I just didn't know how to listen properly.",
+          "Observation impossible. I think this place needed more gentleness."
         ],
         "Sentinel": [
-          "Reconnaissance échouée. Je vais consigner : observation non conforme, incident majeur.",
-          "Analyse impossible. Je recommande une révision complète du protocole de surveillance.",
-          "Observation infructueuse. Situation instable, périmètre non validé, rapport d’échec en préparation.",
-          "Rien détecté. Je note que la procédure improvisée n’a pas été productive.",
-          "Repérage non effectué. Je classe l’opération dans les inspections à risque élevé."
+          "Reconnaissance failed. Logging: observation out of parameters, major incident.",
+          "Analysis impossible. I recommend a full review of the surveillance protocol.",
+          "Observation fruitless. Situation unstable, perimeter not validated, failure report in progress.",
+          "Nothing detected. I note that the improvised procedure was not productive.",
+          "Scouting not completed. Filing this operation under high-risk inspections."
         ],
         "Explorer": [
-          "Bon, j’ai regardé partout… et j’ai rien vu. Genre vraiment rien.",
-          "J’ai exploré un peu au hasard, mais je crois que j’ai raté un truc important.",
-          "Je pensais voir un truc bizarre, mais j’ai juste vu un caillou. Encore.",
-          "J’ai failli tomber, et du coup j’ai pas vu ce qu’il fallait. Oups.",
-          "J’ai regardé derrière les trucs… mais pas les bons trucs, apparemment."
+          "Well, I looked everywhere... and saw nothing. Like, really nothing.",
+          "I explored around at random, but I think I missed something important.",
+          "I thought I saw something weird, but it was just a rock. Again.",
+          "I almost fell, and because of that I missed what mattered. Oops.",
+          "I checked behind stuff... just not the right stuff, apparently."
         ]
       }
     }

@@ -80,14 +80,14 @@ export class LayoutService {
     const activeIds = new Set<number>();
     this.collectPanelIds(this.root, activeIds);
 
-    // Supprimer les panels qui ne sont plus dans l'arbre
+    // Remove panels that are no longer in the tree
     for (const id of Object.keys(this.panels).map(Number)) {
       if (!activeIds.has(id)) {
         delete this.panels[id];
       }
     }
 
-    // Ajuster le panneau actif si nécessaire
+    // Adjust the active panel if necessary
     if (this.activePanelId && !activeIds.has(this.activePanelId)) {
       this.activePanelId = activeIds.size ? [...activeIds][0] : null;
     }
@@ -208,10 +208,10 @@ focus(direction: 'left' | 'right' | 'up' | 'down') {
   const path = this.findPath(this.root, this.activePanelId);
   if (!path) return;
 
-  // le leaf actif est le dernier élément
+  // the active leaf is the last element
   const leaf = path[path.length - 1];
 
-  // remonter dans l’arbre
+  // walk back up the tree
   for (let i = path.length - 2; i >= 0; i--) {
     const parent = path[i];
     const sibling = this.getSibling(leaf, parent, direction);

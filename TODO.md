@@ -1,96 +1,96 @@
-# TODO — MVP Base du jeu
+# TODO — MVP Game Foundation
 
-## Issues terminées ✅
+## Completed issues ✅
 
-Ces issues peuvent être marquées comme fermées.
+These issues can be marked as closed.
 
 | Issue | Notes |
 |---|---|
-| Initialisation du frontend Angular (UI console-like) | Thème console, composants, layout tmux-like |
-| Modèle de recrue | Interface `Recruit` avec `id`, `name`, `stats` (PHY/MEN/SOC à 0/3/5) |
-| Structure de mission : avant → événement → retour | Phases EN_ROUTE → EVENEMENT → RETOUR → TERMINEE avec timer |
-| Lancement d'une mission | Commande `mission start <id> <recruitId>`, garde contre recrue déjà en mission |
-| Suivi des missions en cours | Barre ASCII + phase dans MissionDetail et Dashboard |
-| Logs narratifs (IA + recrues) | Pool aléatoire par phase, voix [IA] et [RECRUE] |
-| Interface console-like : dashboard | Vue globale avec compteurs, missions actives, recrues disponibles |
-| Interface console-like : recrues | Liste (statut Available/In Mission) + détail avec barres de stats |
-| Interface console-like : missions disponibles | Tableau avec statut, progression, recrue assignée |
-| Interface console-like : missions en cours | Panel MissionDetail avec barre ASCII et phases |
-| Interface console-like : logs | Log global (start/end) + logs détaillés par mission |
+| Angular frontend initialization (console-like UI) | Console theme, components, tmux-like layout |
+| Recruit model | `Recruit` interface with `id`, `name`, `stats` (PHY/MEN/SOC at 0/3/5) |
+| Mission structure: before → event → return | EN_ROUTE → EVENT → RETURN → COMPLETED phases with timer |
+| Launching a mission | `mission start <id> <recruitId>` command, guard against a recruit already on a mission |
+| Tracking missions in progress | ASCII bar + phase in MissionDetail and Dashboard |
+| Narrative logs (AI + recruits) | Random pool per phase, [IA] and [RECRUIT] voices |
+| Console-like interface: dashboard | Overview with counters, active missions, available recruits |
+| Console-like interface: recruits | List (Available/In Mission status) + detail with stat bars |
+| Console-like interface: available missions | Table with status, progress, assigned recruit |
+| Console-like interface: missions in progress | MissionDetail panel with ASCII bar and phases |
+| Console-like interface: logs | Global log (start/end) + detailed logs per mission |
 
 ---
 
-## Issues partiellement complètes ⚠️
+## Partially complete issues ⚠️
 
-Ces issues ont une base fonctionnelle en frontend mais nécessitent un vrai backend pour être considérées closes.
+These issues have a working frontend base but need a real backend to be considered closed.
 
-| Issue | Ce qui manque |
+| Issue | What's missing |
 |---|---|
-| Logs techniques | Les logs [SYS] existent mais ne détaillent pas les jets de dés (car les jets n'existent pas encore) |
-| Initialisation du backend Node.js | Le projet Express existe (`server/index.js`) mais n'a aucune route — à connecter quand la DB est prête |
+| Technical logs | [SYS] logs exist but don't detail dice rolls (since rolls don't exist yet) |
+| Node.js backend initialization | The Express project exists (`server/index.js`) but has no routes — needs to be wired up once the DB is ready |
 
 ---
 
-## Prochaines étapes par bloc
+## Next steps by block
 
-### Bloc 1 — Système de jeu (logique pure, frontend)
-Ces trois issues forment un bloc indépendant qui peut être fait sans backend.
+### Block 1 — Game system (pure logic, frontend)
+These three issues form an independent block that can be done without a backend.
 
-1. **Système de jets : table des dés**
-   - Définir la correspondance stat → nombre de dés (ex. stat 0 = 0d6, stat 5 = 2d6, stat 10 = 3d6)
-   - Implémenter `rollDice(stat: number): number` dans un service dédié
+1. **Roll system: dice table**
+   - Define the stat → number of dice mapping (e.g. stat 0 = 0d6, stat 5 = 2d6, stat 10 = 3d6)
+   - Implement `rollDice(stat: number): number` in a dedicated service
 
-2. **Système de jets : résolution**
-   - À la phase EVENEMENT : lancer `1d20 + rollDice(stat)` et comparer au DC de la mission
-   - Stocker le résultat dans `MissionState`
-   - Ajouter le DC et la stat utilisée au modèle Mission
+2. **Roll system: resolution**
+   - During the EVENT phase: roll `1d20 + rollDice(stat)` and compare it to the mission's DC
+   - Store the result in `MissionState`
+   - Add the DC and the stat used to the Mission model
 
-3. **Mort / survie des recrues**
-   - Si jet < DC : marquer la recrue comme morte dans `GameService`
-   - Émettre un log [SYS] de mort et un log [RECRUE] de dernière parole
-   - Empêcher une recrue morte d'être assignée à une nouvelle mission
+3. **Recruit death / survival**
+   - If the roll < DC: mark the recruit as dead in `GameService`
+   - Emit a death [SYS] log and a last-words [RECRUIT] log
+   - Prevent a dead recruit from being assigned to a new mission
 
-### Bloc 2 — Recrues dynamiques (frontend)
-Dépend du Bloc 1 pour l'état (mort/vivant).
+### Block 2 — Dynamic recruits (frontend)
+Depends on Block 1 for state (dead/alive).
 
-4. **Génération de candidats**
-   - Générer N candidats avec des noms aléatoires et stats (0, 3, 5 réparties aléatoirement)
-   - Commande `candidate list` + panel CandidateList
+4. **Candidate generation**
+   - Generate N candidates with random names and stats (0, 3, 5 distributed randomly)
+   - `candidate list` command + CandidateList panel
 
-5. **Interface console-like : candidats**
-   - Panel d'affichage des candidats disponibles avec leurs stats
+5. **Console-like interface: candidates**
+   - Panel displaying available candidates with their stats
 
-6. **Recrutement de recrues**
-   - Commande `recruit hire <candidateId>` : transfère le candidat dans la liste des recrues
+6. **Recruiting recruits**
+   - `recruit hire <candidateId>` command: moves the candidate into the recruits list
 
-### Bloc 3 — Backend et persistance
-Dépend des Blocs 1 et 2 pour connaître le schéma final.
+### Block 3 — Backend and persistence
+Depends on Blocks 1 and 2 to know the final schema.
 
-7. **Schéma PostgreSQL minimal**
-   - Tables : `recruits`, `missions_active`, `missions_logs`, `config`
-   - Migrations versionnées
+7. **Minimal PostgreSQL schema**
+   - Tables: `recruits`, `missions_active`, `missions_logs`, `config`
+   - Versioned migrations
 
-8. **Système de temps réel : stockage du timestamp**
-   - Stocker `last_updated_at` par session/joueur en base
+8. **Real-time system: storing the timestamp**
+   - Store `last_updated_at` per session/player in the database
 
-9. **Système de temps réel : calcul du delta**
-   - Au chargement : calculer `Date.now() - last_updated_at`
+9. **Real-time system: delta calculation**
+   - On load: compute `Date.now() - last_updated_at`
 
-10. **Système de temps réel : rattrapage du temps**
-    - Rejouer les ticks manquants pour les missions en cours au retour du joueur
+10. **Real-time system: time catch-up**
+    - Replay missed ticks for missions in progress when the player returns
 
-11. **Routes backend Node.js**
-    - `GET /state` : état complet (recrues, missions, logs)
+11. **Node.js backend routes**
+    - `GET /state`: full state (recruits, missions, logs)
     - `POST /mission/start`, `POST /mission/stop`
     - `GET /missions/:id/logs`
 
-### Bloc 4 — DevOps
-À faire en dernier, quand le backend est fonctionnel.
+### Block 4 — DevOps
+To be done last, once the backend is functional.
 
-12. **Lecture des missions depuis config.json**
-    - Déplacer les missions hardcodées vers `server/config.json`
-    - Route `GET /config/missions` consommée par le frontend
+12. **Reading missions from config.json**
+    - Move hardcoded missions to `server/config.json`
+    - `GET /config/missions` route consumed by the frontend
 
-13. **Containerisation avec Podman**
-    - Podmanfile multi-stage pour frontend et backend
-    - Exposition des ports configurables via `.env`
+13. **Containerization with Podman**
+    - Multi-stage Podmanfile for frontend and backend
+    - Configurable ports exposed via `.env`

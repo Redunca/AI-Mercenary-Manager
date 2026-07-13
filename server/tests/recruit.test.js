@@ -86,13 +86,13 @@ describe('rowToCandidate', () => {
 describe('rowToRecruit', () => {
   test('maps a database row to the recruit shape', () => {
     const row = {
-      id: 7, name: 'Kade', job_title: 'Soldat d\'élite', personality: 'Analyst',
+      id: 7, name: 'Kade', job_title: 'Elite Soldier', personality: 'Analyst',
       attributes: { might: 5 }, hp: 10, max_hp: 22, status: 'available',
       perks: [], flaws: [{ name: 'Clumsy' }],
     };
 
     expect(rowToRecruit(row)).toEqual({
-      id: '7', name: 'Kade', jobTitle: 'Soldat d\'élite', personality: 'Analyst',
+      id: '7', name: 'Kade', jobTitle: 'Elite Soldier', personality: 'Analyst',
       attributes: { might: 5 }, hp: 10, maxHp: 22, status: 'available',
       perks: [], flaws: [{ name: 'Clumsy' }],
     });

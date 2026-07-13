@@ -3,64 +3,64 @@
     "success": {
       "perk-and-flawless": {
         "Analyst": [
-          "Intimidation réussie. Leur seuil de résistance était… conceptuellement décoratif.",
-          "Menace perçue. Statistiquement, ils auraient dû tenir au moins trois secondes de plus.",
-          "Autorité imposée. Je note que leur courage repose sur des fondations purement théoriques.",
-          "Pression appliquée. Je propose qu’on classe leur réaction dans ‘effondrement prévisible’.",
-          "Domination établie. Leur volonté s’est dissoute avec une efficacité presque scientifique."
+          "Intimidation successful. Their resistance threshold was... conceptually decorative.",
+          "Threat registered. Statistically, they should have held out at least three more seconds.",
+          "Authority imposed. I note that their courage rests on purely theoretical foundations.",
+          "Pressure applied. I propose we file their reaction under 'predictable collapse'.",
+          "Dominance established. Their will dissolved with almost scientific efficiency."
         ],
         "Diplomat": [
-          "Ils ont cédé… je crois qu’ils avaient juste besoin qu’on leur parle fermement.",
-          "La tension s’est apaisée. Je ressens une étrange harmonie dans leur capitulation.",
-          "Ils ont compris notre position. Peut‑être que l’univers voulait qu’ils lâchent prise.",
-          "La confrontation s’est résolue. Je crois que nous avons trouvé une paix… musclée.",
-          "Ils ont reculé. Je sens que cette énergie forte a finalement apporté de la clarté."
+          "They gave in... I think they just needed someone to speak to them firmly.",
+          "The tension eased. I sense a strange harmony in their surrender.",
+          "They understood our position. Maybe the universe wanted them to let go.",
+          "The confrontation resolved itself. I think we found a peace... a forceful one.",
+          "They backed down. I feel like that strong energy finally brought some clarity."
         ],
         "Sentinel": [
-          "Intimidation validée. Je vais consigner : pression conforme, réaction attendue.",
-          "Menace perçue. Je recommande d’ajouter cette méthode au protocole de dissuasion.",
-          "Autorité imposée. Intervention réussie, situation stabilisée, rapport en cours.",
-          "Pression appliquée. Je note que la procédure improvisée a été étonnamment efficace.",
-          "Domination établie. Je classe l’opération dans les actions de dissuasion exemplaires."
+          "Intimidation confirmed. Logging: pressure within parameters, expected reaction.",
+          "Threat registered. I recommend adding this method to the deterrence protocol.",
+          "Authority imposed. Intervention successful, situation stabilized, report in progress.",
+          "Pressure applied. I note that the improvised procedure was surprisingly effective.",
+          "Dominance established. Filing this operation under exemplary deterrence actions."
         ],
         "Explorer": [
-          "Ok, j’ai juste fait un gros ‘BOUH’ et ils ont paniqué. Trop facile.",
-          "J’ai crié un truc au hasard, et ils ont reculé direct. Je suis impressionnant.",
-          "Je pensais que ça allait être drôle, mais ça a surtout super bien marché.",
-          "J’ai fait une pose stylée, et ils ont flippé. Je devrais faire ça plus souvent.",
-          "Je sais pas ce que j’ai fait, mais ça les a calmés. Talent naturel, j’imagine."
+          "Okay, I just yelled a big 'BOO' and they panicked. Too easy.",
+          "I shouted something random, and they backed off instantly. I'm impressive.",
+          "I thought it'd be funny, but mostly it just worked really well.",
+          "I struck a cool pose, and they freaked out. I should do that more often.",
+          "No idea what I did, but it calmed them down. Natural talent, I guess."
         ]
       }
     },
     "failure": {
       "perk-and-flawless": {
         "Analyst": [
-          "Intimidation échouée. Leur résistance est… étonnamment irrationnelle.",
-          "Menace ignorée. Statistiquement, ils auraient dû au moins hésiter.",
-          "Autorité non imposée. Je note que leur courage repose sur une illusion tenace.",
-          "Pression inefficace. Je suppose que leur esprit a décidé de ne rien comprendre.",
-          "Domination non établie. Je vais considérer cet incident comme une anomalie comportementale."
+          "Intimidation failed. Their resistance is... surprisingly irrational.",
+          "Threat ignored. Statistically, they should have at least hesitated.",
+          "Authority not imposed. I note that their courage rests on a stubborn illusion.",
+          "Pressure ineffective. I assume their mind decided to understand nothing.",
+          "Dominance not established. Filing this incident as a behavioral anomaly."
         ],
         "Diplomat": [
-          "Ils n’ont pas cédé… je crois qu’ils traversent une période de grande affirmation.",
-          "La tension n’a pas bougé. Je ressens beaucoup de résistance émotionnelle.",
-          "Ils ont tenu bon. Peut‑être que leur cœur n’était pas prêt à lâcher prise.",
-          "La confrontation n’a rien donné. Je sens que l’univers voulait qu’on soit plus doux.",
-          "Ils n’ont pas reculé. Je crois qu’ils avaient besoin d’un autre type d’énergie."
+          "They didn't give in... I think they're going through a phase of real self-assertion.",
+          "The tension didn't shift. I sense a lot of emotional resistance.",
+          "They held firm. Maybe their heart wasn't ready to let go.",
+          "The confrontation went nowhere. I feel like the universe wanted us to be gentler.",
+          "They didn't back down. I think they needed a different kind of energy."
         ],
         "Sentinel": [
-          "Intimidation échouée. Je vais consigner : pression non conforme, incident majeur.",
-          "Menace ignorée. Je recommande une révision complète du protocole de dissuasion.",
-          "Autorité non imposée. Intervention ratée, situation instable, rapport d’échec en préparation.",
-          "Pression inefficace. Je note que la procédure improvisée n’a pas été productive.",
-          "Domination non établie. Je classe l’action dans les échecs à risque élevé."
+          "Intimidation failed. Logging: pressure out of parameters, major incident.",
+          "Threat ignored. I recommend a full review of the deterrence protocol.",
+          "Authority not imposed. Intervention failed, situation unstable, failure report in progress.",
+          "Pressure ineffective. I note that the improvised procedure was not productive.",
+          "Dominance not established. Filing this action under high-risk failures."
         ],
         "Explorer": [
-          "Bon, j’ai crié, j’ai gesticulé… et ils ont juste rigolé. Pas top.",
-          "J’ai fait une pose stylée, mais ils n’ont pas eu peur du tout.",
-          "Je pensais que ça allait les impressionner, mais ça les a juste énervés.",
-          "J’ai tenté un ‘BOUH’, mais c’était vraiment nul. Je prends note.",
-          "Wow, ils sont beaucoup plus courageux que prévu. Je vais devoir crier plus fort."
+          "Well, I yelled, I flailed around... and they just laughed. Not great.",
+          "I struck a cool pose, but they weren't scared at all.",
+          "I thought it would impress them, but it just annoyed them.",
+          "I tried a 'BOO', but it was really lame. Noted.",
+          "Wow, they're way braver than expected. I'm going to have to yell louder."
         ]
       }
     }

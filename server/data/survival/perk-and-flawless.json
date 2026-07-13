@@ -3,64 +3,64 @@
     "success": {
       "perk-and-flawless": {
         "Analyst": [
-          "Survie assurée. Leur environnement hostile repose sur des principes… étonnamment simplistes.",
-          "Menace évitée. Statistiquement, nous aurions dû rencontrer au moins un danger réel.",
-          "Situation stabilisée. Je note que la nature semble fonctionner en mode ‘bêta instable’.",
-          "Péril contourné. Je propose qu’on classe cet incident dans ‘risque surestimé’.",
-          "Zone sécurisée. Leur conception du danger est un hommage involontaire à la panique irrationnelle."
+          "Survival ensured. Their hostile environment operates on... surprisingly simplistic principles.",
+          "Threat avoided. Statistically, we should have encountered at least one real danger.",
+          "Situation stabilized. I note that nature seems to be running in 'unstable beta' mode.",
+          "Peril bypassed. I propose we file this incident under 'overestimated risk'.",
+          "Zone secured. Their conception of danger is an unintentional tribute to irrational panic."
         ],
         "Diplomat": [
-          "Nous avons traversé l’épreuve… je crois que l’environnement voulait nous laisser passer.",
-          "La nature s’est apaisée autour de nous. Je ressens une belle harmonie dans ce moment.",
-          "Le danger s’est dissipé. Peut‑être que l’univers voulait nous offrir une seconde chance.",
-          "La situation s’est éclaircie. Je sens que cette épreuve nous a rapprochés de quelque chose.",
-          "Nous sommes en sécurité. Je crois que cette zone cherchait simplement à nous tester avec douceur."
+          "We made it through the ordeal... I think the environment wanted to let us pass.",
+          "Nature calmed around us. I sense a lovely harmony in this moment.",
+          "The danger dissipated. Maybe the universe wanted to offer us a second chance.",
+          "The situation cleared up. I feel like this ordeal brought us closer to something.",
+          "We're safe. I think this place simply wanted to test us gently."
         ],
         "Sentinel": [
-          "Survie validée. Je vais consigner : menace évitée, protocole respecté autant que possible.",
-          "Situation stabilisée. Je recommande d’ajouter cette méthode au manuel de survie.",
-          "Péril contourné. Intervention conforme, aucun incident majeur, rapport en cours.",
-          "Zone sécurisée. Je note que la procédure improvisée a été étonnamment efficace.",
-          "Menace neutralisée. Je classe l’opération dans les actions de survie exemplaires."
+          "Survival confirmed. Logging: threat avoided, protocol followed as closely as possible.",
+          "Situation stabilized. I recommend adding this method to the survival manual.",
+          "Peril bypassed. Intervention within parameters, no major incident, report in progress.",
+          "Zone secured. I note that the improvised procedure was surprisingly effective.",
+          "Threat neutralized. Filing this operation under exemplary survival actions."
         ],
         "Explorer": [
-          "Ok, j’ai couru, j’ai sauté, j’ai crié… et ça a marché. Je suis vivant.",
-          "J’ai improvisé un chemin, et apparemment c’était le bon. Trop facile.",
-          "Je pensais que ça allait être super dangereux, mais finalement c’était fun.",
-          "J’ai failli tomber trois fois, mais je suis là. Victoire.",
-          "J’ai fait n’importe quoi, et ça a fonctionné. Je suis un survivant naturel."
+          "Okay, I ran, I jumped, I screamed... and it worked. I'm alive.",
+          "I improvised a path, and apparently it was the right one. Too easy.",
+          "I thought it'd be super dangerous, but it turned out to be fun.",
+          "I almost fell three times, but I'm still here. Victory.",
+          "I just did whatever, and it worked. I'm a natural-born survivor."
         ]
       }
     },
     "failure": {
       "perk-and-flawless": {
         "Analyst": [
-          "Survie compromise. Leur environnement hostile est si chaotique qu’il défie toute analyse.",
-          "Menace non évitée. Statistiquement, nous aurions dû repérer ce danger… mais non.",
-          "Situation instable. Je note que la nature semble fonctionner en mode ‘erreur critique’.",
-          "Péril non contourné. Je suppose que l’environnement a décidé d’être imprévisible.",
-          "Zone non sécurisée. Je vais considérer cet incident comme une anomalie environnementale."
+          "Survival compromised. Their hostile environment is so chaotic it defies analysis.",
+          "Threat not avoided. Statistically, we should have spotted that danger... but no.",
+          "Situation unstable. I note that nature seems to be running in 'critical error' mode.",
+          "Peril not bypassed. I assume the environment decided to be unpredictable.",
+          "Zone not secured. I will file this incident as an environmental anomaly."
         ],
         "Diplomat": [
-          "Nous n’avons pas traversé l’épreuve… je crois que l’environnement était en colère.",
-          "La nature s’est refermée sur nous. Je ressens beaucoup de tension dans l’air.",
-          "Le danger n’a pas voulu se dissiper. Peut‑être que l’univers voulait nous ralentir.",
-          "La situation s’est assombrie. Je sens que cette épreuve demandait plus de douceur.",
-          "Nous ne sommes pas en sécurité. Je crois que cette zone traverse une période difficile."
+          "We didn't make it through the ordeal... I think the environment was angry.",
+          "Nature closed in on us. I sense a lot of tension in the air.",
+          "The danger refused to dissipate. Maybe the universe wanted to slow us down.",
+          "The situation grew darker. I feel like this ordeal needed more gentleness.",
+          "We're not safe. I think this place is going through a rough patch."
         ],
         "Sentinel": [
-          "Survie échouée. Je vais consigner : menace non évitée, incident majeur.",
-          "Situation instable. Je recommande une révision complète du protocole de survie.",
-          "Péril non contourné. Intervention ratée, risque accru, rapport d’échec en préparation.",
-          "Zone non sécurisée. Je note que la procédure improvisée n’a pas été productive.",
-          "Menace persistante. Je classe l’opération dans les actions de survie à risque élevé."
+          "Survival failed. Logging: threat not avoided, major incident.",
+          "Situation unstable. I recommend a full review of the survival protocol.",
+          "Peril not bypassed. Intervention failed, increased risk, failure report in progress.",
+          "Zone not secured. I note that the improvised procedure was not productive.",
+          "Threat persisting. Filing this operation under high-risk survival actions."
         ],
         "Explorer": [
-          "Bon, j’ai couru, j’ai sauté… et je me suis vautré. Pas top.",
-          "J’ai improvisé un chemin, mais c’était clairement le mauvais.",
-          "Je pensais que ça allait être fun, mais c’était surtout dangereux.",
-          "J’ai failli tomber trois fois… et la quatrième fois j’ai pas failli.",
-          "J’ai fait n’importe quoi, et ça n’a pas du tout fonctionné. Oups."
+          "Well, I ran, I jumped... and I face-planted. Not great.",
+          "I improvised a path, but it was clearly the wrong one.",
+          "I thought it'd be fun, but it was mostly just dangerous.",
+          "I almost fell three times... and the fourth time I didn't 'almost'.",
+          "I just did whatever, and it didn't work at all. Oops."
         ]
       }
     }

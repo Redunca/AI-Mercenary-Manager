@@ -87,7 +87,7 @@ export class CommandService {
   routeCommand(input: string, panelId: number) {
     const { command, args } = this.parse(input);
 
-    // 1. commandes locales
+    // 1. local commands
     const panel = this.layout.getPanelById(panelId);
     if (panel?.terminal?.localCommands[command]) {
       panel.terminal.localCommands[command](...args);
@@ -95,14 +95,14 @@ export class CommandService {
       return;
     }
 
-    // 2. commandes globales
+    // 2. global commands
     if (this.globalCommands[command]) {
       this.globalCommands[command](...args);
       panel?.terminal?.setInput('');
       return;
     }
 
-    console.warn("Commande inconnue :", command);
+    console.warn("Unknown command:", command);
   }
 
 
@@ -137,17 +137,17 @@ export class CommandService {
       return;
     }
 
-    console.warn("Option inconnue :", opt);
+    console.warn("Unknown option:", opt);
   }
   private handleFocus(arg: string) {
-    // focus par ID
+    // focus by ID
   const id = Number(arg);
   if (!isNaN(id)) {
     this.layout.setActivePanel(id);
     return;
   }
 
-  // focus directionnel
+  // directional focus
   const dir = arg as 'left' | 'right' | 'up' | 'down';
   this.layout.focus(dir);
   }
@@ -326,7 +326,7 @@ export class CommandService {
         if (args[0]) {
           void this.shopService.buyItem(Number(args[0])).then(result => {
             if (result?.error) {
-              console.warn('Achat échoué :', result.error);
+              console.warn('Purchase failed:', result.error);
               return;
             }
             void this.gameSync.sync().then(() => {
@@ -343,7 +343,7 @@ export class CommandService {
 
   private handleWallet() {
     this.shopService.getWallet().subscribe(wallet => {
-      console.log(`💰 Crédit actuel: ${wallet} ₹`);
+      console.log(`💰 Current credit: ${wallet} ₹`);
     });
   }
 

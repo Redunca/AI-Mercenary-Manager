@@ -1,30 +1,30 @@
 import { TerminalController } from './terminal-controller';
 
-// Bug : dans execute(), history.push(this.input) est appelé après parseFn() qui
-// appelle déjà setInput('') via routeCommand. L'historique enregistre donc des
-// chaînes vides au lieu des commandes saisies. La navigation haut/bas retourne ''.
-describe('TerminalController - historique des commandes', () => {
+// Bug: in execute(), history.push(this.input) was called after parseFn(), which
+// already calls setInput('') via routeCommand. So the history recorded empty
+// strings instead of the entered commands, and up/down navigation returned ''.
+describe('TerminalController - command history', () => {
   let ctrl: TerminalController;
 
   beforeEach(() => {
     ctrl = new TerminalController(1, {});
   });
 
-  it('devrait enregistrer la commande saisie dans l\'historique après exécution', () => {
+  it('should record the entered command in the history after execution', () => {
     ctrl.setInput('mission list');
 
-    // Simule le comportement de routeCommand qui vide l'input avant le retour
+    // Simulates the behavior of routeCommand, which clears the input before returning
     ctrl.execute((input, _panelId) => {
       ctrl.setInput('');
     });
 
     ctrl.historyPrevious();
-    // Avec le bug : retourne '' (input déjà vidé avant history.push)
-    // Comportement attendu : retourner 'mission list'
+    // With the bug: returns '' (input already cleared before history.push)
+    // Expected behavior: return 'mission list'
     expect(ctrl.getInput()).toBe('mission list');
   });
 
-  it('devrait permettre la navigation dans l\'historique avec plusieurs commandes', () => {
+  it('should allow navigating the history across several commands', () => {
     const commands = ['recruit list', 'mission list', 'home'];
 
     for (const cmd of commands) {
@@ -44,7 +44,7 @@ describe('TerminalController - historique des commandes', () => {
     expect(ctrl.getInput()).toBe('recruit list');
   });
 
-  it('historyNext devrait revenir à une entrée vide après la dernière commande', () => {
+  it('historyNext should return to an empty entry after the last command', () => {
     ctrl.setInput('logs');
     ctrl.execute((input, _panelId) => {
       ctrl.setInput('');

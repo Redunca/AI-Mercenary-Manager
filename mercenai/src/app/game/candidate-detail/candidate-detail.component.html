@@ -8,7 +8,7 @@
   <div class="indent-one">"hp"        : {{ candidate.hp }}/{{ candidate.maxHp }},</div>
 
   <div class="indent-one">"attributes" : {{ '{' }}</div>
-  <div class="indent-two">// Physique</div>
+  <div class="indent-two">// Physical</div>
   <div class="indent-two">agility    {{ statBar(candidate.attributes.agility) }}  {{ candidate.attributes.agility }}</div>
   <div class="indent-two">fortitude  {{ statBar(candidate.attributes.fortitude) }}  {{ candidate.attributes.fortitude }}</div>
   <div class="indent-two">might      {{ statBar(candidate.attributes.might) }}  {{ candidate.attributes.might }}</div>
@@ -38,8 +38,8 @@
   <div class="indent-one">]</div>
 </ng-container>
 <ng-template #notFound>
-  <div class="indent-one muted">Candidat introuvable : {{ id }}</div>
+  <div class="indent-one muted">Candidate not found: {{ id }}</div>
 </ng-template>
 <div>{{ '}' }}</div>
-<div class="hint">[ hire ] pour recruter ce candidat ({{ game.recruits.length }}/{{ game.player$.value.maxNumberOfRecruits }})</div>
+<div class="hint">[ hire ] to recruit this candidate ({{ game.recruits.length }}/{{ game.player$.value.maxNumberOfRecruits }})</div>
 <div *ngIf="hireError" class="flaw">{{ hireError }}</div>
