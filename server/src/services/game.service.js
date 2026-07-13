@@ -307,6 +307,23 @@ async function completeMission(client, playerId, instance, template, failed, shi
     await ShipService.updateShipStatus(client, playerId, instance.ship_id, 'docked')
   }
 
+  if (!failed && !instance.reward_forfeited) {
+    const creditsWon = instance.event_results
+      .filter(r => r.rewardEarned?.type === 'CREDITS')
+      .reduce((sum, r) => sum + r.rewardEarned.amount, 0)
+
+    if (creditsWon > 0) {
+      const player = await client.query(
+        'SELECT wallet FROM players WHERE id = $1 FOR UPDATE',
+        [playerId],
+      )
+      await client.query(
+        'UPDATE players SET wallet = $1 WHERE id = $2',
+        [player.rows[0].wallet + creditsWon, playerId],
+      )
+    }
+  }
+
   const shipData = await ShipService.getShip(client, playerId, instance.ship_id)
   const crewNames = shipData?.crew?.length > 0
     ? (await Promise.all(
@@ -427,7 +444,7 @@ async function advanceMission(client, playerId, instance, template, now) {
          WHERE id = $5`,
         [failed, rewardForfeited, currentEventIndex, JSON.stringify(eventResults), instance.id],
       )
-      await completeMission(client, playerId, { ...instance, failed, reward_forfeited: rewardForfeited }, template, true, resolution.shipDestroyed)
+      await completeMission(client, playerId, { ...instance, failed, reward_forfeited: rewardForfeited, event_results: eventResults }, template, true, resolution.shipDestroyed)
       return
     }
   }
@@ -463,7 +480,7 @@ async function advanceMission(client, playerId, instance, template, now) {
        WHERE id = $6`,
       [failed, rewardForfeited, currentEventIndex, JSON.stringify(eventResults), failed ? 'failed' : 'success', instance.id],
     )
-    await completeMission(client, playerId, { ...instance, failed, reward_forfeited: rewardForfeited }, template, failed, false)
+    await completeMission(client, playerId, { ...instance, failed, reward_forfeited: rewardForfeited, event_results: eventResults }, template, failed, false)
     return
   }
 

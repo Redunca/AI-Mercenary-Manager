@@ -34,6 +34,10 @@ export class ShopService {
     return this.http.get<number>('/api/shop/wallet');
   }
 
+  refreshWallet(): void {
+    this.getWallet().subscribe(wallet => this.walletSubject.next(wallet));
+  }
+
   buyItem(itemId: number, quantity: number = 1): Promise<any> {
     return this.http.post(`/api/shop/buy/${itemId}`, { quantity }).toPromise() as Promise<any>;
   }

@@ -89,6 +89,14 @@ function createFakeClient() {
     if (s === 'SELECT * FROM players WHERE id = $1') {
       return { rows: state.players.filter(p => p.id === params[0]) }
     }
+    if (s === 'SELECT wallet FROM players WHERE id = $1 FOR UPDATE') {
+      return { rows: state.players.filter(p => p.id === params[0]).map(p => ({ wallet: p.wallet })) }
+    }
+    if (s === 'UPDATE players SET wallet = $1 WHERE id = $2') {
+      const [wallet, id] = params
+      Object.assign(state.players.find(p => p.id === id), { wallet })
+      return { rows: [] }
+    }
 
     // candidates
     if (s.includes('INSERT INTO candidates')) {
@@ -461,6 +469,9 @@ describe('GameService', () => {
       expect(updated.event_results.every(r => r.success)).toBe(true)
       expect(state.recruits.find(r => r.id === 1).status).toBe('available')
       expect(ShipService.updateShipStatus).toHaveBeenCalledWith(expect.anything(), 1, 1, 'docked')
+
+      const totalReward = updated.event_results.reduce((sum, r) => sum + r.rewardEarned.amount, 0)
+      expect(state.players[0].wallet).toBe(10000 + totalReward)
     })
 
     test('an HP_LOSS failure hurts the recruit but still returns the crew and the ship to base', async () => {
@@ -498,6 +509,7 @@ describe('GameService', () => {
       expect(updated.event_results.at(-1).recruitDied).toBe(true)
       // failed mission without destruction of the ship: it should still return to port
       expect(ShipService.updateShipStatus).toHaveBeenCalledWith(expect.anything(), 1, 1, 'docked')
+      expect(state.players[0].wallet).toBe(10000) // a failed mission earns no credits
     })
 
     test('a FORCED_DEPARTURE failure immediately switches the mission to RETURN phase', async () => {

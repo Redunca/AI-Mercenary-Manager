@@ -21,7 +21,8 @@ export class ShopListComponent implements OnInit {
 
   ngOnInit() {
     this.shopService.getShopItems().subscribe(items => { this.items = items; });
-    this.shopService.getWallet().subscribe(wallet => { this.wallet = wallet; });
+    this.shopService.wallet$.subscribe(wallet => { this.wallet = wallet; });
+    this.shopService.refreshWallet();
   }
 
   registerCommands() {
