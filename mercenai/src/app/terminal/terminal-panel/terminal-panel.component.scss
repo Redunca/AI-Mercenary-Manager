@@ -1,4 +1,4 @@
-.panel {
+.terminal-panel {
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -7,25 +7,26 @@
   padding: 8px;
   border: 1px solid #444;
   background: #111;
-  height: 100%;
+  overflow: hidden;
 }
 
-.panel.active {
+.terminal-panel.active {
   border-color: #13A10E;
 }
 
 .panel-content {
-  //flex: 1;
-  overflow: auto;
-  height: fit-content;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
   min-height: 0;
   min-width: 0;
 }
 
-.panel-command-line {
+.panel-input {
   width: 100%;
   min-height: 0;
   min-width: 0;
+  flex-shrink: 0;
   background: #111;
 
   /* Force flexbox to grow with content, but keep input single-line */

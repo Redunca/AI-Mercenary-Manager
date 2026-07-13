@@ -6,6 +6,7 @@
   background-color: #000;
   color: lightgrey;
   font-family: "Terminus Font", monospace;
+  overflow: hidden; /* la page ne doit jamais scroller, seuls les leaves scrollent */
 }
 
 .window-content {
@@ -13,6 +14,7 @@
   display: flex;
   min-height: 0;
   min-width: 0;
+  overflow: hidden;
 }
 
 .window-footer {
