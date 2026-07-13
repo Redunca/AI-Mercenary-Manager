@@ -28,7 +28,7 @@ export class ShopListComponent implements OnInit {
     return {
       'detail': (id: string) => {
         if (!id) { console.warn('Usage: detail <id>'); return; }
-        this.layout.addPanel(PanelModule.ShopDetail, { id });
+        this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShopDetail, { id });
       },
       'buy': (id: string, qtyStr?: string) => {
         if (!id) { console.warn('Usage: buy <id> [quantité]'); return; }

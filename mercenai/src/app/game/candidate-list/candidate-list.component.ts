@@ -41,7 +41,7 @@ export class CandidateListComponent {
       'refresh': () => { void this.candidateService.generateCandidates(5); },
       'detail': (id: string) => {
         if (!id) { console.warn('Usage: detail <id>'); return; }
-        this.layout.addPanel(PanelModule.CandidateDetail, { id });
+        this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.CandidateDetail, { id });
       },
     };
   }

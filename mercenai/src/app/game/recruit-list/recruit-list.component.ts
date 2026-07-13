@@ -32,7 +32,7 @@ export class RecruitListComponent {
     return {
       'detail': (id: string) => {
         if (!id) { console.warn('Usage: detail <id>'); return; }
-        this.layout.addPanel(PanelModule.RecruitDetail, { id });
+        this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.RecruitDetail, { id });
       }
     };
   }

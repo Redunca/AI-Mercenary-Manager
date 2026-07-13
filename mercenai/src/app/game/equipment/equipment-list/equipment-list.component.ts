@@ -26,7 +26,7 @@ export class EquipmentListComponent implements OnInit {
     return {
       'detail': (id: string) => {
         if (!id) { console.warn('Usage: detail <id>'); return; }
-        this.layout.addPanel(PanelModule.EquipmentDetail, { id });
+        this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.EquipmentDetail, { id });
       }
     };
   }
