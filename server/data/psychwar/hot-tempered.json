@@ -3,56 +3,56 @@
     "success": {
       "hot-tempered": {
         "Analyst": [
-          "Influence mentale établie. Une explosion de colère non planifiée a produit l’effet recherché, par accident.",
-          "Pression psychologique réussie. Je note que la rage affichée a été plus efficace qu’une approche calculée.",
-          "Domination mentale obtenue. L’intensité émotionnelle involontaire a créé une pression difficile à anticiper.",
-          "Contrôle émotionnel acquis. Statistiquement, cette méthode aurait dû échouer. Elle a fonctionné malgré tout."
+          "Mental influence established. An unplanned outburst of anger produced the intended effect, by accident.",
+          "Psychological pressure successful. I note the displayed rage was more effective than a calculated approach.",
+          "Mental domination obtained. The unintentional emotional intensity created pressure hard to anticipate.",
+          "Emotional control achieved. Statistically, this method should have failed. It worked anyway."
         ],
         "Diplomat": [
-          "Ils ont cédé face à une colère brute qu’il n’a même pas cherché à contrôler. C’est troublant, mais efficace.",
-          "La tension intérieure s’est brisée sous un éclat de rage soudain. Je ne suis pas sûre d’approuver la méthode.",
-          "Nous avons touché quelque chose en eux, presque malgré lui. Sa colère a parlé plus fort que ses mots.",
-          "Leur résistance s’est dissoute face à une intensité qu’il ne maîtrisait pas vraiment lui-même."
+          "They yielded to a raw anger he didn't even try to control. Unsettling, but effective.",
+          "The inner tension broke under a sudden burst of rage. I'm not sure I approve of the method.",
+          "We touched something in them, almost despite him. His anger spoke louder than his words.",
+          "Their resistance dissolved before an intensity he himself didn't really control."
         ],
         "Sentinel": [
-          "Pression mentale validée. Note : perte de contrôle émotionnel de l’opérateur, résultat conforme malgré tout.",
-          "Influence psychologique obtenue via une explosion de colère non autorisée par le protocole.",
-          "Domination mentale établie. Je recommande néanmoins un encadrement de la gestion émotionnelle de l’opérateur.",
-          "Impact psychique confirmé. Rapport : méthode instable, résultat favorable, risque à surveiller."
+          "Mental pressure validated. Note: emotional loss of control by the operator, result conforms regardless.",
+          "Psychological influence obtained through an outburst of anger not authorized by protocol.",
+          "Mental domination established. I nonetheless recommend oversight of the operator's emotional management.",
+          "Psychic impact confirmed. Report: unstable method, favorable result, risk to monitor."
         ],
         "Explorer": [
-          "J’ai complètement pété un câble et ils ont flippé direct. Efficace, mais je contrôlais rien du tout.",
-          "J’ai crié tellement fort que même moi j’étais surpris. Et ça a marché.",
-          "Ma colère est sortie toute seule, et apparemment c’était exactement ce qu’il fallait.",
-          "Je me suis énervé pour de vrai, pas pour la stratégie. Et ça a suffi à les briser."
+          "I completely lost it and they freaked out immediately. Effective, but I had zero control.",
+          "I yelled so loud even I was surprised. And it worked.",
+          "My anger just came out on its own, and apparently that's exactly what was needed.",
+          "I got genuinely mad, not strategically. And that was enough to break them."
         ]
       }
     },
     "failure": {
       "hot-tempered": {
         "Analyst": [
-          "Influence mentale échouée. La perte de contrôle émotionnel a rendu le discours incohérent et inefficace.",
-          "Pression psychologique inefficace. Je note que la colère affichée a discrédité l’approche entière.",
-          "Domination mentale impossible. L’explosion émotionnelle a été perçue comme une faiblesse, pas une force.",
-          "Contrôle émotionnel non établi. Je consigne : l’instabilité de l’opérateur a compromis l’ensemble de la tentative."
+          "Mental influence failed. The emotional loss of control made the speech incoherent and ineffective.",
+          "Psychological pressure ineffective. I note the displayed anger discredited the entire approach.",
+          "Mental domination impossible. The emotional outburst was perceived as weakness, not strength.",
+          "Emotional control not established. I record: the operator's instability compromised the entire attempt."
         ],
         "Diplomat": [
-          "Ils n’ont pas ouvert leur esprit… sa colère les a effrayés, mais pas de la bonne façon.",
-          "La tension intérieure n’a pas bougé. Je crois qu’ils ont vu de la fragilité derrière cette rage.",
-          "Nous n’avons pas réussi à les toucher. Sa colère a créé une distance, pas une connexion.",
-          "Leur résistance est restée intacte, renforcée par un éclat qu’ils n’ont pas pris au sérieux."
+          "They didn't open their mind... his anger scared them, but not in the right way.",
+          "The inner tension hasn't shifted. I think they saw fragility behind that rage.",
+          "We failed to reach them. His anger created distance, not connection.",
+          "Their resistance stayed intact, reinforced by an outburst they didn't take seriously."
         ],
         "Sentinel": [
-          "Pression mentale échouée. Je vais consigner : perte de contrôle émotionnel ayant discrédité l’opération.",
-          "Influence psychologique refusée. Rapport : instabilité de l’opérateur perçue comme une faiblesse par la cible.",
-          "Domination mentale impossible. Je recommande un retrait de ce profil des opérations de pression psychologique.",
-          "Impact psychique nul. L’explosion émotionnelle a compromis toute crédibilité de l’approche."
+          "Mental pressure failed. Logging: emotional loss of control that discredited the operation.",
+          "Psychological influence rejected. Report: the operator's instability perceived as weakness by the target.",
+          "Mental domination impossible. I recommend removing this profile from psychological pressure operations.",
+          "Psychic impact nil. The emotional outburst compromised all credibility of the approach."
         ],
         "Explorer": [
-          "Je me suis énervé pour de vrai, et ils ont juste vu que j’avais perdu le contrôle. Pas convaincant du tout.",
-          "J’ai crié, et ils ont juste rigolé de moi. Ça a clairement pas marché.",
-          "Ma colère est sortie n’importe comment, et ça les a pas du tout impressionnés.",
-          "Bon, j’ai explosé pour rien cette fois. Zéro effet, beaucoup de honte."
+          "I got genuinely mad, and they just saw that I'd lost control. Not convincing at all.",
+          "I yelled, and they just laughed at me. That clearly didn't work.",
+          "My anger came out all wrong, and it didn't impress them one bit.",
+          "Well, I blew up for nothing this time. Zero effect, plenty of shame."
         ]
       }
     }

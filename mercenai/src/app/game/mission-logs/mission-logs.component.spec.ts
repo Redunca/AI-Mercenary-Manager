@@ -6,10 +6,10 @@ import { LogEntry } from '../../models/log';
 
 const MOCK_LOGS: Record<number, LogEntry[]> = {
   1: [
-    { tag: '[SYS]', message: 'Départ confirmé.', missionId: 1 },
-    { tag: '[IA]', message: 'Aucune anomalie détectée.', missionId: 1 },
-    { tag: '[KADE]', message: '"On y va."', missionId: 1 },
-    { tag: '[VEX→KADE]', message: 'Vex lève les yeux au ciel.', missionId: 1 },
+    { tag: '[SYS]', message: 'Departure confirmed.', missionId: 1 },
+    { tag: '[IA]', message: 'No anomaly detected.', missionId: 1 },
+    { tag: '[KADE]', message: '"Let\'s go."', missionId: 1 },
+    { tag: '[VEX→KADE]', message: 'Vex rolls their eyes.', missionId: 1 },
   ],
 };
 

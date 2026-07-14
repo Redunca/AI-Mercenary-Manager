@@ -3,56 +3,56 @@
     "success": {
       "cowardly": {
         "Analyst": [
-          "Observation réussie, effectuée à une distance de sécurité largement supérieure au nécessaire. Efficace malgré tout.",
-          "Zone analysée depuis une position de repli anticipée. La prudence excessive n’a pas nui à la précision.",
-          "Reconnaissance complète malgré trois arrêts par peur d’être repéré. Résultat conforme.",
-          "Repérage effectué. Je consigne : l’excès de prudence a peut-être évité une exposition inutile."
+          "Observation successful, conducted from a safety distance far greater than necessary. Effective nonetheless.",
+          "Zone analyzed from an anticipated fallback position. Excessive caution didn't hurt precision.",
+          "Reconnaissance complete despite three stops out of fear of being spotted. Result conforms.",
+          "Scouting done. I record: excess caution may have avoided unnecessary exposure."
         ],
         "Diplomat": [
-          "La zone s’est révélée à lui… depuis loin, très loin, mais il a quand même tout vu. C’est déjà beaucoup.",
-          "Reconnaissance harmonieuse, malgré une peur palpable à chaque mouvement. Il a tenu bon.",
-          "J’ai perçu ce qu’il fallait, à distance respectueuse de son propre confort. Je comprends ce besoin.",
-          "Observation réussie. Sa peur ne l’a pas empêché d’accomplir sa tâche, juste de le faire différemment."
+          "The zone revealed itself to him... from far, very far away, but he still saw everything. That's already a lot.",
+          "Reconnaissance went smoothly, despite palpable fear at every movement. He held on.",
+          "I perceived what was needed, at a distance respectful of his own comfort. I understand that need.",
+          "Observation successful. His fear didn't stop him from completing his task, just from doing it differently."
         ],
         "Sentinel": [
-          "Reconnaissance validée. Note : distance opérationnelle excessive observée, sans impact sur le résultat final.",
-          "Observation complète malgré une nervosité manifeste de l’opérateur tout au long de la mission.",
-          "Analyse réussie depuis une position de repli non planifiée mais efficace.",
-          "Repérage effectué. Rapport : opération réussie en dépit d’un stress opérationnel élevé."
+          "Reconnaissance validated. Note: excessive operational distance observed, no impact on the final result.",
+          "Observation complete despite the operator's obvious nervousness throughout the mission.",
+          "Analysis successful from an unplanned but effective fallback position.",
+          "Scouting done. Report: operation successful despite high operational stress."
         ],
         "Explorer": [
-          "J’ai regardé de super loin, genre vraiment loin, mais j’ai quand même tout vu. Ça compte, non ?",
-          "Ok j’étais terrifié à l’idée de m’approcher, mais les jumelles ont fait le travail.",
-          "J’ai failli faire demi-tour plein de fois. Mais j’ai vu ce qu’il fallait quand même.",
-          "Sérieux j’avais la trouille, mais j’ai la reconnaissance qu’il fallait. C’est le principal."
+          "I watched from super far away, like really far, but I still saw everything. That counts, right?",
+          "Okay I was terrified at the thought of getting closer, but the binoculars did the job.",
+          "I almost turned back a bunch of times. But I saw what was needed anyway.",
+          "Seriously I was scared, but I got the recon we needed. That's what matters."
         ]
       }
     },
     "failure": {
       "cowardly": {
         "Analyst": [
-          "Reconnaissance échouée. La distance excessive maintenue par peur a rendu l’observation imprécise.",
-          "Observation impossible. Je note un recul prématuré ayant empêché toute analyse détaillée.",
-          "Analyse infructueuse. La peur de l’exposition a directement limité la qualité des données recueillies.",
-          "Repérage raté. Je consigne : trois reculs consécutifs devant des risques mineurs, résultat compromis."
+          "Reconnaissance failed. The excessive distance kept out of fear made the observation imprecise.",
+          "Observation impossible. I note a premature retreat that prevented any detailed analysis.",
+          "Analysis unsuccessful. Fear of exposure directly limited the quality of the data gathered.",
+          "Scouting failed. I record: three consecutive retreats in the face of minor risks, result compromised."
         ],
         "Diplomat": [
-          "La zone ne s’est pas révélée… je crois qu’il n’a pas osé s’approcher assez pour vraiment voir.",
-          "Reconnaissance bloquée. Il a hésité trop longtemps, paralysé par ce qui pourrait mal tourner.",
-          "Je n’ai rien perçu. Sa peur, cette fois, l’a emporté sur sa curiosité pourtant nécessaire.",
-          "Observation impossible. Je crois qu’il avait besoin qu’on le rassure avant de s’approcher davantage."
+          "The zone didn't reveal itself... I think he didn't dare get close enough to really see.",
+          "Reconnaissance blocked. He hesitated too long, paralyzed by what could go wrong.",
+          "I perceived nothing. His fear, this time, won out over his necessary curiosity.",
+          "Observation impossible. I think he needed reassurance before getting any closer."
         ],
         "Sentinel": [
-          "Reconnaissance échouée. Je vais consigner : distance opérationnelle excessive ayant compromis la mission.",
-          "Analyse impossible. Rapport : l’opérateur a interrompu l’approche suite à un stress jugé excessif.",
-          "Observation infructueuse après un retrait précipité de l’opérateur face à un risque limité.",
-          "Repérage non effectué. Je recommande une préparation psychologique avant la prochaine reconnaissance."
+          "Reconnaissance failed. Logging: excessive operational distance that compromised the mission.",
+          "Analysis impossible. Report: the operator halted the approach following stress deemed excessive.",
+          "Observation unsuccessful after a hasty withdrawal by the operator in the face of limited risk.",
+          "Scouting not completed. I recommend psychological preparation before the next reconnaissance."
         ],
         "Explorer": [
-          "J’ai eu trop peur de m’approcher et j’ai rien vu d’utile. Désolé.",
-          "Bon, j’ai paniqué et je suis resté trop loin pour voir quoi que ce soit.",
-          "Je pouvais m’approcher, mais j’ai eu trop les jetons. Du coup, échec total.",
-          "J’ai vu une ombre bizarre et j’ai tout arrêté. C’était probablement rien, en fait."
+          "I got too scared to get closer and saw nothing useful. Sorry.",
+          "Well, I panicked and stayed too far away to see anything.",
+          "I could have gotten closer, but I chickened out too much. Total failure as a result.",
+          "I saw a weird shadow and stopped everything. It was probably nothing, actually."
         ]
       }
     }

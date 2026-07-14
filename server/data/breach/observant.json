@@ -3,56 +3,56 @@
     "success": {
       "observant": {
         "Analyst": [
-          "Intrusion réussie. J’avais manqué cette faille de configuration ; lui l’a repérée en quelques secondes.",
-          "Accès obtenu grâce à un détail que le scan automatique n’avait pas signalé. Notable.",
-          "Connexion établie. Un port mal configuré, invisible pour tout le monde sauf lui, apparemment.",
-          "Données récupérées. Je consigne : l’observation humaine a surpassé l’analyse algorithmique cette fois."
+          "Intrusion successful. I had missed this configuration flaw; he spotted it in seconds.",
+          "Access obtained thanks to a detail the automatic scan hadn't flagged. Notable.",
+          "Connection established. A misconfigured port, invisible to everyone but him, apparently.",
+          "Data retrieved. I record: human observation outperformed algorithmic analysis this time."
         ],
         "Diplomat": [
-          "Le système s’est ouvert… il a vu quelque chose que personne d’autre n’avait remarqué. Un vrai don.",
-          "Accès accordé. Il a cette façon de regarder au-delà de l’évident, et ça a tout changé.",
-          "On est dedans grâce à un détail qu’il a été seul à voir. Je trouve ça presque poétique.",
-          "La porte numérique s’est ouverte parce qu’il a su écouter ce que le système ne disait pas vraiment."
+          "The system opened up... he saw something no one else had noticed. A real gift.",
+          "Access granted. He has this way of looking beyond the obvious, and it changed everything.",
+          "We're in thanks to a detail only he saw. I find that almost poetic.",
+          "The digital door opened because he knew how to hear what the system wasn't really saying."
         ],
         "Sentinel": [
-          "Intrusion validée. Note : vulnérabilité identifiée par observation directe, non répertoriée au préalable.",
-          "Accès obtenu via une faille détectée manuellement. Je recommande d’ajouter cette méthode au protocole.",
-          "Le système a cédé après identification d’un détail négligé par les outils standards.",
-          "Connexion établie. Rapport : capacité d’observation de l’opérateur directement responsable du succès."
+          "Intrusion validated. Note: vulnerability identified through direct observation, not previously catalogued.",
+          "Access obtained via a manually detected flaw. I recommend adding this method to protocol.",
+          "The system gave way after identifying a detail overlooked by standard tools.",
+          "Connection established. Report: the operator's observational skill directly responsible for success."
         ],
         "Explorer": [
-          "J’ai juste remarqué un truc bizarre dans un coin de l’écran, et bingo, on est dedans.",
-          "Y’avait un détail chelou que personne avait vu. Moi si. Voilà, c’est réglé.",
-          "J’ai regardé un peu plus longtemps que d’habitude, et j’ai vu LE truc. Chance ou talent, allez savoir.",
-          "Un petit détail m’a sauté aux yeux, littéralement. Et ça a suffi."
+          "I just noticed something weird in a corner of the screen, and bingo, we're in.",
+          "There was a sketchy detail nobody had seen. I did. There, sorted.",
+          "I looked a bit longer than usual, and I saw THE thing. Luck or skill, who knows.",
+          "A small detail caught my eye, literally. And that was enough."
         ]
       }
     },
     "failure": {
       "observant": {
         "Analyst": [
-          "Échec d’intrusion. Même une observation minutieuse n’a révélé aucune faille exploitable cette fois.",
-          "Le pare-feu a résisté. Je note l’absence de tout détail anormal détectable, malgré une inspection poussée.",
-          "Connexion bloquée. L’examen attentif du système n’a rien révélé d’exploitable.",
-          "Tentative avortée. Je consigne : parfois, il n’y a simplement rien à observer."
+          "Intrusion failed. Even meticulous observation revealed no exploitable flaw this time.",
+          "The firewall held. I note the absence of any detectable anomaly, despite a thorough inspection.",
+          "Connection blocked. Careful examination of the system revealed nothing exploitable.",
+          "Attempt aborted. I record: sometimes, there is simply nothing to observe."
         ],
         "Diplomat": [
-          "Le système m’a rejeté… même son regard aiguisé n’a rien trouvé cette fois. Ça arrive.",
-          "Accès refusé. Il a cherché, vraiment cherché, mais certaines portes restent closes.",
-          "La porte numérique est restée fermée, malgré toute son attention. Je ne lui en veux pas.",
-          "Les données ne se sont pas laissées approcher, même à l’œil le plus attentif."
+          "The system rejected me... even his sharp eye found nothing this time. It happens.",
+          "Access denied. He looked, really looked, but some doors stay shut.",
+          "The digital door stayed shut, despite all his attention. I don't hold it against him.",
+          "The data wouldn't let itself be approached, even to the most attentive eye."
         ],
         "Sentinel": [
-          "Intrusion échouée. Je vais consigner : aucune faille détectable malgré une observation approfondie.",
-          "Accès refusé. Rapport : capacité d’observation de l’opérateur sans effet sur ce système précis.",
-          "Le système a bloqué la tentative, sans qu’aucun détail exploitable n’ait pu être identifié.",
-          "Connexion impossible. Je recommande de considérer ce système comme sans faille observable connue."
+          "Intrusion failed. Logging: no detectable flaw despite thorough observation.",
+          "Access denied. Report: the operator's observational skill had no effect on this particular system.",
+          "The system blocked the attempt, with no exploitable detail identified.",
+          "Connection impossible. I recommend treating this system as having no known observable flaw."
         ],
         "Explorer": [
-          "J’ai tout regardé, genre vraiment tout, et j’ai rien vu d’utile. Ça arrive.",
-          "D’habitude je repère toujours un truc. Là, rien. Nada.",
-          "J’ai cherché le petit détail habituel. Il était pas là cette fois.",
-          "Bon, même moi j’ai des limites, apparemment. Rien à signaler."
+          "I looked at everything, like really everything, and saw nothing useful. It happens.",
+          "I usually always spot something. This time, nothing. Nada.",
+          "I looked for the usual little detail. It wasn't there this time.",
+          "Well, even I have limits, apparently. Nothing to report."
         ]
       }
     }

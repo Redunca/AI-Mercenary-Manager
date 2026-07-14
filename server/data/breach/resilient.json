@@ -3,56 +3,56 @@
     "success": {
       "resilient": {
         "Analyst": [
-          "Intrusion réussie. Trois retours de choc électrique encaissés sans interruption de l’opération. Notable.",
-          "Accès obtenu malgré une contre-mesure physique qui aurait dû stopper toute tentative.",
-          "Connexion établie après une exposition à un verrou de sécurité actif. Aucun ralentissement observé.",
-          "Données récupérées. Je consigne : la résistance physique de l’opérateur a compensé un système hostile."
+          "Intrusion successful. Three electric shocks absorbed without interrupting the operation. Notable.",
+          "Access obtained despite a physical countermeasure that should have stopped any attempt.",
+          "Connection established after exposure to an active security lock. No slowdown observed.",
+          "Data retrieved. I record: the operator's physical resilience offset a hostile system."
         ],
         "Diplomat": [
-          "Le système s’est ouvert… après avoir résisté de toutes ses forces. Il n’a jamais lâché non plus.",
-          "Accès accordé, malgré la douleur évidente qu’il a traversée pour y arriver. Une vraie détermination.",
-          "On est dedans. Ce système ne voulait vraiment pas, mais lui non plus n’allait pas abandonner.",
-          "La porte numérique s’est ouverte après un long combat silencieux. Il a tenu bon jusqu’au bout."
+          "The system opened up... after resisting with everything it had. He never let go either.",
+          "Access granted, despite the obvious pain he went through to get there. True determination.",
+          "We're in. This system really didn't want to give in, but neither was he going to give up.",
+          "The digital door opened after a long, silent struggle. He held on to the end."
         ],
         "Sentinel": [
-          "Intrusion validée. Note : opérateur ayant subi une contre-mesure active sans interruption de tâche.",
-          "Accès obtenu malgré un mécanisme de défense physique. Endurance jugée hors norme.",
-          "Le système a cédé après une résistance prolongée que l’opérateur a su encaisser.",
-          "Connexion établie. Rapport : capacité de résistance directement responsable de la poursuite de l’opération."
+          "Intrusion validated. Note: operator sustained an active countermeasure without interrupting the task.",
+          "Access obtained despite a physical defense mechanism. Endurance deemed off the charts.",
+          "The system gave way after prolonged resistance the operator managed to absorb.",
+          "Connection established. Report: resilience directly responsible for the operation continuing."
         ],
         "Explorer": [
-          "Ça m’a électrocuté genre deux fois et j’ai continué comme si de rien n’était. On est dedans.",
-          "Le système s’est défendu sérieusement, mais j’encaisse plutôt bien apparemment.",
-          "J’ai pris une décharge qui aurait dû m’envoyer valser. Toujours debout, toujours en train de bosser.",
-          "Ça a fait mal, très mal. Mais j’ai continué, et voilà le résultat."
+          "It shocked me like twice and I just kept going like nothing happened. We're in.",
+          "The system fought back hard, but I take a hit pretty well, apparently.",
+          "I took a jolt that should have sent me flying. Still standing, still working.",
+          "That hurt, a lot. But I kept going, and here's the result."
         ]
       }
     },
     "failure": {
       "resilient": {
         "Analyst": [
-          "Échec d’intrusion. Même une endurance élevée a une limite face à des contre-mesures répétées.",
-          "Le pare-feu a résisté. La résistance physique de l’opérateur a retardé l’échec, sans l’empêcher.",
-          "Connexion bloquée après une exposition prolongée à un système de défense actif.",
-          "Tentative avortée. Je consigne : la persévérance seule n’a pas suffi à contourner ce verrou."
+          "Intrusion failed. Even high endurance has a limit against repeated countermeasures.",
+          "The firewall held. The operator's physical resilience delayed the failure, without preventing it.",
+          "Connection blocked after prolonged exposure to an active defense system.",
+          "Attempt aborted. I record: perseverance alone wasn't enough to get past this lock."
         ],
         "Diplomat": [
-          "Le système m’a rejeté… mais il a tenu tête bien après que la plupart auraient abandonné.",
-          "Accès refusé, malgré tous ses efforts et toute sa résistance. Certains systèmes ne cèdent jamais.",
-          "La porte numérique est restée fermée. Il a tout donné, et ce n’était toujours pas assez.",
-          "Les données ne se sont pas laissées approcher, malgré une endurance remarquable de sa part."
+          "The system rejected me... but he held on well after most would have given up.",
+          "Access denied, despite all his effort and resilience. Some systems never give in.",
+          "The digital door stayed shut. He gave everything, and it still wasn't enough.",
+          "The data wouldn't let itself be approached, despite remarkable endurance on his part."
         ],
         "Sentinel": [
-          "Intrusion échouée. Je vais consigner : résistance prolongée n’ayant finalement pas changé l’issue.",
-          "Accès refusé. Rapport : contre-mesures répétées ayant fini par dépasser le seuil de tolérance.",
-          "Le système a bloqué la tentative après une exposition prolongée du système de défense.",
-          "Connexion impossible. Je recommande un équipement de protection renforcé pour la prochaine tentative."
+          "Intrusion failed. Logging: prolonged resistance that ultimately didn't change the outcome.",
+          "Access denied. Report: repeated countermeasures eventually exceeded the tolerance threshold.",
+          "The system blocked the attempt after prolonged exposure to the defense system.",
+          "Connection impossible. I recommend reinforced protective equipment for the next attempt."
         ],
         "Explorer": [
-          "J’ai encaissé un paquet de décharges, mais à un moment le système a juste gagné. Aïe.",
-          "Je tiens bien le choc d’habitude. Là, c’était vraiment trop.",
-          "J’ai continué bien après que j’aurais dû arrêter. Résultat : ça a fini par avoir raison de moi.",
-          "Ça m’a mis à terre, littéralement. Bon combat quand même."
+          "I took a bunch of shocks, but at some point the system just won. Ouch.",
+          "I usually handle shocks fine. That one was really too much.",
+          "I kept going well after I should have stopped. Result: it eventually got the better of me.",
+          "It knocked me flat, literally. Good fight anyway."
         ]
       }
     }

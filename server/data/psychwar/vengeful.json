@@ -3,56 +3,56 @@
     "success": {
       "vengeful": {
         "Analyst": [
-          "Influence mentale établie. Une rancune personnelle non résolue a alimenté une pression inhabituellement précise.",
-          "Pression psychologique réussie. Je note que la motivation de l’opérateur dépassait largement les objectifs de mission.",
-          "Domination mentale obtenue. L’intensité observée semblait viser bien plus que la cible assignée.",
-          "Contrôle émotionnel acquis grâce à une détermination presque obsessionnelle. Efficace, mais préoccupant."
+          "Mental influence established. Unresolved personal resentment fueled unusually precise pressure.",
+          "Psychological pressure successful. I note the operator's motivation went far beyond mission objectives.",
+          "Mental domination obtained. The observed intensity seemed aimed at far more than the assigned target.",
+          "Emotional control achieved through an almost obsessive determination. Effective, but concerning."
         ],
         "Diplomat": [
-          "Ils ont cédé face à quelque chose de plus profond qu’une simple tactique — une vieille blessure qui parlait.",
-          "La tension intérieure s’est brisée sous le poids d’une rancune qu’il portait depuis bien avant cette mission.",
-          "Nous avons touché quelque chose en eux, porté par une colère qui n’était pas vraiment dirigée contre eux.",
-          "Leur résistance s’est dissoute, mais je me demande à qui cette victoire appartient vraiment."
+          "They yielded to something deeper than mere tactics — an old wound speaking.",
+          "The inner tension broke under the weight of a grudge he'd carried well before this mission.",
+          "We touched something in them, carried by an anger that wasn't really aimed at them.",
+          "Their resistance dissolved, but I wonder who this victory truly belongs to."
         ],
         "Sentinel": [
-          "Pression mentale validée. Note : motivation personnelle non alignée avec les objectifs officiels de mission.",
-          "Influence psychologique obtenue via une intensité émotionnelle liée à un contentieux antérieur non documenté.",
-          "Domination mentale établie. Je recommande une évaluation de l’implication personnelle de l’opérateur.",
-          "Impact psychique confirmé. Rapport : efficacité élevée, origine de la motivation à clarifier."
+          "Mental pressure validated. Note: personal motivation not aligned with official mission objectives.",
+          "Psychological influence obtained through emotional intensity linked to an undocumented prior grievance.",
+          "Mental domination established. I recommend an assessment of the operator's personal involvement.",
+          "Psychic impact confirmed. Report: high effectiveness, origin of motivation to be clarified."
         ],
         "Explorer": [
-          "Honnêtement ? Je pensais à un truc totalement différent, une vieille histoire. Mais ça a marché sur eux aussi.",
-          "J’avais une revanche en tête, pas vraiment eux. Mais bon, le résultat est là.",
-          "Toute cette rage, c’était pas vraiment pour cette mission. Mais ça a suffi à les briser quand même.",
-          "Je réglais mes comptes intérieurs, littéralement. Et ça a fonctionné sur eux par ricochet."
+          "Honestly? I was thinking about something totally different, an old story. But it worked on them too.",
+          "I had a score to settle in mind, not really them. But hey, the result is there.",
+          "All that rage wasn't really for this mission. But it was enough to break them anyway.",
+          "I was settling old scores, literally. And it worked on them by ricochet."
         ]
       }
     },
     "failure": {
       "vengeful": {
         "Analyst": [
-          "Influence mentale échouée. La focalisation sur un grief personnel a détourné l’attention de l’objectif réel.",
-          "Pression psychologique inefficace. Je note que la cible n’a pas réagi à une intensité mal dirigée.",
-          "Domination mentale impossible. L’émotion affichée visait manifestement autre chose que la cible présente.",
-          "Contrôle émotionnel non établi. Je consigne : la rancune a pris le pas sur la stratégie, sans résultat."
+          "Mental influence failed. Fixation on a personal grievance diverted attention from the real objective.",
+          "Psychological pressure ineffective. I note the target didn't react to a misdirected intensity.",
+          "Mental domination impossible. The displayed emotion was clearly aimed at something other than the present target.",
+          "Emotional control not established. I record: resentment took precedence over strategy, with no result."
         ],
         "Diplomat": [
-          "Ils n’ont pas ouvert leur esprit… je crois que sa colère parlait à quelqu’un d’autre, pas à eux.",
-          "La tension intérieure n’a pas bougé. Cette rancune ancienne n’avait pas sa place ici, et ça s’est senti.",
-          "Nous n’avons pas réussi à les toucher. Il visait un fantôme, pas la personne devant lui.",
-          "Leur résistance est restée intacte. Je crois qu’il faudrait qu’il fasse la paix avec son propre passé d’abord."
+          "They didn't open their mind... I think his anger was speaking to someone else, not them.",
+          "The inner tension hasn't shifted. That old resentment had no place here, and it showed.",
+          "We failed to reach them. He was aiming at a ghost, not the person in front of him.",
+          "Their resistance stayed intact. I think he needs to make peace with his own past first."
         ],
         "Sentinel": [
-          "Pression mentale échouée. Je vais consigner : implication personnelle de l’opérateur ayant nui à la mission.",
-          "Influence psychologique refusée. Rapport : motivation mal alignée avec l’objectif tactique assigné.",
-          "Domination mentale impossible. Je recommande de retirer ce profil des cibles liées à un contentieux personnel.",
-          "Impact psychique nul. L’intensité affichée n’était manifestement pas destinée à cette cible."
+          "Mental pressure failed. Logging: personal involvement by the operator that harmed the mission.",
+          "Psychological influence rejected. Report: motivation poorly aligned with the assigned tactical objective.",
+          "Mental domination impossible. I recommend removing this profile from targets tied to a personal grievance.",
+          "Psychic impact nil. The displayed intensity was clearly not meant for this target."
         ],
         "Explorer": [
-          "J’étais tellement dans ma tête à propos d’un vieux compte à régler que j’ai raté la cible, littéralement.",
-          "Toute cette colère, c’était pour quelqu’un d’autre. Ça a juste confus la personne en face.",
-          "Je pensais à ma revanche, pas à la mission. Et ça a foiré complètement.",
-          "Bon, ma vieille rancune a pris toute la place, et il en restait plus pour la vraie mission."
+          "I was so caught up in an old score to settle that I missed the target, literally.",
+          "All that anger was for someone else. It just confused the person in front of me.",
+          "I was thinking about my revenge, not the mission. And it went completely wrong.",
+          "Well, my old grudge took up all the room, and there was nothing left for the actual mission."
         ]
       }
     }

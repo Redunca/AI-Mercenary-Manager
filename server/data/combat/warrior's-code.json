@@ -3,56 +3,56 @@
     "success": {
       "warrior's-code": {
         "Analyst": [
-          "Cible neutralisée. Je note que l’adversaire a cessé toute résistance après un échange de regards. Curieux protocole.",
-          "Combat terminé. Un code tacite semble avoir régi cet affrontement plus que la force brute elle-même.",
-          "Menace éliminée sans escalade excessive. Je consigne : un cadre implicite a limité les dégâts collatéraux.",
-          "Affrontement clos. L’adversaire s’est incliné selon des règles que je ne maîtrise pas totalement. Efficace, cela dit."
+          "Target neutralized. I note the opponent ceased all resistance after an exchange of glances. Curious protocol.",
+          "Combat concluded. An unspoken code seems to have governed this fight more than brute force itself.",
+          "Threat eliminated without excessive escalation. I record: an implicit framework limited collateral damage.",
+          "Engagement closed. The opponent yielded according to rules I don't fully grasp. Effective, nonetheless."
         ],
         "Diplomat": [
-          "Le combat s’est terminé… dans un respect mutuel étrange, presque cérémoniel. J’ai trouvé ça beau.",
-          "La bataille est finie. Je crois qu’ils se sont reconnus comme égaux, avant même de se reconnaître comme ennemis.",
-          "L’adversaire s’est incliné devant quelque chose de plus grand qu’une simple victoire : un honneur partagé.",
-          "Le conflit s’est résolu avec une dignité inattendue des deux côtés. C’est rare, et précieux."
+          "The fight ended... in a strange, almost ceremonial mutual respect. I found it beautiful.",
+          "The battle is over. I think they recognized each other as equals before recognizing each other as enemies.",
+          "The opponent yielded to something greater than mere victory: a shared honor.",
+          "The conflict resolved with unexpected dignity on both sides. That's rare, and precious."
         ],
         "Sentinel": [
-          "Engagement réussi. Note : l’opérateur a suivi un code de conduite non standard, avec un résultat conforme.",
-          "Menace éliminée. Je recommande d’étudier ce protocole informel pour de futurs engagements.",
-          "Combat terminé. L’adversaire a cédé face à une posture d’honneur plutôt qu’à une supériorité brute.",
-          "Opposition neutralisée. Rapport : issue favorable obtenue via un cadre tacite plutôt que réglementaire."
+          "Engagement successful. Note: the operator followed a non-standard code of conduct, with a conforming result.",
+          "Threat eliminated. I recommend studying this informal protocol for future engagements.",
+          "Combat concluded. The opponent yielded to a posture of honor rather than raw superiority.",
+          "Opposition neutralized. Report: favorable outcome obtained via an unspoken framework rather than regulation."
         ],
         "Explorer": [
-          "On s’est regardés, on s’est compris, et ça s’est réglé sans que ça dégénère trop. Classe, non ?",
-          "J’ai proposé un genre de duel à l’ancienne et ils ont accepté. Ça a marché, honnêtement.",
-          "Y’a eu un truc genre code d’honneur entre nous. Je sais pas trop comment expliquer, mais ça a payé.",
-          "On s’est affrontés proprement, et à la fin ils ont juste... reconnu qu’ils avaient perdu. Respect."
+          "We looked at each other, we understood each other, and it got settled without getting too out of hand. Classy, right?",
+          "I proposed an old-school kind of duel and they accepted. Worked, honestly.",
+          "There was some kind of honor code between us. Not sure how to explain it, but it paid off.",
+          "We fought clean, and in the end they just... admitted they'd lost. Respect."
         ]
       }
     },
     "failure": {
       "warrior's-code": {
         "Analyst": [
-          "Échec tactique. L’adhésion stricte à un code d’engagement a limité les options disponibles au moment critique.",
-          "Combat perdu. Je note un refus d’exploiter une ouverture jugée déloyale selon des critères non quantifiables.",
-          "Opposition non neutralisée. Le respect d’un cadre d’honneur a coûté un avantage tactique décisif.",
-          "Affrontement défavorable. Je consigne : les règles suivies par l’opérateur n’étaient pas partagées par l’adversaire."
+          "Tactical failure. Strict adherence to a code of engagement limited available options at the critical moment.",
+          "Combat lost. I note a refusal to exploit an opening deemed dishonorable by unquantifiable criteria.",
+          "Opposition not neutralized. Respecting a code of honor cost a decisive tactical advantage.",
+          "Unfavorable engagement. I record: the rules the operator followed weren't shared by the opponent."
         ],
         "Diplomat": [
-          "Le combat s’est mal terminé… il a respecté un code que l’autre n’a pas honoré en retour. C’est injuste.",
-          "La bataille est perdue. Je crois qu’il a préféré rester fidèle à lui-même plutôt que de gagner à tout prix.",
-          "L’adversaire a eu le dessus, en ignorant les règles que lui suivait scrupuleusement. Ça me pèse un peu.",
-          "La confrontation a échoué. Son honneur est resté intact, même si l’issue, elle, ne l’était pas."
+          "The fight ended badly... he honored a code the other side didn't return in kind. That's unjust.",
+          "The battle is lost. I think he preferred staying true to himself over winning at any cost.",
+          "The opponent got the upper hand, ignoring the rules he scrupulously followed. That weighs on me a little.",
+          "The confrontation failed. His honor stayed intact, even if the outcome didn't."
         ],
         "Sentinel": [
-          "Engagement échoué. Le journal indique un refus d’exploiter une faille jugée contraire au code personnel de l’opérateur.",
-          "Combat perdu. Rapport : l’adversaire n’a suivi aucune règle comparable, créant une asymétrie tactique.",
-          "Menace non éliminée. Je recommande de réévaluer l’usage d’un code d’honneur face à des adversaires non conventionnels.",
-          "Opposition non maîtrisée. Le respect d’un cadre tacite a directement limité l’efficacité de l’engagement."
+          "Engagement failed. The log shows a refusal to exploit a flaw deemed contrary to the operator's personal code.",
+          "Combat lost. Report: the opponent followed no comparable rules, creating a tactical asymmetry.",
+          "Threat not eliminated. I recommend reassessing the use of a code of honor against unconventional opponents.",
+          "Opposition not controlled. Respecting an unspoken framework directly limited engagement effectiveness."
         ],
         "Explorer": [
-          "J’ai voulu faire ça proprement, à l’ancienne. Sauf qu’eux, ils avaient pas lu le même règlement.",
-          "Ok, j’ai laissé passer une occasion parce que ça me semblait pas honorable. Grosse erreur, apparemment.",
-          "Je voulais un combat loyal. J’ai eu un combat tout court. Ma faute.",
-          "J’ai respecté les règles. Ils s’en fichaient royalement. Leçon retenue."
+          "I wanted to do this clean, old-school. Except they hadn't read the same rulebook.",
+          "Okay, I let an opening pass because it felt dishonorable. Big mistake, apparently.",
+          "I wanted a fair fight. I got a fight. My fault.",
+          "I followed the rules. They couldn't have cared less. Lesson learned."
         ]
       }
     }

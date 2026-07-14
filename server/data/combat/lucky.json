@@ -3,64 +3,64 @@
     "success": {
       "lucky": {
         "Analyst": [
-          "Cible neutralisée. Je ne peux pas expliquer statistiquement cette issue. Je la consigne comme anomalie favorable.",
-          "Combat terminé. La probabilité de ce résultat frôlait l’improbable. Et pourtant.",
-          "Menace éliminée. Un facteur non quantifiable semble avoir influencé le déroulement de l’engagement.",
-          "Opposition neutralisée. Je note un enchaînement d’événements statistiquement peu plausible, en notre faveur.",
-          "Affrontement clos. Je révise mes modèles : la chance, apparemment, existe."
+          "Target neutralized. I cannot statistically explain this outcome. Logging it as a favorable anomaly.",
+          "Combat concluded. The probability of this result bordered on the impossible. And yet.",
+          "Threat eliminated. An unquantifiable factor appears to have influenced the engagement.",
+          "Opposition neutralized. I note a statistically implausible chain of events, in our favor.",
+          "Engagement closed. Revising my models: luck, apparently, exists."
         ],
         "Diplomat": [
-          "Le combat s’est résolu… comme porté par une force qui n’était pas seulement la nôtre.",
-          "La bataille est finie. Je crois que l’univers a choisi de nous sourire, cette fois.",
-          "L’adversaire est tombé au moment précis où il ne fallait pas. Curieux hasard.",
-          "Le conflit s’est apaisé grâce à un enchaînement d’événements que je qualifierais de… providentiel.",
-          "La confrontation s’est terminée en notre faveur. Je préfère ne pas chercher à comprendre pourquoi."
+          "The fight resolved itself... as if carried by a force that wasn't only our own.",
+          "The battle is over. I think the universe chose to smile on us this time.",
+          "The opponent fell at the exact wrong moment. Curious coincidence.",
+          "The conflict settled thanks to a chain of events I'd call... providential.",
+          "The confrontation ended in our favor. I'd rather not question why."
         ],
         "Sentinel": [
-          "Engagement réussi. Facteur déterminant : un incident imprévu, favorable, non reproductible.",
-          "Menace éliminée. Je consigne l’issue comme ‘succès non attribuable à la procédure standard’.",
-          "Combat terminé. Rapport : intervention d’un élément extérieur inattendu ayant faussé l’issue prévue.",
-          "Opposition neutralisée. Aucun protocole ne peut expliquer cette séquence d’événements.",
-          "Affrontement clos. Je classe ce succès dans la catégorie ‘à ne pas prendre pour acquis’."
+          "Engagement successful. Determining factor: an unforeseen, favorable, non-reproducible incident.",
+          "Threat eliminated. Logging the outcome as 'success not attributable to standard procedure'.",
+          "Combat concluded. Report: an unexpected outside factor skewed the anticipated outcome.",
+          "Opposition neutralized. No protocol can explain this sequence of events.",
+          "Engagement closed. Filing this success under 'do not take for granted'."
         ],
         "Explorer": [
-          "J’ai glissé, je suis tombé, et apparemment ça a suffi à gagner. Je prends !",
-          "Alors ça, j’y comprends rien, mais on a gagné, donc tant mieux !",
-          "Le truc m’est littéralement tombé dessus au bon moment. J’appelle ça de la chance pure.",
-          "J’ai fermé les yeux à un moment. Sérieux. Et ça a marché quand même.",
-          "Je sais pas ce qui s’est passé, mais je vais pas me plaindre."
+          "I slipped, I fell, and apparently that was enough to win. I'll take it!",
+          "Okay I have no idea what just happened, but we won, so great!",
+          "The thing literally fell on me at exactly the right moment. Calling that pure luck.",
+          "I closed my eyes at one point. Seriously. And it worked out anyway.",
+          "No idea what happened, but I'm not complaining."
         ]
       }
     },
     "failure": {
       "lucky": {
         "Analyst": [
-          "Échec tactique. Aucune anomalie favorable détectée cette fois. Résultat conforme aux probabilités de base.",
-          "Combat perdu. Je note l’absence du facteur chance habituellement observé chez ce sujet.",
-          "Opposition non neutralisée. Les statistiques, pour une fois, se sont appliquées sans exception.",
-          "Affrontement défavorable. Aucun événement imprévu n’est venu compenser le déficit tactique.",
-          "Engagement échoué. Je consigne : la chance n’est pas une stratégie fiable. Confirmé."
+          "Tactical failure. No favorable anomaly detected this time. Result consistent with base probabilities.",
+          "Combat lost. I note the absence of the luck factor usually observed in this subject.",
+          "Opposition not neutralized. Statistics, for once, applied without exception.",
+          "Unfavorable engagement. No unforeseen event came to offset the tactical deficit.",
+          "Engagement failed. I record: luck is not a reliable strategy. Confirmed."
         ],
         "Diplomat": [
-          "Le combat s’est mal terminé. Cette fois, rien n’est venu nous porter.",
-          "La bataille est perdue. Je crois que l’univers avait d’autres projets aujourd’hui.",
-          "L’adversaire a eu le dessus, sans qu’aucun hasard ne vienne nous sauver.",
-          "La confrontation a échoué. Peut-être que la chance, elle aussi, a besoin de repos parfois.",
-          "Le conflit s’est terminé sans le petit miracle habituel. C’est arrivé, tout simplement."
+          "The fight ended badly. This time, nothing came to carry us through.",
+          "The battle is lost. I think the universe had other plans today.",
+          "The opponent got the upper hand, with no lucky break to save us.",
+          "The confrontation failed. Maybe luck, too, needs a rest sometimes.",
+          "The conflict ended without the usual small miracle. It simply happened."
         ],
         "Sentinel": [
-          "Engagement échoué. Aucun facteur externe favorable enregistré durant l’intervention.",
-          "Combat perdu. Rapport : l’issue correspond cette fois aux probabilités calculées initialement.",
-          "Menace non éliminée. Je recommande de ne pas compter sur la répétition d’événements exceptionnels.",
-          "Opposition non maîtrisée. Aucune anomalie favorable à consigner pour cet engagement.",
-          "Affrontement défavorable. Je classe cet échec comme ‘statistiquement attendu, pour une fois’."
+          "Engagement failed. No favorable external factor recorded during the operation.",
+          "Combat lost. Report: this time the outcome matches the originally calculated probabilities.",
+          "Threat not eliminated. I recommend not relying on the recurrence of exceptional events.",
+          "Opposition not controlled. No favorable anomaly to log for this engagement.",
+          "Unfavorable engagement. Filing this failure as 'statistically expected, for once'."
         ],
         "Explorer": [
-          "Bon bah là, ça n’a pas marché. Fallait bien que ça arrive un jour.",
-          "J’ai attendu le miracle. Le miracle n’est pas venu.",
-          "Ok, la chance m’a lâché sur ce coup-là. Tant pis.",
-          "Je pensais que ça allait passer comme d’habitude. Raté.",
-          "Bah… même la chance a ses mauvais jours, apparemment."
+          "Well, that one didn't work. It had to happen someday.",
+          "I waited for the miracle. The miracle didn't come.",
+          "Okay, luck ran out on that one. Oh well.",
+          "I thought it would just work out like usual. Nope.",
+          "Well... even luck has its off days, apparently."
         ]
       }
     }

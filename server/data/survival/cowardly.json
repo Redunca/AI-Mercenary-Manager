@@ -3,56 +3,56 @@
     "success": {
       "cowardly": {
         "Analyst": [
-          "Survie assurée. Trois arrêts complets par panique observés, sans conséquence sur l’issue finale.",
-          "Menace évitée malgré une hésitation quasi permanente face à chaque obstacle rencontré.",
-          "Situation stabilisée. La prudence excessive née de la peur a, statistiquement, limité l’exposition au danger.",
-          "Zone sécurisée. Je consigne : la peur a ralenti la progression sans jamais la compromettre réellement."
+          "Survival ensured. Three complete stops out of panic observed, with no effect on the final outcome.",
+          "Threat avoided despite near-constant hesitation at every obstacle encountered.",
+          "Situation stabilized. Excessive caution born of fear statistically limited exposure to danger.",
+          "Zone secured. I record: fear slowed progress without ever truly jeopardizing it."
         ],
         "Diplomat": [
-          "Nous avons traversé l’épreuve… il tremblait à chaque pas, mais il a continué. C’est ça, le vrai courage.",
-          "La nature s’est apaisée autour de nous. Je crois qu’il a survécu en écoutant sa peur plutôt qu’en l’ignorant.",
-          "Le danger s’est dissipé. Sa terreur ne l’a pas paralysé, elle l’a juste rendu plus prudent.",
-          "Nous sommes en sécurité. Il a eu peur tout du long, et pourtant, il est toujours là."
+          "We got through the ordeal... he was trembling at every step, but he kept going. That's real courage.",
+          "Nature settled around us. I think he survived by listening to his fear rather than ignoring it.",
+          "The danger dissipated. His terror didn't paralyze him, it just made him more careful.",
+          "We're safe. He was afraid the whole time, and yet, he's still here."
         ],
         "Sentinel": [
-          "Survie validée. Note : hésitations multiples liées au stress, sans impact sur le résultat final.",
-          "Situation stabilisée malgré une nervosité manifeste de l’opérateur tout au long de l’épreuve.",
-          "Péril contourné. Je recommande un accompagnement pour renforcer la confiance en situation hostile.",
-          "Zone sécurisée. Rapport : opération réussie en dépit d’un stress opérationnel élevé chez l’opérateur."
+          "Survival validated. Note: multiple stress-related hesitations, no impact on the final result.",
+          "Situation stabilized despite the operator's obvious nervousness throughout the ordeal.",
+          "Danger avoided. I recommend coaching to build confidence in hostile situations.",
+          "Zone secured. Report: operation successful despite high operational stress in the operator."
         ],
         "Explorer": [
-          "J’ai eu la trouille de ma vie à chaque bruit bizarre, mais je suis toujours là. Je compte ça comme une victoire.",
-          "Ok j’ai failli faire demi-tour genre cinq fois. Mais on est en sécurité, donc ça va.",
-          "Franchement j’étais terrifié tout du long. Je le cache pas. Mais ça a suffi pour survivre.",
-          "J’ai fermé les yeux à un moment, sans mentir. Et apparemment c’était le bon moment pour ça."
+          "I was scared out of my mind at every weird noise, but I'm still here. Counting that as a win.",
+          "Okay I almost turned back like five times. But we're safe, so it's fine.",
+          "Honestly I was terrified the whole time. Not hiding it. But it was enough to survive.",
+          "I closed my eyes at one point, not gonna lie. And apparently that was the right moment for it."
         ]
       }
     },
     "failure": {
       "cowardly": {
         "Analyst": [
-          "Survie compromise. L’hésitation répétée a dépassé la fenêtre d’action disponible avant l’aggravation du danger.",
-          "Menace non évitée. Je note un abandon prématuré face à un risque initialement gérable.",
-          "Situation instable. La peur de l’échec a directement précipité l’échec lui-même.",
-          "Péril non contourné. Je consigne : trois reculs consécutifs devant des obstacles pourtant surmontables."
+          "Survival compromised. Repeated hesitation exceeded the available action window before the danger worsened.",
+          "Threat not avoided. I note a premature abandonment in the face of an initially manageable risk.",
+          "Situation unstable. Fear of failure directly precipitated the failure itself.",
+          "Danger not avoided. I record: three consecutive retreats in the face of otherwise surmountable obstacles."
         ],
         "Diplomat": [
-          "Nous n’avons pas traversé l’épreuve… je crois que la peur l’a submergé avant même qu’on ne commence vraiment.",
-          "La nature s’est refermée sur nous. Il a hésité trop longtemps, paralysé par ce qui pourrait mal tourner.",
-          "Le danger n’a pas voulu se dissiper. Sa terreur, cette fois, l’a emporté sur sa détermination.",
-          "Nous ne sommes pas en sécurité. Je crois qu’il avait besoin qu’on le rassure avant d’avancer."
+          "We didn't get through the ordeal... I think fear overwhelmed him before we'd even really started.",
+          "Nature closed in on us. He hesitated too long, paralyzed by what could go wrong.",
+          "The danger wouldn't dissipate. His terror, this time, won out over his determination.",
+          "We are not safe. I think he needed reassurance before moving forward."
         ],
         "Sentinel": [
-          "Survie échouée. Je vais consigner : abandon anticipé sans justification tactique claire.",
-          "Situation instable. Rapport : l’opérateur a interrompu la progression suite à un stress jugé excessif.",
-          "Péril non contourné après un retrait précipité de l’opérateur face à un obstacle mineur.",
-          "Zone non sécurisée. Je recommande une préparation psychologique avant la prochaine exposition au danger."
+          "Survival failed. Logging: premature abandonment with no clear tactical justification.",
+          "Situation unstable. Report: the operator halted progress following stress deemed excessive.",
+          "Danger not avoided after a hasty withdrawal by the operator in the face of a minor obstacle.",
+          "Zone not secured. I recommend psychological preparation before the next exposure to danger."
         ],
         "Explorer": [
-          "J’ai eu trop peur et j’ai tout arrêté avant même que ça devienne vraiment dangereux. Désolé.",
-          "Bon, j’ai paniqué au premier bruit et j’ai reculé. Fallait pas.",
-          "Je pouvais continuer, mais j’ai eu trop les jetons. Du coup, échec total.",
-          "J’ai vu une ombre bizarre et j’ai tout lâché. C’était probablement rien, en fait."
+          "I got too scared and stopped everything before it even got really dangerous. Sorry.",
+          "Well, I panicked at the first noise and backed off. Shouldn't have.",
+          "I could have kept going, but I chickened out too much. Total failure as a result.",
+          "I saw a weird shadow and dropped everything. It was probably nothing, actually."
         ]
       }
     }

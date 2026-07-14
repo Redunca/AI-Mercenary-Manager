@@ -3,56 +3,56 @@
     "success": {
       "resilient": {
         "Analyst": [
-          "Survie assurée. Exposition prolongée à des conditions hostiles encaissée sans dégradation notable des performances.",
-          "Menace évitée malgré un épuisement qui aurait dû, statistiquement, ralentir considérablement la progression.",
-          "Situation stabilisée. Je note une capacité d’endurance dépassant largement les seuils physiologiques standards.",
-          "Zone sécurisée. Ce qui aurait dû l’arrêter net ne l’a même pas ralenti. Remarquable, en un sens."
+          "Survival ensured. Prolonged exposure to hostile conditions absorbed with no notable performance degradation.",
+          "Threat avoided despite an exhaustion that should have, statistically, considerably slowed progress.",
+          "Situation stabilized. I note an endurance capacity far exceeding standard physiological thresholds.",
+          "Zone secured. What should have stopped him cold didn't even slow him down. Remarkable, in a way."
         ],
         "Diplomat": [
-          "Nous avons traversé l’épreuve… il a tout encaissé sans jamais céder. Il y a une force tranquille en lui.",
-          "La nature s’est apaisée autour de nous. Je crois que son corps a simplement refusé d’abandonner son esprit.",
-          "Le danger s’est dissipé, et lui tient encore debout, contre toute logique. Je respecte ça profondément.",
-          "Nous sommes en sécurité. Sa force intérieure a visiblement dépassé ce que son corps pouvait promettre."
+          "We got through the ordeal... he took everything without ever giving in. There's a quiet strength in him.",
+          "Nature settled around us. I think his body simply refused to abandon his spirit.",
+          "The danger dissipated, and he's still standing, against all logic. I deeply respect that.",
+          "We're safe. His inner strength clearly exceeded what his body could promise."
         ],
         "Sentinel": [
-          "Survie validée. Note : l’opérateur a maintenu son activité malgré des conditions jugées critiques.",
-          "Situation stabilisée. Je recommande une étude de sa résistance physique pour les futurs protocoles d’exposition.",
-          "Péril contourné. L’opérateur a dépassé les seuils de tolérance standards sans interruption de mission.",
-          "Zone sécurisée. Rapport signalant une endurance hors norme sur l’ensemble de l’épreuve."
+          "Survival validated. Note: the operator maintained activity despite conditions deemed critical.",
+          "Situation stabilized. I recommend studying his physical resilience for future exposure protocols.",
+          "Danger avoided. The operator exceeded standard tolerance thresholds without interrupting the mission.",
+          "Zone secured. Report notes off-the-charts endurance across the entire ordeal."
         ],
         "Explorer": [
-          "J’ai encaissé des trucs qui auraient dû m’achever trois fois. Toujours debout, apparemment.",
-          "Franchement, ça aurait dû me mettre à terre. Mais non. Je suis increvable, on dirait.",
-          "J’ai limite rien senti. Enfin si, mais bon, je suis encore là, donc ça compte.",
-          "L’environnement a tout donné et je suis quand même debout. Je crois que je suis fait en pierre."
+          "I took hits that should have finished me three times over. Still standing, apparently.",
+          "Honestly, that should have knocked me flat. But no. I'm indestructible, seems like.",
+          "I barely felt it. Okay, I felt it, but I'm still here, so that counts.",
+          "The environment gave it everything and I'm still standing. Pretty sure I'm made of stone."
         ]
       }
     },
     "failure": {
       "resilient": {
         "Analyst": [
-          "Survie compromise. Même une endurance exceptionnelle a une limite, atteinte aujourd’hui.",
-          "Menace non évitée. Je note que la résistance observée n’a fait que retarder l’issue, pas l’éviter.",
-          "Situation instable. Le seuil de tolérance a été franchi malgré une capacité d’absorption élevée.",
-          "Péril non contourné. Je consigne : tenir plus longtemps n’a pas suffi à inverser l’issue."
+          "Survival compromised. Even exceptional endurance has a limit, reached today.",
+          "Threat not avoided. I note the observed resilience only delayed the outcome, not avoided it.",
+          "Situation unstable. The tolerance threshold was crossed despite high absorption capacity.",
+          "Danger not avoided. I record: holding out longer wasn't enough to reverse the outcome."
         ],
         "Diplomat": [
-          "Nous n’avons pas traversé l’épreuve… mais il a tenu bien plus longtemps que quiconque ne l’aurait espéré.",
-          "La nature s’est refermée sur nous. Je crois que même sa force n’a pas suffi, cette fois.",
-          "Le danger a eu le dessus, après une résistance qu’il n’aurait jamais dû laisser durer si longtemps.",
-          "Nous ne sommes pas en sécurité. Il a tout donné jusqu’au bout, et ça, je ne l’oublierai pas."
+          "We didn't get through the ordeal... but he held out far longer than anyone could have hoped.",
+          "Nature closed in on us. I think even his strength wasn't enough, this time.",
+          "The danger got the upper hand, after a resistance he should never have let drag on so long.",
+          "We are not safe. He gave everything until the end, and I won't forget that."
         ],
         "Sentinel": [
-          "Survie échouée. Le journal indique une résistance prolongée n’ayant finalement pas changé l’issue.",
-          "Situation instable. Rapport : seuil d’endurance dépassé après une exposition prolongée aux conditions hostiles.",
-          "Péril non contourné. Je recommande un suivi médical malgré l’absence apparente de séquelles majeures.",
-          "Zone non sécurisée. La capacité d’encaissement de l’opérateur a retardé, sans empêcher, l’échec."
+          "Survival failed. The log shows prolonged resistance that ultimately didn't change the outcome.",
+          "Situation unstable. Report: endurance threshold exceeded after prolonged exposure to hostile conditions.",
+          "Danger not avoided. I recommend a medical follow-up despite no apparent major injuries.",
+          "Zone not secured. The operator's capacity to absorb damage delayed, but didn't prevent, the failure."
         ],
         "Explorer": [
-          "Ok là j’ai vraiment tout pris, et cette fois ça a suffi à m’arrêter. Même moi j’ai des limites.",
-          "J’ai tenu super longtemps, genre vraiment longtemps. Mais bon, à un moment faut céder.",
-          "Je pensais pouvoir tout encaisser. Apparemment y’a un plafond. Je l’ai trouvé aujourd’hui.",
-          "J’ai continué bien après que j’aurais dû arrêter. Résultat : ça a fini par me rattraper."
+          "Okay, I really took everything this time, and it was finally enough to stop me. Even I have limits.",
+          "I held out super long, like really long. But at some point you have to give.",
+          "I thought I could take anything. Turns out there's a ceiling. Found it today.",
+          "I kept going well after I should have stopped. Result: it caught up with me eventually."
         ]
       }
     }

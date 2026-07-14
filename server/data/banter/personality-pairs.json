@@ -2,91 +2,91 @@
   "Analyst+Diplomat": {
     "speaker": "A",
     "lines": [
-      "{A} récite déjà trois statistiques que personne n'a demandées. {B} l'écoute patiemment."
+      "{A} is already reciting three statistics nobody asked for. {B} listens patiently."
     ],
     "reply": [
-      "Ce que tu dis est juste, {A}, mais on n'a peut-être pas besoin des chiffres pour le sentir."
+      "What you're saying is correct, {A}, but maybe we don't need the numbers to feel it."
     ]
   },
   "Analyst+Sentinel": {
     "speaker": "A",
     "lines": [
-      "{A} corrige une donnée du rapport de {B} pour la deuxième fois."
+      "{A} corrects a data point in {B}'s report for the second time."
     ],
     "reply": [
-      "Le protocole n'a pas besoin d'être plus précis, {A}, juste respecté."
+      "The protocol doesn't need to be more precise, {A}, just respected."
     ]
   },
   "Explorer+Analyst": {
     "speaker": "A",
     "lines": [
-      "{A} saute déjà à la conclusion suivante. {B} n'a pas fini son calcul."
+      "{A} already jumps to the next conclusion. {B} hasn't finished the calculation."
     ],
     "reply": [
-      "Laisse-moi finir, {A}, j'y étais presque."
+      "Let me finish, {A}, I was almost there."
     ]
   },
   "Diplomat+Sentinel": {
     "speaker": "A",
     "lines": [
-      "{A} propose d'écouter l'autre camp. {B} n'y voit aucun intérêt tactique."
+      "{A} suggests hearing the other side out. {B} sees no tactical point in it."
     ],
     "reply": [
-      "On suit le protocole, {A}, pas les sentiments."
+      "We follow protocol, {A}, not feelings."
     ]
   },
   "Explorer+Diplomat": {
     "speaker": "A",
     "lines": [
-      "{A} veut foncer sans en discuter. {B} préférerait qu'on en parle d'abord."
+      "{A} wants to charge ahead without discussing it. {B} would rather talk it through first."
     ],
     "reply": [
-      "On peut au moins en parler avant, {A} ?"
+      "Can we at least talk about it first, {A}?"
     ]
   },
   "Explorer+Sentinel": {
     "speaker": "A",
     "lines": [
-      "{A} improvise, encore. {B} note l'écart au protocole dans un coin de sa tête."
+      "{A} improvises, again. {B} mentally notes the protocol deviation."
     ],
     "reply": [
-      "Ce n'était pas la procédure, {A}. Encore une fois."
+      "That wasn't procedure, {A}. Again."
     ]
   },
   "Analyst+Analyst": {
     "speaker": "A",
     "lines": [
-      "{A} conteste l'interprétation des chiffres de {B}, poliment mais fermement."
+      "{A} disputes {B}'s interpretation of the numbers, politely but firmly."
     ],
     "reply": [
-      "Tes données sont bonnes, {A}, mais ta lecture est incomplète."
+      "Your data is good, {A}, but your reading is incomplete."
     ]
   },
   "Diplomat+Diplomat": {
     "speaker": "A",
     "lines": [
-      "{A} laisse {B} parler en premier. {B} insiste pour que ce soit l'inverse."
+      "{A} lets {B} speak first. {B} insists it should be the other way around."
     ],
     "reply": [
-      "Non non, vas-y toi, {A}, je t'en prie."
+      "No, no, you go ahead, {A}, please."
     ]
   },
   "Sentinel+Sentinel": {
     "speaker": "A",
     "lines": [
-      "{A} et {B} ne sont pas d'accord sur qui, des deux, dirige réellement l'opération."
+      "{A} and {B} disagree on which of them is actually running the operation."
     ],
     "reply": [
-      "C'est moi qui ai le protocole à jour, {A}, pas toi."
+      "I'm the one with the current protocol, {A}, not you."
     ]
   },
   "Explorer+Explorer": {
     "speaker": "A",
     "lines": [
-      "{A} propose un plan de plus en plus douteux. {B} trouve ça génial."
+      "{A} proposes an increasingly questionable plan. {B} thinks it's brilliant."
     ],
     "reply": [
-      "Carrément, {A}, on tente le coup."
+      "Absolutely, {A}, let's go for it."
     ]
   }
 }

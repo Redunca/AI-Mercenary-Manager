@@ -3,56 +3,56 @@
     "success": {
       "greedy": {
         "Analyst": [
-          "Accord obtenu, après ajout de trois clauses supplémentaires clairement à notre avantage. Ils ont accepté quand même.",
-          "Négociation conclue avec une marge bénéficiaire nettement supérieure à l’estimation initiale.",
-          "Discussion réussie. Je note un intérêt personnel manifeste ayant guidé chaque contre-proposition.",
-          "Terrain d’entente trouvé. Statistiquement, une telle avidité aurait dû faire échouer les pourparlers."
+          "Deal reached, after adding three extra clauses clearly to our advantage. They accepted anyway.",
+          "Negotiation concluded with a profit margin significantly higher than the initial estimate.",
+          "Discussion successful. I note a blatant personal interest guiding every counteroffer.",
+          "Common ground found. Statistically, such greed should have derailed the talks."
         ],
         "Diplomat": [
-          "Ils ont accepté… même si je sens qu’il pensait surtout à ce que ça allait lui rapporter.",
-          "La négociation s’est harmonisée, portée par une ambition personnelle qui a, cette fois, servi tout le monde.",
-          "Nous avons trouvé un terrain d’entente, un peu plus généreux pour nous que prévu à l’origine.",
-          "Ils ont dit oui, sous le regard insistant de quelqu’un qui comptait déjà les bénéfices."
+          "They agreed... though I sense he was mostly thinking about what he'd get out of it.",
+          "The negotiation came together, carried by a personal ambition that, this time, served everyone.",
+          "We found common ground, a bit more generous to us than originally planned.",
+          "They said yes, under the insistent gaze of someone already counting the profits."
         ],
         "Sentinel": [
-          "Négociation validée. Note : clauses supplémentaires ajoutées en cours de discussion, non prévues au mandat initial.",
-          "Accord obtenu malgré un comportement intéressé de l’opérateur. Résultat conforme, méthode à surveiller.",
-          "Discussion réussie. Je recommande un encadrement des motivations personnelles lors des futures négociations.",
-          "Terrain d’entente trouvé. Rapport : intérêt financier de l’opérateur non aligné avec le mandat officiel."
+          "Negotiation validated. Note: extra clauses added mid-discussion, not part of the original mandate.",
+          "Deal obtained despite self-interested behavior from the operator. Result conforms, method to monitor.",
+          "Discussion successful. I recommend oversight of personal motivations in future negotiations.",
+          "Common ground found. Report: the operator's financial interest not aligned with the official mandate."
         ],
         "Explorer": [
-          "J’ai négocié, et j’en ai profité pour ajouter un petit bonus pour nous. Ils ont dit oui !",
-          "Ok j’ai peut-être poussé un peu fort sur les termes. Mais ils ont mordu direct.",
-          "J’ai fait l’accord, et en plus j’ai réussi à gratter un extra au passage. Journée productive.",
-          "Je pensais surtout à ce qu’on allait y gagner, et bizarrement ça a rendu mon offre plus convaincante."
+          "I negotiated, and took the chance to add a little bonus for us. They said yes!",
+          "Okay maybe I pushed the terms a bit hard. But they bit immediately.",
+          "I made the deal, and on top of that I managed to squeeze out an extra. Productive day.",
+          "I was mostly thinking about what we'd gain, and weirdly that made my offer more convincing."
         ]
       }
     },
     "failure": {
       "greedy": {
         "Analyst": [
-          "Négociation échouée. La demande de clauses supplémentaires a éveillé une suspicion légitime chez la cible.",
-          "Accord refusé après une exigence jugée incohérente avec l’équilibre initial de l’offre.",
-          "Discussion infructueuse. Je note que l’avidité manifestée a directement compromis la crédibilité de l’offre.",
-          "Terrain d’entente non trouvé. Statistiquement, une telle cupidité affichée devait finir par bloquer l’accord."
+          "Negotiation failed. The request for extra clauses raised legitimate suspicion in the target.",
+          "Deal rejected after a demand deemed inconsistent with the offer's initial balance.",
+          "Discussion unsuccessful. I note the displayed greed directly compromised the offer's credibility.",
+          "Common ground not found. Statistically, such blatant greed was bound to eventually block the deal."
         ],
         "Diplomat": [
-          "Ils n’ont pas accepté… je crois qu’ils ont senti qu’il pensait plus à lui qu’à un accord juste.",
-          "La négociation n’a pas pris. Son intérêt personnel s’est vu, malgré lui.",
-          "Ils ont rejeté l’offre. Peut-être qu’une once de désintéressement aurait changé les choses.",
-          "La conversation s’est bloquée sous le poids de ses propres exigences. C’est dommage, vraiment."
+          "They didn't agree... I think they sensed he was thinking more of himself than of a fair deal.",
+          "The negotiation didn't take. His personal interest showed, despite himself.",
+          "They rejected the offer. Maybe a touch of selflessness would have changed things.",
+          "The conversation stalled under the weight of his own demands. That's a real shame."
         ],
         "Sentinel": [
-          "Négociation échouée. Le journal indique une exigence supplémentaire incompatible avec le mandat établi.",
-          "Accord refusé. Rapport : comportement intéressé de l’opérateur directement lié à l’échec des pourparlers.",
-          "Discussion infructueuse. Je recommande une révision du profil d’opérateur pour les négociations sensibles.",
-          "Terrain d’entente non trouvé, compromis par une cupidité mal dissimulée au moment critique."
+          "Negotiation failed. The log shows an additional demand incompatible with the established mandate.",
+          "Deal rejected. Report: the operator's self-interested behavior directly linked to the talks' failure.",
+          "Discussion unsuccessful. I recommend a review of the operator profile for sensitive negotiations.",
+          "Common ground not found, compromised by poorly hidden greed at the critical moment."
         ],
         "Explorer": [
-          "J’ai peut-être un peu trop demandé. Ils ont senti l’arnaque à des kilomètres.",
-          "Ok, j’ai poussé trop fort, trop vite. Ils se sont braqués direct.",
-          "Je pensais surtout à ce qu’on allait gagner, et ça s’est vu. Grosse erreur.",
-          "J’ai été gourmand, littéralement gourmand, et ça a fait capoter tout l’accord."
+          "Maybe I asked for a bit too much. They smelled the scam from miles away.",
+          "Okay, I pushed too hard, too fast. They shut down immediately.",
+          "I was mostly thinking about what we'd gain, and it showed. Big mistake.",
+          "I got greedy, literally greedy, and it tanked the whole deal."
         ]
       }
     }

@@ -3,56 +3,56 @@
     "success": {
       "observant": {
         "Analyst": [
-          "Entrée réussie. Un schéma de ronde repéré en observant les gardes quelques minutes à peine.",
-          "Pénétration effectuée grâce à un détail que la surveillance automatisée n’avait pas signalé.",
-          "Accès discret obtenu après identification d’un angle mort que personne d’autre n’avait remarqué.",
-          "Zone infiltrée. Je consigne : l’observation directe a surpassé l’analyse des plans fournis."
+          "Entry successful. A patrol pattern spotted after watching the guards for barely a few minutes.",
+          "Penetration achieved thanks to a detail automated surveillance hadn't flagged.",
+          "Discreet access obtained after identifying a blind spot no one else had noticed.",
+          "Zone infiltrated. I record: direct observation outperformed the provided floor plans."
         ],
         "Diplomat": [
-          "Je suis passé sans être vu… il a cette façon de voir ce que les autres laissent filer.",
-          "L’infiltration s’est faite en douceur, guidée par un regard qui sait où et quand regarder.",
-          "Le passage s’est ouvert à lui grâce à un détail qu’il a été seul à observer.",
-          "Je suis passé sans alerte, parce qu’il a su lire le rythme du lieu avant d’agir."
+          "I got through unseen... he has that way of seeing what others let slip by.",
+          "The infiltration went smoothly, guided by an eye that knows where and when to look.",
+          "The passage opened up to him thanks to a detail only he observed.",
+          "I got through without raising an alarm, because he knew how to read the rhythm of the place before acting."
         ],
         "Sentinel": [
-          "Infiltration validée. Note : schéma de surveillance identifié par observation directe, non détecté par les capteurs.",
-          "Accès obtenu via une faille détectée manuellement. Je recommande d’ajouter cette méthode au protocole.",
-          "Zone pénétrée après identification d’un détail négligé par la reconnaissance initiale.",
-          "Passage sécurisé. Rapport : capacité d’observation de l’opérateur directement responsable du succès."
+          "Infiltration validated. Note: surveillance pattern identified through direct observation, not detected by sensors.",
+          "Access obtained via a manually detected flaw. I recommend adding this method to protocol.",
+          "Zone penetrated after identifying a detail overlooked by the initial reconnaissance.",
+          "Passage secured. Report: the operator's observational skill directly responsible for success."
         ],
         "Explorer": [
-          "J’ai remarqué le rythme des gardes, genre vraiment précis. Et j’ai juste suivi le bon moment.",
-          "Y’avait un détail chelou que personne avait vu. Moi si. Voilà, c’est réglé.",
-          "J’ai regardé un peu plus longtemps que d’habitude, et j’ai vu LE passage libre.",
-          "Un petit détail m’a sauté aux yeux, littéralement. Et ça a suffi."
+          "I noticed the guards' rhythm, like really precise. And I just followed the right moment.",
+          "There was a sketchy detail nobody had seen. I did. There, sorted.",
+          "I looked a bit longer than usual, and I saw THE clear path.",
+          "A small detail caught my eye, literally. And that was enough."
         ]
       }
     },
     "failure": {
       "observant": {
         "Analyst": [
-          "Infiltration échouée. Même une observation minutieuse n’a révélé aucune faille exploitable cette fois.",
-          "Accès refusé. Je note l’absence de tout schéma exploitable, malgré une inspection poussée.",
-          "Zone non pénétrée. L’examen attentif de la zone n’a rien révélé d’exploitable.",
-          "Passage compromis. Je consigne : parfois, il n’y a simplement rien à observer."
+          "Infiltration failed. Even meticulous observation revealed no exploitable flaw this time.",
+          "Access denied. I note the absence of any exploitable pattern, despite a thorough inspection.",
+          "Zone not penetrated. Careful examination of the zone revealed nothing exploitable.",
+          "Passage compromised. I record: sometimes, there is simply nothing to observe."
         ],
         "Diplomat": [
-          "Je n’ai pas réussi à passer… même son regard aiguisé n’a rien trouvé cette fois. Ça arrive.",
-          "L’infiltration a été bloquée. Il a cherché, vraiment cherché, mais certains lieux restent illisibles.",
-          "La zone n’a pas voulu s’ouvrir, malgré toute son attention portée à chaque détail.",
-          "Je n’ai pas pu entrer, malgré une observation minutieuse de sa part."
+          "I couldn't get through... even his sharp eye found nothing this time. It happens.",
+          "The infiltration was blocked. He looked, really looked, but some places stay unreadable.",
+          "The zone wouldn't open, despite all his attention to every detail.",
+          "I couldn't get in, despite meticulous observation on his part."
         ],
         "Sentinel": [
-          "Infiltration échouée. Je vais consigner : aucune faille détectable malgré une observation approfondie.",
-          "Accès refusé. Rapport : capacité d’observation de l’opérateur sans effet sur ce site précis.",
-          "Zone non pénétrée, malgré un examen jugé conforme aux standards les plus élevés.",
-          "Passage compromis. Je recommande de considérer ce site comme sans faille observable connue."
+          "Infiltration failed. Logging: no detectable flaw despite thorough observation.",
+          "Access denied. Report: the operator's observational skill had no effect on this specific site.",
+          "Zone not penetrated, despite an examination deemed consistent with the highest standards.",
+          "Passage compromised. I recommend treating this site as having no known observable flaw."
         ],
         "Explorer": [
-          "J’ai tout regardé, genre vraiment tout, et j’ai rien vu d’utile. Ça arrive.",
-          "D’habitude je repère toujours un truc. Là, rien. Nada.",
-          "J’ai cherché le petit détail habituel. Il était pas là cette fois.",
-          "Bon, même moi j’ai des limites, apparemment. Rien à signaler."
+          "I looked at everything, like really everything, and saw nothing useful. It happens.",
+          "I usually always spot something. This time, nothing. Nada.",
+          "I looked for the usual little detail. It wasn't there this time.",
+          "Well, even I have limits, apparently. Nothing to report."
         ]
       }
     }

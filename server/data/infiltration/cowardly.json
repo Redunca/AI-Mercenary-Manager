@@ -3,56 +3,56 @@
     "success": {
       "cowardly": {
         "Analyst": [
-          "Entrée réussie, malgré trois arrêts complets par peur d’être repéré. Résultat conforme.",
-          "Pénétration effectuée depuis une approche excessivement prudente. Efficace, si lente.",
-          "Accès discret obtenu. Je note que la nervosité observée n’a curieusement pas trahi sa présence.",
-          "Zone infiltrée. Je consigne : la peur de l’échec a peut-être évité l’échec lui-même."
+          "Entry successful, despite three complete stops out of fear of being spotted. Result conforms.",
+          "Penetration achieved through an excessively cautious approach. Effective, if slow.",
+          "Discreet access obtained. I note the observed nervousness curiously didn't give away his presence.",
+          "Zone infiltrated. I record: fear of failure may have prevented failure itself."
         ],
         "Diplomat": [
-          "Je suis passé sans être vu… malgré des mains tremblantes tout du long. Je trouve ça courageux, à sa façon.",
-          "L’infiltration s’est faite en douceur, portée par une prudence née de la peur plutôt que de la maîtrise.",
-          "Il avait peur à chaque pas, et pourtant il a continué. C’est ça, le vrai courage.",
-          "Le passage s’est ouvert à lui. Sa peur ne l’a pas arrêté, elle l’a juste rendu plus attentif."
+          "I got through unseen... despite trembling hands the whole way. I find that courageous, in its own way.",
+          "The infiltration went smoothly, carried by a caution born of fear rather than mastery.",
+          "He was afraid at every step, and yet he kept going. That's real courage.",
+          "The passage opened up to him. His fear didn't stop him, it just made him more careful."
         ],
         "Sentinel": [
-          "Infiltration validée. Note : hésitations multiples observées, sans impact sur le résultat final.",
-          "Accès obtenu malgré une nervosité manifeste de l’opérateur tout au long de l’approche.",
-          "Zone pénétrée. Je recommande un accompagnement pour réduire le temps d’exécution futur.",
-          "Passage sécurisé. Rapport : opération réussie en dépit d’un stress opérationnel élevé."
+          "Infiltration validated. Note: multiple hesitations observed, no impact on the final result.",
+          "Access obtained despite the operator's obvious nervousness throughout the approach.",
+          "Zone penetrated. I recommend coaching to reduce future execution time.",
+          "Passage secured. Report: operation successful despite high operational stress."
         ],
         "Explorer": [
-          "J’ai eu la trouille de ma vie à chaque bruit, mais je suis passé sans problème.",
-          "Ok j’étais terrifié tout du long, mais apparemment ça a suffi pour pas se faire prendre.",
-          "J’ai failli tout lâcher genre cinq fois. Mais j’ai continué. Fier de moi, en fait.",
-          "Sérieux j’ai eu la trouille de ma vie, mais je suis dedans. C’est ça qui compte, non ?"
+          "I was scared out of my mind at every noise, but I got through no problem.",
+          "Okay I was terrified the whole time, but apparently it was enough not to get caught.",
+          "I almost quit like five times. But I kept going. Proud of myself, actually.",
+          "Seriously I was scared out of my mind, but I'm in. That's what counts, right?"
         ]
       }
     },
     "failure": {
       "cowardly": {
         "Analyst": [
-          "Infiltration échouée. L’hésitation répétée a dépassé la fenêtre d’action disponible avant détection.",
-          "Accès refusé après un recul prématuré face à un risque initialement gérable.",
-          "Zone non pénétrée. La peur de l’échec a directement précipité l’échec lui-même.",
-          "Passage compromis. Je consigne : trois reculs consécutifs devant des risques mineurs."
+          "Infiltration failed. Repeated hesitation exceeded the available action window before detection.",
+          "Access denied after a premature retreat in the face of an initially manageable risk.",
+          "Zone not penetrated. Fear of failure directly precipitated the failure itself.",
+          "Passage compromised. I record: three consecutive retreats in the face of minor risks."
         ],
         "Diplomat": [
-          "Je n’ai pas réussi à passer… je crois que la peur l’a submergé avant même qu’il ne commence vraiment.",
-          "L’environnement a semblé se refermer. Il a hésité trop longtemps, paralysé par ce qui pourrait mal tourner.",
-          "La zone n’a pas voulu s’ouvrir. Sa terreur, cette fois, l’a emporté sur sa détermination.",
-          "Je n’ai pas pu entrer. Je crois qu’il avait besoin qu’on le rassure avant d’avancer."
+          "I couldn't get through... I think fear overwhelmed him before he'd even really started.",
+          "The environment seemed to close up. He hesitated too long, paralyzed by what could go wrong.",
+          "The zone wouldn't open. His terror, this time, won out over his determination.",
+          "I couldn't get in. I think he needed reassurance before moving forward."
         ],
         "Sentinel": [
-          "Infiltration échouée. Je vais consigner : abandon anticipé sans justification tactique claire.",
-          "Accès refusé. Rapport : l’opérateur a interrompu la progression suite à un stress jugé excessif.",
-          "Zone non pénétrée après un retrait précipité de l’opérateur face à un risque limité.",
-          "Passage compromis. Je recommande une préparation psychologique avant la prochaine infiltration."
+          "Infiltration failed. Logging: premature abandonment with no clear tactical justification.",
+          "Access denied. Report: the operator halted progress following stress deemed excessive.",
+          "Zone not penetrated after a hasty withdrawal by the operator in the face of limited risk.",
+          "Passage compromised. I recommend psychological preparation before the next infiltration."
         ],
         "Explorer": [
-          "J’ai eu trop peur et j’ai tout arrêté avant même que ça devienne vraiment dangereux. Désolé.",
-          "Bon, j’ai paniqué au premier bruit et j’ai reculé. Fallait pas.",
-          "Je pouvais continuer, mais j’ai eu trop les jetons. Du coup, échec total.",
-          "J’ai vu une ombre bizarre et j’ai tout lâché. C’était probablement rien, en fait."
+          "I got too scared and stopped everything before it even got really dangerous. Sorry.",
+          "Okay, I panicked at the first noise and backed off. Shouldn't have.",
+          "I could have kept going, but I chickened out too much. Total failure as a result.",
+          "I saw a weird shadow and dropped everything. It was probably nothing, actually."
         ]
       }
     }

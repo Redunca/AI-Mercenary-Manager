@@ -3,56 +3,56 @@
     "success": {
       "greedy": {
         "Analyst": [
-          "Diagnostic terminé. Des pièces de récupération non autorisées ont été utilisées pour la réparation. Efficace malgré tout.",
-          "Système réparé avec des composants visiblement détournés d’un autre équipement. Résultat conforme.",
-          "Circuit stabilisé, accompagné du prélèvement discret de matériel excédentaire. Je note l’opportunisme.",
-          "Module opérationnel, et l’inventaire personnel de l’opérateur légèrement enrichi au passage."
+          "Diagnostic complete. Unauthorized salvaged parts were used for the repair. Effective nonetheless.",
+          "System repaired with components visibly diverted from other equipment. Result conforms.",
+          "Circuit stabilized, along with a discreet skimming of surplus material. I note the opportunism.",
+          "Module operational, and the operator's personal inventory slightly enriched along the way."
         ],
         "Diplomat": [
-          "La machine s’est ouverte à lui… pendant qu’il évaluait déjà ce qu’il pourrait en tirer.",
-          "Le système fonctionne à nouveau, réparé avec des pièces dont l’origine reste floue.",
-          "Le circuit a accepté ses ajustements. J’espère que ce qu’il a gardé pour lui en valait la peine.",
-          "La réparation a pris, et son regard n’a jamais quitté ce qu’il pouvait garder pour lui."
+          "The machine opened up to him... while he was already assessing what he could get out of it.",
+          "The system works again, repaired with parts of uncertain origin.",
+          "The circuit accepted his adjustments. I hope what he kept for himself was worth it.",
+          "The repair held, and his eyes never left what he could keep for himself."
         ],
         "Sentinel": [
-          "Réparation validée. Note : usage de pièces non répertoriées, origine à clarifier, résultat néanmoins conforme.",
-          "Système stabilisé avec des composants dont la provenance n’a pas été déclarée.",
-          "Circuit opérationnel. Je recommande un inventaire de vérification après cette intervention.",
-          "Module fonctionnel. Rapport : comportement opportuniste de l’opérateur sans impact négatif sur le résultat."
+          "Repair validated. Note: use of unlisted parts, origin to be clarified, result conforms nonetheless.",
+          "System stabilized with components whose provenance wasn't declared.",
+          "Circuit operational. I recommend a verification inventory following this intervention.",
+          "Module functional. Report: opportunistic behavior from the operator with no negative impact on the result."
         ],
         "Explorer": [
-          "J’ai récupéré deux ou trois pièces au passage. Personne va s’en apercevoir, et ça remarche.",
-          "Ok j’ai peut-être piqué un composant sur un autre système. Mais regarde, ça a marché !",
-          "Je pouvais pas laisser ces pièces là sans les utiliser. Efficace ET rentable.",
-          "J’ai réparé le truc, et j’ai gardé le surplus pour moi. Priorités, hein."
+          "I grabbed two or three parts on the way. No one will notice, and it works again.",
+          "Okay, maybe I swiped a component off another system. But look, it worked!",
+          "I couldn't leave those parts lying there unused. Efficient AND profitable.",
+          "I fixed the thing, and I kept the surplus for myself. Priorities, right."
         ]
       }
     },
     "failure": {
       "greedy": {
         "Analyst": [
-          "Diagnostic impossible. L’usage de pièces inadaptées, choisies pour leur valeur de revente, a aggravé la panne.",
-          "Réparation échouée après l’utilisation de composants incompatibles récupérés à des fins personnelles.",
-          "Circuit instable. Je note qu’un comportement opportuniste a directement affecté la qualité de l’intervention.",
-          "Problème non résolu. Je consigne : l’appât du gain a transformé une panne mineure en défaillance majeure."
+          "Diagnostic impossible. The use of ill-suited parts, chosen for resale value, worsened the malfunction.",
+          "Repair failed after the use of incompatible components salvaged for personal gain.",
+          "Circuit unstable. I note opportunistic behavior directly affected the quality of the intervention.",
+          "Problem unresolved. I record: the lure of profit turned a minor malfunction into a major failure."
         ],
         "Diplomat": [
-          "La machine n’a pas voulu coopérer… je crois qu’il pensait plus à ce qu’il pouvait en tirer qu’à la réparer vraiment.",
-          "Le système a rejeté ses ajustements, faits avec des pièces qui n’étaient pas les bonnes.",
-          "Le circuit n’a pas accepté son aide. Peut-être que la précipitation pour le profit y est pour quelque chose.",
-          "La réparation a échoué. Son envie d’en tirer profit a pris le pas sur la rigueur nécessaire."
+          "The machine wouldn't cooperate... I think he was thinking more about what he could get out of it than actually fixing it.",
+          "The system rejected his adjustments, made with parts that weren't the right ones.",
+          "The circuit didn't accept his help. Maybe the rush for profit had something to do with it.",
+          "The repair failed. His desire to profit took precedence over the necessary rigor."
         ],
         "Sentinel": [
-          "Réparation échouée. Le journal indique l’utilisation de pièces inadaptées choisies pour leur valeur marchande.",
-          "Système instable. Rapport : comportement opportuniste de l’opérateur directement lié à l’échec de l’intervention.",
-          "Circuit non opérationnel après l’usage de composants incompatibles récupérés à des fins personnelles.",
-          "Module hors service. Je recommande un contrôle strict des pièces utilisées lors des futures interventions."
+          "Repair failed. The log shows the use of ill-suited parts chosen for their market value.",
+          "System unstable. Report: opportunistic behavior from the operator directly linked to the intervention's failure.",
+          "Circuit non-operational after the use of incompatible components salvaged for personal gain.",
+          "Module out of service. I recommend strict control of parts used in future interventions."
         ],
         "Explorer": [
-          "J’ai utilisé une pièce que j’avais piquée ailleurs. Mauvaise idée, elle allait pas du tout.",
-          "Ok, j’ai voulu économiser en récupérant un truc pas fait pour ça. Ça a mal tourné.",
-          "Je pensais surtout à ce que j’allais y gagner, et ça s’est vu dans le résultat.",
-          "J’ai été gourmand, littéralement, et ça a cassé encore plus le système."
+          "I used a part I'd swiped elsewhere. Bad idea, it didn't fit at all.",
+          "Okay, I tried to save money by grabbing something not made for this. It went badly.",
+          "I was mostly thinking about what I'd gain, and it showed in the result.",
+          "I got greedy, literally, and it broke the system even more."
         ]
       }
     }

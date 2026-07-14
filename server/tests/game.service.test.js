@@ -327,7 +327,7 @@ describe('GameService', () => {
       expect(state.missionTemplates).toHaveLength(25)
     })
 
-    test('persiste le planet object (avec tags) de chaque modèle de mission généré', async () => {
+    test('persists the planet object (with tags) of each generated mission template', async () => {
       // Reproduces exactly what seedMissionTemplates() does internally (same
       // seed, same loadData()/generateMission() calls) so we can assert the
       // persisted planet matches what the generator actually produced,
@@ -359,7 +359,7 @@ describe('GameService', () => {
         })
     })
 
-    test('est idempotent : un second appel ne recrée ni joueur ni recrue supplémentaire', async () => {
+    test('is idempotent: a second call does not recreate a player or extra recruit', async () => {
       await GameService.initGame()
       await GameService.initGame()
 

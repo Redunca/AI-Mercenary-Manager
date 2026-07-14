@@ -3,56 +3,56 @@
     "success": {
       "resilient": {
         "Analyst": [
-          "Cible neutralisée. J’avais projeté un échec probable après le premier coup encaissé. Erreur de calcul, apparemment.",
-          "Combat terminé. Sa capacité à absorber les dégâts dépasse toute norme physiologique connue.",
-          "Menace éliminée. Je note un seuil de résistance à la douleur statistiquement improbable.",
-          "Affrontement clos. Ce qui aurait dû l’immobiliser ne l’a même pas ralenti. Fascinant, en un sens."
+          "Target neutralized. I had projected likely failure after the first hit taken. Miscalculation, apparently.",
+          "Combat concluded. His capacity to absorb damage exceeds any known physiological norm.",
+          "Threat eliminated. I note a statistically improbable pain tolerance threshold.",
+          "Engagement closed. What should have immobilized him didn't even slow him down. Fascinating, in a way."
         ],
         "Diplomat": [
-          "Le combat s’est terminé… il a tout encaissé sans jamais céder. Il y a quelque chose de touchant là-dedans.",
-          "La bataille est finie. Je crois que son corps a simplement refusé d’abandonner son esprit.",
-          "L’adversaire est tombé, et lui tient encore debout, contre toute logique. Je respecte ça profondément.",
-          "Le conflit s’est apaisé. Sa force intérieure a visiblement dépassé ce que son corps pouvait promettre."
+          "The fight ended... he took everything without ever giving in. There's something moving about that.",
+          "The battle is over. I think his body simply refused to abandon his spirit.",
+          "The opponent fell, and he's still standing, against all logic. I deeply respect that.",
+          "The conflict has settled. His inner strength clearly exceeded what his body could promise."
         ],
         "Sentinel": [
-          "Engagement réussi. Note : l’opérateur a continué le combat malgré des dégâts jugés critiques.",
-          "Menace éliminée. Je recommande une étude de sa résistance physique pour les futurs protocoles.",
-          "Combat terminé. L’opérateur a dépassé les seuils de tolérance standards sans interruption d’activité.",
-          "Opposition neutralisée. Rapport signalant une endurance hors norme sur l’ensemble de l’engagement."
+          "Engagement successful. Note: the operator continued the fight despite damage deemed critical.",
+          "Threat eliminated. I recommend studying his physical resilience for future protocols.",
+          "Combat concluded. The operator exceeded standard tolerance thresholds without interruption of activity.",
+          "Opposition neutralized. Report notes off-the-charts endurance across the entire engagement."
         ],
         "Explorer": [
-          "J’ai pris des coups que j’aurais jamais dû encaisser, et je suis toujours debout. Bizarre mais cool.",
-          "Franchement, ça aurait dû me mettre KO trois fois. Mais non. Je suis increvable, apparemment.",
-          "J’ai limite rien senti. Enfin si, mais bon, je suis encore là, donc ça compte.",
-          "Ils ont tout donné et je suis quand même debout. Je crois que je suis fait en pierre."
+          "I took hits I should never have survived, and I'm still standing. Weird but cool.",
+          "Honestly, that should have knocked me out three times over. But no. I'm indestructible, apparently.",
+          "I barely felt it. Okay, I felt it, but I'm still here, so that counts.",
+          "They gave it everything and I'm still standing. Pretty sure I'm made of stone."
         ]
       }
     },
     "failure": {
       "resilient": {
         "Analyst": [
-          "Échec tactique. Même une endurance exceptionnelle a une limite, atteinte aujourd’hui.",
-          "Combat perdu. Je note que la résistance observée n’a fait que retarder l’issue, pas l’éviter.",
-          "Opposition non neutralisée. Le seuil de tolérance a été franchi malgré une capacité d’absorption élevée.",
-          "Affrontement défavorable. Je consigne : tenir plus longtemps n’a pas suffi à inverser l’issue."
+          "Tactical failure. Even exceptional endurance has a limit, reached today.",
+          "Combat lost. I note the observed resilience only delayed the outcome, not avoided it.",
+          "Opposition not neutralized. The tolerance threshold was crossed despite high absorption capacity.",
+          "Unfavorable engagement. I record: holding out longer wasn't enough to reverse the outcome."
         ],
         "Diplomat": [
-          "Le combat s’est mal terminé… mais il a tenu bien plus longtemps que quiconque ne l’aurait espéré.",
-          "La bataille est perdue. Je crois que même sa force n’a pas suffi, cette fois.",
-          "L’adversaire a eu le dessus, après un combat qu’il n’aurait jamais dû laisser durer si longtemps.",
-          "La confrontation a échoué. Il a tout donné jusqu’au bout, et ça, je ne l’oublierai pas."
+          "The fight ended badly... but he held out far longer than anyone could have hoped.",
+          "The battle is lost. I think even his strength wasn't enough, this time.",
+          "The opponent got the upper hand, after a fight he should never have let drag on so long.",
+          "The confrontation failed. He gave everything until the end, and I won't forget that."
         ],
         "Sentinel": [
-          "Engagement échoué. Le journal indique une résistance prolongée n’ayant finalement pas changé l’issue.",
-          "Combat perdu. Rapport : seuil d’endurance dépassé après une exposition prolongée aux dégâts.",
-          "Menace non éliminée. Je recommande un suivi médical malgré l’absence apparente de séquelles majeures.",
-          "Opposition non maîtrisée. La capacité d’encaissement de l’opérateur a retardé, sans empêcher, l’échec."
+          "Engagement failed. The log shows prolonged resistance that ultimately didn't change the outcome.",
+          "Combat lost. Report: endurance threshold exceeded after prolonged exposure to damage.",
+          "Threat not eliminated. I recommend a medical follow-up despite no apparent major injuries.",
+          "Opposition not controlled. The operator's capacity to absorb damage delayed, but didn't prevent, the failure."
         ],
         "Explorer": [
-          "Ok là j’ai vraiment tout pris, et cette fois ça a suffi à m’arrêter. Même moi j’ai des limites.",
-          "J’ai tenu super longtemps, genre vraiment longtemps. Mais bon, à un moment faut céder.",
-          "Je pensais pouvoir tout encaisser. Apparemment y’a un plafond. Je l’ai trouvé aujourd’hui.",
-          "J’ai continué bien après que j’aurais dû arrêter. Résultat : ça a fini par me rattraper."
+          "Okay, I really took everything this time, and it was finally enough to stop me. Even I have limits.",
+          "I held out super long, like really long. But at some point you have to give.",
+          "I thought I could take anything. Turns out there's a ceiling. Found it today.",
+          "I kept going well after I should have stopped. Result: it caught up with me eventually."
         ]
       }
     }

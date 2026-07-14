@@ -3,56 +3,56 @@
     "success": {
       "proud": {
         "Analyst": [
-          "Diagnostic terminé sans consultation du manuel, jugée superflue par l’opérateur. Résultat conforme malgré tout.",
-          "Système réparé selon une méthode personnelle, refusant toute procédure standard. Efficace, contre toute attente.",
-          "Circuit stabilisé. Je note un refus catégorique de demander assistance, sans conséquence ici.",
-          "Module opérationnel. Statistiquement, cette confiance aurait dû produire une erreur. Ce n’est pas le cas."
+          "Diagnostic complete without consulting the manual, deemed superfluous by the operator. Result conforms nonetheless.",
+          "System repaired using a personal method, refusing any standard procedure. Effective, against all odds.",
+          "Circuit stabilized. I note a categorical refusal to ask for assistance, without consequence here.",
+          "Module operational. Statistically, this confidence should have caused an error. It didn't."
         ],
         "Diplomat": [
-          "La machine s’est ouverte à lui… porté par une assurance qui ne doutait jamais d’elle-même.",
-          "Le système fonctionne à nouveau, réparé avec une certitude presque déconcertante.",
-          "Le circuit a accepté ses ajustements, imposés avec une confiance inébranlable.",
-          "La réparation a pris. Son aplomb, pour une fois, n’a fait qu’accompagner sa justesse."
+          "The machine opened up to him... carried by a confidence that never doubted itself.",
+          "The system works again, repaired with an almost unsettling certainty.",
+          "The circuit accepted his adjustments, made with unshakable confidence.",
+          "The repair held. His poise, for once, only matched his accuracy."
         ],
         "Sentinel": [
-          "Réparation validée. Note : procédure standard ignorée au profit d’une méthode personnelle, résultat conforme.",
-          "Système stabilisé sans consultation de la documentation technique disponible.",
-          "Circuit opérationnel malgré un refus d’assistance que je qualifierais d’excessif au vu du contexte.",
-          "Module fonctionnel. Rapport : assurance de l’opérateur ayant, cette fois, été justifiée."
+          "Repair validated. Note: standard procedure ignored in favor of a personal method, result conforms.",
+          "System stabilized without consulting available technical documentation.",
+          "Circuit operational despite a refusal of assistance I'd call excessive given the context.",
+          "Module functional. Report: the operator's confidence was, this time, justified."
         ],
         "Explorer": [
-          "J’ai pas eu besoin du manuel, j’ai juste su quoi faire. Je me trompe jamais avec ces trucs-là.",
-          "Franchement, avec mon instinct, pas besoin d’aide extérieure. Et voilà, j’avais raison.",
-          "Je leur ai dit que je gérais tout seul. Et bah oui, c’était vrai.",
-          "Pas besoin de demander de l’aide. Je sais ce que je fais."
+          "Didn't need the manual, just knew what to do. Never wrong about this stuff.",
+          "Honestly, with my instincts, no need for outside help. And there you go, I was right.",
+          "I told them I could handle it alone. And yeah, it was true.",
+          "No need to ask for help. I know what I'm doing."
         ]
       }
     },
     "failure": {
       "proud": {
         "Analyst": [
-          "Diagnostic impossible. Le refus de consulter la documentation a directement causé une erreur de manipulation.",
-          "Réparation échouée après un refus catégorique de reconsidérer une première approche erronée.",
-          "Circuit instable. Je note qu’un excès de confiance a empêché toute correction en cours d’intervention.",
-          "Problème non résolu. Je consigne : l’assurance affichée n’était pas corrélée à la compétence technique requise."
+          "Diagnostic impossible. The refusal to consult documentation directly caused a handling error.",
+          "Repair failed after a categorical refusal to reconsider an initial, flawed approach.",
+          "Circuit unstable. I note excess confidence prevented any correction during the intervention.",
+          "Problem unresolved. I record: the displayed confidence wasn't matched by the required technical skill."
         ],
         "Diplomat": [
-          "La machine n’a pas voulu coopérer… je crois qu’il était trop certain de lui pour vraiment l’écouter.",
-          "Le système a rejeté ses ajustements. Son assurance, cette fois, a fermé la porte plutôt que de l’ouvrir.",
-          "Le circuit n’a pas accepté son aide. Peut-être qu’un peu d’humilité aurait mieux servi cette réparation.",
-          "La réparation a échoué. Je crois qu’il avait besoin d’admettre qu’il pouvait se tromper."
+          "The machine wouldn't cooperate... I think he was too sure of himself to really listen to it.",
+          "The system rejected his adjustments. His confidence, this time, closed the door instead of opening it.",
+          "The circuit didn't accept his help. Maybe a bit of humility would have served this repair better.",
+          "The repair failed. I think he needed to admit he could be wrong."
         ],
         "Sentinel": [
-          "Réparation échouée. Je vais consigner : refus d’assistance malgré un doute technique raisonnable.",
-          "Système instable. Rapport : excès de confiance de l’opérateur directement lié à l’échec de l’intervention.",
-          "Circuit non opérationnel après un diagnostic initial erroné maintenu sans remise en question.",
-          "Module hors service. Je recommande un protocole de double vérification obligatoire avant intervention."
+          "Repair failed. Logging: refusal of assistance despite reasonable technical doubt.",
+          "System unstable. Report: the operator's excess confidence directly linked to the intervention's failure.",
+          "Circuit non-operational after an initial flawed diagnosis maintained without reconsideration.",
+          "Module out of service. I recommend a mandatory double-check protocol before intervention."
         ],
         "Explorer": [
-          "J’étais sûr de moi, tellement sûr. Et j’avais tort. Ça pique.",
-          "Je me trompe jamais avec la mécanique, sauf que là, si.",
-          "J’ai pas voulu demander d’aide. Grosse erreur, avec le recul.",
-          "Mon assurance a écrit un chèque que la machine a pas voulu encaisser."
+          "I was sure of myself, so sure. And I was wrong. That stings.",
+          "I'm never wrong about mechanics, except this time, I was.",
+          "I didn't want to ask for help. Big mistake, in hindsight.",
+          "My confidence wrote a check the machine wouldn't cash."
         ]
       }
     }

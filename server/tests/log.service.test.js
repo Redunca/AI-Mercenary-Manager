@@ -159,7 +159,7 @@ describe('buildPhaseLogs', () => {
       },
     })
 
-    expect(mission[0].message).toContain('[Patrouille de couloir · ROUTINE]')
+    expect(mission[0].message).toContain('[Corridor Patrol · ROUTINE]')
     expect(mission[2].tag).toBe('[KADE]')
     expect(global[0].message).toContain('Kade')
   })
@@ -171,7 +171,7 @@ describe('buildPhaseLogs', () => {
       context: { ...base.context, planet: { id: 'p1', name: 'Kessarine', tags: ['isolated'] } },
     })
 
-    const sysText = mission[0].message.replace('[Patrouille de couloir · ROUTINE] ', '')
+    const sysText = mission[0].message.replace('[Corridor Patrol · ROUTINE] ', '')
     expect(planetTags.isolated.sys).toContain(sysText)
     expect(planetTags.isolated.ia).toContain(mission[1].message)
   })
@@ -183,10 +183,10 @@ describe('buildPhaseLogs', () => {
       context: { ...base.context, planet: { id: 'p2', name: 'Nowhere', tags: ['not-a-real-tag'] } },
     })
 
-    const sysText = mission[0].message.replace('[Patrouille de couloir · ROUTINE] ', '')
+    const sysText = mission[0].message.replace('[Corridor Patrol · ROUTINE] ', '')
     expect([
-      'Unité en déplacement vers la zone d\'opération.',
-      'Départ confirmé. Aucun incident au départ.',
+      'Unit moving toward the operation zone.',
+      'Departure confirmed. No incidents on launch.',
     ]).toContain(sysText)
   })
 })
@@ -320,7 +320,7 @@ describe('buildEventResultLogs', () => {
 
     expect(planetTags.isolated.ia).toContain(mission[1].message)
     expect(mission[0].message).toContain('1d20(15) + 1d4(3) = 18 vs DC 10')
-    expect(mission[0].message).toContain('SUCCÈS')
+    expect(mission[0].message).toContain('SUCCESS')
   })
 
   test('falls back to the generic [IA] pool when the planet has no matching tag content', () => {
@@ -331,7 +331,7 @@ describe('buildEventResultLogs', () => {
       context: { ...baseArgs.context, planet: { id: 'p2', name: 'Nowhere', tags: ['not-a-real-tag'] } },
     })
 
-    expect(['Objectif intermédiaire validé.', 'Résultat conforme aux projections.', 'Exécution nominale.'])
+    expect(['Intermediate objective validated.', 'Result matches projections.', 'Nominal execution.'])
       .toContain(mission[1].message)
   })
 })

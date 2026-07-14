@@ -3,56 +3,56 @@
     "success": {
       "brash": {
         "Analyst": [
-          "Survie assurée. Aucune évaluation préalable du terrain effectuée. Statistiquement, ça n’aurait pas dû fonctionner.",
-          "Menace évitée en ignorant délibérément trois signaux d’alerte environnementaux évidents.",
-          "Situation stabilisée via une approche que je qualifierais d’imprudente. Efficace, mais non reproductible sans risque.",
-          "Zone sécurisée. Je consigne : la précipitation a court-circuité toute prudence, sans conséquence cette fois."
+          "Survival ensured. No prior terrain assessment carried out. Statistically, this shouldn't have worked.",
+          "Threat avoided by deliberately ignoring three obvious environmental warning signals.",
+          "Situation stabilized via an approach I'd call reckless. Effective, but risky to repeat.",
+          "Zone secured. I record: haste short-circuited all caution, without consequence this time."
         ],
         "Diplomat": [
-          "Nous avons traversé l’épreuve… avant même qu’il n’ait fini d’évaluer le danger réel. Étonnant.",
-          "La nature s’est apaisée autour de nous. Il a foncé sans hésiter, et parfois, l’audace suffit à elle seule.",
-          "Le danger s’est dissipé, plus vite que prévu. Son impatience a, pour une fois, servi la cause.",
-          "Nous sommes en sécurité, portés par l’élan de sa précipitation. Risqué, mais beau à voir."
+          "We got through the ordeal... before he'd even finished assessing the real danger. Astonishing.",
+          "Nature settled around us. He charged in without hesitation, and sometimes boldness alone is enough.",
+          "The danger dissipated, faster than expected. His impatience served the cause, for once.",
+          "We're safe, carried by the force of his haste. Risky, but beautiful to watch."
         ],
         "Sentinel": [
-          "Survie validée. Note : évaluation du terrain ignorée, résultat néanmoins conforme.",
-          "Situation stabilisée via une méthode non planifiée. Je recommande fortement de ne pas généraliser cette approche.",
-          "Péril contourné par une tentative directe, sans préparation préalable. Succès malgré le risque encouru.",
-          "Zone sécurisée. Rapport : précipitation notable de l’opérateur, issue favorable par chance opérationnelle."
+          "Survival validated. Note: terrain assessment skipped, result nonetheless conforming.",
+          "Situation stabilized via an unplanned method. I strongly recommend not generalizing this approach.",
+          "Danger avoided through a direct attempt, with no prior preparation. Success despite the risk taken.",
+          "Zone secured. Report: notable haste from the operator, favorable outcome by operational luck."
         ],
         "Explorer": [
-          "J’ai foncé sans réfléchir et ça a marché du premier coup. Qui a besoin d’un plan ?",
-          "Zéro préparation, cent pour cent d’action. Et apparemment ça suffit parfois.",
-          "J’ai sauté sans regarder en bas. On est vivants, donc tant mieux.",
-          "J’avais pas de plan, juste de l’élan. Et l’élan a payé."
+          "I charged in without thinking and it worked on the first try. Who needs a plan?",
+          "Zero preparation, one hundred percent action. And apparently that's enough sometimes.",
+          "I jumped without looking down. We're alive, so good enough.",
+          "I had no plan, just momentum. And the momentum paid off."
         ]
       }
     },
     "failure": {
       "brash": {
         "Analyst": [
-          "Survie compromise. L’absence totale d’évaluation du terrain a directement déclenché un danger évitable.",
-          "Menace non évitée après une progression précipitée ayant ignoré des signaux d’alerte évidents.",
-          "Situation instable. Je note qu’une préparation minimale aurait probablement changé l’issue.",
-          "Péril non contourné. Je consigne : la précipitation a transformé un risque gérable en échec certain."
+          "Survival compromised. The total absence of terrain assessment directly triggered an avoidable danger.",
+          "Threat not avoided after a rushed advance that ignored obvious warning signals.",
+          "Situation unstable. I note that minimal preparation would likely have changed the outcome.",
+          "Danger not avoided. I record: haste turned a manageable risk into a certain failure."
         ],
         "Diplomat": [
-          "Nous n’avons pas traversé l’épreuve… il a foncé sans prendre le temps d’écouter l’environnement d’abord.",
-          "La nature s’est refermée sur nous. Son impatience a peut-être précipité ce que la patience aurait évité.",
-          "Le danger n’a pas voulu se dissiper, provoqué par une approche trop brusque.",
-          "Nous ne sommes pas en sécurité. Je crois qu’il fallait y aller plus doucement."
+          "We didn't get through the ordeal... he charged in without taking the time to listen to the environment first.",
+          "Nature closed in on us. His impatience may have precipitated what patience would have avoided.",
+          "The danger wouldn't dissipate, provoked by an approach that was too abrupt.",
+          "We are not safe. I think it needed a gentler touch."
         ],
         "Sentinel": [
-          "Survie échouée. Je vais consigner : absence d’évaluation préalable, danger déclenché prématurément.",
-          "Situation instable. Rapport : précipitation de l’opérateur directement liée à l’aggravation du péril.",
-          "Péril non contourné après une approche jugée non conforme au protocole minimal de prudence.",
-          "Zone non sécurisée. Je recommande une phase d’évaluation obligatoire avant toute prochaine exposition."
+          "Survival failed. Logging: no prior assessment, danger triggered prematurely.",
+          "Situation unstable. Report: the operator's haste directly linked to the worsening of the danger.",
+          "Danger not avoided after an approach deemed non-compliant with minimal caution protocol.",
+          "Zone not secured. I recommend a mandatory assessment phase before any next exposure."
         ],
         "Explorer": [
-          "J’ai foncé sans réfléchir, comme d’habitude. Sauf que cette fois, ça a pas payé du tout.",
-          "Zéro plan, zéro résultat. Je vois le lien maintenant.",
-          "J’ai sauté sans regarder, et cette fois y’avait vraiment un problème en bas.",
-          "Peut-être que j’aurais dû regarder avant de foncer. Peut-être."
+          "I charged in without thinking, like always. Except this time it didn't pay off at all.",
+          "Zero plan, zero result. I see the connection now.",
+          "I jumped without looking, and this time there really was a problem below.",
+          "Maybe I should have looked before charging in. Maybe."
         ]
       }
     }

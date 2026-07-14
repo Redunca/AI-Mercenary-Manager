@@ -3,64 +3,64 @@
     "success": {
       "bloodlust": {
         "Analyst": [
-          "Cible neutralisée. Je note une accélération cardiaque nettement supérieure à la moyenne — enthousiasme confirmé.",
-          "Combat terminé. Statistiquement, il aurait pu s’arrêter plus tôt. Il a choisi de ne pas le faire.",
-          "Menace éliminée. J’observe une réticence manifeste à cesser l’engagement une fois l’objectif atteint.",
-          "Affrontement clos. Je consigne : dépense d’énergie largement supérieure au nécessaire.",
-          "Opposition neutralisée. Le sourire post-combat est, je le note, statistiquement anormal."
+          "Target neutralized. I note a heart rate markedly above average — enthusiasm confirmed.",
+          "Combat concluded. Statistically, it could have ended sooner. He chose not to.",
+          "Threat eliminated. I observe a clear reluctance to disengage once the objective was met.",
+          "Engagement closed. I record: energy expenditure well beyond what was necessary.",
+          "Opposition neutralized. The post-combat smile is, I note, statistically abnormal."
         ],
         "Diplomat": [
-          "Le combat s’est achevé… un peu tard, à mon goût. Il semblait vouloir prolonger l’instant.",
-          "La bataille est finie, mais je sens qu’il aurait continué si on l’avait laissé faire.",
-          "L’adversaire s’est incliné. Lui, en revanche, cherchait encore du regard un autre adversaire.",
-          "Le conflit s’est résolu. Je perçois chez lui une joie que je préfère ne pas trop questionner.",
-          "La confrontation est terminée. Il a l’air presque déçu que ça s’arrête."
+          "The fight ended... a little late for my taste. He seemed to want to prolong the moment.",
+          "The battle is over, but I sense he would have kept going if we'd let him.",
+          "The opponent yielded. He, however, was already looking around for another one.",
+          "The conflict is resolved. I sense a joy in him I'd rather not question too closely.",
+          "The confrontation is over. He looks almost disappointed it's stopping."
         ],
         "Sentinel": [
-          "Engagement réussi. Je note un dépassement du seuil d’engagement recommandé de 40%.",
-          "Menace éliminée. Recommandation : encadrement renforcé lors du prochain engagement armé.",
-          "Combat terminé. L’opérateur a poursuivi l’affrontement au-delà de la neutralisation effective.",
-          "Opposition neutralisée. Rapport signalant un enthousiasme incompatible avec le protocole standard.",
-          "Affrontement clos. Consigne ajoutée au dossier : surveiller la propension au combat prolongé."
+          "Engagement successful. I note a 40% overshoot of the recommended engagement threshold.",
+          "Threat eliminated. Recommendation: reinforced oversight for the next armed engagement.",
+          "Combat concluded. The operator continued the fight past effective neutralization.",
+          "Opposition neutralized. Report flags enthusiasm incompatible with standard protocol.",
+          "Engagement closed. Note added to file: monitor tendency toward prolonged combat."
         ],
         "Explorer": [
-          "Ouais ! Encore un ! Qui est le suivant ?",
-          "J’ai adoré ça. Sérieusement, on peut en refaire un tout de suite ?",
-          "Je crois que j’ai crié de joie à un moment. Aucun regret.",
-          "Franchement ? Meilleur moment de la journée. On y retourne quand ?",
-          "Ils sont tombés et j’étais presque triste que ça s’arrête."
+          "Yeah! Another one! Who's next?",
+          "I loved that. Seriously, can we do it again right now?",
+          "Pretty sure I whooped with joy at some point. No regrets.",
+          "Honestly? Best moment of the day. When do we go back?",
+          "They went down and I was almost sad it was over."
         ]
       }
     },
     "failure": {
       "bloodlust": {
         "Analyst": [
-          "Échec tactique. Je note qu’il a ignoré trois occasions de repli en faveur de l’engagement continu.",
-          "Combat perdu. L’analyse indique une escalade injustifiée du niveau d’agressivité.",
-          "Opposition non neutralisée. Le comportement observé relève davantage de l’instinct que de la stratégie.",
-          "Affrontement défavorable. Je consigne : la retraite était une option. Elle n’a pas été envisagée.",
-          "Engagement échoué. Statistiquement, continuer à ce stade réduisait les chances de survie."
+          "Tactical failure. I note he ignored three opportunities to fall back in favor of continued engagement.",
+          "Combat lost. Analysis indicates an unjustified escalation in aggression level.",
+          "Opposition not neutralized. The observed behavior owes more to instinct than strategy.",
+          "Unfavorable engagement. I record: retreat was an option. It was not considered.",
+          "Engagement failed. Statistically, continuing at this stage reduced survival odds."
         ],
         "Diplomat": [
-          "Le combat s’est mal terminé… je crois qu’il ne voulait tout simplement pas s’arrêter.",
-          "La bataille est perdue. Je sens qu’une partie de lui la regrette moins que moi.",
-          "L’adversaire a eu le dessus. Lui, semble déjà penser au prochain affrontement.",
-          "La confrontation a échoué. Peut-être qu’il faudrait apprendre à laisser un combat finir de lui-même.",
-          "Le conflit s’est terminé dans la douleur. Ce n’est pas la première fois que ça arrive avec lui."
+          "The fight ended badly... I think he simply didn't want to stop.",
+          "The battle is lost. Part of him seems to regret it less than I do.",
+          "The opponent got the upper hand. He already seems to be thinking about the next fight.",
+          "The confrontation failed. Maybe he needs to learn to let a fight end on its own.",
+          "The conflict ended in pain. It's not the first time this has happened with him."
         ],
         "Sentinel": [
-          "Engagement échoué. Le journal indique un refus de désengagement malgré l’ordre de repli.",
-          "Combat perdu. Rapport d’incident : comportement à risque, insubordination tactique mineure.",
-          "Menace non éliminée. Je recommande une évaluation du contrôle des impulsions avant la prochaine mission.",
-          "Opposition non maîtrisée. L’escalade délibérée du conflit a aggravé l’issue de l’engagement.",
-          "Affrontement défavorable. Consigne au dossier : troisième incident du même type ce trimestre."
+          "Engagement failed. The log shows a refusal to disengage despite the fallback order.",
+          "Combat lost. Incident report: risky behavior, minor tactical insubordination.",
+          "Threat not eliminated. I recommend an impulse-control evaluation before the next mission.",
+          "Opposition not controlled. Deliberate escalation of the conflict worsened the engagement's outcome.",
+          "Unfavorable engagement. Note added to file: third incident of this type this quarter."
         ],
         "Explorer": [
-          "Bon… j’aurais peut-être dû arrêter avant. Mais c’était trop tentant.",
-          "Ok, ça a mal tourné. Je referais pareil, en fait.",
-          "J’ai peut-être un peu trop insisté sur ce coup-là. Un peu.",
-          "Aïe. Bon, au moins c’était intense.",
-          "Je savais que je pouvais gagner. J’avais juste pas prévu… ça."
+          "Well... I probably should have stopped earlier. But it was too tempting.",
+          "Okay, that went badly. I'd do it exactly the same again, honestly.",
+          "Maybe I pushed it a little too far on that one. A little.",
+          "Ouch. Well, at least it was intense.",
+          "I knew I could win. I just didn't see... that coming."
         ]
       }
     }

@@ -3,56 +3,56 @@
     "success": {
       "observant": {
         "Analyst": [
-          "Diagnostic terminé. Un défaut de soudure invisible au scan a été repéré à l’œil nu en quelques secondes.",
-          "Système réparé grâce à un détail que l’analyse automatisée n’avait pas signalé.",
-          "Circuit stabilisé après identification d’une anomalie qu’aucun capteur standard n’avait détectée.",
-          "Module opérationnel. Je consigne : l’observation humaine a surpassé l’analyse algorithmique cette fois."
+          "Diagnostic complete. A solder defect invisible to the scan was spotted with the naked eye in seconds.",
+          "System repaired thanks to a detail automated analysis hadn't flagged.",
+          "Circuit stabilized after identifying an anomaly no standard sensor had detected.",
+          "Module operational. I record: human observation outperformed algorithmic analysis this time."
         ],
         "Diplomat": [
-          "La machine s’est ouverte à lui… il a vu quelque chose que personne d’autre n’avait remarqué.",
-          "Le système fonctionne à nouveau grâce à un détail qu’il a été seul à observer.",
-          "Le circuit a accepté ses ajustements, guidés par un regard qui sait où chercher.",
-          "La réparation a pris parce qu’il a su voir au-delà de l’évident."
+          "The machine opened up to him... he saw something no one else had noticed.",
+          "The system works again thanks to a detail only he observed.",
+          "The circuit accepted his adjustments, guided by an eye that knows where to look.",
+          "The repair held because he knew how to see beyond the obvious."
         ],
         "Sentinel": [
-          "Réparation validée. Note : défaut identifié par observation directe, non répertorié par les outils standards.",
-          "Système stabilisé via une faille détectée manuellement. Je recommande d’ajouter cette méthode au protocole.",
-          "Circuit opérationnel après identification d’un détail négligé par le diagnostic automatique.",
-          "Module fonctionnel. Rapport : capacité d’observation de l’opérateur directement responsable du succès."
+          "Repair validated. Note: flaw identified through direct observation, not catalogued by standard tools.",
+          "System stabilized via a manually detected flaw. I recommend adding this method to protocol.",
+          "Circuit operational after identifying a detail overlooked by the automatic diagnostic.",
+          "Module functional. Report: the operator's observational skill directly responsible for success."
         ],
         "Explorer": [
-          "J’ai remarqué un truc bizarre sur un fil, tout petit. Et bingo, ça remarche.",
-          "Y’avait un détail chelou que personne avait vu. Moi si. Voilà, c’est réglé.",
-          "J’ai regardé un peu plus longtemps que d’habitude, et j’ai vu LE truc cassé.",
-          "Un petit détail m’a sauté aux yeux, littéralement. Et ça a suffi."
+          "I noticed something weird on a wire, tiny thing. And bingo, it works again.",
+          "There was a sketchy detail nobody had seen. I did. There, sorted.",
+          "I looked a bit longer than usual, and I saw THE broken thing.",
+          "A small detail caught my eye, literally. And that was enough."
         ]
       }
     },
     "failure": {
       "observant": {
         "Analyst": [
-          "Diagnostic impossible. Même une observation minutieuse n’a révélé aucune anomalie exploitable cette fois.",
-          "Réparation échouée. Je note l’absence de tout détail anormal détectable, malgré une inspection poussée.",
-          "Circuit instable. L’examen attentif du système n’a rien révélé d’exploitable.",
-          "Problème non résolu. Je consigne : parfois, il n’y a simplement rien à observer."
+          "Diagnostic impossible. Even meticulous observation revealed no exploitable anomaly this time.",
+          "Repair failed. I note the absence of any detectable abnormal detail, despite a thorough inspection.",
+          "Circuit unstable. Careful examination of the system revealed nothing exploitable.",
+          "Problem unresolved. I record: sometimes, there is simply nothing to observe."
         ],
         "Diplomat": [
-          "La machine n’a pas voulu coopérer… même son regard aiguisé n’a rien trouvé cette fois. Ça arrive.",
-          "Le système a rejeté ses ajustements. Il a cherché, vraiment cherché, mais certaines pannes restent muettes.",
-          "Le circuit n’a pas accepté son aide, malgré toute son attention.",
-          "La réparation a échoué, malgré une observation minutieuse de sa part."
+          "The machine wouldn't cooperate... even his sharp eye found nothing this time. It happens.",
+          "The system rejected his adjustments. He looked, really looked, but some malfunctions stay silent.",
+          "The circuit didn't accept his help, despite all his attention.",
+          "The repair failed, despite meticulous observation on his part."
         ],
         "Sentinel": [
-          "Réparation échouée. Je vais consigner : aucune anomalie détectable malgré une observation approfondie.",
-          "Système instable. Rapport : capacité d’observation de l’opérateur sans effet sur cette panne précise.",
-          "Circuit non opérationnel, malgré un examen jugé conforme aux standards les plus élevés.",
-          "Module hors service. Je recommande de considérer cette panne comme sans cause observable identifiée."
+          "Repair failed. Logging: no detectable anomaly despite thorough observation.",
+          "System unstable. Report: the operator's observational skill had no effect on this specific malfunction.",
+          "Circuit non-operational, despite an examination deemed consistent with the highest standards.",
+          "Module out of service. I recommend treating this malfunction as having no identified observable cause."
         ],
         "Explorer": [
-          "J’ai tout regardé, genre vraiment tout, et j’ai rien vu d’utile. Ça arrive.",
-          "D’habitude je repère toujours un truc. Là, rien. Nada.",
-          "J’ai cherché le petit détail habituel. Il était pas là cette fois.",
-          "Bon, même moi j’ai des limites, apparemment. Rien à signaler."
+          "I looked at everything, like really everything, and saw nothing useful. It happens.",
+          "I usually always spot something. This time, nothing. Nada.",
+          "I looked for the usual little detail. It wasn't there this time.",
+          "Well, even I have limits, apparently. Nothing to report."
         ]
       }
     }

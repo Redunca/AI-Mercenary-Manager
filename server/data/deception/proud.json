@@ -3,56 +3,56 @@
     "success": {
       "proud": {
         "Analyst": [
-          "Manipulation réussie. Il a présenté son mensonge comme une évidence indiscutable. Ils n’ont pas osé le contredire.",
-          "Mensonge accepté, porté par une assurance qui ne laissait littéralement aucune place au doute.",
-          "Couverture validée. Son ego a rendu le récit si affirmatif qu’il en devenait presque crédible par défaut.",
-          "Illusion maintenue. Je note que la confiance excessive affichée a compensé plusieurs incohérences mineures."
+          "Manipulation successful. He presented his lie as indisputable fact. They didn't dare contradict him.",
+          "Lie accepted, carried by a confidence that left literally no room for doubt.",
+          "Cover validated. His ego made the story so assertive it became almost credible by default.",
+          "Illusion maintained. I note the excessive confidence displayed offset several minor inconsistencies."
         ],
         "Diplomat": [
-          "Ils ont cru ce qu’il disait… porté par une assurance qui, je dois l’admettre, était presque hypnotique.",
-          "La vérité alternative a trouvé sa place, soutenue par une fierté qu’il n’a jamais laissé vaciller.",
-          "Ils ont accepté ses paroles, séduits par cette certitude qu’il projette sans jamais douter de lui-même.",
-          "La façade a tenu grâce à un aplomb inébranlable. Son ego, pour une fois, a servi la mission."
+          "They believed what he said... carried by a confidence that, I must admit, was almost hypnotic.",
+          "The alternate truth found its place, backed by a pride he never let waver.",
+          "They accepted his words, drawn in by the certainty he projects without ever doubting himself.",
+          "The facade held thanks to unshakable poise. His ego, for once, served the mission."
         ],
         "Sentinel": [
-          "Déception réussie. Note : posture d’autorité affirmée sans justification technique, résultat conforme malgré tout.",
-          "Mensonge accepté grâce à une assurance excessive de l’opérateur. Méthode risquée, issue favorable.",
-          "Manipulation validée. Rapport : confiance en soi de l’opérateur ayant compensé un récit fragile.",
-          "Couverture confirmée. Je consigne : l’aplomb affiché a suffi à dissuader toute vérification supplémentaire."
+          "Deception successful. Note: authoritative posture asserted with no technical justification, result conforms regardless.",
+          "Lie accepted thanks to excessive confidence from the operator. Risky method, favorable outcome.",
+          "Manipulation validated. Report: the operator's self-confidence offset a fragile story.",
+          "Cover confirmed. I record: the displayed poise was enough to deter any further verification."
         ],
         "Explorer": [
-          "J’ai dit mon mensonge avec tellement d’assurance que même moi j’y ai presque cru.",
-          "Je leur ai balancé ça sans hésiter une seconde. Le doute, très peu pour moi.",
-          "J’ai bombé le torse et j’ai parlé fort. Apparemment, ça suffit à convaincre les gens.",
-          "Franchement, avec cette confiance-là, je pourrais vendre n’importe quoi."
+          "I told my lie with so much confidence that even I almost believed it.",
+          "I threw it at them without hesitating for a second. Doubt, not really my thing.",
+          "I puffed out my chest and spoke loudly. Apparently that's enough to convince people.",
+          "Honestly, with that kind of confidence, I could sell anything."
         ]
       }
     },
     "failure": {
       "proud": {
         "Analyst": [
-          "Échec de manipulation. Il a maintenu une affirmation intenable plutôt que d’ajuster son récit. Erreur d’ego.",
-          "Mensonge refusé après une insistance excessive sur des détails que la cible a fini par contester.",
-          "Couverture brisée. Je note un refus catégorique d’admettre la moindre incohérence, jusqu’à l’échec complet.",
-          "Manipulation ratée. Statistiquement, l’excès de confiance a rendu le mensonge plus fragile, pas moins."
+          "Manipulation failed. He held an untenable claim rather than adjusting his story. Ego error.",
+          "Lie rejected after excessive insistence on details the target eventually challenged.",
+          "Cover blown. I note a categorical refusal to admit the slightest inconsistency, leading to total failure.",
+          "Manipulation failed. Statistically, excess confidence made the lie more fragile, not less."
         ],
         "Diplomat": [
-          "Ils n’ont pas cru ce qu’il disait… je crois que sa certitude a fini par sembler suspecte, à force.",
-          "La vérité alternative n’a pas pris. Son assurance, cette fois, a semé le doute plutôt que la confiance.",
-          "Ils ont rejeté ses paroles. Peut-être qu’un peu d’humilité aurait mieux servi son récit.",
-          "La façade s’est effondrée sous le poids de sa propre fierté, qui refusait de céder même un peu."
+          "They didn't believe what he said... I think his certainty eventually started to look suspicious.",
+          "The alternate truth didn't take. His confidence, this time, sowed doubt rather than trust.",
+          "They rejected his words. Maybe a bit of humility would have served his story better.",
+          "The facade collapsed under the weight of his own pride, which refused to yield even a little."
         ],
         "Sentinel": [
-          "Déception échouée. Le journal indique un refus de corriger le récit malgré des signaux de suspicion évidents.",
-          "Mensonge refusé. Rapport : posture d’autorité excessive de l’opérateur ayant éveillé la méfiance de la cible.",
-          "Manipulation ratée. Je recommande un travail sur la flexibilité du discours en situation de pression.",
-          "Couverture compromise par un excès de confiance ayant transformé un doute mineur en rejet total."
+          "Deception failed. The log shows a refusal to correct the story despite clear signs of suspicion.",
+          "Lie rejected. Report: the operator's excessive authoritative posture raised the target's distrust.",
+          "Manipulation failed. I recommend working on flexibility of speech under pressure.",
+          "Cover compromised by excess confidence that turned minor doubt into total rejection."
         ],
         "Explorer": [
-          "J’ai refusé de reculer même quand j’ai vu qu’ils doutaient. Grosse erreur, avec le recul.",
-          "Je pensais que mon assurance suffirait. Apparemment, non.",
-          "J’ai insisté, insisté, insisté... et ils ont fini par tout remettre en question.",
-          "Mon ego a écrit un chèque que mon mensonge pouvait pas encaisser."
+          "I refused to back down even when I saw they doubted me. Big mistake, in hindsight.",
+          "I thought my confidence would be enough. Apparently not.",
+          "I insisted, insisted, insisted... and they ended up questioning everything.",
+          "My ego wrote a check my lie couldn't cash."
         ]
       }
     }

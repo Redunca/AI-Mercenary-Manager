@@ -3,204 +3,204 @@
     "trigger": "flaw:bloodlust+flaw:pacifist",
     "speaker": "A",
     "lines": [
-      "{A} charge encore. {B} soupire.",
-      "{A} enchaîne un round de trop. {B} détourne le regard."
+      "{A} charges in again. {B} sighs.",
+      "{A} goes one round too many. {B} looks away."
     ],
     "reply": [
-      "On en a déjà parlé, {A}.",
-      "Ce n'était pas nécessaire, {A}. Pas cette fois non plus."
+      "We've talked about this before, {A}.",
+      "That wasn't necessary, {A}. Not this time either."
     ]
   },
   {
     "trigger": "flaw:greedy+flaw:honest",
     "speaker": "A",
     "lines": [
-      "{A} recompte déjà les parts, à voix haute. {B} fronce les sourcils.",
-      "{A} évoque un « petit à-côté » que personne n'avait mentionné. {B} n'aime pas ça."
+      "{A} is already recounting the shares, out loud. {B} frowns.",
+      "{A} mentions a \"little extra\" nobody had brought up. {B} doesn't like it."
     ],
     "reply": [
-      "On avait dit qu'on partagerait équitablement, {A}.",
-      "Ce n'est pas ce qu'on avait convenu, {A}."
+      "We agreed to split evenly, {A}.",
+      "That's not what we agreed to, {A}."
     ]
   },
   {
     "trigger": "flaw:hot-tempered+flaw:cowardly",
     "speaker": "A",
     "lines": [
-      "{A} serre déjà les poings. {B} recule d'un pas.",
-      "{A} monte le ton. {B} cherche déjà la sortie du regard."
+      "{A} already has fists clenched. {B} takes a step back.",
+      "{A} raises their voice. {B} is already scanning for the exit."
     ],
     "reply": [
-      "Calme-toi, {A}, on va tous y passer.",
-      "On peut peut-être éviter ça, {A} ?"
+      "Calm down, {A}, we're all going to pay for this.",
+      "Can we maybe avoid that, {A}?"
     ]
   },
   {
     "trigger": "flaw:bloodlust+perk:warrior's-code",
     "speaker": "A",
     "lines": [
-      "{A} veut en finir vite et fort. {B} lève une main : pas comme ça.",
-      "{A} ignore la retenue habituelle. {B} n'apprécie pas la méthode."
+      "{A} wants to end it fast and hard. {B} raises a hand: not like this.",
+      "{A} ignores the usual restraint. {B} doesn't like the method."
     ],
     "reply": [
-      "Il y a une façon de faire les choses, {A}.",
-      "On ne frappe pas un adversaire à terre, {A}."
+      "There's a right way to do things, {A}.",
+      "We don't hit an opponent who's down, {A}."
     ]
   },
   {
     "trigger": "flaw:cowardly+perk:lucky",
     "speaker": "A",
     "lines": [
-      "{A} vérifie trois fois la sortie de secours. {B} hausse les épaules, amusé.",
-      "{A} sursaute au moindre bruit. {B} trouve visiblement ça drôle."
+      "{A} checks the emergency exit three times. {B} shrugs, amused.",
+      "{A} jumps at the slightest noise. {B} clearly finds it funny."
     ],
     "reply": [
-      "Détends-toi, {A}, ça se passe toujours bien pour moi.",
-      "T'inquiète, {A}, j'ai jamais eu de problème avec ça."
+      "Relax, {A}, it always works out for me.",
+      "Don't worry, {A}, I've never had a problem with that."
     ]
   },
   {
     "trigger": "flaw:greedy+perk:silver-tongue",
     "speaker": "A",
     "lines": [
-      "{A} recalcule déjà sa part après que {B} a conclu l'accord.",
-      "{A} chuchote qu'on aurait pu tirer plus de {B}, une fois le marché signé."
+      "{A} is already recalculating their cut after {B} closed the deal.",
+      "{A} whispers that they could have gotten more out of {B}, once the deal was signed."
     ],
     "reply": [
-      "On a eu un bon prix, {A}. Contente-toi de ça.",
-      "C'était déjà une bonne affaire, {A}."
+      "We got a good price, {A}. Be happy with that.",
+      "That was already a good deal, {A}."
     ]
   },
   {
     "trigger": "flaw:honest+perk:silver-tongue",
     "speaker": "A",
     "lines": [
-      "{A} reprend {B} sur un détail légèrement enjolivé de son récit.",
-      "{A} précise, un peu trop fort, que ce n'était pas exactement ce qui s'est passé."
+      "{A} calls out {B} on a slightly embellished detail of their story.",
+      "{A} points out, a bit too loudly, that it's not exactly what happened."
     ],
     "reply": [
-      "C'est une version plus... vendable, {A}.",
-      "Disons que j'ai arrondi les angles, {A}."
+      "It's a more... sellable version, {A}.",
+      "Let's just say I smoothed out the edges, {A}."
     ]
   },
   {
     "trigger": "flaw:hot-tempered+perk:warrior's-code",
     "speaker": "A",
     "lines": [
-      "{A} veut déjà répondre par la force. {B} pose une main ferme sur son épaule.",
-      "{A} serre les poings avant même la fin de la discussion. {B} secoue la tête."
+      "{A} already wants to answer with force. {B} puts a firm hand on their shoulder.",
+      "{A} clenches their fists before the discussion is even over. {B} shakes their head."
     ],
     "reply": [
-      "Pas comme ça, {A}. On a des règles.",
-      "Respire, {A}. Ce n'est pas notre façon de faire."
+      "Not like that, {A}. We have rules.",
+      "Breathe, {A}. That's not how we do things."
     ]
   },
   {
     "trigger": "flaw:pacifist+perk:warrior's-code",
     "speaker": "A",
     "lines": [
-      "{A} refuse de porter le coup final. {B} insiste : c'est ce que l'honneur exige.",
-      "{A} et {B} ne s'accordent pas sur ce que « faire les choses bien » veut vraiment dire."
+      "{A} refuses to deliver the finishing blow. {B} insists: honor demands it.",
+      "{A} and {B} disagree on what \"doing things right\" really means."
     ],
     "reply": [
-      "L'honneur exige parfois de finir ce qu'on a commencé, {A}.",
-      "Ce n'est pas de la cruauté, {A}, c'est le code."
+      "Honor sometimes demands finishing what you started, {A}.",
+      "This isn't cruelty, {A}, it's the code."
     ]
   },
   {
     "trigger": "flaw:cowardly+perk:resilient",
     "speaker": "A",
     "lines": [
-      "{A} recule d'un pas. {B} encaisse un coup sans même ciller.",
-      "{A} regarde {B} se relever comme si de rien n'était, incrédule."
+      "{A} takes a step back. {B} takes a hit without even flinching.",
+      "{A} watches {B} get back up like nothing happened, in disbelief."
     ],
     "reply": [
-      "Ça va, {A}, j'en ai vu d'autres.",
-      "T'inquiète pas pour moi, {A}. Inquiète-toi pour eux."
+      "I'm fine, {A}, I've seen worse.",
+      "Don't worry about me, {A}. Worry about them."
     ]
   },
   {
     "trigger": "flaw:greedy+perk:observant",
     "speaker": "A",
     "lines": [
-      "{A} suit déjà le regard de {B} vers ce qui brille dans un coin.",
-      "{A} demande à {B} de « garder un œil » sur ce qui pourrait valoir quelque chose."
+      "{A} already follows {B}'s gaze toward something shiny in the corner.",
+      "{A} asks {B} to \"keep an eye\" on anything that might be worth something."
     ],
     "reply": [
-      "J'ai vu, {A}. On verra si on a le temps.",
-      "Je note, {A}. Priorité à la mission, quand même."
+      "I saw it, {A}. We'll see if we have time.",
+      "Noted, {A}. Mission comes first, though."
     ]
   },
   {
     "trigger": "flaw:hot-tempered+perk:silver-tongue",
     "speaker": "A",
     "lines": [
-      "{A} vient de tout faire dégénérer. {B} reprend la parole pour rattraper la situation.",
-      "{A} hausse le ton une fois de plus. {B} intervient avec un sourire désarmant."
+      "{A} just made everything blow up. {B} steps in to salvage the situation.",
+      "{A} raises their voice one more time. {B} steps in with a disarming smile."
     ],
     "reply": [
-      "Laisse-moi arranger ça, {A}.",
-      "Je vais réparer ce que tu viens de casser, {A}."
+      "Let me handle this, {A}.",
+      "I'll fix what you just broke, {A}."
     ]
   },
   {
     "trigger": "flaw:greedy+perk:warrior's-code",
     "speaker": "A",
     "lines": [
-      "{A} se penche déjà vers les affaires de l'adversaire à terre. {B} s'interpose.",
-      "{A} veut fouiller les poches du vaincu. {B} trouve ça indigne."
+      "{A} is already leaning toward the fallen opponent's belongings. {B} steps in the way.",
+      "{A} wants to search the defeated opponent's pockets. {B} finds it disgraceful."
     ],
     "reply": [
-      "On ne dépouille pas un adversaire vaincu, {A}.",
-      "Ce n'est pas comme ça qu'on fait les choses, {A}."
+      "We don't loot a defeated opponent, {A}.",
+      "That's not how we do things, {A}."
     ]
   },
   {
     "trigger": "flaw:cowardly+perk:warrior's-code",
     "speaker": "A",
     "lines": [
-      "{A} cherche déjà une échappatoire. {B} reste planté, immobile.",
-      "{A} propose de se replier. {B} refuse de tourner le dos si tôt."
+      "{A} is already looking for a way out. {B} stands firm, unmoving.",
+      "{A} suggests retreating. {B} refuses to turn their back this soon."
     ],
     "reply": [
-      "On ne fuit pas comme ça, {A}.",
-      "Il y a une façon de se retirer, {A}, et ce n'en est pas une."
+      "We don't run like that, {A}.",
+      "There's a right way to withdraw, {A}, and this isn't it."
     ]
   },
   {
     "trigger": "flaw:bloodlust+perk:lucky",
     "speaker": "A",
     "lines": [
-      "{A} se jette encore dans la mêlée. {B} s'en sort indemne, comme toujours.",
-      "{A} ne compte plus les risques pris. {B} hausse les épaules, amusé par sa propre chance."
+      "{A} throws themselves into the fray again. {B} comes out unscathed, as always.",
+      "{A} has lost count of the risks taken. {B} shrugs, amused by their own luck."
     ],
     "reply": [
-      "Encore une fois où ça aurait pu mal tourner, {A}. Encore une fois où ça n'a pas.",
-      "T'inquiète, {A}, j'ai un bon karma en ce moment."
+      "Another time that could have gone badly, {A}. Another time it didn't.",
+      "Don't worry, {A}, I've got good karma right now."
     ]
   },
   {
     "trigger": "flaw:hot-tempered+perk:resilient",
     "speaker": "A",
     "lines": [
-      "{A} veut déjà repartir au contact. {B} se contente d'encaisser et d'attendre.",
-      "{A} s'agite, prêt à exploser. {B} reste stoïque, comme si de rien n'était."
+      "{A} already wants to get back into it. {B} just takes the hits and waits.",
+      "{A} is fuming, ready to explode. {B} stays stoic, like nothing happened."
     ],
     "reply": [
-      "Pourquoi tu t'énerves, {A} ? Moi ça me fait pas grand-chose.",
-      "Garde ton énergie, {A}. J'encaisse, toi économise-toi."
+      "Why are you getting worked up, {A}? It barely does anything to me.",
+      "Save your energy, {A}. I'll take the hits, you save yourself."
     ]
   },
   {
     "trigger": "flaw:cowardly+perk:silver-tongue",
     "speaker": "A",
     "lines": [
-      "{A} recule discrètement pendant que {B} prend la parole pour désamorcer la situation.",
-      "{A} laisse {B} négocier, soulagé de ne pas avoir à lever le petit doigt."
+      "{A} quietly steps back while {B} speaks up to defuse the situation.",
+      "{A} lets {B} negotiate, relieved not to have to lift a finger."
     ],
     "reply": [
-      "T'en fais pas, {A}, je gère. On n'a pas besoin d'en arriver là.",
-      "Laisse-moi parler, {A}. Personne n'a besoin de se battre."
+      "Don't worry, {A}, I've got this. We don't need it to come to that.",
+      "Let me talk, {A}. Nobody needs to fight."
     ]
   }
 ]

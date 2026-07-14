@@ -3,56 +3,56 @@
     "success": {
       "honest": {
         "Analyst": [
-          "Accord obtenu sans une seule exagération. Techniquement remarquable : une négociation fondée sur des faits vérifiables.",
-          "Négociation conclue. Il n’a rien promis qu’il ne pouvait tenir, et ça a suffi à les convaincre.",
-          "Discussion réussie. Je note que la transparence totale a produit un effet de confiance mesurable.",
-          "Terrain d’entente trouvé sans une seule fausse déclaration. Je propose d’étudier cette approche plus avant."
+          "Deal reached without a single exaggeration. Technically remarkable: a negotiation built on verifiable facts.",
+          "Negotiation concluded. He promised nothing he couldn't deliver, and that was enough to convince them.",
+          "Discussion successful. I note total transparency produced a measurable trust effect.",
+          "Common ground found without a single false statement. I propose we study this approach further."
         ],
         "Diplomat": [
-          "Ils ont accepté… parce qu’il ne leur a rien caché, même ce qui aurait pu jouer contre nous.",
-          "La négociation s’est harmonisée autour d’une sincérité rare, presque désarmante.",
-          "Nous avons trouvé un terrain d’entente parce qu’il a refusé de leur mentir, même un peu.",
-          "Ils ont dit oui à une vérité complète, pas à une belle histoire. Je trouve ça admirable."
+          "They agreed... because he hid nothing from them, not even what could have worked against us.",
+          "The negotiation came together around a rare, almost disarming sincerity.",
+          "We found common ground because he refused to lie to them, even a little.",
+          "They said yes to a complete truth, not a pretty story. I find that admirable."
         ],
         "Sentinel": [
-          "Négociation validée sans usage de fausses déclarations. Je consigne : méthode inhabituelle, résultat conforme.",
-          "Accord obtenu par transparence totale plutôt que par persuasion classique. Approche à documenter.",
-          "Discussion réussie. L’opérateur a strictement respecté son refus de mentir, sans compromettre l’objectif.",
-          "Terrain d’entente trouvé. Rapport : aucune fausse information transmise, résultat inchangé."
+          "Negotiation validated without any false statements. I record: unusual method, result conforms.",
+          "Deal obtained through total transparency rather than classic persuasion. Approach worth documenting.",
+          "Discussion successful. The operator strictly honored his refusal to lie, without compromising the objective.",
+          "Common ground found. Report: no false information transmitted, result unchanged."
         ],
         "Explorer": [
-          "J’ai littéralement dit la vérité, toute la vérité, et ils ont accepté quand même. Qui l’aurait cru ?",
-          "Je peux pas mentir en négociation, alors j’ai juste été honnête à fond. Et ça a marché !",
-          "Ok, je suis nul en bluff, alors j’ai juste dit ce qui était vrai. Apparemment ça suffit parfois.",
-          "J’ai pas enjolivé, j’ai pas menti. Juste dit les choses. Et ils ont signé."
+          "I literally told the truth, the whole truth, and they accepted anyway. Who would have thought?",
+          "I can't lie during negotiations, so I was just fully honest. And it worked!",
+          "Okay, I'm terrible at bluffing, so I just said what was true. Apparently that's enough sometimes.",
+          "I didn't embellish, I didn't lie. Just said things as they were. And they signed."
         ]
       }
     },
     "failure": {
       "honest": {
         "Analyst": [
-          "Négociation échouée. L’opérateur a révélé une faiblesse de notre position au pire moment possible.",
-          "Accord refusé. Je note qu’il a corrigé une exagération d’un partenaire, sapant sa propre offre.",
-          "Discussion infructueuse. L’excès de transparence a donné à la cible un avantage qu’elle a exploité.",
-          "Terrain d’entente non trouvé. Je vais considérer cet incident comme un conflit entre principe et objectif."
+          "Negotiation failed. The operator revealed a weakness in our position at the worst possible moment.",
+          "Deal rejected. I note he corrected a partner's exaggeration, undermining his own offer.",
+          "Discussion unsuccessful. Excess transparency gave the target an advantage it exploited.",
+          "Common ground not found. I'll classify this incident as a conflict between principle and objective."
         ],
         "Diplomat": [
-          "Ils n’ont pas accepté… je crois qu’il ne pouvait tout simplement pas cacher nos propres doutes.",
-          "La négociation n’a pas pris parce qu’il a refusé de trahir sa propre honnêteté, même pour la mission.",
-          "Ils ont vu nos failles dans ses yeux. Il ne sait pas les cacher, et c’est peut-être bien ainsi.",
-          "La conversation s’est bloquée. Je crois qu’il a préféré la vérité à l’avantage tactique."
+          "They didn't agree... I think he simply couldn't hide our own doubts.",
+          "The negotiation didn't take because he refused to betray his own honesty, even for the mission.",
+          "They saw our flaws in his eyes. He doesn't know how to hide them, and maybe that's for the best.",
+          "The conversation stalled. I think he preferred the truth over tactical advantage."
         ],
         "Sentinel": [
-          "Négociation échouée. Le journal indique une divulgation d’information sensible au moment critique.",
-          "Accord refusé. Rapport : l’opérateur a explicitement refusé de formuler une déclaration favorable mais inexacte.",
-          "Discussion infructueuse. Je recommande de ne plus assigner ce profil à des négociations à enjeu élevé.",
-          "Terrain d’entente non trouvé par refus catégorique de dissimuler une information défavorable."
+          "Negotiation failed. The log shows a disclosure of sensitive information at the critical moment.",
+          "Deal rejected. Report: the operator explicitly refused to make a favorable but inaccurate statement.",
+          "Discussion unsuccessful. I recommend no longer assigning this profile to high-stakes negotiations.",
+          "Common ground not found, due to a categorical refusal to conceal unfavorable information."
         ],
         "Explorer": [
-          "Ils m’ont demandé un truc direct et j’ai littéralement pas pu mentir. Négociation ruinée instantanément.",
-          "Je suis vraiment nul pour bluffer. Ma tête dit tout avant même que j’ouvre la bouche.",
-          "J’ai essayé de rester vague, j’ai flanché, et j’ai fini par tout avouer. Oups.",
-          "Je peux pas mentir, c’est physique chez moi. Et là, ça nous a coûté l’accord."
+          "They asked me something direct and I literally couldn't lie. Negotiation ruined instantly.",
+          "I'm really terrible at bluffing. My face gives it away before I even open my mouth.",
+          "I tried to stay vague, I choked, and ended up admitting everything. Oops.",
+          "I can't lie, it's physical for me. And this time, it cost us the deal."
         ]
       }
     }

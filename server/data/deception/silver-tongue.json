@@ -3,56 +3,56 @@
     "success": {
       "silver-tongue": {
         "Analyst": [
-          "Manipulation réussie. En cinq minutes de conversation, il a extrait une information que nous cherchions depuis des jours.",
-          "Mensonge accepté, puis prolongé en une conversation qui a révélé bien plus que prévu. Rendement exceptionnel.",
-          "Couverture validée, et un secret utile obtenu en prime. Je note un rapport effort/résultat remarquable.",
-          "Illusion maintenue. Il a fait parler la cible sans qu’elle ne réalise avoir dit quoi que ce soit d’important."
+          "Manipulation successful. In five minutes of conversation, he extracted information we'd been after for days.",
+          "Lie accepted, then extended into a conversation that revealed far more than expected. Exceptional yield.",
+          "Cover validated, and a useful secret obtained as a bonus. I note a remarkable effort-to-result ratio.",
+          "Illusion maintained. He got the target talking without them realizing they'd said anything important."
         ],
         "Diplomat": [
-          "Ils ont cru ce qu’il disait… et lui ont même confié bien plus qu’il n’en demandait. Une vraie alchimie de mots.",
-          "La conversation a glissé vers des confidences inattendues. Je crois qu’il a cette capacité rare d’inspirer confiance.",
-          "Ils se sont laissés convaincre, puis se sont laissés aller à se confier. C’est un don, vraiment.",
-          "La façade a tenu, et quelque chose de plus précieux encore en est ressorti : leur vérité, offerte librement."
+          "They believed what he said... and even confided far more than he asked for. True alchemy of words.",
+          "The conversation drifted into unexpected confessions. I think he has that rare gift of inspiring trust.",
+          "They let themselves be convinced, then let themselves open up. It's a real gift, honestly.",
+          "The facade held, and something even more precious came out of it: their truth, freely given."
         ],
         "Sentinel": [
-          "Déception réussie. Note : information supplémentaire obtenue par conversation dirigée, non prévue au plan initial.",
-          "Mensonge accepté, suivi de l’extraction d’un renseignement exploitable. Je recommande cette approche à l’avenir.",
-          "Manipulation validée. Rapport : capacité conversationnelle de l’opérateur ayant dépassé les objectifs de mission.",
-          "Couverture confirmée, avec un gain de renseignement non anticipé. Opération à classer en réussite exemplaire."
+          "Deception successful. Note: additional information obtained through directed conversation, not part of the original plan.",
+          "Lie accepted, followed by extraction of exploitable intelligence. I recommend this approach going forward.",
+          "Manipulation validated. Report: the operator's conversational skill exceeded mission objectives.",
+          "Cover confirmed, with an unanticipated intelligence gain. Operation to be filed as an exemplary success."
         ],
         "Explorer": [
-          "J’ai discuté cinq minutes et ils m’ont tout raconté sans même que je demande. Je sais pas comment je fais ça.",
-          "On papotait, et d’un coup ils m’ont lâché un secret énorme. Je crois que je suis doué pour ça.",
-          "J’ai juste écouté et posé les bonnes questions, et hop, ils m’ont tout dit. Facile.",
-          "Je leur ai parlé cinq minutes et maintenant j’en sais plus qu’eux sur leurs propres affaires."
+          "I chatted for five minutes and they told me everything without me even asking. No idea how I do that.",
+          "We were just talking, and suddenly they dropped a huge secret. I think I'm good at this.",
+          "I just listened and asked the right questions, and boom, they told me everything. Easy.",
+          "I talked to them for five minutes and now I know more about their own business than they do."
         ]
       }
     },
     "failure": {
       "silver-tongue": {
         "Analyst": [
-          "Échec de manipulation. Même une conversation prolongée n’a révélé aucune information exploitable cette fois.",
-          "Mensonge refusé malgré une approche conversationnelle habituellement efficace. Cible atypique, probablement.",
-          "Couverture brisée. Je note que le charme verbal habituel de l’opérateur n’a eu aucun effet mesurable.",
-          "Manipulation ratée. Statistiquement rare : la cible s’est montrée hermétique à toute forme de conversation dirigée."
+          "Manipulation failed. Even an extended conversation revealed no exploitable information this time.",
+          "Lie rejected despite a conversational approach that's usually effective. Atypical target, probably.",
+          "Cover blown. I note the operator's usual verbal charm had no measurable effect.",
+          "Manipulation failed. Statistically rare: the target proved impervious to any form of directed conversation."
         ],
         "Diplomat": [
-          "Ils n’ont pas cru ce qu’il disait… même sa voix, habituellement si convaincante, n’a pas suffi cette fois.",
-          "La conversation n’a mené nulle part. Je crois que certaines personnes restent simplement fermées.",
-          "Ils ont rejeté ses paroles, malgré tous ses efforts pour créer un lien. C’est rare, et ça doit le toucher.",
-          "La façade s’est effondrée. Même les mots les plus habiles ne trouvent pas toujours une oreille prête à écouter."
+          "They didn't believe what he said... even his voice, usually so convincing, wasn't enough this time.",
+          "The conversation went nowhere. I think some people simply stay closed off.",
+          "They rejected his words, despite all his effort to build a connection. That's rare, and it must sting.",
+          "The facade collapsed. Even the most skillful words don't always find a willing ear."
         ],
         "Sentinel": [
-          "Déception échouée. Le journal indique une absence totale de résultat malgré une approche conversationnelle avancée.",
-          "Mensonge refusé. Rapport : compétences conversationnelles de l’opérateur sans effet sur cette cible spécifique.",
-          "Manipulation ratée. Je recommande de documenter ce profil de cible comme résistant aux techniques verbales.",
-          "Couverture compromise malgré l’usage des méthodes habituelles de l’opérateur. Cas à étudier."
+          "Deception failed. The log shows a total absence of results despite an advanced conversational approach.",
+          "Lie rejected. Report: the operator's conversational skills had no effect on this specific target.",
+          "Manipulation failed. I recommend documenting this target profile as resistant to verbal techniques.",
+          "Cover compromised despite the operator's usual methods. Case worth studying."
         ],
         "Explorer": [
-          "D’habitude je fais toujours parler les gens. Là, rien. Silence radio total.",
-          "J’ai tout essayé, mes meilleures questions, mon meilleur sourire. Nada.",
-          "Cette fois, personne n’a rien lâché. Même moi j’ai des limites, apparemment.",
-          "J’ai discuté un bon moment, mais j’ai rien tiré d’eux. Frustrant."
+          "I usually always get people talking. This time, nothing. Total radio silence.",
+          "I tried everything, my best questions, my best smile. Nada.",
+          "This time, nobody gave anything up. Even I have limits, apparently.",
+          "I talked for a good while, but got nothing out of them. Frustrating."
         ]
       }
     }

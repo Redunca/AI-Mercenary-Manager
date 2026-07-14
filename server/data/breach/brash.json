@@ -3,56 +3,56 @@
     "success": {
       "brash": {
         "Analyst": [
-          "Intrusion réussie. Aucune phase de reconnaissance préalable. Statistiquement, ça n’aurait pas dû fonctionner.",
-          "Accès obtenu en ignorant délibérément trois protocoles de prudence standards. Résultat conforme malgré tout.",
-          "Connexion établie via une approche que je qualifierais d’imprudente. Efficace, mais reproductible avec risque.",
-          "Données récupérées. Je consigne : la précipitation a court-circuité l’analyse, sans conséquence cette fois."
+          "Intrusion successful. No prior reconnaissance phase. Statistically, this shouldn't have worked.",
+          "Access obtained by deliberately ignoring three standard caution protocols. Result conforms regardless.",
+          "Connection established via an approach I'd call reckless. Effective, but risky to repeat.",
+          "Data retrieved. I record: haste short-circuited analysis, without consequence this time."
         ],
         "Diplomat": [
-          "Le système s’est ouvert… avant même qu’il n’ait fini de réfléchir à comment s’y prendre. Étonnant.",
-          "Accès accordé. Il a foncé sans hésiter, et parfois, l’audace suffit à elle seule.",
-          "On est dedans, plus vite que prévu. Son impatience a, pour une fois, servi la cause.",
-          "La porte numérique s’est ouverte sous l’élan de sa précipitation. Risqué, mais beau à voir."
+          "The system opened up... before he'd even finished thinking about how to approach it. Astonishing.",
+          "Access granted. He charged in without hesitation, and sometimes boldness alone is enough.",
+          "We're in, faster than expected. His impatience served the cause, for once.",
+          "The digital door opened under the force of his haste. Risky, but beautiful to watch."
         ],
         "Sentinel": [
-          "Intrusion validée. Note : procédure de reconnaissance ignorée, résultat néanmoins conforme.",
-          "Accès obtenu via une méthode non planifiée. Je recommande fortement de ne pas généraliser cette approche.",
-          "Le système a cédé à une tentative directe, sans préparation préalable. Succès malgré le risque encouru.",
-          "Connexion établie. Rapport : précipitation notable de l’opérateur, issue favorable par chance opérationnelle."
+          "Intrusion validated. Note: reconnaissance procedure skipped, result nonetheless conforming.",
+          "Access obtained via an unplanned method. I strongly recommend not generalizing this approach.",
+          "The system gave way to a direct attempt, with no prior preparation. Success despite the risk taken.",
+          "Connection established. Report: notable haste from the operator, favorable outcome by operational luck."
         ],
         "Explorer": [
-          "J’ai foncé sans réfléchir et ça a marché du premier coup. Qui a besoin d’un plan ?",
-          "Zéro préparation, cent pour cent d’action. Et apparemment ça suffit parfois.",
-          "J’ai cliqué sur tout direct, sans vérifier quoi que ce soit. On est dedans, donc tant mieux.",
-          "J’avais pas de plan, juste de l’élan. Et l’élan a payé."
+          "I charged in without thinking and it worked on the first try. Who needs a plan?",
+          "Zero preparation, one hundred percent action. And apparently that's enough sometimes.",
+          "I clicked on everything at once without checking a thing. We're in, so good enough.",
+          "I had no plan, just momentum. And the momentum paid off."
         ]
       }
     },
     "failure": {
       "brash": {
         "Analyst": [
-          "Échec d’intrusion. L’absence totale de reconnaissance a directement déclenché une contre-mesure évitable.",
-          "Le pare-feu a résisté après une tentative précipitée ayant ignoré des signaux d’alerte évidents.",
-          "Connexion bloquée. Je note qu’une préparation minimale aurait probablement changé l’issue.",
-          "Tentative avortée. Je consigne : la précipitation a transformé un risque gérable en échec certain."
+          "Intrusion failed. The total absence of reconnaissance directly triggered an avoidable countermeasure.",
+          "The firewall held after a rushed attempt that ignored obvious warning signals.",
+          "Connection blocked. I note that minimal preparation would likely have changed the outcome.",
+          "Attempt aborted. I record: haste turned a manageable risk into a certain failure."
         ],
         "Diplomat": [
-          "Le système m’a rejeté… il a foncé sans prendre le temps de l’écouter d’abord.",
-          "Accès refusé. Son impatience a peut-être précipité ce que la patience aurait évité.",
-          "La porte numérique est restée fermée, claquée par une approche trop brusque.",
-          "Les données ne se sont pas laissées approcher. Je crois qu’il fallait y aller plus doucement."
+          "The system rejected me... he charged in without taking the time to listen to it first.",
+          "Access denied. His impatience may have caused what patience would have avoided.",
+          "The digital door stayed shut, slammed by an approach that was too abrupt.",
+          "The data wouldn't let itself be approached. I think it needed a gentler touch."
         ],
         "Sentinel": [
-          "Intrusion échouée. Je vais consigner : absence de reconnaissance préalable, contre-mesure déclenchée.",
-          "Accès refusé. Rapport : précipitation de l’opérateur directement liée au déclenchement de l’alerte.",
-          "Le système a bloqué la tentative après une approche jugée non conforme au protocole minimal.",
-          "Connexion impossible. Je recommande une phase de reconnaissance obligatoire avant toute prochaine tentative."
+          "Intrusion failed. Logging: no prior reconnaissance, countermeasure triggered.",
+          "Access denied. Report: the operator's haste directly linked to the triggered alert.",
+          "The system blocked the attempt after an approach deemed non-compliant with minimal protocol.",
+          "Connection impossible. I recommend a mandatory reconnaissance phase before any next attempt."
         ],
         "Explorer": [
-          "J’ai foncé sans réfléchir, comme d’habitude. Sauf que cette fois, ça a pas payé du tout.",
-          "Zéro plan, zéro résultat. Je vois le lien maintenant.",
-          "J’ai cliqué sur tout d’un coup et j’ai déclenché une alarme. Oups.",
-          "Peut-être que j’aurais dû regarder avant de foncer. Peut-être."
+          "I charged in without thinking, like always. Except this time it didn't pay off at all.",
+          "Zero plan, zero result. I see the connection now.",
+          "I clicked on everything at once and set off an alarm. Oops.",
+          "Maybe I should have looked before charging in. Maybe."
         ]
       }
     }

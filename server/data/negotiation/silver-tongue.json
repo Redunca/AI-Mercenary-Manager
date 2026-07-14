@@ -3,56 +3,56 @@
     "success": {
       "silver-tongue": {
         "Analyst": [
-          "Accord obtenu en un temps record, assorti de conditions plus favorables que le mandat initial ne l’exigeait.",
-          "Négociation conclue, puis prolongée en une conversation ayant révélé leurs marges réelles. Rendement exceptionnel.",
-          "Discussion réussie, et une information stratégique obtenue en prime. Rapport effort/résultat remarquable.",
-          "Terrain d’entente trouvé. Il a fait dire à la cible bien plus qu’elle n’avait l’intention de révéler."
+          "Deal reached in record time, with terms more favorable than the original mandate required.",
+          "Negotiation concluded, then extended into a conversation that revealed their real margins. Exceptional yield.",
+          "Discussion successful, with strategic information obtained as a bonus. Remarkable effort-to-result ratio.",
+          "Common ground found. He got the target to reveal far more than it intended to."
         ],
         "Diplomat": [
-          "Ils ont accepté… et lui ont même confié bien plus qu’il n’en demandait. Une vraie alchimie de mots.",
-          "La conversation a glissé vers des concessions inattendues. Je crois qu’il inspire une confiance rare.",
-          "Ils se sont laissés convaincre, puis se sont laissés aller à être généreux. C’est un don, vraiment.",
-          "L’accord a été trouvé, et quelque chose de plus précieux encore en est ressorti : leur confiance, offerte librement."
+          "They agreed... and even confided far more than he asked for. True alchemy of words.",
+          "The conversation drifted into unexpected concessions. I think he inspires rare trust.",
+          "They let themselves be convinced, then let themselves be generous. It's a real gift, honestly.",
+          "The deal was reached, and something even more precious came out of it: their trust, freely given."
         ],
         "Sentinel": [
-          "Négociation validée. Note : conditions obtenues dépassant largement le mandat initial de l’opération.",
-          "Accord obtenu, suivi de l’extraction d’une information commerciale exploitable. Approche à généraliser.",
-          "Discussion réussie. Rapport : capacité conversationnelle de l’opérateur ayant dépassé les objectifs de mission.",
-          "Terrain d’entente trouvé, avec un gain de renseignement non anticipé. Opération à classer en réussite exemplaire."
+          "Negotiation validated. Note: terms obtained far exceeding the operation's original mandate.",
+          "Deal obtained, followed by the extraction of exploitable business intelligence. Approach worth generalizing.",
+          "Discussion successful. Report: the operator's conversational skill exceeded mission objectives.",
+          "Common ground found, with an unanticipated intelligence gain. Operation to be filed as an exemplary success."
         ],
         "Explorer": [
-          "J’ai discuté cinq minutes et ils m’ont offert bien plus que ce que je demandais. Je sais pas comment je fais ça.",
-          "On papotait, et d’un coup ils ont accepté des conditions énormes. Je crois que je suis doué pour ça.",
-          "J’ai juste écouté et posé les bonnes questions, et hop, accord signé aux meilleures conditions.",
-          "Je leur ai parlé cinq minutes et maintenant on a un bien meilleur deal que prévu."
+          "I talked for five minutes and they offered me way more than I was asking for. No idea how I do that.",
+          "We were just chatting, and suddenly they accepted huge terms. I think I'm good at this.",
+          "I just listened and asked the right questions, and boom, deal signed on the best terms.",
+          "I talked to them for five minutes and now we have a much better deal than expected."
         ]
       }
     },
     "failure": {
       "silver-tongue": {
         "Analyst": [
-          "Négociation échouée. Même une conversation prolongée n’a débloqué aucune concession cette fois.",
-          "Accord refusé malgré une approche conversationnelle habituellement efficace. Cible atypique, probablement.",
-          "Discussion infructueuse. Je note que le charme verbal habituel de l’opérateur n’a eu aucun effet mesurable.",
-          "Terrain d’entente non trouvé. Statistiquement rare : la cible s’est montrée hermétique à toute conversation dirigée."
+          "Negotiation failed. Even an extended conversation unlocked no concession this time.",
+          "Deal rejected despite a conversational approach that's usually effective. Atypical target, probably.",
+          "Discussion unsuccessful. I note the operator's usual verbal charm had no measurable effect.",
+          "Common ground not found. Statistically rare: the target proved impervious to any directed conversation."
         ],
         "Diplomat": [
-          "Ils n’ont pas accepté… même sa voix, habituellement si convaincante, n’a pas suffi cette fois.",
-          "La conversation n’a mené nulle part. Je crois que certaines personnes restent simplement inflexibles.",
-          "Ils ont rejeté l’offre, malgré tous ses efforts pour créer un lien. C’est rare, et ça doit le toucher.",
-          "L’accord ne s’est pas fait. Même les mots les plus habiles ne trouvent pas toujours une oreille prête à écouter."
+          "They didn't agree... even his voice, usually so convincing, wasn't enough this time.",
+          "The conversation went nowhere. I think some people simply stay inflexible.",
+          "They rejected the offer, despite all his effort to build a connection. That's rare, and it must sting.",
+          "The deal fell through. Even the most skillful words don't always find a willing ear."
         ],
         "Sentinel": [
-          "Négociation échouée. Le journal indique une absence totale de concession malgré une approche conversationnelle avancée.",
-          "Accord refusé. Rapport : compétences conversationnelles de l’opérateur sans effet sur cette partie adverse spécifique.",
-          "Discussion infructueuse. Je recommande de documenter ce profil de cible comme résistant aux techniques verbales.",
-          "Terrain d’entente non trouvé malgré l’usage des méthodes habituelles de l’opérateur. Cas à étudier."
+          "Negotiation failed. The log shows a total absence of concessions despite an advanced conversational approach.",
+          "Deal rejected. Report: the operator's conversational skills had no effect on this specific counterparty.",
+          "Discussion unsuccessful. I recommend documenting this target profile as resistant to verbal techniques.",
+          "Common ground not found despite the operator's usual methods. Case worth studying."
         ],
         "Explorer": [
-          "D’habitude je fais toujours plier les gens un peu. Là, rien. Mur total.",
-          "J’ai tout essayé, mes meilleurs arguments, mon meilleur sourire. Nada.",
-          "Cette fois, personne n’a rien lâché. Même moi j’ai des limites, apparemment.",
-          "J’ai discuté un bon moment, mais j’ai rien obtenu d’eux. Frustrant."
+          "I usually always get people to bend a little. This time, nothing. Total wall.",
+          "I tried everything, my best arguments, my best smile. Nada.",
+          "This time, nobody gave anything up. Even I have limits, apparently.",
+          "I talked for a good while, but got nothing out of them. Frustrating."
         ]
       }
     }

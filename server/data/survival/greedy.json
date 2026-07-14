@@ -3,56 +3,56 @@
     "success": {
       "greedy": {
         "Analyst": [
-          "Survie assurée. Un détour non planifié pour récupérer des ressources supplémentaires n’a finalement rien coûté.",
-          "Menace évitée malgré une prise de risque motivée par l’appât de matériel récupérable en zone dangereuse.",
-          "Situation stabilisée. Je note un comportement de collecte agressif ayant, contre toute attente, payé.",
-          "Zone sécurisée, avec un inventaire personnel visiblement enrichi au passage. Efficacité inattendue."
+          "Survival ensured. An unplanned detour to recover extra resources ultimately cost nothing.",
+          "Threat avoided despite a risk taken for the lure of recoverable material in a dangerous zone.",
+          "Situation stabilized. I note an aggressive collecting behavior that, against all odds, paid off.",
+          "Zone secured, with a personal inventory visibly enriched along the way. Unexpected efficiency."
         ],
         "Diplomat": [
-          "Nous avons traversé l’épreuve… avec quelques poches un peu plus lourdes qu’au départ, je l’ai remarqué.",
-          "La nature s’est apaisée autour de nous. Je crois qu’il a vu là une occasion autant qu’un danger.",
-          "Le danger s’est dissipé, et il en a profité pour ramasser ce qu’il pouvait. J’espère qu’il en valait la peine.",
-          "Nous sommes en sécurité. Son regard n’a jamais quitté ce qu’il pouvait emporter, même dans le péril."
+          "We got through the ordeal... with pockets a bit heavier than at the start, I noticed.",
+          "Nature settled around us. I think he saw an opportunity as much as a danger there.",
+          "The danger dissipated, and he took the chance to grab what he could. I hope it was worth it.",
+          "We're safe. His eyes never left what he could carry off, even in the middle of danger."
         ],
         "Sentinel": [
-          "Survie validée. Note : détour non autorisé pour collecte de ressources, sans impact négatif sur l’issue.",
-          "Situation stabilisée malgré une priorité donnée à la récupération de matériel plutôt qu’à la sécurité immédiate.",
-          "Péril contourné. Je recommande un encadrement des comportements de collecte en zone à risque.",
-          "Zone sécurisée. Rapport : gain matériel non prévu obtenu en marge de l’objectif principal."
+          "Survival validated. Note: unauthorized detour for resource collection, no negative impact on the outcome.",
+          "Situation stabilized despite prioritizing material recovery over immediate safety.",
+          "Danger avoided. I recommend oversight of collecting behavior in risk zones.",
+          "Zone secured. Report: unplanned material gain obtained alongside the main objective."
         ],
         "Explorer": [
-          "J’ai vu un truc qui brillait au milieu du danger, et je l’ai pris. On est vivants ET plus riches.",
-          "Ok j’ai peut-être pris un petit détour pour du butin. Mais regarde, ça a payé !",
-          "Je pouvais pas laisser ça là. Et finalement, ça a pas compromis notre survie. Double victoire.",
-          "J’ai ramassé ce que je pouvais en chemin. Priorités, hein."
+          "I saw something shiny in the middle of the danger, and I took it. We're alive AND richer.",
+          "Okay maybe I took a little detour for some loot. But look, it paid off!",
+          "I couldn't leave that there. And in the end, it didn't compromise our survival. Double win.",
+          "I grabbed what I could on the way. Priorities, right."
         ]
       }
     },
     "failure": {
       "greedy": {
         "Analyst": [
-          "Survie compromise. Un détour motivé par l’appât du gain a directement retardé l’échappée nécessaire.",
-          "Menace non évitée après une prise de risque injustifiée pour la récupération de matériel secondaire.",
-          "Situation instable. Je note que la priorité donnée aux ressources a affecté le temps de réaction disponible.",
-          "Péril non contourné. Je consigne : la cupidité a transformé un risque gérable en danger réel."
+          "Survival compromised. A detour motivated by the lure of profit directly delayed the necessary escape.",
+          "Threat not avoided after an unjustified risk taken to recover secondary material.",
+          "Situation unstable. I note that prioritizing resources affected the available reaction time.",
+          "Danger not avoided. I record: greed turned a manageable risk into real danger."
         ],
         "Diplomat": [
-          "Nous n’avons pas traversé l’épreuve… je crois qu’il en voulait plus que ce que la situation pouvait offrir.",
-          "La nature s’est refermée sur nous, pendant qu’il cherchait encore quelque chose à emporter.",
-          "Le danger n’a pas voulu se dissiper. Peut-être qu’il fallait choisir entre la sécurité et le profit.",
-          "Nous ne sommes pas en sécurité. Son envie d’en avoir plus nous a coûté un temps précieux."
+          "We didn't get through the ordeal... I think he wanted more than the situation could offer.",
+          "Nature closed in on us, while he was still looking for something to take.",
+          "The danger wouldn't dissipate. Maybe he had to choose between safety and profit.",
+          "We are not safe. His desire for more cost us precious time."
         ],
         "Sentinel": [
-          "Survie échouée. Le journal indique un détour non autorisé pour collecte de ressources ayant retardé l’extraction.",
-          "Situation instable. Rapport : priorité donnée au gain matériel directement liée à l’échec de l’opération.",
-          "Péril non contourné après une prise de risque injustifiée motivée par l’appât du gain.",
-          "Zone non sécurisée. Je recommande une clarification des priorités opérationnelles en situation de survie."
+          "Survival failed. The log shows an unauthorized detour for resource collection that delayed the extraction.",
+          "Situation unstable. Report: priority given to material gain directly linked to the operation's failure.",
+          "Danger not avoided after an unjustified risk taken for the sake of profit.",
+          "Zone not secured. I recommend clarifying operational priorities in survival situations."
         ],
         "Explorer": [
-          "J’ai voulu prendre un truc en plus, et ça nous a coûté un temps qu’on avait pas. Ma faute.",
-          "Ok, j’aurais peut-être dû laisser ce truc briller tranquillement là où il était.",
-          "Je pouvais pas résister. Et ça a fini par vraiment nous compliquer la vie.",
-          "J’ai priorisé le butin sur la sécurité. Mauvais calcul, clairement."
+          "I wanted to grab one more thing, and it cost us time we didn't have. My fault.",
+          "Okay, maybe I should have just left that thing shining quietly where it was.",
+          "I couldn't resist. And it ended up really complicating our lives.",
+          "I prioritized loot over safety. Bad call, clearly."
         ]
       }
     }

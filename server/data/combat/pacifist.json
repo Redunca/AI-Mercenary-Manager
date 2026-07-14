@@ -3,56 +3,56 @@
     "success": {
       "pacifist": {
         "Analyst": [
-          "Cible neutralisée sans arme létale. Statistiquement moins efficace, mais le résultat final est identique.",
-          "Combat terminé. Je note un refus systématique du coup fatal, compensé par une précision inhabituelle.",
-          "Menace éliminée par immobilisation plutôt que destruction. Méthode inhabituelle, résultat conforme.",
-          "Affrontement clos. L’adversaire est neutralisé, pas détruit. Je consigne la distinction comme pertinente."
+          "Target neutralized without lethal force. Statistically less efficient, but the final result is identical.",
+          "Combat concluded. I note a systematic refusal of the finishing blow, offset by unusual precision.",
+          "Threat eliminated by immobilization rather than destruction. Unusual method, result conforms.",
+          "Engagement closed. The opponent is neutralized, not destroyed. Logging the distinction as relevant."
         ],
         "Diplomat": [
-          "Le combat s’est terminé sans qu’un seul coup mortel ne soit porté. Je respecte profondément ce choix.",
-          "La bataille est finie, et personne n’est mort par sa main. C’est une victoire d’une autre nature.",
-          "L’adversaire est tombé, mais vivant. Je crois que c’est exactement ce qu’il voulait.",
-          "Le conflit s’est résolu sans effusion de sang inutile. Je trouve ça profondément apaisant."
+          "The fight ended without a single fatal blow being struck. I deeply respect that choice.",
+          "The battle is over, and no one died by his hand. That's a victory of a different kind.",
+          "The opponent fell, but alive. I think that's exactly what he wanted.",
+          "The conflict resolved without needless bloodshed. I find that deeply reassuring."
         ],
         "Sentinel": [
-          "Engagement réussi. Note : neutralisation non létale, conforme aux principes de l’opérateur.",
-          "Menace maîtrisée sans perte de vie adverse. Méthode atypique, résultat validé malgré tout.",
-          "Combat terminé. L’opérateur a maintenu sa ligne de conduite jusqu’au bout. Je le consigne favorablement.",
-          "Opposition neutralisée par immobilisation. Je recommande d’étudier cette approche pour d’autres cas."
+          "Engagement successful. Note: non-lethal neutralization, consistent with the operator's principles.",
+          "Threat controlled with no enemy loss of life. Atypical method, result validated regardless.",
+          "Combat concluded. The operator held to his line of conduct throughout. Logging this favorably.",
+          "Opposition neutralized through immobilization. I recommend studying this approach for other cases."
         ],
         "Explorer": [
-          "Bon, j’ai pas tué personne, j’ai juste... ralenti les choses. Et ça a marché !",
-          "J’ai refusé le coup final et je les ai juste assommés. Meilleure décision de la journée.",
-          "Personne n’est mort, tout le monde va s’en sortir. Je préfère largement ça.",
-          "J’ai trouvé un moyen de gagner sans faire de mal pour de vrai. Fier de moi."
+          "Okay, I didn't kill anyone, I just... slowed things down. And it worked!",
+          "I refused the finishing blow and just knocked them out. Best decision of the day.",
+          "Nobody died, everyone's going to make it. I strongly prefer that.",
+          "Found a way to win without actually hurting anyone. Proud of that."
         ]
       }
     },
     "failure": {
       "pacifist": {
         "Analyst": [
-          "Échec tactique. Le refus d’infliger un coup décisif a directement compromis l’issue de l’engagement.",
-          "Combat perdu. Je note une hésitation systématique au moment critique, contraire à l’efficacité pure.",
-          "Opposition non neutralisée. La retenue observée a offert à l’adversaire des occasions répétées.",
-          "Affrontement défavorable. Je consigne : les principes ont primé sur la survie, avec un coût mesurable."
+          "Tactical failure. The refusal to deliver a decisive blow directly compromised the engagement's outcome.",
+          "Combat lost. I note systematic hesitation at the critical moment, contrary to pure efficiency.",
+          "Opposition not neutralized. The observed restraint gave the opponent repeated openings.",
+          "Unfavorable engagement. I record: principles took precedence over survival, at a measurable cost."
         ],
         "Diplomat": [
-          "Le combat s’est mal terminé… mais il n’a pas trahi ce en quoi il croit. Ça compte pour moi.",
-          "La bataille est perdue. Je crois qu’il a préféré perdre plutôt que devenir quelqu’un d’autre.",
-          "L’adversaire a eu le dessus, sans que lui n’ait cherché à vraiment blesser. C’est une forme de courage.",
-          "La confrontation a échoué. Ses convictions lui ont coûté cher, et pourtant je ne peux pas le blâmer."
+          "The fight ended badly... but he didn't betray what he believes in. That matters to me.",
+          "The battle is lost. I think he preferred to lose rather than become someone else.",
+          "The opponent got the upper hand, without him ever truly trying to hurt them. That's a form of courage.",
+          "The confrontation failed. His convictions cost him dearly, and yet I can't blame him."
         ],
         "Sentinel": [
-          "Engagement échoué. Le journal indique un refus répété d’engager une force létale suffisante.",
-          "Combat perdu. Rapport : la retenue de l’opérateur a directement affecté l’issue tactique.",
-          "Menace non éliminée. Je recommande une clarification des règles d’engagement avant la prochaine mission.",
-          "Opposition non maîtrisée. Le respect strict d’un code personnel a limité l’efficacité opérationnelle."
+          "Engagement failed. The log shows a repeated refusal to apply sufficient lethal force.",
+          "Combat lost. Report: the operator's restraint directly affected the tactical outcome.",
+          "Threat not eliminated. I recommend clarifying the rules of engagement before the next mission.",
+          "Opposition not controlled. Strict adherence to a personal code limited operational effectiveness."
         ],
         "Explorer": [
-          "J’ai pas voulu vraiment leur faire mal, et du coup ça s’est retourné contre moi.",
-          "Ok, j’aurais peut-être dû frapper plus fort. Mais j’ai pas pu m’y résoudre.",
-          "Je préfère perdre comme ça plutôt que gagner autrement. Même si ça pique.",
-          "J’ai retenu mes coups jusqu’au bout. Résultat : je me suis pris les leurs en pleine face."
+          "I didn't want to really hurt them, and it backfired on me.",
+          "Okay, maybe I should have hit harder. But I couldn't bring myself to do it.",
+          "I'd rather lose like this than win any other way. Even if it stings.",
+          "I held back to the end. Result: I took theirs full in the face."
         ]
       }
     }

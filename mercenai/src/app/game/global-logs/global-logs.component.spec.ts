@@ -4,8 +4,8 @@ import { LogService } from '../../core/log.service';
 import { LogEntry } from '../../models/log';
 
 const MOCK_GLOBAL_LOGS: LogEntry[] = [
-  { tag: '[SYS]', message: 'Mission "Patrouille de couloir" terminée [SUCCÈS].' },
-  { tag: '[VEX→KADE]', message: 'Vex lève les yeux au ciel.' },
+  { tag: '[SYS]', message: 'Mission "Corridor Patrol" completed [SUCCESS].' },
+  { tag: '[VEX→KADE]', message: 'Vex rolls their eyes.' },
 ];
 
 describe('GlobalLogsComponent', () => {

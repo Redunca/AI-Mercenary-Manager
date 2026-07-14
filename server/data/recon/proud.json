@@ -3,56 +3,56 @@
     "success": {
       "proud": {
         "Analyst": [
-          "Observation réussie sans vérification secondaire, jugée inutile par l’opérateur. Résultat conforme malgré tout.",
-          "Zone analysée en un seul passage, effectué avec une assurance ne laissant aucune place au doute.",
-          "Reconnaissance complète. Je note un refus catégorique de demander confirmation, sans conséquence ici.",
-          "Repérage effectué. Statistiquement, cette confiance aurait dû produire une erreur. Ce n’est pas le cas."
+          "Observation successful with no secondary check, deemed unnecessary by the operator. Result conforms nonetheless.",
+          "Zone analyzed in a single pass, carried out with a confidence leaving no room for doubt.",
+          "Reconnaissance complete. I note a categorical refusal to seek confirmation, without consequence here.",
+          "Scouting done. Statistically, this confidence should have caused an error. It didn't."
         ],
         "Diplomat": [
-          "La zone s’est révélée à lui… porté par une assurance qui ne doutait jamais d’elle-même.",
-          "Reconnaissance harmonieuse, menée avec une certitude presque déconcertante.",
-          "J’ai perçu ce qu’il fallait, mais lui semblait déjà tout savoir avant même de regarder.",
-          "Observation réussie. Son aplomb, pour une fois, n’a fait qu’accompagner sa justesse."
+          "The zone revealed itself to him... carried by a confidence that never doubted itself.",
+          "Reconnaissance went smoothly, conducted with an almost unsettling certainty.",
+          "I perceived what was needed, but he seemed to already know everything before even looking.",
+          "Observation successful. His poise, for once, only matched his accuracy."
         ],
         "Sentinel": [
-          "Reconnaissance validée. Note : absence de vérification secondaire, résultat néanmoins conforme.",
-          "Observation complète menée en un seul passage, sans consultation d’un second avis.",
-          "Analyse réussie malgré une confiance en soi que je qualifierais d’excessive au vu du contexte.",
-          "Repérage effectué. Rapport : assurance de l’opérateur ayant, cette fois, été justifiée."
+          "Reconnaissance validated. Note: absence of secondary verification, result conforms nonetheless.",
+          "Observation complete conducted in a single pass, with no second opinion consulted.",
+          "Analysis successful despite a self-confidence I'd call excessive given the context.",
+          "Scouting done. Report: the operator's confidence was, this time, justified."
         ],
         "Explorer": [
-          "J’ai regardé une fois, et j’ai su. Pas besoin de vérifier deux fois, je me trompe jamais.",
-          "Franchement, avec mon œil, une seule passe suffit. Et voilà, j’avais raison.",
-          "Je leur ai dit que j’avais tout vu du premier coup. Et bah oui, c’était vrai.",
-          "Pas besoin de perdre du temps à re-vérifier. Je sais ce que je vois."
+          "I looked once, and I knew. No need to check twice, I'm never wrong.",
+          "Honestly, with my eye, one pass is enough. And there you go, I was right.",
+          "I told them I'd seen everything the first time. And yeah, it was true.",
+          "No need to waste time double-checking. I know what I see."
         ]
       }
     },
     "failure": {
       "proud": {
         "Analyst": [
-          "Reconnaissance échouée. Le refus de vérifier une seconde fois a directement causé l’omission d’un élément clé.",
-          "Observation impossible après un refus catégorique de reconsidérer une première impression erronée.",
-          "Analyse infructueuse. Je note qu’un excès de confiance a empêché toute correction en cours d’opération.",
-          "Repérage raté. Je consigne : l’assurance affichée n’était pas corrélée à l’exactitude du jugement."
+          "Reconnaissance failed. The refusal to check a second time directly caused a key element to be missed.",
+          "Observation impossible after a categorical refusal to reconsider an initial, flawed impression.",
+          "Analysis unsuccessful. I note excess confidence prevented any correction during the operation.",
+          "Scouting failed. I record: the displayed confidence wasn't matched by accuracy of judgment."
         ],
         "Diplomat": [
-          "La zone ne s’est pas révélée… je crois qu’il était trop certain de lui pour vraiment regarder.",
-          "Reconnaissance bloquée. Son assurance, cette fois, a fermé les yeux plutôt que de les ouvrir.",
-          "Je n’ai rien perçu. Peut-être qu’un peu de doute aurait mieux servi cette mission.",
-          "Observation impossible. Je crois qu’il avait besoin d’admettre qu’il pouvait se tromper."
+          "The zone didn't reveal itself... I think he was too sure of himself to really look.",
+          "Reconnaissance blocked. His confidence, this time, closed his eyes rather than opening them.",
+          "I perceived nothing. Maybe a bit of doubt would have served this mission better.",
+          "Observation impossible. I think he needed to admit he could be wrong."
         ],
         "Sentinel": [
-          "Reconnaissance échouée. Je vais consigner : refus de vérification secondaire malgré un doute raisonnable.",
-          "Analyse impossible. Rapport : excès de confiance de l’opérateur directement lié à l’échec de la mission.",
-          "Observation infructueuse après un jugement initial erroné maintenu sans remise en question.",
-          "Repérage non effectué correctement. Je recommande un protocole de double vérification obligatoire."
+          "Reconnaissance failed. Logging: refusal of secondary verification despite reasonable doubt.",
+          "Analysis impossible. Report: the operator's excess confidence directly linked to the mission's failure.",
+          "Observation unsuccessful after an initial flawed judgment maintained without reconsideration.",
+          "Scouting not completed properly. I recommend a mandatory double-check protocol."
         ],
         "Explorer": [
-          "J’étais sûr de moi, tellement sûr. Et j’avais tort. Ça pique.",
-          "Je me trompe jamais, sauf que là, si.",
-          "J’ai pas voulu vérifier deux fois. Grosse erreur, avec le recul.",
-          "Mon assurance a écrit un chèque que la réalité a pas voulu encaisser."
+          "I was sure of myself, so sure. And I was wrong. That stings.",
+          "I'm never wrong, except this time, I was.",
+          "I didn't want to check twice. Big mistake, in hindsight.",
+          "My confidence wrote a check reality wouldn't cash."
         ]
       }
     }
