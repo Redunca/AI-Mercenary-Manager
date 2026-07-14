@@ -1,0 +1,60 @@
+{
+  "PSYCHWAR": {
+    "success": {
+      "observant": {
+        "Analyst": [
+          "Mental influence established. A barely visible flinch revealed exactly where to apply pressure.",
+          "Psychological pressure successful thanks to a behavioral detail no one else had noticed.",
+          "Mental domination obtained. I note a precise identification of the target's emotional breaking point.",
+          "Emotional control achieved by exploiting a detail standard analysis hadn't caught."
+        ],
+        "Diplomat": [
+          "They yielded... he had seen, even before they knew it themselves, where their fear was hiding.",
+          "The inner tension broke because he knew how to look beyond the words, to the real unease.",
+          "We touched something in them that he had spotted from the very start. A real gift for observation.",
+          "Their resistance dissolved before someone who had already understood everything about them, in silence."
+        ],
+        "Sentinel": [
+          "Mental pressure validated. Note: emotional breaking point identified through direct behavioral observation.",
+          "Psychological influence obtained by exploiting a detail not catalogued by standard methods.",
+          "Mental domination established thanks to a precise reading of the target's behavior before intervention.",
+          "Psychic impact confirmed. Report: the operator's observational skill directly linked to the success."
+        ],
+        "Explorer": [
+          "I noticed something in their eyes, like a nervous tic, and I pressed right on that.",
+          "There was a small sign I caught immediately. And that was enough to tip everything over.",
+          "I just observed a bit before speaking, and I saw exactly what was worrying them.",
+          "A detail caught my eye, and I knew exactly what to say. Effective."
+        ]
+      }
+    },
+    "failure": {
+      "observant": {
+        "Analyst": [
+          "Mental influence failed. No exploitable behavioral signal could be identified in this target.",
+          "Psychological pressure ineffective despite thorough observation of the target's behavior.",
+          "Mental domination impossible. The absence of any revealing clue limited any targeted approach.",
+          "Emotional control not established. I record: even the finest observation revealed nothing this time."
+        ],
+        "Diplomat": [
+          "They didn't open their mind... even his attentive gaze found nothing to hold onto.",
+          "The inner tension hasn't shifted. Sometimes, there's simply nothing to see, even for him.",
+          "We failed to reach them, despite all his attention to every detail.",
+          "Their resistance stayed intact, unmoved by an otherwise meticulous observation."
+        ],
+        "Sentinel": [
+          "Mental pressure failed. Logging: no identifiable breaking point despite thorough observation.",
+          "Psychological influence rejected. Report: the operator's observational skill had no effect on this target.",
+          "Mental domination impossible. I recommend documenting this target as having no visible behavioral flaw.",
+          "Psychic impact nil, despite a behavioral analysis deemed rigorous."
+        ],
+        "Explorer": [
+          "I observed everything, really everything, and saw nothing exploitable. It happens.",
+          "I usually always spot something in people. This time, nothing at all.",
+          "I looked for the usual little sign. It just wasn't there.",
+          "Even I have limits when it comes to observation, apparently."
+        ]
+      }
+    }
+  }
+}

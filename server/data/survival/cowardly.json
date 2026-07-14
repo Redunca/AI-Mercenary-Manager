@@ -1,0 +1,60 @@
+{
+  "SURVIVAL": {
+    "success": {
+      "cowardly": {
+        "Analyst": [
+          "Survival ensured. Three complete stops out of panic observed, with no effect on the final outcome.",
+          "Threat avoided despite near-constant hesitation at every obstacle encountered.",
+          "Situation stabilized. Excessive caution born of fear statistically limited exposure to danger.",
+          "Zone secured. I record: fear slowed progress without ever truly jeopardizing it."
+        ],
+        "Diplomat": [
+          "We got through the ordeal... he was trembling at every step, but he kept going. That's real courage.",
+          "Nature settled around us. I think he survived by listening to his fear rather than ignoring it.",
+          "The danger dissipated. His terror didn't paralyze him, it just made him more careful.",
+          "We're safe. He was afraid the whole time, and yet, he's still here."
+        ],
+        "Sentinel": [
+          "Survival validated. Note: multiple stress-related hesitations, no impact on the final result.",
+          "Situation stabilized despite the operator's obvious nervousness throughout the ordeal.",
+          "Danger avoided. I recommend coaching to build confidence in hostile situations.",
+          "Zone secured. Report: operation successful despite high operational stress in the operator."
+        ],
+        "Explorer": [
+          "I was scared out of my mind at every weird noise, but I'm still here. Counting that as a win.",
+          "Okay I almost turned back like five times. But we're safe, so it's fine.",
+          "Honestly I was terrified the whole time. Not hiding it. But it was enough to survive.",
+          "I closed my eyes at one point, not gonna lie. And apparently that was the right moment for it."
+        ]
+      }
+    },
+    "failure": {
+      "cowardly": {
+        "Analyst": [
+          "Survival compromised. Repeated hesitation exceeded the available action window before the danger worsened.",
+          "Threat not avoided. I note a premature abandonment in the face of an initially manageable risk.",
+          "Situation unstable. Fear of failure directly precipitated the failure itself.",
+          "Danger not avoided. I record: three consecutive retreats in the face of otherwise surmountable obstacles."
+        ],
+        "Diplomat": [
+          "We didn't get through the ordeal... I think fear overwhelmed him before we'd even really started.",
+          "Nature closed in on us. He hesitated too long, paralyzed by what could go wrong.",
+          "The danger wouldn't dissipate. His terror, this time, won out over his determination.",
+          "We are not safe. I think he needed reassurance before moving forward."
+        ],
+        "Sentinel": [
+          "Survival failed. Logging: premature abandonment with no clear tactical justification.",
+          "Situation unstable. Report: the operator halted progress following stress deemed excessive.",
+          "Danger not avoided after a hasty withdrawal by the operator in the face of a minor obstacle.",
+          "Zone not secured. I recommend psychological preparation before the next exposure to danger."
+        ],
+        "Explorer": [
+          "I got too scared and stopped everything before it even got really dangerous. Sorry.",
+          "Well, I panicked at the first noise and backed off. Shouldn't have.",
+          "I could have kept going, but I chickened out too much. Total failure as a result.",
+          "I saw a weird shadow and dropped everything. It was probably nothing, actually."
+        ]
+      }
+    }
+  }
+}

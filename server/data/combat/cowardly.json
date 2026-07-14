@@ -1,0 +1,60 @@
+{
+  "COMBAT": {
+    "success": {
+      "cowardly": {
+        "Analyst": [
+          "Target neutralized regardless. I note a tactical withdrawal mid-combat — statistically, it limited damage.",
+          "Combat concluded. His excessive caution, against all odds, avoided unnecessary exposure.",
+          "Threat eliminated. The observed strategic retreat was irrational in intent, rational in effect.",
+          "Engagement closed. I record: notable hesitation, favorable outcome despite it."
+        ],
+        "Diplomat": [
+          "The fight ended... he was afraid, and that's human. I'm glad he's still here.",
+          "The battle is over. I think he survived by listening to his instinct, even trembling.",
+          "The opponent went down. He's still breathing, and that's already a lot after such a scare.",
+          "The conflict has settled. His fear didn't betray him this time. I'm glad for him."
+        ],
+        "Sentinel": [
+          "Engagement successful. Note: momentary tactical withdrawal consistent with self-preservation protocol.",
+          "Threat eliminated. The operator's excessive caution fortunately didn't compromise the outcome.",
+          "Combat concluded. Marked defensive behavior observed; result conforms regardless.",
+          "Opposition neutralized. I recommend confidence-building before the next engagement."
+        ],
+        "Explorer": [
+          "Okay I freaked out, like really freaked out. But we won, so I'm counting it as a win.",
+          "I almost turned back three times. Three. But hey, we're alive.",
+          "Honestly I was terrified. Not hiding it. But it worked out anyway.",
+          "I closed my eyes at one point, not gonna lie. And apparently that was the right moment."
+        ]
+      }
+    },
+    "failure": {
+      "cowardly": {
+        "Analyst": [
+          "Tactical failure. The observed hesitation cost a decisive window of action.",
+          "Combat lost. I note a premature withdrawal that compromised the formation.",
+          "Opposition not neutralized. Repeated retreat erased any initial advantage.",
+          "Unfavorable engagement. I record: fear preceded strategy, with the expected consequences."
+        ],
+        "Diplomat": [
+          "The fight ended badly... fear overwhelmed him, and I can't hold that against him.",
+          "The battle is lost. I think he simply wasn't ready to face it head-on.",
+          "The opponent got the upper hand. He retreated, and part of me understands why.",
+          "The confrontation failed. Maybe we should have protected him from that fear sooner."
+        ],
+        "Sentinel": [
+          "Engagement failed. The log shows an unauthorized withdrawal mid-fight.",
+          "Combat lost. Report: avoidance behavior that directly affected the outcome.",
+          "Threat not eliminated. I recommend psychological support before re-engagement.",
+          "Opposition not controlled. The operator's excessive restraint compromised the mission."
+        ],
+        "Explorer": [
+          "Okay I got too scared and backed off at the worst possible moment. Sorry.",
+          "I wanted to run, seriously. And it backfired.",
+          "I froze on the spot. Completely froze. And here's the result.",
+          "Honestly? I was terrified and it showed. A lot."
+        ]
+      }
+    }
+  }
+}

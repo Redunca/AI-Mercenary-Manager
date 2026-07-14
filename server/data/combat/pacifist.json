@@ -1,0 +1,60 @@
+{
+  "COMBAT": {
+    "success": {
+      "pacifist": {
+        "Analyst": [
+          "Target neutralized without lethal force. Statistically less efficient, but the final result is identical.",
+          "Combat concluded. I note a systematic refusal of the finishing blow, offset by unusual precision.",
+          "Threat eliminated by immobilization rather than destruction. Unusual method, result conforms.",
+          "Engagement closed. The opponent is neutralized, not destroyed. Logging the distinction as relevant."
+        ],
+        "Diplomat": [
+          "The fight ended without a single fatal blow being struck. I deeply respect that choice.",
+          "The battle is over, and no one died by his hand. That's a victory of a different kind.",
+          "The opponent fell, but alive. I think that's exactly what he wanted.",
+          "The conflict resolved without needless bloodshed. I find that deeply reassuring."
+        ],
+        "Sentinel": [
+          "Engagement successful. Note: non-lethal neutralization, consistent with the operator's principles.",
+          "Threat controlled with no enemy loss of life. Atypical method, result validated regardless.",
+          "Combat concluded. The operator held to his line of conduct throughout. Logging this favorably.",
+          "Opposition neutralized through immobilization. I recommend studying this approach for other cases."
+        ],
+        "Explorer": [
+          "Okay, I didn't kill anyone, I just... slowed things down. And it worked!",
+          "I refused the finishing blow and just knocked them out. Best decision of the day.",
+          "Nobody died, everyone's going to make it. I strongly prefer that.",
+          "Found a way to win without actually hurting anyone. Proud of that."
+        ]
+      }
+    },
+    "failure": {
+      "pacifist": {
+        "Analyst": [
+          "Tactical failure. The refusal to deliver a decisive blow directly compromised the engagement's outcome.",
+          "Combat lost. I note systematic hesitation at the critical moment, contrary to pure efficiency.",
+          "Opposition not neutralized. The observed restraint gave the opponent repeated openings.",
+          "Unfavorable engagement. I record: principles took precedence over survival, at a measurable cost."
+        ],
+        "Diplomat": [
+          "The fight ended badly... but he didn't betray what he believes in. That matters to me.",
+          "The battle is lost. I think he preferred to lose rather than become someone else.",
+          "The opponent got the upper hand, without him ever truly trying to hurt them. That's a form of courage.",
+          "The confrontation failed. His convictions cost him dearly, and yet I can't blame him."
+        ],
+        "Sentinel": [
+          "Engagement failed. The log shows a repeated refusal to apply sufficient lethal force.",
+          "Combat lost. Report: the operator's restraint directly affected the tactical outcome.",
+          "Threat not eliminated. I recommend clarifying the rules of engagement before the next mission.",
+          "Opposition not controlled. Strict adherence to a personal code limited operational effectiveness."
+        ],
+        "Explorer": [
+          "I didn't want to really hurt them, and it backfired on me.",
+          "Okay, maybe I should have hit harder. But I couldn't bring myself to do it.",
+          "I'd rather lose like this than win any other way. Even if it stings.",
+          "I held back to the end. Result: I took theirs full in the face."
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,1 @@
+ALTER TABLE mission_templates ADD COLUMN IF NOT EXISTS planet JSONB;

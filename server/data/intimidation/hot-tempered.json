@@ -1,0 +1,60 @@
+{
+  "INTIMIDATION": {
+    "success": {
+      "hot-tempered": {
+        "Analyst": [
+          "Intimidation successful. An unplanned burst of anger produced the intended effect, by accident.",
+          "Threat perceived. I note the displayed rage was more effective than a calculated approach.",
+          "Authority imposed. The unintentional emotional intensity created pressure the target found hard to anticipate.",
+          "Domination established. Statistically, this method should have failed. It worked anyway."
+        ],
+        "Diplomat": [
+          "They yielded to a raw anger he didn't even try to control. Unsettling, but effective.",
+          "The tension eased under a sudden burst of rage. I'm not sure I approve of the method.",
+          "They understood our position, almost despite him. His anger spoke louder than his words.",
+          "They backed down from an intensity he himself didn't really control."
+        ],
+        "Sentinel": [
+          "Intimidation validated. Note: emotional loss of control by the operator, result conforms regardless.",
+          "Threat perceived through an outburst of anger not authorized by the deterrence protocol.",
+          "Authority imposed. I nonetheless recommend oversight of the operator's emotional management.",
+          "Domination established. Report: unstable method, favorable result, risk to monitor."
+        ],
+        "Explorer": [
+          "I completely lost it and they freaked out immediately. Effective, but I had zero control.",
+          "I yelled so loud even I was surprised. And it worked.",
+          "My anger just came out on its own, and apparently that's exactly what was needed.",
+          "I got genuinely mad, not strategically. And that was enough to make them back off."
+        ]
+      }
+    },
+    "failure": {
+      "hot-tempered": {
+        "Analyst": [
+          "Intimidation failed. The emotional loss of control made the threat incoherent and ineffective.",
+          "Threat ignored. I note the displayed anger discredited the entire approach.",
+          "Authority not imposed. The emotional outburst was perceived as weakness, not strength.",
+          "Domination not established. I record: the operator's instability compromised the entire attempt."
+        ],
+        "Diplomat": [
+          "They didn't yield... his anger surprised them, but not in the right way.",
+          "The tension hasn't shifted. I think they saw fragility behind that rage.",
+          "They held firm. His anger created distance, not submission.",
+          "They didn't back down, reinforced by an outburst they didn't take seriously."
+        ],
+        "Sentinel": [
+          "Intimidation failed. Logging: emotional loss of control that discredited the operation.",
+          "Threat ignored. Report: the operator's instability perceived as weakness by the target.",
+          "Authority not imposed. I recommend removing this profile from direct deterrence operations.",
+          "Domination not established. The emotional outburst compromised all credibility of the approach."
+        ],
+        "Explorer": [
+          "I got genuinely mad, and they just saw that I'd lost control. Not convincing at all.",
+          "I yelled, and they just laughed at me. That clearly didn't work.",
+          "My anger came out all wrong, and it didn't impress them one bit.",
+          "Well, I blew up for nothing this time. Zero effect, plenty of shame."
+        ]
+      }
+    }
+  }
+}

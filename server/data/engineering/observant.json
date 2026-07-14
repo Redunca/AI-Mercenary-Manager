@@ -1,0 +1,60 @@
+{
+  "ENGINEERING": {
+    "success": {
+      "observant": {
+        "Analyst": [
+          "Diagnostic complete. A solder defect invisible to the scan was spotted with the naked eye in seconds.",
+          "System repaired thanks to a detail automated analysis hadn't flagged.",
+          "Circuit stabilized after identifying an anomaly no standard sensor had detected.",
+          "Module operational. I record: human observation outperformed algorithmic analysis this time."
+        ],
+        "Diplomat": [
+          "The machine opened up to him... he saw something no one else had noticed.",
+          "The system works again thanks to a detail only he observed.",
+          "The circuit accepted his adjustments, guided by an eye that knows where to look.",
+          "The repair held because he knew how to see beyond the obvious."
+        ],
+        "Sentinel": [
+          "Repair validated. Note: flaw identified through direct observation, not catalogued by standard tools.",
+          "System stabilized via a manually detected flaw. I recommend adding this method to protocol.",
+          "Circuit operational after identifying a detail overlooked by the automatic diagnostic.",
+          "Module functional. Report: the operator's observational skill directly responsible for success."
+        ],
+        "Explorer": [
+          "I noticed something weird on a wire, tiny thing. And bingo, it works again.",
+          "There was a sketchy detail nobody had seen. I did. There, sorted.",
+          "I looked a bit longer than usual, and I saw THE broken thing.",
+          "A small detail caught my eye, literally. And that was enough."
+        ]
+      }
+    },
+    "failure": {
+      "observant": {
+        "Analyst": [
+          "Diagnostic impossible. Even meticulous observation revealed no exploitable anomaly this time.",
+          "Repair failed. I note the absence of any detectable abnormal detail, despite a thorough inspection.",
+          "Circuit unstable. Careful examination of the system revealed nothing exploitable.",
+          "Problem unresolved. I record: sometimes, there is simply nothing to observe."
+        ],
+        "Diplomat": [
+          "The machine wouldn't cooperate... even his sharp eye found nothing this time. It happens.",
+          "The system rejected his adjustments. He looked, really looked, but some malfunctions stay silent.",
+          "The circuit didn't accept his help, despite all his attention.",
+          "The repair failed, despite meticulous observation on his part."
+        ],
+        "Sentinel": [
+          "Repair failed. Logging: no detectable anomaly despite thorough observation.",
+          "System unstable. Report: the operator's observational skill had no effect on this specific malfunction.",
+          "Circuit non-operational, despite an examination deemed consistent with the highest standards.",
+          "Module out of service. I recommend treating this malfunction as having no identified observable cause."
+        ],
+        "Explorer": [
+          "I looked at everything, like really everything, and saw nothing useful. It happens.",
+          "I usually always spot something. This time, nothing. Nada.",
+          "I looked for the usual little detail. It wasn't there this time.",
+          "Well, even I have limits, apparently. Nothing to report."
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "ENGINEERING": {
+    "success": {
+      "proud": {
+        "Analyst": [
+          "Diagnostic complete without consulting the manual, deemed superfluous by the operator. Result conforms nonetheless.",
+          "System repaired using a personal method, refusing any standard procedure. Effective, against all odds.",
+          "Circuit stabilized. I note a categorical refusal to ask for assistance, without consequence here.",
+          "Module operational. Statistically, this confidence should have caused an error. It didn't."
+        ],
+        "Diplomat": [
+          "The machine opened up to him... carried by a confidence that never doubted itself.",
+          "The system works again, repaired with an almost unsettling certainty.",
+          "The circuit accepted his adjustments, made with unshakable confidence.",
+          "The repair held. His poise, for once, only matched his accuracy."
+        ],
+        "Sentinel": [
+          "Repair validated. Note: standard procedure ignored in favor of a personal method, result conforms.",
+          "System stabilized without consulting available technical documentation.",
+          "Circuit operational despite a refusal of assistance I'd call excessive given the context.",
+          "Module functional. Report: the operator's confidence was, this time, justified."
+        ],
+        "Explorer": [
+          "Didn't need the manual, just knew what to do. Never wrong about this stuff.",
+          "Honestly, with my instincts, no need for outside help. And there you go, I was right.",
+          "I told them I could handle it alone. And yeah, it was true.",
+          "No need to ask for help. I know what I'm doing."
+        ]
+      }
+    },
+    "failure": {
+      "proud": {
+        "Analyst": [
+          "Diagnostic impossible. The refusal to consult documentation directly caused a handling error.",
+          "Repair failed after a categorical refusal to reconsider an initial, flawed approach.",
+          "Circuit unstable. I note excess confidence prevented any correction during the intervention.",
+          "Problem unresolved. I record: the displayed confidence wasn't matched by the required technical skill."
+        ],
+        "Diplomat": [
+          "The machine wouldn't cooperate... I think he was too sure of himself to really listen to it.",
+          "The system rejected his adjustments. His confidence, this time, closed the door instead of opening it.",
+          "The circuit didn't accept his help. Maybe a bit of humility would have served this repair better.",
+          "The repair failed. I think he needed to admit he could be wrong."
+        ],
+        "Sentinel": [
+          "Repair failed. Logging: refusal of assistance despite reasonable technical doubt.",
+          "System unstable. Report: the operator's excess confidence directly linked to the intervention's failure.",
+          "Circuit non-operational after an initial flawed diagnosis maintained without reconsideration.",
+          "Module out of service. I recommend a mandatory double-check protocol before intervention."
+        ],
+        "Explorer": [
+          "I was sure of myself, so sure. And I was wrong. That stings.",
+          "I'm never wrong about mechanics, except this time, I was.",
+          "I didn't want to ask for help. Big mistake, in hindsight.",
+          "My confidence wrote a check the machine wouldn't cash."
+        ]
+      }
+    }
+  }
+}

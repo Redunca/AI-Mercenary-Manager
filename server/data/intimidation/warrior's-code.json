@@ -1,0 +1,60 @@
+{
+  "INTIMIDATION": {
+    "success": {
+      "warrior's-code": {
+        "Analyst": [
+          "Intimidation successful. A single formal warning, clear and unambiguous, was enough to secure submission.",
+          "Threat perceived as credible, backed by a posture of honor rather than a mere show of force.",
+          "Authority imposed. I note the target yielded to a code of conduct it seemed to recognize.",
+          "Domination established without resorting to brutality. Effective, and oddly respected by both sides."
+        ],
+        "Diplomat": [
+          "They yielded... he offered them an honorable way out, and they took it with relief.",
+          "The tension eased before a threat delivered with dignity rather than cruelty.",
+          "They understood our position because he left them the choice to leave with their head held high.",
+          "They backed down, not out of fear alone, but out of respect for the clarity and fairness of the ultimatum given."
+        ],
+        "Sentinel": [
+          "Intimidation validated. Note: a single formal ultimatum delivered, consistent with a non-standard code of conduct.",
+          "Threat perceived through a posture of authority grounded in honor rather than raw coercion.",
+          "Authority imposed. I recommend studying this informal protocol for similar future engagements.",
+          "Domination established. Report: favorable outcome obtained via an unspoken framework rather than regulation."
+        ],
+        "Explorer": [
+          "I gave them one clear chance to leave, no detours. They took it immediately.",
+          "I laid out the rules once, honestly. And that was enough to calm them down.",
+          "No shouting, just a firm and honest warning. And it worked.",
+          "I left them a dignified way out. They took it without arguing."
+        ]
+      }
+    },
+    "failure": {
+      "warrior's-code": {
+        "Analyst": [
+          "Intimidation failed. The refusal to escalate beyond a single formal warning limited the pressure's effect.",
+          "Threat ignored after an approach deemed too measured for this specific target.",
+          "Authority not imposed. The code of honor followed by the operator wasn't shared by the target.",
+          "Domination not established. I record: the rules followed by the operator weren't honored in return."
+        ],
+        "Diplomat": [
+          "They didn't yield... he offered them an honorable way out, which they chose to ignore.",
+          "The tension hasn't shifted. His dignity wasn't enough against a target with no sense of honor at all.",
+          "They held firm, unmoved by an ultimatum delivered with such restraint and respect.",
+          "They didn't back down. His personal code, for once, wasn't enough."
+        ],
+        "Sentinel": [
+          "Intimidation failed. The log shows a refusal to escalate despite the target's lack of reaction.",
+          "Threat ignored. Report: the operator's code of honor had no effect on an unconventional target.",
+          "Authority not imposed. I recommend reassessing the use of a code of conduct against hostile opponents.",
+          "Domination not established. Respecting an unspoken framework directly limited deterrence effectiveness."
+        ],
+        "Explorer": [
+          "I gave them an honest chance to leave. They just laughed it off.",
+          "I laid out the rules properly. They clearly hadn't read the same rulebook.",
+          "I wanted to do this with honor. It just wasn't enough this time.",
+          "I stuck to my code. They couldn't have cared less."
+        ]
+      }
+    }
+  }
+}

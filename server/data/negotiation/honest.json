@@ -1,0 +1,60 @@
+{
+  "NEGOTIATION": {
+    "success": {
+      "honest": {
+        "Analyst": [
+          "Deal reached without a single exaggeration. Technically remarkable: a negotiation built on verifiable facts.",
+          "Negotiation concluded. He promised nothing he couldn't deliver, and that was enough to convince them.",
+          "Discussion successful. I note total transparency produced a measurable trust effect.",
+          "Common ground found without a single false statement. I propose we study this approach further."
+        ],
+        "Diplomat": [
+          "They agreed... because he hid nothing from them, not even what could have worked against us.",
+          "The negotiation came together around a rare, almost disarming sincerity.",
+          "We found common ground because he refused to lie to them, even a little.",
+          "They said yes to a complete truth, not a pretty story. I find that admirable."
+        ],
+        "Sentinel": [
+          "Negotiation validated without any false statements. I record: unusual method, result conforms.",
+          "Deal obtained through total transparency rather than classic persuasion. Approach worth documenting.",
+          "Discussion successful. The operator strictly honored his refusal to lie, without compromising the objective.",
+          "Common ground found. Report: no false information transmitted, result unchanged."
+        ],
+        "Explorer": [
+          "I literally told the truth, the whole truth, and they accepted anyway. Who would have thought?",
+          "I can't lie during negotiations, so I was just fully honest. And it worked!",
+          "Okay, I'm terrible at bluffing, so I just said what was true. Apparently that's enough sometimes.",
+          "I didn't embellish, I didn't lie. Just said things as they were. And they signed."
+        ]
+      }
+    },
+    "failure": {
+      "honest": {
+        "Analyst": [
+          "Negotiation failed. The operator revealed a weakness in our position at the worst possible moment.",
+          "Deal rejected. I note he corrected a partner's exaggeration, undermining his own offer.",
+          "Discussion unsuccessful. Excess transparency gave the target an advantage it exploited.",
+          "Common ground not found. I'll classify this incident as a conflict between principle and objective."
+        ],
+        "Diplomat": [
+          "They didn't agree... I think he simply couldn't hide our own doubts.",
+          "The negotiation didn't take because he refused to betray his own honesty, even for the mission.",
+          "They saw our flaws in his eyes. He doesn't know how to hide them, and maybe that's for the best.",
+          "The conversation stalled. I think he preferred the truth over tactical advantage."
+        ],
+        "Sentinel": [
+          "Negotiation failed. The log shows a disclosure of sensitive information at the critical moment.",
+          "Deal rejected. Report: the operator explicitly refused to make a favorable but inaccurate statement.",
+          "Discussion unsuccessful. I recommend no longer assigning this profile to high-stakes negotiations.",
+          "Common ground not found, due to a categorical refusal to conceal unfavorable information."
+        ],
+        "Explorer": [
+          "They asked me something direct and I literally couldn't lie. Negotiation ruined instantly.",
+          "I'm really terrible at bluffing. My face gives it away before I even open my mouth.",
+          "I tried to stay vague, I choked, and ended up admitting everything. Oops.",
+          "I can't lie, it's physical for me. And this time, it cost us the deal."
+        ]
+      }
+    }
+  }
+}

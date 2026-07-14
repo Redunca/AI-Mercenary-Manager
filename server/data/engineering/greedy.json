@@ -1,0 +1,60 @@
+{
+  "ENGINEERING": {
+    "success": {
+      "greedy": {
+        "Analyst": [
+          "Diagnostic complete. Unauthorized salvaged parts were used for the repair. Effective nonetheless.",
+          "System repaired with components visibly diverted from other equipment. Result conforms.",
+          "Circuit stabilized, along with a discreet skimming of surplus material. I note the opportunism.",
+          "Module operational, and the operator's personal inventory slightly enriched along the way."
+        ],
+        "Diplomat": [
+          "The machine opened up to him... while he was already assessing what he could get out of it.",
+          "The system works again, repaired with parts of uncertain origin.",
+          "The circuit accepted his adjustments. I hope what he kept for himself was worth it.",
+          "The repair held, and his eyes never left what he could keep for himself."
+        ],
+        "Sentinel": [
+          "Repair validated. Note: use of unlisted parts, origin to be clarified, result conforms nonetheless.",
+          "System stabilized with components whose provenance wasn't declared.",
+          "Circuit operational. I recommend a verification inventory following this intervention.",
+          "Module functional. Report: opportunistic behavior from the operator with no negative impact on the result."
+        ],
+        "Explorer": [
+          "I grabbed two or three parts on the way. No one will notice, and it works again.",
+          "Okay, maybe I swiped a component off another system. But look, it worked!",
+          "I couldn't leave those parts lying there unused. Efficient AND profitable.",
+          "I fixed the thing, and I kept the surplus for myself. Priorities, right."
+        ]
+      }
+    },
+    "failure": {
+      "greedy": {
+        "Analyst": [
+          "Diagnostic impossible. The use of ill-suited parts, chosen for resale value, worsened the malfunction.",
+          "Repair failed after the use of incompatible components salvaged for personal gain.",
+          "Circuit unstable. I note opportunistic behavior directly affected the quality of the intervention.",
+          "Problem unresolved. I record: the lure of profit turned a minor malfunction into a major failure."
+        ],
+        "Diplomat": [
+          "The machine wouldn't cooperate... I think he was thinking more about what he could get out of it than actually fixing it.",
+          "The system rejected his adjustments, made with parts that weren't the right ones.",
+          "The circuit didn't accept his help. Maybe the rush for profit had something to do with it.",
+          "The repair failed. His desire to profit took precedence over the necessary rigor."
+        ],
+        "Sentinel": [
+          "Repair failed. The log shows the use of ill-suited parts chosen for their market value.",
+          "System unstable. Report: opportunistic behavior from the operator directly linked to the intervention's failure.",
+          "Circuit non-operational after the use of incompatible components salvaged for personal gain.",
+          "Module out of service. I recommend strict control of parts used in future interventions."
+        ],
+        "Explorer": [
+          "I used a part I'd swiped elsewhere. Bad idea, it didn't fit at all.",
+          "Okay, I tried to save money by grabbing something not made for this. It went badly.",
+          "I was mostly thinking about what I'd gain, and it showed in the result.",
+          "I got greedy, literally, and it broke the system even more."
+        ]
+      }
+    }
+  }
+}

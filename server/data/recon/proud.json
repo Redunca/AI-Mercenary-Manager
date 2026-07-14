@@ -1,0 +1,60 @@
+{
+  "RECON": {
+    "success": {
+      "proud": {
+        "Analyst": [
+          "Observation successful with no secondary check, deemed unnecessary by the operator. Result conforms nonetheless.",
+          "Zone analyzed in a single pass, carried out with a confidence leaving no room for doubt.",
+          "Reconnaissance complete. I note a categorical refusal to seek confirmation, without consequence here.",
+          "Scouting done. Statistically, this confidence should have caused an error. It didn't."
+        ],
+        "Diplomat": [
+          "The zone revealed itself to him... carried by a confidence that never doubted itself.",
+          "Reconnaissance went smoothly, conducted with an almost unsettling certainty.",
+          "I perceived what was needed, but he seemed to already know everything before even looking.",
+          "Observation successful. His poise, for once, only matched his accuracy."
+        ],
+        "Sentinel": [
+          "Reconnaissance validated. Note: absence of secondary verification, result conforms nonetheless.",
+          "Observation complete conducted in a single pass, with no second opinion consulted.",
+          "Analysis successful despite a self-confidence I'd call excessive given the context.",
+          "Scouting done. Report: the operator's confidence was, this time, justified."
+        ],
+        "Explorer": [
+          "I looked once, and I knew. No need to check twice, I'm never wrong.",
+          "Honestly, with my eye, one pass is enough. And there you go, I was right.",
+          "I told them I'd seen everything the first time. And yeah, it was true.",
+          "No need to waste time double-checking. I know what I see."
+        ]
+      }
+    },
+    "failure": {
+      "proud": {
+        "Analyst": [
+          "Reconnaissance failed. The refusal to check a second time directly caused a key element to be missed.",
+          "Observation impossible after a categorical refusal to reconsider an initial, flawed impression.",
+          "Analysis unsuccessful. I note excess confidence prevented any correction during the operation.",
+          "Scouting failed. I record: the displayed confidence wasn't matched by accuracy of judgment."
+        ],
+        "Diplomat": [
+          "The zone didn't reveal itself... I think he was too sure of himself to really look.",
+          "Reconnaissance blocked. His confidence, this time, closed his eyes rather than opening them.",
+          "I perceived nothing. Maybe a bit of doubt would have served this mission better.",
+          "Observation impossible. I think he needed to admit he could be wrong."
+        ],
+        "Sentinel": [
+          "Reconnaissance failed. Logging: refusal of secondary verification despite reasonable doubt.",
+          "Analysis impossible. Report: the operator's excess confidence directly linked to the mission's failure.",
+          "Observation unsuccessful after an initial flawed judgment maintained without reconsideration.",
+          "Scouting not completed properly. I recommend a mandatory double-check protocol."
+        ],
+        "Explorer": [
+          "I was sure of myself, so sure. And I was wrong. That stings.",
+          "I'm never wrong, except this time, I was.",
+          "I didn't want to check twice. Big mistake, in hindsight.",
+          "My confidence wrote a check reality wouldn't cash."
+        ]
+      }
+    }
+  }
+}

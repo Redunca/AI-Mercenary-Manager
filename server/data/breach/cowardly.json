@@ -1,0 +1,60 @@
+{
+  "BREACH": {
+    "success": {
+      "cowardly": {
+        "Analyst": [
+          "Intrusion successful. I note three complete stops out of fear of triggering an alarm. Result conforms regardless.",
+          "Access obtained despite near-constant hesitation at every port. Effective, if slow.",
+          "Connection established. The excessive caution observed curiously avoided any handling errors.",
+          "Data retrieved. I record: fear of failure may have prevented failure itself."
+        ],
+        "Diplomat": [
+          "The system gave way... despite his trembling hands. I find that courageous, in its own way.",
+          "Access granted. He was afraid at every click, and yet he kept going. That's real courage.",
+          "We're in. I think he outdid himself, even terrified of being discovered.",
+          "The digital door opened. His fear didn't stop him, it just slowed him down a little."
+        ],
+        "Sentinel": [
+          "Intrusion validated. Note: multiple hesitations observed, no impact on the final result.",
+          "Access obtained. I recommend coaching to reduce future execution time.",
+          "The system gave way, despite the operator's obvious nervousness throughout the operation.",
+          "Connection established. Report: operation successful despite high operational stress."
+        ],
+        "Explorer": [
+          "I nearly had a heart attack at every beep, but we're in. Counting that as a win.",
+          "Okay I was terrified the whole time, but apparently it was enough not to get caught.",
+          "I almost quit like five times. But I kept going. Proud of myself, actually.",
+          "Seriously I was scared out of my mind, but we've got the data. That's what counts, right?"
+        ]
+      }
+    },
+    "failure": {
+      "cowardly": {
+        "Analyst": [
+          "Intrusion failed. Repeated hesitation exceeded the available action window before detection.",
+          "The firewall held. I note a premature abandonment in the face of a simple warning message.",
+          "Connection blocked. Fear of failure directly precipitated the failure itself.",
+          "Attempt aborted. I record: three consecutive retreats in the face of minor risks."
+        ],
+        "Diplomat": [
+          "The system rejected me... and I think it sensed the fear before we even really tried.",
+          "Access denied. He hesitated too long, paralyzed by what could go wrong.",
+          "The digital door stayed shut. His fear, this time, won out over his determination.",
+          "The data wouldn't let itself be approached. I think he needed reassurance first."
+        ],
+        "Sentinel": [
+          "Intrusion failed. Logging: premature abandonment with no clear technical justification.",
+          "Access denied. Report: the operator interrupted the procedure following stress deemed excessive.",
+          "The system blocked the attempt after a hasty withdrawal by the operator.",
+          "Connection impossible. I recommend psychological preparation before the next intrusion."
+        ],
+        "Explorer": [
+          "I got too scared and stopped everything before it even got really dangerous. Sorry.",
+          "Okay, I panicked at the first beep and backed off. Shouldn't have.",
+          "I could have kept going, but I chickened out too much. Total failure as a result.",
+          "I saw a red light and dropped everything. It was probably nothing, actually."
+        ]
+      }
+    }
+  }
+}

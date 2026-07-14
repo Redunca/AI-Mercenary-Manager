@@ -1,0 +1,60 @@
+{
+  "INTIMIDATION": {
+    "success": {
+      "cowardly": {
+        "Analyst": [
+          "Intimidation successful, despite obvious hesitation before he even spoke. Result conforms.",
+          "Threat perceived as credible, while the operator visibly dreaded the confrontation more than the target did.",
+          "Authority imposed. I note the voice trembled slightly, without the target seeming to notice.",
+          "Domination established despite internal nervousness far exceeding what was shown outwardly."
+        ],
+        "Diplomat": [
+          "They yielded... never knowing how afraid he was saying it. A quiet, almost invisible courage.",
+          "The tension has eased. I think he drew on a strength he didn't know he had.",
+          "They backed down before someone who was trembling inside, but who held firm to the end.",
+          "They understood our position, never guessing the fear it cost him to voice it."
+        ],
+        "Sentinel": [
+          "Intimidation validated. Note: high internal stress in the operator, no visible impact on perceived credibility.",
+          "Threat perceived despite obvious apprehension from the operator before verbal engagement.",
+          "Authority imposed. I recommend building self-confidence before future confrontations.",
+          "Domination established. Report: operation successful despite high internal operational stress."
+        ],
+        "Explorer": [
+          "I was scared out of my mind saying it, but apparently it didn't show at all.",
+          "Okay I was terrified inside, but I kept my voice steady. And it worked.",
+          "I bluffed hard while literally shaking. They saw nothing.",
+          "Seriously I was more scared of them than they were of me. But shh, it works anyway."
+        ]
+      }
+    },
+    "failure": {
+      "cowardly": {
+        "Analyst": [
+          "Intimidation failed. The operator's hesitation became visible at the critical moment, undermining the threat's credibility.",
+          "Threat ignored after noticeable nervousness betrayed the operator's real lack of confidence.",
+          "Authority not imposed. The underlying fear eventually showed through, canceling the intended effect.",
+          "Domination not established. I record: the voice cracked at the worst possible moment."
+        ],
+        "Diplomat": [
+          "They didn't yield... I think they saw the fear before even hearing the threat.",
+          "The tension hasn't shifted. His own fear eventually showed, despite all his efforts.",
+          "They held firm, sensing he feared the confrontation more than they did.",
+          "They didn't back down. I think his fear spoke louder than his words, this time."
+        ],
+        "Sentinel": [
+          "Intimidation failed. Logging: visible signs of stress that compromised the threat's credibility.",
+          "Threat ignored. Report: the operator's nervousness perceived by the target, canceling the deterrent effect.",
+          "Authority not imposed. I recommend specific preparation before any future direct confrontation.",
+          "Domination not established. The operator's underlying fear eventually showed through."
+        ],
+        "Explorer": [
+          "My voice cracked at the worst moment and they clearly heard it. Busted.",
+          "I tried to bluff but my fear eventually showed. Zero effect.",
+          "They saw I was more terrified than they were. End of the threat, literally.",
+          "I choked halfway through. Not my best performance."
+        ]
+      }
+    }
+  }
+}

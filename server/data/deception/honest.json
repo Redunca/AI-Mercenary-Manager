@@ -1,0 +1,60 @@
+{
+  "DECEPTION": {
+    "success": {
+      "honest": {
+        "Analyst": [
+          "Manipulation successful without a single lie. Technically remarkable: nothing but skillfully arranged truths.",
+          "Their mind yielded to an incomplete version of reality rather than a lie. Notable distinction.",
+          "Cover validated. He invented nothing — he simply omitted. I consider this a rhetorical feat.",
+          "Illusion maintained without a false statement. I propose we study this method further."
+        ],
+        "Diplomat": [
+          "He hid nothing from them... well, almost nothing. I think he found a way to be sincere and careful at once.",
+          "The alternate truth wasn't really one — just a partial truth. I respect the limit he sets for himself.",
+          "They believed what he said, because it was true. Just not all of it. There's integrity in that.",
+          "The facade held without a single lie. I think his sincerity ended up being his best asset."
+        ],
+        "Sentinel": [
+          "Deception successful without any false statements. I record: unusual method, result conforms.",
+          "Cover maintained through strategic omission rather than direct lying. Approach worth documenting.",
+          "Manipulation validated. The operator strictly honored his refusal to lie, without compromising the objective.",
+          "Operational illusion maintained. Report: no false information transmitted, result unchanged."
+        ],
+        "Explorer": [
+          "I literally said the truth, just not the whole truth. And apparently that works just as well.",
+          "I didn't lie, I swear. I just... omitted a lot. Does that count?",
+          "Okay, I'm terrible at lying, but I'm pretty good at saying truths that mislead anyway.",
+          "I can't lie, literally can't. So I found another way. And it worked!"
+        ]
+      }
+    },
+    "failure": {
+      "honest": {
+        "Analyst": [
+          "Manipulation failed. The operator corrected his own cover story when asked directly. Counterproductive.",
+          "Lie rejected. I note he literally admitted part of the truth at the worst possible moment.",
+          "Cover blown by an excess of sincerity at the critical moment. Predictable, statistically.",
+          "Manipulation failed. I'll classify this incident as an irreconcilable conflict between principle and objective."
+        ],
+        "Diplomat": [
+          "He couldn't bring himself to lie... I think it simply went against who he is.",
+          "The cover collapsed because he refused to betray his own honesty, even for the mission.",
+          "They saw the truth in his eyes. He doesn't know how to hide that sort of thing, and maybe that's for the best.",
+          "The facade broke. I think he preferred to be found out rather than become someone else."
+        ],
+        "Sentinel": [
+          "Deception failed. The log shows a partial disclosure of the truth at the critical moment.",
+          "Lie rejected. Report: the operator explicitly refused to make a required false statement.",
+          "Manipulation failed. I recommend no longer assigning this profile to direct concealment operations.",
+          "Cover compromised by a categorical refusal to lie, despite mission instructions."
+        ],
+        "Explorer": [
+          "They asked me something direct and I literally couldn't lie. Caught instantly.",
+          "I'm really terrible at this. Like really. My face gives it away before I even open my mouth.",
+          "I tried to lie, I choked, and ended up telling the truth. Oops.",
+          "I can't lie, it's physical for me. And this time, it cost us."
+        ]
+      }
+    }
+  }
+}

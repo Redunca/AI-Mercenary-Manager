@@ -1,0 +1,60 @@
+{
+  "BREACH": {
+    "success": {
+      "observant": {
+        "Analyst": [
+          "Intrusion successful. I had missed this configuration flaw; he spotted it in seconds.",
+          "Access obtained thanks to a detail the automatic scan hadn't flagged. Notable.",
+          "Connection established. A misconfigured port, invisible to everyone but him, apparently.",
+          "Data retrieved. I record: human observation outperformed algorithmic analysis this time."
+        ],
+        "Diplomat": [
+          "The system opened up... he saw something no one else had noticed. A real gift.",
+          "Access granted. He has this way of looking beyond the obvious, and it changed everything.",
+          "We're in thanks to a detail only he saw. I find that almost poetic.",
+          "The digital door opened because he knew how to hear what the system wasn't really saying."
+        ],
+        "Sentinel": [
+          "Intrusion validated. Note: vulnerability identified through direct observation, not previously catalogued.",
+          "Access obtained via a manually detected flaw. I recommend adding this method to protocol.",
+          "The system gave way after identifying a detail overlooked by standard tools.",
+          "Connection established. Report: the operator's observational skill directly responsible for success."
+        ],
+        "Explorer": [
+          "I just noticed something weird in a corner of the screen, and bingo, we're in.",
+          "There was a sketchy detail nobody had seen. I did. There, sorted.",
+          "I looked a bit longer than usual, and I saw THE thing. Luck or skill, who knows.",
+          "A small detail caught my eye, literally. And that was enough."
+        ]
+      }
+    },
+    "failure": {
+      "observant": {
+        "Analyst": [
+          "Intrusion failed. Even meticulous observation revealed no exploitable flaw this time.",
+          "The firewall held. I note the absence of any detectable anomaly, despite a thorough inspection.",
+          "Connection blocked. Careful examination of the system revealed nothing exploitable.",
+          "Attempt aborted. I record: sometimes, there is simply nothing to observe."
+        ],
+        "Diplomat": [
+          "The system rejected me... even his sharp eye found nothing this time. It happens.",
+          "Access denied. He looked, really looked, but some doors stay shut.",
+          "The digital door stayed shut, despite all his attention. I don't hold it against him.",
+          "The data wouldn't let itself be approached, even to the most attentive eye."
+        ],
+        "Sentinel": [
+          "Intrusion failed. Logging: no detectable flaw despite thorough observation.",
+          "Access denied. Report: the operator's observational skill had no effect on this particular system.",
+          "The system blocked the attempt, with no exploitable detail identified.",
+          "Connection impossible. I recommend treating this system as having no known observable flaw."
+        ],
+        "Explorer": [
+          "I looked at everything, like really everything, and saw nothing useful. It happens.",
+          "I usually always spot something. This time, nothing. Nada.",
+          "I looked for the usual little detail. It wasn't there this time.",
+          "Well, even I have limits, apparently. Nothing to report."
+        ]
+      }
+    }
+  }
+}

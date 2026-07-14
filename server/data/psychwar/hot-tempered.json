@@ -1,0 +1,60 @@
+{
+  "PSYCHWAR": {
+    "success": {
+      "hot-tempered": {
+        "Analyst": [
+          "Mental influence established. An unplanned outburst of anger produced the intended effect, by accident.",
+          "Psychological pressure successful. I note the displayed rage was more effective than a calculated approach.",
+          "Mental domination obtained. The unintentional emotional intensity created pressure hard to anticipate.",
+          "Emotional control achieved. Statistically, this method should have failed. It worked anyway."
+        ],
+        "Diplomat": [
+          "They yielded to a raw anger he didn't even try to control. Unsettling, but effective.",
+          "The inner tension broke under a sudden burst of rage. I'm not sure I approve of the method.",
+          "We touched something in them, almost despite him. His anger spoke louder than his words.",
+          "Their resistance dissolved before an intensity he himself didn't really control."
+        ],
+        "Sentinel": [
+          "Mental pressure validated. Note: emotional loss of control by the operator, result conforms regardless.",
+          "Psychological influence obtained through an outburst of anger not authorized by protocol.",
+          "Mental domination established. I nonetheless recommend oversight of the operator's emotional management.",
+          "Psychic impact confirmed. Report: unstable method, favorable result, risk to monitor."
+        ],
+        "Explorer": [
+          "I completely lost it and they freaked out immediately. Effective, but I had zero control.",
+          "I yelled so loud even I was surprised. And it worked.",
+          "My anger just came out on its own, and apparently that's exactly what was needed.",
+          "I got genuinely mad, not strategically. And that was enough to break them."
+        ]
+      }
+    },
+    "failure": {
+      "hot-tempered": {
+        "Analyst": [
+          "Mental influence failed. The emotional loss of control made the speech incoherent and ineffective.",
+          "Psychological pressure ineffective. I note the displayed anger discredited the entire approach.",
+          "Mental domination impossible. The emotional outburst was perceived as weakness, not strength.",
+          "Emotional control not established. I record: the operator's instability compromised the entire attempt."
+        ],
+        "Diplomat": [
+          "They didn't open their mind... his anger scared them, but not in the right way.",
+          "The inner tension hasn't shifted. I think they saw fragility behind that rage.",
+          "We failed to reach them. His anger created distance, not connection.",
+          "Their resistance stayed intact, reinforced by an outburst they didn't take seriously."
+        ],
+        "Sentinel": [
+          "Mental pressure failed. Logging: emotional loss of control that discredited the operation.",
+          "Psychological influence rejected. Report: the operator's instability perceived as weakness by the target.",
+          "Mental domination impossible. I recommend removing this profile from psychological pressure operations.",
+          "Psychic impact nil. The emotional outburst compromised all credibility of the approach."
+        ],
+        "Explorer": [
+          "I got genuinely mad, and they just saw that I'd lost control. Not convincing at all.",
+          "I yelled, and they just laughed at me. That clearly didn't work.",
+          "My anger came out all wrong, and it didn't impress them one bit.",
+          "Well, I blew up for nothing this time. Zero effect, plenty of shame."
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "INFILTRATION": {
+    "success": {
+      "cowardly": {
+        "Analyst": [
+          "Entry successful, despite three complete stops out of fear of being spotted. Result conforms.",
+          "Penetration achieved through an excessively cautious approach. Effective, if slow.",
+          "Discreet access obtained. I note the observed nervousness curiously didn't give away his presence.",
+          "Zone infiltrated. I record: fear of failure may have prevented failure itself."
+        ],
+        "Diplomat": [
+          "I got through unseen... despite trembling hands the whole way. I find that courageous, in its own way.",
+          "The infiltration went smoothly, carried by a caution born of fear rather than mastery.",
+          "He was afraid at every step, and yet he kept going. That's real courage.",
+          "The passage opened up to him. His fear didn't stop him, it just made him more careful."
+        ],
+        "Sentinel": [
+          "Infiltration validated. Note: multiple hesitations observed, no impact on the final result.",
+          "Access obtained despite the operator's obvious nervousness throughout the approach.",
+          "Zone penetrated. I recommend coaching to reduce future execution time.",
+          "Passage secured. Report: operation successful despite high operational stress."
+        ],
+        "Explorer": [
+          "I was scared out of my mind at every noise, but I got through no problem.",
+          "Okay I was terrified the whole time, but apparently it was enough not to get caught.",
+          "I almost quit like five times. But I kept going. Proud of myself, actually.",
+          "Seriously I was scared out of my mind, but I'm in. That's what counts, right?"
+        ]
+      }
+    },
+    "failure": {
+      "cowardly": {
+        "Analyst": [
+          "Infiltration failed. Repeated hesitation exceeded the available action window before detection.",
+          "Access denied after a premature retreat in the face of an initially manageable risk.",
+          "Zone not penetrated. Fear of failure directly precipitated the failure itself.",
+          "Passage compromised. I record: three consecutive retreats in the face of minor risks."
+        ],
+        "Diplomat": [
+          "I couldn't get through... I think fear overwhelmed him before he'd even really started.",
+          "The environment seemed to close up. He hesitated too long, paralyzed by what could go wrong.",
+          "The zone wouldn't open. His terror, this time, won out over his determination.",
+          "I couldn't get in. I think he needed reassurance before moving forward."
+        ],
+        "Sentinel": [
+          "Infiltration failed. Logging: premature abandonment with no clear tactical justification.",
+          "Access denied. Report: the operator halted progress following stress deemed excessive.",
+          "Zone not penetrated after a hasty withdrawal by the operator in the face of limited risk.",
+          "Passage compromised. I recommend psychological preparation before the next infiltration."
+        ],
+        "Explorer": [
+          "I got too scared and stopped everything before it even got really dangerous. Sorry.",
+          "Okay, I panicked at the first noise and backed off. Shouldn't have.",
+          "I could have kept going, but I chickened out too much. Total failure as a result.",
+          "I saw a weird shadow and dropped everything. It was probably nothing, actually."
+        ]
+      }
+    }
+  }
+}

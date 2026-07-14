@@ -1,0 +1,60 @@
+{
+  "COMBAT": {
+    "success": {
+      "warrior's-code": {
+        "Analyst": [
+          "Target neutralized. I note the opponent ceased all resistance after an exchange of glances. Curious protocol.",
+          "Combat concluded. An unspoken code seems to have governed this fight more than brute force itself.",
+          "Threat eliminated without excessive escalation. I record: an implicit framework limited collateral damage.",
+          "Engagement closed. The opponent yielded according to rules I don't fully grasp. Effective, nonetheless."
+        ],
+        "Diplomat": [
+          "The fight ended... in a strange, almost ceremonial mutual respect. I found it beautiful.",
+          "The battle is over. I think they recognized each other as equals before recognizing each other as enemies.",
+          "The opponent yielded to something greater than mere victory: a shared honor.",
+          "The conflict resolved with unexpected dignity on both sides. That's rare, and precious."
+        ],
+        "Sentinel": [
+          "Engagement successful. Note: the operator followed a non-standard code of conduct, with a conforming result.",
+          "Threat eliminated. I recommend studying this informal protocol for future engagements.",
+          "Combat concluded. The opponent yielded to a posture of honor rather than raw superiority.",
+          "Opposition neutralized. Report: favorable outcome obtained via an unspoken framework rather than regulation."
+        ],
+        "Explorer": [
+          "We looked at each other, we understood each other, and it got settled without getting too out of hand. Classy, right?",
+          "I proposed an old-school kind of duel and they accepted. Worked, honestly.",
+          "There was some kind of honor code between us. Not sure how to explain it, but it paid off.",
+          "We fought clean, and in the end they just... admitted they'd lost. Respect."
+        ]
+      }
+    },
+    "failure": {
+      "warrior's-code": {
+        "Analyst": [
+          "Tactical failure. Strict adherence to a code of engagement limited available options at the critical moment.",
+          "Combat lost. I note a refusal to exploit an opening deemed dishonorable by unquantifiable criteria.",
+          "Opposition not neutralized. Respecting a code of honor cost a decisive tactical advantage.",
+          "Unfavorable engagement. I record: the rules the operator followed weren't shared by the opponent."
+        ],
+        "Diplomat": [
+          "The fight ended badly... he honored a code the other side didn't return in kind. That's unjust.",
+          "The battle is lost. I think he preferred staying true to himself over winning at any cost.",
+          "The opponent got the upper hand, ignoring the rules he scrupulously followed. That weighs on me a little.",
+          "The confrontation failed. His honor stayed intact, even if the outcome didn't."
+        ],
+        "Sentinel": [
+          "Engagement failed. The log shows a refusal to exploit a flaw deemed contrary to the operator's personal code.",
+          "Combat lost. Report: the opponent followed no comparable rules, creating a tactical asymmetry.",
+          "Threat not eliminated. I recommend reassessing the use of a code of honor against unconventional opponents.",
+          "Opposition not controlled. Respecting an unspoken framework directly limited engagement effectiveness."
+        ],
+        "Explorer": [
+          "I wanted to do this clean, old-school. Except they hadn't read the same rulebook.",
+          "Okay, I let an opening pass because it felt dishonorable. Big mistake, apparently.",
+          "I wanted a fair fight. I got a fight. My fault.",
+          "I followed the rules. They couldn't have cared less. Lesson learned."
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "RECON": {
+    "success": {
+      "cowardly": {
+        "Analyst": [
+          "Observation successful, conducted from a safety distance far greater than necessary. Effective nonetheless.",
+          "Zone analyzed from an anticipated fallback position. Excessive caution didn't hurt precision.",
+          "Reconnaissance complete despite three stops out of fear of being spotted. Result conforms.",
+          "Scouting done. I record: excess caution may have avoided unnecessary exposure."
+        ],
+        "Diplomat": [
+          "The zone revealed itself to him... from far, very far away, but he still saw everything. That's already a lot.",
+          "Reconnaissance went smoothly, despite palpable fear at every movement. He held on.",
+          "I perceived what was needed, at a distance respectful of his own comfort. I understand that need.",
+          "Observation successful. His fear didn't stop him from completing his task, just from doing it differently."
+        ],
+        "Sentinel": [
+          "Reconnaissance validated. Note: excessive operational distance observed, no impact on the final result.",
+          "Observation complete despite the operator's obvious nervousness throughout the mission.",
+          "Analysis successful from an unplanned but effective fallback position.",
+          "Scouting done. Report: operation successful despite high operational stress."
+        ],
+        "Explorer": [
+          "I watched from super far away, like really far, but I still saw everything. That counts, right?",
+          "Okay I was terrified at the thought of getting closer, but the binoculars did the job.",
+          "I almost turned back a bunch of times. But I saw what was needed anyway.",
+          "Seriously I was scared, but I got the recon we needed. That's what matters."
+        ]
+      }
+    },
+    "failure": {
+      "cowardly": {
+        "Analyst": [
+          "Reconnaissance failed. The excessive distance kept out of fear made the observation imprecise.",
+          "Observation impossible. I note a premature retreat that prevented any detailed analysis.",
+          "Analysis unsuccessful. Fear of exposure directly limited the quality of the data gathered.",
+          "Scouting failed. I record: three consecutive retreats in the face of minor risks, result compromised."
+        ],
+        "Diplomat": [
+          "The zone didn't reveal itself... I think he didn't dare get close enough to really see.",
+          "Reconnaissance blocked. He hesitated too long, paralyzed by what could go wrong.",
+          "I perceived nothing. His fear, this time, won out over his necessary curiosity.",
+          "Observation impossible. I think he needed reassurance before getting any closer."
+        ],
+        "Sentinel": [
+          "Reconnaissance failed. Logging: excessive operational distance that compromised the mission.",
+          "Analysis impossible. Report: the operator halted the approach following stress deemed excessive.",
+          "Observation unsuccessful after a hasty withdrawal by the operator in the face of limited risk.",
+          "Scouting not completed. I recommend psychological preparation before the next reconnaissance."
+        ],
+        "Explorer": [
+          "I got too scared to get closer and saw nothing useful. Sorry.",
+          "Well, I panicked and stayed too far away to see anything.",
+          "I could have gotten closer, but I chickened out too much. Total failure as a result.",
+          "I saw a weird shadow and stopped everything. It was probably nothing, actually."
+        ]
+      }
+    }
+  }
+}

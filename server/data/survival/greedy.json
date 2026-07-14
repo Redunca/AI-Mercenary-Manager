@@ -1,0 +1,60 @@
+{
+  "SURVIVAL": {
+    "success": {
+      "greedy": {
+        "Analyst": [
+          "Survival ensured. An unplanned detour to recover extra resources ultimately cost nothing.",
+          "Threat avoided despite a risk taken for the lure of recoverable material in a dangerous zone.",
+          "Situation stabilized. I note an aggressive collecting behavior that, against all odds, paid off.",
+          "Zone secured, with a personal inventory visibly enriched along the way. Unexpected efficiency."
+        ],
+        "Diplomat": [
+          "We got through the ordeal... with pockets a bit heavier than at the start, I noticed.",
+          "Nature settled around us. I think he saw an opportunity as much as a danger there.",
+          "The danger dissipated, and he took the chance to grab what he could. I hope it was worth it.",
+          "We're safe. His eyes never left what he could carry off, even in the middle of danger."
+        ],
+        "Sentinel": [
+          "Survival validated. Note: unauthorized detour for resource collection, no negative impact on the outcome.",
+          "Situation stabilized despite prioritizing material recovery over immediate safety.",
+          "Danger avoided. I recommend oversight of collecting behavior in risk zones.",
+          "Zone secured. Report: unplanned material gain obtained alongside the main objective."
+        ],
+        "Explorer": [
+          "I saw something shiny in the middle of the danger, and I took it. We're alive AND richer.",
+          "Okay maybe I took a little detour for some loot. But look, it paid off!",
+          "I couldn't leave that there. And in the end, it didn't compromise our survival. Double win.",
+          "I grabbed what I could on the way. Priorities, right."
+        ]
+      }
+    },
+    "failure": {
+      "greedy": {
+        "Analyst": [
+          "Survival compromised. A detour motivated by the lure of profit directly delayed the necessary escape.",
+          "Threat not avoided after an unjustified risk taken to recover secondary material.",
+          "Situation unstable. I note that prioritizing resources affected the available reaction time.",
+          "Danger not avoided. I record: greed turned a manageable risk into real danger."
+        ],
+        "Diplomat": [
+          "We didn't get through the ordeal... I think he wanted more than the situation could offer.",
+          "Nature closed in on us, while he was still looking for something to take.",
+          "The danger wouldn't dissipate. Maybe he had to choose between safety and profit.",
+          "We are not safe. His desire for more cost us precious time."
+        ],
+        "Sentinel": [
+          "Survival failed. The log shows an unauthorized detour for resource collection that delayed the extraction.",
+          "Situation unstable. Report: priority given to material gain directly linked to the operation's failure.",
+          "Danger not avoided after an unjustified risk taken for the sake of profit.",
+          "Zone not secured. I recommend clarifying operational priorities in survival situations."
+        ],
+        "Explorer": [
+          "I wanted to grab one more thing, and it cost us time we didn't have. My fault.",
+          "Okay, maybe I should have just left that thing shining quietly where it was.",
+          "I couldn't resist. And it ended up really complicating our lives.",
+          "I prioritized loot over safety. Bad call, clearly."
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "NEGOTIATION": {
+    "success": {
+      "greedy": {
+        "Analyst": [
+          "Deal reached, after adding three extra clauses clearly to our advantage. They accepted anyway.",
+          "Negotiation concluded with a profit margin significantly higher than the initial estimate.",
+          "Discussion successful. I note a blatant personal interest guiding every counteroffer.",
+          "Common ground found. Statistically, such greed should have derailed the talks."
+        ],
+        "Diplomat": [
+          "They agreed... though I sense he was mostly thinking about what he'd get out of it.",
+          "The negotiation came together, carried by a personal ambition that, this time, served everyone.",
+          "We found common ground, a bit more generous to us than originally planned.",
+          "They said yes, under the insistent gaze of someone already counting the profits."
+        ],
+        "Sentinel": [
+          "Negotiation validated. Note: extra clauses added mid-discussion, not part of the original mandate.",
+          "Deal obtained despite self-interested behavior from the operator. Result conforms, method to monitor.",
+          "Discussion successful. I recommend oversight of personal motivations in future negotiations.",
+          "Common ground found. Report: the operator's financial interest not aligned with the official mandate."
+        ],
+        "Explorer": [
+          "I negotiated, and took the chance to add a little bonus for us. They said yes!",
+          "Okay maybe I pushed the terms a bit hard. But they bit immediately.",
+          "I made the deal, and on top of that I managed to squeeze out an extra. Productive day.",
+          "I was mostly thinking about what we'd gain, and weirdly that made my offer more convincing."
+        ]
+      }
+    },
+    "failure": {
+      "greedy": {
+        "Analyst": [
+          "Negotiation failed. The request for extra clauses raised legitimate suspicion in the target.",
+          "Deal rejected after a demand deemed inconsistent with the offer's initial balance.",
+          "Discussion unsuccessful. I note the displayed greed directly compromised the offer's credibility.",
+          "Common ground not found. Statistically, such blatant greed was bound to eventually block the deal."
+        ],
+        "Diplomat": [
+          "They didn't agree... I think they sensed he was thinking more of himself than of a fair deal.",
+          "The negotiation didn't take. His personal interest showed, despite himself.",
+          "They rejected the offer. Maybe a touch of selflessness would have changed things.",
+          "The conversation stalled under the weight of his own demands. That's a real shame."
+        ],
+        "Sentinel": [
+          "Negotiation failed. The log shows an additional demand incompatible with the established mandate.",
+          "Deal rejected. Report: the operator's self-interested behavior directly linked to the talks' failure.",
+          "Discussion unsuccessful. I recommend a review of the operator profile for sensitive negotiations.",
+          "Common ground not found, compromised by poorly hidden greed at the critical moment."
+        ],
+        "Explorer": [
+          "Maybe I asked for a bit too much. They smelled the scam from miles away.",
+          "Okay, I pushed too hard, too fast. They shut down immediately.",
+          "I was mostly thinking about what we'd gain, and it showed. Big mistake.",
+          "I got greedy, literally greedy, and it tanked the whole deal."
+        ]
+      }
+    }
+  }
+}

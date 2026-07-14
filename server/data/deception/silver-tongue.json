@@ -1,0 +1,60 @@
+{
+  "DECEPTION": {
+    "success": {
+      "silver-tongue": {
+        "Analyst": [
+          "Manipulation successful. In five minutes of conversation, he extracted information we'd been after for days.",
+          "Lie accepted, then extended into a conversation that revealed far more than expected. Exceptional yield.",
+          "Cover validated, and a useful secret obtained as a bonus. I note a remarkable effort-to-result ratio.",
+          "Illusion maintained. He got the target talking without them realizing they'd said anything important."
+        ],
+        "Diplomat": [
+          "They believed what he said... and even confided far more than he asked for. True alchemy of words.",
+          "The conversation drifted into unexpected confessions. I think he has that rare gift of inspiring trust.",
+          "They let themselves be convinced, then let themselves open up. It's a real gift, honestly.",
+          "The facade held, and something even more precious came out of it: their truth, freely given."
+        ],
+        "Sentinel": [
+          "Deception successful. Note: additional information obtained through directed conversation, not part of the original plan.",
+          "Lie accepted, followed by extraction of exploitable intelligence. I recommend this approach going forward.",
+          "Manipulation validated. Report: the operator's conversational skill exceeded mission objectives.",
+          "Cover confirmed, with an unanticipated intelligence gain. Operation to be filed as an exemplary success."
+        ],
+        "Explorer": [
+          "I chatted for five minutes and they told me everything without me even asking. No idea how I do that.",
+          "We were just talking, and suddenly they dropped a huge secret. I think I'm good at this.",
+          "I just listened and asked the right questions, and boom, they told me everything. Easy.",
+          "I talked to them for five minutes and now I know more about their own business than they do."
+        ]
+      }
+    },
+    "failure": {
+      "silver-tongue": {
+        "Analyst": [
+          "Manipulation failed. Even an extended conversation revealed no exploitable information this time.",
+          "Lie rejected despite a conversational approach that's usually effective. Atypical target, probably.",
+          "Cover blown. I note the operator's usual verbal charm had no measurable effect.",
+          "Manipulation failed. Statistically rare: the target proved impervious to any form of directed conversation."
+        ],
+        "Diplomat": [
+          "They didn't believe what he said... even his voice, usually so convincing, wasn't enough this time.",
+          "The conversation went nowhere. I think some people simply stay closed off.",
+          "They rejected his words, despite all his effort to build a connection. That's rare, and it must sting.",
+          "The facade collapsed. Even the most skillful words don't always find a willing ear."
+        ],
+        "Sentinel": [
+          "Deception failed. The log shows a total absence of results despite an advanced conversational approach.",
+          "Lie rejected. Report: the operator's conversational skills had no effect on this specific target.",
+          "Manipulation failed. I recommend documenting this target profile as resistant to verbal techniques.",
+          "Cover compromised despite the operator's usual methods. Case worth studying."
+        ],
+        "Explorer": [
+          "I usually always get people talking. This time, nothing. Total radio silence.",
+          "I tried everything, my best questions, my best smile. Nada.",
+          "This time, nobody gave anything up. Even I have limits, apparently.",
+          "I talked for a good while, but got nothing out of them. Frustrating."
+        ]
+      }
+    }
+  }
+}

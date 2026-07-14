@@ -1,0 +1,60 @@
+{
+  "INFILTRATION": {
+    "success": {
+      "observant": {
+        "Analyst": [
+          "Entry successful. A patrol pattern spotted after watching the guards for barely a few minutes.",
+          "Penetration achieved thanks to a detail automated surveillance hadn't flagged.",
+          "Discreet access obtained after identifying a blind spot no one else had noticed.",
+          "Zone infiltrated. I record: direct observation outperformed the provided floor plans."
+        ],
+        "Diplomat": [
+          "I got through unseen... he has that way of seeing what others let slip by.",
+          "The infiltration went smoothly, guided by an eye that knows where and when to look.",
+          "The passage opened up to him thanks to a detail only he observed.",
+          "I got through without raising an alarm, because he knew how to read the rhythm of the place before acting."
+        ],
+        "Sentinel": [
+          "Infiltration validated. Note: surveillance pattern identified through direct observation, not detected by sensors.",
+          "Access obtained via a manually detected flaw. I recommend adding this method to protocol.",
+          "Zone penetrated after identifying a detail overlooked by the initial reconnaissance.",
+          "Passage secured. Report: the operator's observational skill directly responsible for success."
+        ],
+        "Explorer": [
+          "I noticed the guards' rhythm, like really precise. And I just followed the right moment.",
+          "There was a sketchy detail nobody had seen. I did. There, sorted.",
+          "I looked a bit longer than usual, and I saw THE clear path.",
+          "A small detail caught my eye, literally. And that was enough."
+        ]
+      }
+    },
+    "failure": {
+      "observant": {
+        "Analyst": [
+          "Infiltration failed. Even meticulous observation revealed no exploitable flaw this time.",
+          "Access denied. I note the absence of any exploitable pattern, despite a thorough inspection.",
+          "Zone not penetrated. Careful examination of the zone revealed nothing exploitable.",
+          "Passage compromised. I record: sometimes, there is simply nothing to observe."
+        ],
+        "Diplomat": [
+          "I couldn't get through... even his sharp eye found nothing this time. It happens.",
+          "The infiltration was blocked. He looked, really looked, but some places stay unreadable.",
+          "The zone wouldn't open, despite all his attention to every detail.",
+          "I couldn't get in, despite meticulous observation on his part."
+        ],
+        "Sentinel": [
+          "Infiltration failed. Logging: no detectable flaw despite thorough observation.",
+          "Access denied. Report: the operator's observational skill had no effect on this specific site.",
+          "Zone not penetrated, despite an examination deemed consistent with the highest standards.",
+          "Passage compromised. I recommend treating this site as having no known observable flaw."
+        ],
+        "Explorer": [
+          "I looked at everything, like really everything, and saw nothing useful. It happens.",
+          "I usually always spot something. This time, nothing. Nada.",
+          "I looked for the usual little detail. It wasn't there this time.",
+          "Well, even I have limits, apparently. Nothing to report."
+        ]
+      }
+    }
+  }
+}

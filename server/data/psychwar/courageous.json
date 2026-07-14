@@ -1,0 +1,60 @@
+{
+  "PSYCHWAR": {
+    "success": {
+      "courageous": {
+        "Analyst": [
+          "Mental influence established. No trace of doubt detected in the operator throughout the confrontation.",
+          "Psychological pressure successful. His unshakable emotional stability left the target unable to retaliate.",
+          "Mental domination obtained. I note a total absence of fear response, statistically remarkable.",
+          "Emotional control achieved. The operator's confidence never wavered, even against a mental counterattack."
+        ],
+        "Diplomat": [
+          "They yielded to a presence so calm it became almost unshakable. A real rock.",
+          "The inner tension broke before his total absence of fear. Reassuring to watch.",
+          "We touched something in them, carried by a courage that asked for nothing in return.",
+          "Their resistance dissolved before someone who clearly had nothing to fear from their retaliation."
+        ],
+        "Sentinel": [
+          "Mental pressure validated. Note: total absence of stress response in the operator, optimal result.",
+          "Psychological influence obtained. The operator's emotional stability deemed exemplary throughout the engagement.",
+          "Mental domination established with no notable emotional counter-reaction from the operator.",
+          "Psychic impact confirmed. Report: the operator's mental resilience directly responsible for the success."
+        ],
+        "Explorer": [
+          "They tried to scare me, seriously they tried everything. But I felt nothing, for real.",
+          "I was just there, calm, and it completely threw them off.",
+          "No fear, no doubt. I think that's exactly what broke them.",
+          "They wanted to break me mentally. Failed. Still just as zen."
+        ]
+      }
+    },
+    "failure": {
+      "courageous": {
+        "Analyst": [
+          "Mental influence failed. Even total emotional stability wasn't enough to shake this target.",
+          "Psychological pressure ineffective. I note the operator's absence of fear had no measurable effect.",
+          "Mental domination impossible. The target proved insensitive to any form of pressure, calm or not.",
+          "Emotional control not established. I record: courage alone wasn't enough against this particular resistance."
+        ],
+        "Diplomat": [
+          "They didn't open their mind... even against a calm as unshakable as his.",
+          "The inner tension hasn't shifted. Sometimes, even the greatest serenity isn't enough to reach a closed heart.",
+          "We failed to reach them, despite a presence as solid and reassuring as his.",
+          "Their resistance stayed intact. Some barriers give way to nothing, not even courage."
+        ],
+        "Sentinel": [
+          "Mental pressure failed. Logging: the operator's emotional stability had no effect on this target.",
+          "Psychological influence rejected despite a total absence of stress response from the operator.",
+          "Mental domination impossible. I recommend studying this target as resistant to direct approaches.",
+          "Psychic impact nil, despite an emotional performance deemed flawless from the operator."
+        ],
+        "Explorer": [
+          "I was super calm, zero fear, and it still didn't work. Weird.",
+          "They were just... immune, seems like. Nothing to be done.",
+          "My legendary calm got me nothing this time. First time, honestly.",
+          "I gave it everything in the cool-headedness department, and it amounted to nothing at all."
+        ]
+      }
+    }
+  }
+}

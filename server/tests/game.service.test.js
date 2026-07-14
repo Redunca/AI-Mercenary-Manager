@@ -176,8 +176,12 @@ function createFakeClient() {
       return { rows: [{ count: state.missionTemplates.length }] }
     }
     if (s.includes('INSERT INTO mission_templates')) {
-      const [id, name, description, difficulty, events] = params
-      const tpl = { id, name, description, difficulty, events: JSON.parse(events) }
+      const [id, name, description, difficulty, events, planet] = params
+      const tpl = {
+        id, name, description, difficulty,
+        events: JSON.parse(events),
+        planet: planet ? JSON.parse(planet) : null,
+      }
       const existing = state.missionTemplates.find(t => t.id === id)
       if (existing) Object.assign(existing, tpl)
       else state.missionTemplates.push(tpl)
@@ -323,7 +327,39 @@ describe('GameService', () => {
       expect(state.missionTemplates).toHaveLength(25)
     })
 
-    test('is idempotent: a second call does not recreate a player nor an extra recruit', async () => {
+    test('persists the planet object (with tags) of each generated mission template', async () => {
+      // Reproduces exactly what seedMissionTemplates() does internally (same
+      // seed, same loadData()/generateMission() calls) so we can assert the
+      // persisted planet matches what the generator actually produced,
+      // instead of asserting on hardcoded tag values.
+      setSeed(MISSION_SEED)
+      const { loadData } = require('../src/dataLoader')
+      const { generateMission } = require('../src/engine/missionGenerator')
+      const SEED_DIFFICULTIES = [
+        'ROUTINE', 'ROUTINE', 'ROUTINE', 'ROUTINE', 'ROUTINE',
+        'STANDARD', 'STANDARD', 'STANDARD', 'STANDARD', 'STANDARD',
+        'HARD', 'HARD', 'HARD', 'HARD', 'HARD', 'HARD',
+        'PERILOUS', 'PERILOUS', 'PERILOUS', 'PERILOUS', 'PERILOUS',
+        'EPIC', 'EPIC', 'EPIC', 'EPIC', 'EPIC',
+      ]
+      const data = loadData()
+      const expectedMissions = SEED_DIFFICULTIES.map(difficulty => generateMission(data, { difficulty }))
+
+      setSeed(MISSION_SEED)
+      await GameService.initGame()
+
+      expect(state.missionTemplates).toHaveLength(25)
+      state.missionTemplates
+        .sort((a, b) => a.id - b.id)
+        .forEach((tpl, i) => {
+          expect(tpl.planet).not.toBeNull()
+          expect(Array.isArray(tpl.planet.tags)).toBe(true)
+          expect(tpl.planet.tags).toEqual(expectedMissions[i].planet.tags)
+          expect(tpl.planet.name).toEqual(expectedMissions[i].planet.name)
+        })
+    })
+
+    test('is idempotent: a second call does not recreate a player or extra recruit', async () => {
       await GameService.initGame()
       await GameService.initGame()
 

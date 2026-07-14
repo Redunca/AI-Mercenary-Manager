@@ -1,0 +1,194 @@
+{
+  "arid": {
+    "sys": [
+      "Sensor interference from airborne dust.",
+      "Reduced visibility: dust clouds detected.",
+      "Sensors recalibrated for ambient aridity."
+    ],
+    "ia": [
+      "High atmospheric dust. Sensor reliability reduced by 12%.",
+      "Thermal signature blurred by ground heat.",
+      "Arid environment confirmed. Equipment overheating risk."
+    ]
+  },
+  "hot": {
+    "sys": [
+      "Thermal alert: critical outside temperature.",
+      "Cooling systems running at maximum.",
+      "Ambient thermal signature abnormally high."
+    ],
+    "ia": [
+      "Thermal noise interfering with infrared sensors.",
+      "Ambient temperature outside nominal parameters.",
+      "Equipment overheating risk: moderate."
+    ]
+  },
+  "cold": {
+    "sys": [
+      "Frost detected on external sensors.",
+      "Outside temperature below standard operational threshold.",
+      "Batteries in reinforced power-saving mode."
+    ],
+    "ia": [
+      "Energy efficiency reduced by ambient cold.",
+      "Frost condensation on external optics.",
+      "Estimated battery life revised downward."
+    ]
+  },
+  "ice": {
+    "sys": [
+      "Intense light reflection off ice: optical sensor glare.",
+      "Unstable icy terrain detected beneath the unit.",
+      "Anti-glare filters activated automatically."
+    ],
+    "ia": [
+      "Excessive glacial brightness. Artificial vision recalibrated.",
+      "Icy surface: traction loss risk flagged.",
+      "Unusual radio silence in this frozen zone."
+    ]
+  },
+  "jungle": {
+    "sys": [
+      "Dense canopy: unstable GPS signal.",
+      "Ambient humidity affecting electronic components.",
+      "Dense vegetation limiting sensor field of view."
+    ],
+    "ia": [
+      "Electromagnetic interference linked to vegetation density.",
+      "High humidity level. Minor corrosion risk to monitor.",
+      "Intense biological background noise on audio sensors."
+    ]
+  },
+  "volcanic": {
+    "sys": [
+      "Sulfurous particles detected in local atmosphere.",
+      "Minor seismic activity recorded nearby.",
+      "Respiratory filters running continuously."
+    ],
+    "ia": [
+      "Corrosive atmospheric composition. Enhanced monitoring recommended.",
+      "Regular telluric vibrations. Origin: local volcanic activity.",
+      "Air quality below standard comfort norms."
+    ]
+  },
+  "ocean": {
+    "sys": [
+      "High saline humidity level detected.",
+      "Radio signal attenuated by proximity to the ocean mass.",
+      "Surface corrosion detected on external equipment."
+    ],
+    "ia": [
+      "Salt-saturated air. Medium-term corrosion risk.",
+      "Acoustic propagation altered by the aquatic environment.",
+      "Ambient humidity outside standard parameters."
+    ]
+  },
+  "urban": {
+    "sys": [
+      "Dense communications traffic detected in the zone.",
+      "Radio signal disrupted by surrounding urban activity.",
+      "Multiple electromagnetic sources identified nearby."
+    ],
+    "ia": [
+      "High population density. Discretion recommended.",
+      "Urban surveillance networks detected on the periphery.",
+      "Ambient urban noise filtered from communications."
+    ]
+  },
+  "megacity": {
+    "sys": [
+      "Air traffic congestion reported above the zone.",
+      "Radio signal drowned out by dense urban transmissions.",
+      "Vertical infrastructure limiting sensor range."
+    ],
+    "ia": [
+      "Extreme urban density. High exposure risk.",
+      "Omnipresent camera network detected.",
+      "Ambient data volume saturating analysis channels."
+    ]
+  },
+  "corporate": {
+    "sys": [
+      "Private security scanners detected on the periphery.",
+      "Corporate surveillance drones spotted nearby.",
+      "Private security signature identified in the zone."
+    ],
+    "ia": [
+      "Private security presence. Increased discretion recommended.",
+      "Non-governmental surveillance systems active.",
+      "Corporate security protocols detected on local frequencies."
+    ]
+  },
+  "mining": {
+    "sys": [
+      "Constant mechanical vibrations detected in the ground.",
+      "High mineral particulate suspension.",
+      "Continuous industrial background noise recorded."
+    ],
+    "ia": [
+      "Intense mining activity in the immediate vicinity.",
+      "Particle concentration above comfort norms.",
+      "Mechanical, non-seismic vibrations confirmed."
+    ]
+  },
+  "frontier": {
+    "sys": [
+      "Weak communication relay detected.",
+      "Intermittent network signal in border zone.",
+      "Minimal local infrastructure confirmed."
+    ],
+    "ia": [
+      "Limited network coverage. Transmission delays expected.",
+      "Zone on the margin of standard infrastructure.",
+      "Local logistical support deemed insufficient."
+    ]
+  },
+  "isolated": {
+    "sys": [
+      "No communication relay detected nearby.",
+      "Near-nonexistent network signal in this zone.",
+      "Abnormally high transmission delay recorded."
+    ],
+    "ia": [
+      "Isolation confirmed. No external assistance readily available.",
+      "Total radio silence outside the unit.",
+      "Zone outside any known network coverage."
+    ]
+  },
+  "independent": {
+    "sys": [
+      "No official frequency detected in the zone.",
+      "Absence of factional surveillance confirmed.",
+      "Out-of-jurisdiction zone identified."
+    ],
+    "ia": [
+      "No controlling authority detected locally.",
+      "Autonomous administrative zone confirmed.",
+      "No official protocol applicable here."
+    ]
+  },
+  "colonized": {
+    "sys": [
+      "Standard communication infrastructure detected.",
+      "Active colonial relay nearby.",
+      "Stable local network identified."
+    ],
+    "ia": [
+      "Established infrastructure. Stable communications expected.",
+      "Local administrative presence confirmed.",
+      "Zone properly mapped by colonial authorities."
+    ]
+  },
+  "newcolony": {
+    "sys": [
+      "Recent, unstable infrastructure detected.",
+      "Provisional communication relay identified.",
+      "Local network still being deployed."
+    ],
+    "ia": [
+      "Young infrastructure. Local system reliability uncertain.",
+      "Zone under active development. Partial data only.",
+      "Colonial network still unstable, delays possible."
+    ]
+  }
+}

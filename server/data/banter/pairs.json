@@ -1,0 +1,206 @@
+[
+  {
+    "trigger": "flaw:bloodlust+flaw:pacifist",
+    "speaker": "A",
+    "lines": [
+      "{A} charges in again. {B} sighs.",
+      "{A} goes one round too many. {B} looks away."
+    ],
+    "reply": [
+      "We've talked about this before, {A}.",
+      "That wasn't necessary, {A}. Not this time either."
+    ]
+  },
+  {
+    "trigger": "flaw:greedy+flaw:honest",
+    "speaker": "A",
+    "lines": [
+      "{A} is already recounting the shares, out loud. {B} frowns.",
+      "{A} mentions a \"little extra\" nobody had brought up. {B} doesn't like it."
+    ],
+    "reply": [
+      "We agreed to split evenly, {A}.",
+      "That's not what we agreed to, {A}."
+    ]
+  },
+  {
+    "trigger": "flaw:hot-tempered+flaw:cowardly",
+    "speaker": "A",
+    "lines": [
+      "{A} already has fists clenched. {B} takes a step back.",
+      "{A} raises their voice. {B} is already scanning for the exit."
+    ],
+    "reply": [
+      "Calm down, {A}, we're all going to pay for this.",
+      "Can we maybe avoid that, {A}?"
+    ]
+  },
+  {
+    "trigger": "flaw:bloodlust+perk:warrior's-code",
+    "speaker": "A",
+    "lines": [
+      "{A} wants to end it fast and hard. {B} raises a hand: not like this.",
+      "{A} ignores the usual restraint. {B} doesn't like the method."
+    ],
+    "reply": [
+      "There's a right way to do things, {A}.",
+      "We don't hit an opponent who's down, {A}."
+    ]
+  },
+  {
+    "trigger": "flaw:cowardly+perk:lucky",
+    "speaker": "A",
+    "lines": [
+      "{A} checks the emergency exit three times. {B} shrugs, amused.",
+      "{A} jumps at the slightest noise. {B} clearly finds it funny."
+    ],
+    "reply": [
+      "Relax, {A}, it always works out for me.",
+      "Don't worry, {A}, I've never had a problem with that."
+    ]
+  },
+  {
+    "trigger": "flaw:greedy+perk:silver-tongue",
+    "speaker": "A",
+    "lines": [
+      "{A} is already recalculating their cut after {B} closed the deal.",
+      "{A} whispers that they could have gotten more out of {B}, once the deal was signed."
+    ],
+    "reply": [
+      "We got a good price, {A}. Be happy with that.",
+      "That was already a good deal, {A}."
+    ]
+  },
+  {
+    "trigger": "flaw:honest+perk:silver-tongue",
+    "speaker": "A",
+    "lines": [
+      "{A} calls out {B} on a slightly embellished detail of their story.",
+      "{A} points out, a bit too loudly, that it's not exactly what happened."
+    ],
+    "reply": [
+      "It's a more... sellable version, {A}.",
+      "Let's just say I smoothed out the edges, {A}."
+    ]
+  },
+  {
+    "trigger": "flaw:hot-tempered+perk:warrior's-code",
+    "speaker": "A",
+    "lines": [
+      "{A} already wants to answer with force. {B} puts a firm hand on their shoulder.",
+      "{A} clenches their fists before the discussion is even over. {B} shakes their head."
+    ],
+    "reply": [
+      "Not like that, {A}. We have rules.",
+      "Breathe, {A}. That's not how we do things."
+    ]
+  },
+  {
+    "trigger": "flaw:pacifist+perk:warrior's-code",
+    "speaker": "A",
+    "lines": [
+      "{A} refuses to deliver the finishing blow. {B} insists: honor demands it.",
+      "{A} and {B} disagree on what \"doing things right\" really means."
+    ],
+    "reply": [
+      "Honor sometimes demands finishing what you started, {A}.",
+      "This isn't cruelty, {A}, it's the code."
+    ]
+  },
+  {
+    "trigger": "flaw:cowardly+perk:resilient",
+    "speaker": "A",
+    "lines": [
+      "{A} takes a step back. {B} takes a hit without even flinching.",
+      "{A} watches {B} get back up like nothing happened, in disbelief."
+    ],
+    "reply": [
+      "I'm fine, {A}, I've seen worse.",
+      "Don't worry about me, {A}. Worry about them."
+    ]
+  },
+  {
+    "trigger": "flaw:greedy+perk:observant",
+    "speaker": "A",
+    "lines": [
+      "{A} already follows {B}'s gaze toward something shiny in the corner.",
+      "{A} asks {B} to \"keep an eye\" on anything that might be worth something."
+    ],
+    "reply": [
+      "I saw it, {A}. We'll see if we have time.",
+      "Noted, {A}. Mission comes first, though."
+    ]
+  },
+  {
+    "trigger": "flaw:hot-tempered+perk:silver-tongue",
+    "speaker": "A",
+    "lines": [
+      "{A} just made everything blow up. {B} steps in to salvage the situation.",
+      "{A} raises their voice one more time. {B} steps in with a disarming smile."
+    ],
+    "reply": [
+      "Let me handle this, {A}.",
+      "I'll fix what you just broke, {A}."
+    ]
+  },
+  {
+    "trigger": "flaw:greedy+perk:warrior's-code",
+    "speaker": "A",
+    "lines": [
+      "{A} is already leaning toward the fallen opponent's belongings. {B} steps in the way.",
+      "{A} wants to search the defeated opponent's pockets. {B} finds it disgraceful."
+    ],
+    "reply": [
+      "We don't loot a defeated opponent, {A}.",
+      "That's not how we do things, {A}."
+    ]
+  },
+  {
+    "trigger": "flaw:cowardly+perk:warrior's-code",
+    "speaker": "A",
+    "lines": [
+      "{A} is already looking for a way out. {B} stands firm, unmoving.",
+      "{A} suggests retreating. {B} refuses to turn their back this soon."
+    ],
+    "reply": [
+      "We don't run like that, {A}.",
+      "There's a right way to withdraw, {A}, and this isn't it."
+    ]
+  },
+  {
+    "trigger": "flaw:bloodlust+perk:lucky",
+    "speaker": "A",
+    "lines": [
+      "{A} throws themselves into the fray again. {B} comes out unscathed, as always.",
+      "{A} has lost count of the risks taken. {B} shrugs, amused by their own luck."
+    ],
+    "reply": [
+      "Another time that could have gone badly, {A}. Another time it didn't.",
+      "Don't worry, {A}, I've got good karma right now."
+    ]
+  },
+  {
+    "trigger": "flaw:hot-tempered+perk:resilient",
+    "speaker": "A",
+    "lines": [
+      "{A} already wants to get back into it. {B} just takes the hits and waits.",
+      "{A} is fuming, ready to explode. {B} stays stoic, like nothing happened."
+    ],
+    "reply": [
+      "Why are you getting worked up, {A}? It barely does anything to me.",
+      "Save your energy, {A}. I'll take the hits, you save yourself."
+    ]
+  },
+  {
+    "trigger": "flaw:cowardly+perk:silver-tongue",
+    "speaker": "A",
+    "lines": [
+      "{A} quietly steps back while {B} speaks up to defuse the situation.",
+      "{A} lets {B} negotiate, relieved not to have to lift a finger."
+    ],
+    "reply": [
+      "Don't worry, {A}, I've got this. We don't need it to come to that.",
+      "Let me talk, {A}. Nobody needs to fight."
+    ]
+  }
+]

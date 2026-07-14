@@ -1,0 +1,60 @@
+{
+  "DECEPTION": {
+    "success": {
+      "greedy": {
+        "Analyst": [
+          "Manipulation successful. He added three additional financial demands. They accepted anyway.",
+          "Lie accepted, along with a clearly disproportionate compensation request. Effective nonetheless.",
+          "Cover validated, but I note a blatant personal interest guiding every word choice.",
+          "Illusion maintained. Statistically, the greed should have given the operation away. It didn't."
+        ],
+        "Diplomat": [
+          "They believed what he said... though I sense he was mostly thinking about what he'd get out of it.",
+          "The alternate truth found its footing, driven by an interest I'd rather not examine too closely.",
+          "They accepted his words. I hope he remembers that trust is worth more than profit.",
+          "The facade held, carried by a personal ambition that, this time, served the mission."
+        ],
+        "Sentinel": [
+          "Deception successful. Note: unauthorized compensation request made mid-operation.",
+          "Lie accepted despite self-interested behavior from the operator. Result conforms, method to monitor.",
+          "Manipulation validated. I recommend oversight of personal motivations in future operations.",
+          "Cover confirmed. Report: the operator's financial interest not aligned with official objectives."
+        ],
+        "Explorer": [
+          "I told them my story, and took the chance to negotiate a little bonus on the side. They said yes!",
+          "Okay I might have exaggerated the value of what I was offering. But they bit immediately.",
+          "I lied, and on top of that I made a bit of cash on the side. Productive day.",
+          "I was mostly thinking about what I'd get out of it, and weirdly that made my lie more convincing."
+        ]
+      }
+    },
+    "failure": {
+      "greedy": {
+        "Analyst": [
+          "Manipulation failed. The excessive compensation demand raised legitimate suspicion.",
+          "Lie rejected after a financial demand deemed inconsistent with the story presented.",
+          "Cover blown. I note the displayed greed directly compromised the story's credibility.",
+          "Manipulation failed. Statistically, such blatant greed was bound to eventually raise suspicion."
+        ],
+        "Diplomat": [
+          "They didn't believe what he said... I think they sensed he was thinking more of himself than of them.",
+          "The alternate truth didn't take. His personal interest showed, despite himself.",
+          "They rejected his words. Maybe a touch of selflessness would have changed things.",
+          "The facade collapsed under the weight of his own demands. That's a real shame."
+        ],
+        "Sentinel": [
+          "Deception failed. The log shows a financial demand incompatible with the established cover.",
+          "Lie rejected. Report: the operator's self-interested behavior directly linked to the mission's failure.",
+          "Manipulation failed. I recommend a review of the operator profile for concealment operations.",
+          "Cover compromised by poorly hidden greed at the critical moment."
+        ],
+        "Explorer": [
+          "Maybe I pushed the bonus thing a bit too hard. That raised their suspicions immediately.",
+          "Okay, I asked for too much, too fast. They smelled the scam from miles away.",
+          "I was mostly thinking about what I'd gain, and it showed. Big mistake.",
+          "I got greedy, literally greedy, and it cost me all the story's credibility."
+        ]
+      }
+    }
+  }
+}

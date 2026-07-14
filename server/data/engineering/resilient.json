@@ -1,0 +1,60 @@
+{
+  "ENGINEERING": {
+    "success": {
+      "resilient": {
+        "Analyst": [
+          "Diagnostic complete. Three electric shocks absorbed without interrupting the intervention. Notable.",
+          "System repaired despite prolonged exposure to fumes that should have slowed anyone else down.",
+          "Circuit stabilized after a physical shock that should have, statistically, halted the operation.",
+          "Module operational. I record: the operator's physical resilience offset a hostile environment."
+        ],
+        "Diplomat": [
+          "The machine opened up to him... after he took far more than he should have to get there.",
+          "The system works again, despite the pain he went through without ever stopping.",
+          "The circuit accepted his adjustments. He never let go, even when it hurt.",
+          "The repair held. His physical determination eventually got the better of the machine itself."
+        ],
+        "Sentinel": [
+          "Repair validated. Note: operator sustained a risk exposure without interrupting the task.",
+          "System stabilized despite a physical incident during the intervention. Endurance deemed off the charts.",
+          "Circuit operational after prolonged resistance to degraded working conditions.",
+          "Module functional. Report: resilience directly responsible for the operation continuing."
+        ],
+        "Explorer": [
+          "It shocked me twice and I just kept going like nothing happened. Fixed anyway.",
+          "The thing fought back hard, but I take a hit pretty well, apparently.",
+          "I took a jolt that should have sent me flying. Still standing, still working.",
+          "That hurt, a lot. But I kept going, and there, it works again."
+        ]
+      }
+    },
+    "failure": {
+      "resilient": {
+        "Analyst": [
+          "Diagnostic impossible. Even high endurance has a limit against repeated malfunctions.",
+          "Repair failed. The operator's physical resilience delayed the failure, without preventing it.",
+          "Circuit unstable after prolonged exposure to degraded working conditions.",
+          "Problem unresolved. I record: perseverance alone wasn't enough to get past this malfunction."
+        ],
+        "Diplomat": [
+          "The machine wouldn't cooperate... but he held on well after most would have given up.",
+          "The system rejected his adjustments, despite all his effort and resilience.",
+          "The circuit didn't accept his help. He gave everything, and it still wasn't enough.",
+          "The repair failed, despite remarkable endurance on his part."
+        ],
+        "Sentinel": [
+          "Repair failed. Logging: prolonged resistance that ultimately didn't change the outcome.",
+          "System unstable. Report: repeated malfunctions eventually exceeded the tolerance threshold.",
+          "Circuit non-operational after prolonged exposure to a hazardous working environment.",
+          "Module out of service. I recommend reinforced protective equipment for the next intervention."
+        ],
+        "Explorer": [
+          "I took a bunch of shocks, but at some point the machine just won. Ouch.",
+          "I usually handle shocks fine. That one was really too much.",
+          "I kept going well after I should have stopped. Result: it eventually got the better of me.",
+          "It knocked me flat, literally. Good attempt anyway."
+        ]
+      }
+    }
+  }
+}

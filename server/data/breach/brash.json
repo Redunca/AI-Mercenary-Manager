@@ -1,0 +1,60 @@
+{
+  "BREACH": {
+    "success": {
+      "brash": {
+        "Analyst": [
+          "Intrusion successful. No prior reconnaissance phase. Statistically, this shouldn't have worked.",
+          "Access obtained by deliberately ignoring three standard caution protocols. Result conforms regardless.",
+          "Connection established via an approach I'd call reckless. Effective, but risky to repeat.",
+          "Data retrieved. I record: haste short-circuited analysis, without consequence this time."
+        ],
+        "Diplomat": [
+          "The system opened up... before he'd even finished thinking about how to approach it. Astonishing.",
+          "Access granted. He charged in without hesitation, and sometimes boldness alone is enough.",
+          "We're in, faster than expected. His impatience served the cause, for once.",
+          "The digital door opened under the force of his haste. Risky, but beautiful to watch."
+        ],
+        "Sentinel": [
+          "Intrusion validated. Note: reconnaissance procedure skipped, result nonetheless conforming.",
+          "Access obtained via an unplanned method. I strongly recommend not generalizing this approach.",
+          "The system gave way to a direct attempt, with no prior preparation. Success despite the risk taken.",
+          "Connection established. Report: notable haste from the operator, favorable outcome by operational luck."
+        ],
+        "Explorer": [
+          "I charged in without thinking and it worked on the first try. Who needs a plan?",
+          "Zero preparation, one hundred percent action. And apparently that's enough sometimes.",
+          "I clicked on everything at once without checking a thing. We're in, so good enough.",
+          "I had no plan, just momentum. And the momentum paid off."
+        ]
+      }
+    },
+    "failure": {
+      "brash": {
+        "Analyst": [
+          "Intrusion failed. The total absence of reconnaissance directly triggered an avoidable countermeasure.",
+          "The firewall held after a rushed attempt that ignored obvious warning signals.",
+          "Connection blocked. I note that minimal preparation would likely have changed the outcome.",
+          "Attempt aborted. I record: haste turned a manageable risk into a certain failure."
+        ],
+        "Diplomat": [
+          "The system rejected me... he charged in without taking the time to listen to it first.",
+          "Access denied. His impatience may have caused what patience would have avoided.",
+          "The digital door stayed shut, slammed by an approach that was too abrupt.",
+          "The data wouldn't let itself be approached. I think it needed a gentler touch."
+        ],
+        "Sentinel": [
+          "Intrusion failed. Logging: no prior reconnaissance, countermeasure triggered.",
+          "Access denied. Report: the operator's haste directly linked to the triggered alert.",
+          "The system blocked the attempt after an approach deemed non-compliant with minimal protocol.",
+          "Connection impossible. I recommend a mandatory reconnaissance phase before any next attempt."
+        ],
+        "Explorer": [
+          "I charged in without thinking, like always. Except this time it didn't pay off at all.",
+          "Zero plan, zero result. I see the connection now.",
+          "I clicked on everything at once and set off an alarm. Oops.",
+          "Maybe I should have looked before charging in. Maybe."
+        ]
+      }
+    }
+  }
+}

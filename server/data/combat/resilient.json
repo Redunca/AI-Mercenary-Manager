@@ -1,0 +1,60 @@
+{
+  "COMBAT": {
+    "success": {
+      "resilient": {
+        "Analyst": [
+          "Target neutralized. I had projected likely failure after the first hit taken. Miscalculation, apparently.",
+          "Combat concluded. His capacity to absorb damage exceeds any known physiological norm.",
+          "Threat eliminated. I note a statistically improbable pain tolerance threshold.",
+          "Engagement closed. What should have immobilized him didn't even slow him down. Fascinating, in a way."
+        ],
+        "Diplomat": [
+          "The fight ended... he took everything without ever giving in. There's something moving about that.",
+          "The battle is over. I think his body simply refused to abandon his spirit.",
+          "The opponent fell, and he's still standing, against all logic. I deeply respect that.",
+          "The conflict has settled. His inner strength clearly exceeded what his body could promise."
+        ],
+        "Sentinel": [
+          "Engagement successful. Note: the operator continued the fight despite damage deemed critical.",
+          "Threat eliminated. I recommend studying his physical resilience for future protocols.",
+          "Combat concluded. The operator exceeded standard tolerance thresholds without interruption of activity.",
+          "Opposition neutralized. Report notes off-the-charts endurance across the entire engagement."
+        ],
+        "Explorer": [
+          "I took hits I should never have survived, and I'm still standing. Weird but cool.",
+          "Honestly, that should have knocked me out three times over. But no. I'm indestructible, apparently.",
+          "I barely felt it. Okay, I felt it, but I'm still here, so that counts.",
+          "They gave it everything and I'm still standing. Pretty sure I'm made of stone."
+        ]
+      }
+    },
+    "failure": {
+      "resilient": {
+        "Analyst": [
+          "Tactical failure. Even exceptional endurance has a limit, reached today.",
+          "Combat lost. I note the observed resilience only delayed the outcome, not avoided it.",
+          "Opposition not neutralized. The tolerance threshold was crossed despite high absorption capacity.",
+          "Unfavorable engagement. I record: holding out longer wasn't enough to reverse the outcome."
+        ],
+        "Diplomat": [
+          "The fight ended badly... but he held out far longer than anyone could have hoped.",
+          "The battle is lost. I think even his strength wasn't enough, this time.",
+          "The opponent got the upper hand, after a fight he should never have let drag on so long.",
+          "The confrontation failed. He gave everything until the end, and I won't forget that."
+        ],
+        "Sentinel": [
+          "Engagement failed. The log shows prolonged resistance that ultimately didn't change the outcome.",
+          "Combat lost. Report: endurance threshold exceeded after prolonged exposure to damage.",
+          "Threat not eliminated. I recommend a medical follow-up despite no apparent major injuries.",
+          "Opposition not controlled. The operator's capacity to absorb damage delayed, but didn't prevent, the failure."
+        ],
+        "Explorer": [
+          "Okay, I really took everything this time, and it was finally enough to stop me. Even I have limits.",
+          "I held out super long, like really long. But at some point you have to give.",
+          "I thought I could take anything. Turns out there's a ceiling. Found it today.",
+          "I kept going well after I should have stopped. Result: it caught up with me eventually."
+        ]
+      }
+    }
+  }
+}

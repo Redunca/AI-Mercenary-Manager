@@ -1,0 +1,60 @@
+{
+  "RECON": {
+    "success": {
+      "observant": {
+        "Analyst": [
+          "Observation successful. A detail invisible to the thermal scan was spotted with the naked eye in seconds.",
+          "Zone analyzed with a precision far exceeding standard sensor capabilities.",
+          "Reconnaissance complete thanks to a pattern only a careful human eye could detect.",
+          "Scouting done. I record: direct observation outperformed automated analysis yet again."
+        ],
+        "Diplomat": [
+          "The zone revealed itself to him... he has this way of seeing what others let slip by.",
+          "Reconnaissance went smoothly. He knew how to read the space like a familiar face.",
+          "I perceived what was needed, but he saw far more. A real gift for attention.",
+          "Observation successful. I think this zone had no secrets left for such a patient eye."
+        ],
+        "Sentinel": [
+          "Reconnaissance validated. Note: critical detail identified through direct observation, not detected by sensors.",
+          "Observation complete. I recommend adding this capability to the standard surveillance protocol.",
+          "Analysis successful thanks to vigilance exceeding the usual attention thresholds required.",
+          "Scouting done. Report: the operator's observational skill directly responsible for the success."
+        ],
+        "Explorer": [
+          "I noticed something weird in a corner, like really subtle. And it changed everything.",
+          "There was a sketchy detail nobody would have seen. I did. There, sorted.",
+          "I looked a bit longer than usual, and I saw THE important thing.",
+          "A small detail caught my eye, literally. And that was enough to understand everything."
+        ]
+      }
+    },
+    "failure": {
+      "observant": {
+        "Analyst": [
+          "Reconnaissance failed. Even meticulous observation revealed no exploitable element this time.",
+          "Observation impossible. I note the absence of any detectable abnormal detail, despite a thorough inspection.",
+          "Analysis unsuccessful despite a careful examination of the entire zone.",
+          "Scouting failed. I record: sometimes, there is simply nothing to observe."
+        ],
+        "Diplomat": [
+          "The zone didn't reveal itself... even his sharp eye found nothing this time. It happens.",
+          "Reconnaissance blocked. He looked, really looked, but some places stay silent.",
+          "I perceived nothing, despite all his attention. I don't hold it against him.",
+          "Observation impossible, despite unwavering patience."
+        ],
+        "Sentinel": [
+          "Reconnaissance failed. Logging: no detectable element despite thorough observation.",
+          "Analysis impossible. Report: the operator's observational skill had no effect on this specific zone.",
+          "Observation unsuccessful despite vigilance deemed consistent with the highest standards.",
+          "Scouting not completed. I recommend treating this zone as having no known observable anomaly."
+        ],
+        "Explorer": [
+          "I looked at everything, like really everything, and saw nothing useful. It happens.",
+          "I usually always spot something. This time, nothing. Nada.",
+          "I looked for the usual little detail. It wasn't there this time.",
+          "Well, even I have limits, apparently. Nothing to report."
+        ]
+      }
+    }
+  }
+}

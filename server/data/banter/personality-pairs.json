@@ -1,0 +1,92 @@
+{
+  "Analyst+Diplomat": {
+    "speaker": "A",
+    "lines": [
+      "{A} is already reciting three statistics nobody asked for. {B} listens patiently."
+    ],
+    "reply": [
+      "What you're saying is correct, {A}, but maybe we don't need the numbers to feel it."
+    ]
+  },
+  "Analyst+Sentinel": {
+    "speaker": "A",
+    "lines": [
+      "{A} corrects a data point in {B}'s report for the second time."
+    ],
+    "reply": [
+      "The protocol doesn't need to be more precise, {A}, just respected."
+    ]
+  },
+  "Explorer+Analyst": {
+    "speaker": "A",
+    "lines": [
+      "{A} already jumps to the next conclusion. {B} hasn't finished the calculation."
+    ],
+    "reply": [
+      "Let me finish, {A}, I was almost there."
+    ]
+  },
+  "Diplomat+Sentinel": {
+    "speaker": "A",
+    "lines": [
+      "{A} suggests hearing the other side out. {B} sees no tactical point in it."
+    ],
+    "reply": [
+      "We follow protocol, {A}, not feelings."
+    ]
+  },
+  "Explorer+Diplomat": {
+    "speaker": "A",
+    "lines": [
+      "{A} wants to charge ahead without discussing it. {B} would rather talk it through first."
+    ],
+    "reply": [
+      "Can we at least talk about it first, {A}?"
+    ]
+  },
+  "Explorer+Sentinel": {
+    "speaker": "A",
+    "lines": [
+      "{A} improvises, again. {B} mentally notes the protocol deviation."
+    ],
+    "reply": [
+      "That wasn't procedure, {A}. Again."
+    ]
+  },
+  "Analyst+Analyst": {
+    "speaker": "A",
+    "lines": [
+      "{A} disputes {B}'s interpretation of the numbers, politely but firmly."
+    ],
+    "reply": [
+      "Your data is good, {A}, but your reading is incomplete."
+    ]
+  },
+  "Diplomat+Diplomat": {
+    "speaker": "A",
+    "lines": [
+      "{A} lets {B} speak first. {B} insists it should be the other way around."
+    ],
+    "reply": [
+      "No, no, you go ahead, {A}, please."
+    ]
+  },
+  "Sentinel+Sentinel": {
+    "speaker": "A",
+    "lines": [
+      "{A} and {B} disagree on which of them is actually running the operation."
+    ],
+    "reply": [
+      "I'm the one with the current protocol, {A}, not you."
+    ]
+  },
+  "Explorer+Explorer": {
+    "speaker": "A",
+    "lines": [
+      "{A} proposes an increasingly questionable plan. {B} thinks it's brilliant."
+    ],
+    "reply": [
+      "Absolutely, {A}, let's go for it."
+    ]
+  }
+}
