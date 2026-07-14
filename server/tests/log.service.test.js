@@ -356,6 +356,9 @@ describe('perk/flaw-specific event quote files', () => {
 
   const eventTypeDirs = fs.readdirSync(DATA_DIR)
     .filter(f => fs.statSync(path.join(DATA_DIR, f)).isDirectory())
+    // banter/ holds relationship-dialogue files (pairs.json, personality-pairs.json) keyed by
+    // trait *pairs* or personality combos, not a single perk/flaw name — out of scope here.
+    .filter(f => f !== 'banter')
 
   // Discover every perk/flaw-specific file across every event-type folder, and pair each
   // with the perk/flaw it's supposed to represent (via the reverse of the slug lookup above).
