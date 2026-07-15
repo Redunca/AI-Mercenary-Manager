@@ -146,9 +146,10 @@ async function insertLogEntries(client, playerId, entries) {
  *   The single recruit driving this log entry, if any (e.g. the recruit who rolled for an event). Null for
  *   phase logs, which speak for the whole crew rather than one actor.
  * @property {Array<{id: string|number, name: string, perks: any[], flaws: any[], personality: string}>} crew
- *   The full crew assigned to the mission instance, regardless of who is "acting". Not used by the log text
- *   built in this file yet — it's threaded through so later log-building logic (banter, etc.) has it without
- *   further plumbing changes.
+ *   The full crew assigned to the mission instance, regardless of who is "acting". Used by buildBanterLog()
+ *   to find eligible trait-pair/personality-pair matches; not used by buildPhaseLogs/buildEventResultLogs.
+ *   `planet.tags` is also consumed by buildBanterLog() to prefer tag-flavored line variants when a chosen
+ *   banter entry defines them (see pickTagFlavoredContent), falling back to its generic lines/reply otherwise.
  */
 
 function buildPhaseLogs({ context, phase, failed, rewardForfeited, recruitName }) {
@@ -366,8 +367,28 @@ async function getLastBanterPairNames(client, playerId, missionId) {
  * (fewer than 2 crew members, the only eligible pair(s) all repeat the immediately preceding banter
  * pair, or no trait-pair/personality-pair template matches any eligible crew pair).
  */
+/**
+ * If the chosen entry defines tag-flavored variants (entry.tagLines: { [planetTag]: { lines, reply } })
+ * and the planet has a matching tag, prefer those over the entry's generic lines/reply — mirroring
+ * pickPlanetTagQuote's "collect matches, then pick one at random" pattern. Falls back to entry.lines/
+ * entry.reply when there's no planet, no tags, or entry.tagLines has no matching (non-empty) tag.
+ */
+function pickTagFlavoredContent(entry, tags) {
+  if (Array.isArray(tags) && tags.length > 0 && entry.tagLines) {
+    const matches = tags.filter(tag => (
+      Array.isArray(entry.tagLines[tag]?.lines) && entry.tagLines[tag].lines.length > 0 &&
+      Array.isArray(entry.tagLines[tag]?.reply) && entry.tagLines[tag].reply.length > 0
+    ))
+    if (matches.length > 0) {
+      const tag = matches[Math.floor(Math.random() * matches.length)]
+      return entry.tagLines[tag]
+    }
+  }
+  return { lines: entry.lines, reply: entry.reply }
+}
+
 async function buildBanterLog(client, playerId, context) {
-  const { missionId, crew } = context
+  const { missionId, crew, planet } = context
   if (!Array.isArray(crew) || crew.length < 2) return null
 
   const lastPair = await getLastBanterPairNames(client, playerId, missionId)
@@ -394,8 +415,9 @@ async function buildBanterLog(client, playerId, context) {
   if (!chosen) return null
 
   const { A, B, entry } = chosen
-  const line = pick(entry.lines).replace(/\{A\}/g, A.name).replace(/\{B\}/g, B.name)
-  const reply = pick(entry.reply).replace(/\{A\}/g, A.name).replace(/\{B\}/g, B.name)
+  const { lines, reply: replyLines } = pickTagFlavoredContent(entry, planet?.tags)
+  const line = pick(lines).replace(/\{A\}/g, A.name).replace(/\{B\}/g, B.name)
+  const reply = pick(replyLines).replace(/\{A\}/g, A.name).replace(/\{B\}/g, B.name)
 
   return {
     mission: [

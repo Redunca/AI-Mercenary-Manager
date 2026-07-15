@@ -528,6 +528,55 @@ describe('buildBanterLog', () => {
     expect(result).toBeNull()
   })
 
+  test('prefers a planet-tag-flavored line/reply when the chosen entry defines one', async () => {
+    const crew = [
+      recruit(1, 'Kade', 'Explorer', { flaws: [{ name: 'Bloodlust' }] }),
+      recruit(2, 'Vex', 'Sentinel', { flaws: [{ name: 'Pacifist' }] }),
+    ]
+    const entry = banterPairs.find(p => p.trigger === 'flaw:bloodlust+flaw:pacifist')
+    const originalTagLines = entry.tagLines
+    entry.tagLines = {
+      'hostile-fauna': {
+        lines: ['{A} keeps swinging at the wildlife. {B} is done asking nicely.'],
+        reply: ['Not everything out here is a threat, {A}.'],
+      },
+    }
+    try {
+      const result = await buildBanterLog(fakeClient(null), 1, {
+        missionId: 1, crew, planet: { tags: ['hostile-fauna'] },
+      })
+      expect(result).not.toBeNull()
+      expect(result.mission[0].message).toBe('Kade keeps swinging at the wildlife. Vex is done asking nicely.')
+      expect(result.mission[1].message).toBe('Not everything out here is a threat, Kade.')
+    } finally {
+      if (originalTagLines === undefined) delete entry.tagLines
+      else entry.tagLines = originalTagLines
+    }
+  })
+
+  test('falls back to generic lines when planet tags do not match any tagLines entry', async () => {
+    const crew = [
+      recruit(1, 'Kade', 'Explorer', { flaws: [{ name: 'Bloodlust' }] }),
+      recruit(2, 'Vex', 'Sentinel', { flaws: [{ name: 'Pacifist' }] }),
+    ]
+    const entry = banterPairs.find(p => p.trigger === 'flaw:bloodlust+flaw:pacifist')
+    const result = await buildBanterLog(fakeClient(null), 1, {
+      missionId: 1, crew, planet: { tags: ['some-unrelated-tag'] },
+    })
+    expect(result).not.toBeNull()
+    expect(entry.lines.map(l => l.replace(/\{A\}/g, 'Kade').replace(/\{B\}/g, 'Vex'))).toContain(result.mission[0].message)
+  })
+
+  test('does not crash when planet or planet.tags is missing', async () => {
+    const crew = [
+      recruit(1, 'Kade', 'Explorer', { flaws: [{ name: 'Bloodlust' }] }),
+      recruit(2, 'Vex', 'Sentinel', { flaws: [{ name: 'Pacifist' }] }),
+    ]
+    await expect(buildBanterLog(fakeClient(null), 1, { missionId: 1, crew })).resolves.not.toBeNull()
+    await expect(buildBanterLog(fakeClient(null), 1, { missionId: 1, crew, planet: {} })).resolves.not.toBeNull()
+    await expect(buildBanterLog(fakeClient(null), 1, { missionId: 1, crew, planet: { tags: [] } })).resolves.not.toBeNull()
+  })
+
   test('duplicate crew names do not crash and still resolve via distinct ids', async () => {
     // CANDIDATE_NAMES has no uniqueness guarantee (server/src/domain/recruit.js), so two crew
     // members can share a display name. The tag can render ambiguously ([KADE→KADE]) but the
