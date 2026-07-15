@@ -4,11 +4,19 @@
     "speaker": "A",
     "lines": [
       "{A} charges in again. {B} sighs.",
-      "{A} goes one round too many. {B} looks away."
+      "{A} goes one round too many. {B} looks away.",
+      "{A} steps forward with a grin. {B} quietly asks them to reconsider.",
+      "{A} cracks their knuckles eagerly. {B} winces at the implication.",
+      "{A} mutters that they 'want more'. {B} shakes their head slowly.",
+      "{A} leans toward the fight again. {B} whispers a plea for restraint."
     ],
     "reply": [
       "We've talked about this before, {A}.",
-      "That wasn't necessary, {A}. Not this time either."
+      "That wasn't necessary, {A}. Not this time either.",
+      "You don't have to chase every fight, {A}.",
+      "Please slow down, {A}. This isn't the way.",
+      "I know you feel it, {A}, but violence isn't purpose.",
+      "Not every moment needs blood, {A}."
     ]
   },
   {
@@ -16,11 +24,19 @@
     "speaker": "A",
     "lines": [
       "{A} is already recounting the shares, out loud. {B} frowns.",
-      "{A} mentions a \"little extra\" nobody had brought up. {B} doesn't like it."
+      "{A} mentions a \"little extra\" nobody had brought up. {B} doesn't like it.",
+      "{A} wonders if the client 'forgot' to mention a bonus. {B} doubts it.",
+      "{A} suggests checking pockets 'just in case'. {B} frowns deeply.",
+      "{A} asks if they can renegotiate. {B} sighs.",
+      "{A} eyes the loot pile. {B} crosses their arms."
     ],
     "reply": [
       "We agreed to split evenly, {A}.",
-      "That's not what we agreed to, {A}."
+      "That's not what we agreed to, {A}.",
+      "We're not squeezing people for more, {A}.",
+      "Honesty matters more than profit, {A}.",
+      "We agreed on fairness, {A}. Stick to it.",
+      "No shortcuts, {A}. Not with the truth."
     ]
   },
   {
@@ -28,11 +44,19 @@
     "speaker": "A",
     "lines": [
       "{A} already has fists clenched. {B} takes a step back.",
-      "{A} raises their voice. {B} is already scanning for the exit."
+      "{A} raises their voice. {B} is already scanning for the exit.",
+      "{A} stomps forward. {B} nearly jumps.",
+      "{A} growls under their breath. {B} edges away.",
+      "{A} slams a door open. {B} flinches hard.",
+      "{A} threatens action. {B} begs them not to."
     ],
     "reply": [
       "Calm down, {A}, we're all going to pay for this.",
-      "Can we maybe avoid that, {A}?"
+      "Can we maybe avoid that, {A}?",
+      "Please don't make this worse, {A}.",
+      "I really don't want to be here if you explode, {A}.",
+      "Let's not escalate, {A}. Please.",
+      "I'm begging you, {A}. Don't start something."
     ]
   },
   {
@@ -40,11 +64,19 @@
     "speaker": "A",
     "lines": [
       "{A} wants to end it fast and hard. {B} raises a hand: not like this.",
-      "{A} ignores the usual restraint. {B} doesn't like the method."
+      "{A} ignores the usual restraint. {B} doesn't like the method.",
+      "{A} charges ahead. {B} calls out a reminder of honor.",
+      "{A} raises their blade. {B} insists on proper form.",
+      "{A} pushes forward aggressively. {B} demands discipline.",
+      "{A} ignores caution. {B} warns them of dishonor."
     ],
     "reply": [
       "There's a right way to do things, {A}.",
-      "We don't hit an opponent who's down, {A}."
+      "We don't hit an opponent who's down, {A}.",
+      "Honor guides us, {A}, not impulse.",
+      "Respect the code, {A}. Always.",
+      "Strength without discipline is meaningless, {A}.",
+      "Hold yourself to the standard, {A}."
     ]
   },
   {
@@ -52,11 +84,19 @@
     "speaker": "A",
     "lines": [
       "{A} checks the emergency exit three times. {B} shrugs, amused.",
-      "{A} jumps at the slightest noise. {B} clearly finds it funny."
+      "{A} jumps at the slightest noise. {B} clearly finds it funny.",
+      "{A} checks behind them again. {B} strolls confidently.",
+      "{A} whispers a fear. {B} laughs it off.",
+      "{A} hesitates at a doorway. {B} walks through untouched.",
+      "{A} expects disaster. {B} expects luck."
     ],
     "reply": [
       "Relax, {A}, it always works out for me.",
-      "Don't worry, {A}, I've never had a problem with that."
+      "Don't worry, {A}, I've never had a problem with that.",
+      "Luck's on my side, {A}. Always.",
+      "You worry too much, {A}. I've got this.",
+      "Things fall my way, {A}. They always do.",
+      "Relax, {A}. I'm charmed."
     ]
   },
   {
@@ -64,11 +104,19 @@
     "speaker": "A",
     "lines": [
       "{A} is already recalculating their cut after {B} closed the deal.",
-      "{A} whispers that they could have gotten more out of {B}, once the deal was signed."
+      "{A} whispers that they could have gotten more out of {B}, once the deal was signed.",
+      "{A} asks if {B} could push harder next time. {B} smirks knowingly.",
+      "{A} wonders if the client had more to give. {B} shrugs.",
+      "{A} suggests a 'bonus clause'. {B} laughs softly.",
+      "{A} hints they could have doubled the price. {B} rolls their eyes."
     ],
     "reply": [
       "We got a good price, {A}. Be happy with that.",
-      "That was already a good deal, {A}."
+      "That was already a good deal, {A}.",
+      "Trust me, {A}, I pushed as far as we could.",
+      "More pressure would've broken the deal, {A}.",
+      "Negotiation is balance, {A}.",
+      "Charm has limits, {A}."
     ]
   },
   {
@@ -76,11 +124,19 @@
     "speaker": "A",
     "lines": [
       "{A} calls out {B} on a slightly embellished detail of their story.",
-      "{A} points out, a bit too loudly, that it's not exactly what happened."
+      "{A} points out, a bit too loudly, that it's not exactly what happened.",
+      "{A} corrects another detail mid‑sentence. {B} groans softly.",
+      "{A} points out a contradiction. {B} waves it off.",
+      "{A} insists on truth. {B} insists on presentation.",
+      "{A} highlights a factual error. {B} calls it 'creative framing'."
     ],
     "reply": [
       "It's a more... sellable version, {A}.",
-      "Let's just say I smoothed out the edges, {A}."
+      "Let's just say I smoothed out the edges, {A}.",
+      "Truth is flexible in storytelling, {A}.",
+      "Charm needs space, {A}.",
+      "Let me embellish a little, {A}.",
+      "Accuracy isn't always the goal, {A}."
     ]
   },
   {
@@ -88,11 +144,19 @@
     "speaker": "A",
     "lines": [
       "{A} already wants to answer with force. {B} puts a firm hand on their shoulder.",
-      "{A} clenches their fists before the discussion is even over. {B} shakes their head."
+      "{A} clenches their fists before the discussion is even over. {B} shakes their head.",
+      "{A} raises their voice. {B} keeps theirs steady.",
+      "{A} pushes forward. {B} holds them back.",
+      "{A} fumes loudly. {B} stays composed.",
+      "{A} threatens action. {B} cites the code."
     ],
     "reply": [
       "Not like that, {A}. We have rules.",
-      "Breathe, {A}. That's not how we do things."
+      "Breathe, {A}. That's not how we do things.",
+      "Discipline over impulse, {A}.",
+      "Honor requires restraint, {A}.",
+      "Calm your spirit, {A}.",
+      "The code is stronger than anger, {A}."
     ]
   },
   {
@@ -100,11 +164,19 @@
     "speaker": "A",
     "lines": [
       "{A} refuses to deliver the finishing blow. {B} insists: honor demands it.",
-      "{A} and {B} disagree on what \"doing things right\" really means."
+      "{A} and {B} disagree on what \"doing things right\" really means.",
+      "{A} steps back. {B} urges them forward.",
+      "{A} hesitates. {B} insists on ritual.",
+      "{A} questions the code. {B} defends it.",
+      "{A} refuses the strike. {B} calls it dishonor."
     ],
     "reply": [
       "Honor sometimes demands finishing what you started, {A}.",
-      "This isn't cruelty, {A}, it's the code."
+      "This isn't cruelty, {A}, it's the code.",
+      "Tradition matters, {A}.",
+      "Honor isn't cruelty, {A}.",
+      "The code shapes us, {A}.",
+      "Duty isn't always pleasant, {A}."
     ]
   },
   {
@@ -112,11 +184,19 @@
     "speaker": "A",
     "lines": [
       "{A} takes a step back. {B} takes a hit without even flinching.",
-      "{A} watches {B} get back up like nothing happened, in disbelief."
+      "{A} watches {B} get back up like nothing happened, in disbelief.",
+      "{A} panics at a scratch. {B} shrugs.",
+      "{A} expects {B} to fall. {B} stays upright.",
+      "{A} worries loudly. {B} barely reacts.",
+      "{A} hides behind {B}. {B} stands firm."
     ],
     "reply": [
       "I'm fine, {A}, I've seen worse.",
-      "Don't worry about me, {A}. Worry about them."
+      "Don't worry about me, {A}. Worry about them.",
+      "I barely felt it, {A}.",
+      "I've taken worse hits, {A}.",
+      "You panic too easily, {A}.",
+      "Let me handle the damage, {A}."
     ]
   },
   {
@@ -124,11 +204,19 @@
     "speaker": "A",
     "lines": [
       "{A} already follows {B}'s gaze toward something shiny in the corner.",
-      "{A} asks {B} to \"keep an eye\" on anything that might be worth something."
+      "{A} asks {B} to \"keep an eye\" on anything that might be worth something.",
+      "{A} points excitedly at a glimmer. {B} doesn't break focus.",
+      "{A} suggests checking a drawer. {B} shakes their head.",
+      "{A} hints at hidden treasure. {B} keeps eyes on the mission.",
+      "{A} asks if they can 'quickly grab' something. {B} refuses."
     ],
     "reply": [
       "I saw it, {A}. We'll see if we have time.",
-      "Noted, {A}. Mission comes first, though."
+      "Noted, {A}. Mission comes first, though.",
+      "Later, {A}. Mission first.",
+      "We're not here to collect souvenirs, {A}.",
+      "Focus, {A}. Loot comes after survival.",
+      "I'll tell you when it's safe, {A}."
     ]
   },
   {
@@ -136,11 +224,19 @@
     "speaker": "A",
     "lines": [
       "{A} just made everything blow up. {B} steps in to salvage the situation.",
-      "{A} raises their voice one more time. {B} steps in with a disarming smile."
+      "{A} raises their voice one more time. {B} steps in with a disarming smile.",
+      "{A} escalates. {B} de-escalates instantly.",
+      "{A} pushes tension higher. {B} diffuses it smoothly.",
+      "{A} makes things worse. {B} patches it with words.",
+      "{A} scares the crowd. {B} reassures them effortlessly."
     ],
     "reply": [
       "Let me handle this, {A}.",
-      "I'll fix what you just broke, {A}."
+      "I'll fix what you just broke, {A}.",
+      "Let me untangle this, {A}.",
+      "I can calm them down, {A}.",
+      "Talking works better than shouting, {A}.",
+      "I'll smooth it over, {A}."
     ]
   },
   {
@@ -148,11 +244,19 @@
     "speaker": "A",
     "lines": [
       "{A} is already leaning toward the fallen opponent's belongings. {B} steps in the way.",
-      "{A} wants to search the defeated opponent's pockets. {B} finds it disgraceful."
+      "{A} wants to search the defeated opponent's pockets. {B} finds it disgraceful.",
+      "{A} crouches to inspect loot. {B} pulls them back.",
+      "{A} suggests 'just a quick look'. {B} refuses.",
+      "{A} tries again. {B} stands firm.",
+      "{A} argues it's 'just practical'. {B} calls it dishonor."
     ],
     "reply": [
       "We don't loot a defeated opponent, {A}.",
-      "That's not how we do things, {A}."
+      "That's not how we do things, {A}.",
+      "Honor before greed, {A}.",
+      "We don't touch the fallen, {A}.",
+      "The code forbids this, {A}.",
+      "Show respect, {A}."
     ]
   },
   {
@@ -160,11 +264,19 @@
     "speaker": "A",
     "lines": [
       "{A} is already looking for a way out. {B} stands firm, unmoving.",
-      "{A} suggests retreating. {B} refuses to turn their back this soon."
+      "{A} suggests retreating. {B} refuses to turn their back this soon.",
+      "{A} panics at movement. {B} stays steady.",
+      "{A} urges withdrawal. {B} refuses with dignity.",
+      "{A} hides behind debris. {B} stands tall.",
+      "{A} whispers fear. {B} whispers courage."
     ],
     "reply": [
       "We don't run like that, {A}.",
-      "There's a right way to withdraw, {A}, and this isn't it."
+      "There's a right way to withdraw, {A}, and this isn't it.",
+      "Stand firm, {A}.",
+      "Courage first, {A}.",
+      "Retreat only when it's right, {A}.",
+      "Fear doesn't guide us, {A}."
     ]
   },
   {
@@ -172,11 +284,19 @@
     "speaker": "A",
     "lines": [
       "{A} throws themselves into the fray again. {B} comes out unscathed, as always.",
-      "{A} has lost count of the risks taken. {B} shrugs, amused by their own luck."
+      "{A} has lost count of the risks taken. {B} shrugs, amused by their own luck.",
+      "{A} dives into danger. {B} strolls out untouched.",
+      "{A} pushes too far. {B} laughs at their luck.",
+      "{A} nearly gets hit. {B} avoids it casually.",
+      "{A} takes risks. {B} avoids consequences."
     ],
     "reply": [
       "Another time that could have gone badly, {A}. Another time it didn't.",
-      "Don't worry, {A}, I've got good karma right now."
+      "Don't worry, {A}, I've got good karma right now.",
+      "Luck shields me, {A}.",
+      "I always land on my feet, {A}.",
+      "Fortune favors me today, {A}.",
+      "I'm blessed with timing, {A}."
     ]
   },
   {
@@ -184,11 +304,19 @@
     "speaker": "A",
     "lines": [
       "{A} already wants to get back into it. {B} just takes the hits and waits.",
-      "{A} is fuming, ready to explode. {B} stays stoic, like nothing happened."
+      "{A} is fuming, ready to explode. {B} stays stoic, like nothing happened.",
+      "{A} raises their voice. {B} doesn't flinch.",
+      "{A} steps forward. {B} stays calm.",
+      "{A} vents frustration. {B} absorbs it.",
+      "{A} pushes conflict. {B} remains unshaken."
     ],
     "reply": [
       "Why are you getting worked up, {A}? It barely does anything to me.",
-      "Save your energy, {A}. I'll take the hits, you save yourself."
+      "Save your energy, {A}. I'll take the hits, you save yourself.",
+      "I barely feel it, {A}.",
+      "Let me take the hits, {A}.",
+      "You save your strength, {A}.",
+      "I can handle more, {A}."
     ]
   },
   {
@@ -196,11 +324,19 @@
     "speaker": "A",
     "lines": [
       "{A} quietly steps back while {B} speaks up to defuse the situation.",
-      "{A} lets {B} negotiate, relieved not to have to lift a finger."
+      "{A} lets {B} negotiate, relieved not to have to lift a finger.",
+      "{A} stays silent. {B} takes control.",
+      "{A} trembles slightly. {B} reassures everyone.",
+      "{A} whispers fear. {B} speaks confidence.",
+      "{A} steps back again. {B} steps forward."
     ],
     "reply": [
       "Don't worry, {A}, I've got this. We don't need it to come to that.",
-      "Let me talk, {A}. Nobody needs to fight."
+      "Let me talk, {A}. Nobody needs to fight.",
+      "Let me talk us out, {A}.",
+      "Words will solve this, {A}.",
+      "I'll calm them down, {A}.",
+      "You're safe behind me, {A}."
     ]
   }
 ]
