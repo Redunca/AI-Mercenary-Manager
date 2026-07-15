@@ -2,91 +2,171 @@
   "Analyst+Diplomat": {
     "speaker": "A",
     "lines": [
-      "{A} is already reciting three statistics nobody asked for. {B} listens patiently."
+      "{A} is already reciting three statistics nobody asked for. {B} listens patiently.",
+      "{A} begins outlining a full model. {B} smiles politely.",
+      "{A} references a correlation. {B} asks if it matters right now.",
+      "{A} explains a trend. {B} wonders if they can simplify.",
+      "{A} dives into methodology. {B} suggests focusing on the moment."
     ],
     "reply": [
-      "What you're saying is correct, {A}, but maybe we don't need the numbers to feel it."
+      "What you're saying is correct, {A}, but maybe we don't need the numbers to feel it.",
+      "Let's stay grounded, {A}.",
+      "We don't need full analysis every time, {A}.",
+      "I appreciate the detail, {A}, but let's keep it human.",
+      "Sometimes clarity beats precision, {A}."
     ]
   },
   "Analyst+Sentinel": {
     "speaker": "A",
     "lines": [
-      "{A} corrects a data point in {B}'s report for the second time."
+      "{A} corrects a data point in {B}'s report for the second time.",
+      "{A} points out inefficiency. {B} refuses to adjust.",
+      "{A} suggests recalibration. {B} cites regulation.",
+      "{A} questions a step. {B} insists it's mandatory.",
+      "{A} proposes a shortcut. {B} denies it immediately."
     ],
     "reply": [
-      "The protocol doesn't need to be more precise, {A}, just respected."
+      "The protocol doesn't need to be more precise, {A}, just respected.",
+      "Protocol is protocol, {A}.",
+      "We don't change procedure mid‑operation, {A}.",
+      "Rules exist for a reason, {A}.",
+      "Stick to the manual, {A}."
     ]
   },
   "Explorer+Analyst": {
     "speaker": "A",
     "lines": [
-      "{A} already jumps to the next conclusion. {B} hasn't finished the calculation."
+      "{A} already jumps to the next conclusion. {B} hasn't finished the calculation.",
+      "{A} leaps to a conclusion. {B} recalculates quietly.",
+      "{A} suggests a risky assumption. {B} asks for proof.",
+      "{A} pushes for speed. {B} asks for accuracy.",
+      "{A} improvises a theory. {B} checks the numbers."
     ],
     "reply": [
-      "Let me finish, {A}, I was almost there."
+      "Let me finish, {A}, I was almost there.",
+      "Data first, {A}.",
+      "We need confirmation, {A}.",
+      "Let me verify before we jump, {A}.",
+      "Slow down, {A}. I'm still computing."
     ]
   },
   "Diplomat+Sentinel": {
     "speaker": "A",
     "lines": [
-      "{A} suggests hearing the other side out. {B} sees no tactical point in it."
+      "{A} suggests hearing the other side out. {B} sees no tactical point in it.",
+      "{A} proposes a discussion. {B} declines firmly.",
+      "{A} asks for perspective. {B} cites protocol again.",
+      "{A} suggests patience. {B} insists on action.",
+      "{A} wants dialogue. {B} wants compliance."
     ],
     "reply": [
-      "We follow protocol, {A}, not feelings."
+      "We follow protocol, {A}, not feelings.",
+      "Procedure comes first, {A}.",
+      "We don't negotiate protocol, {A}.",
+      "Sentiment won't alter the rules, {A}.",
+      "Protocol stands, {A}."
     ]
   },
   "Explorer+Diplomat": {
     "speaker": "A",
     "lines": [
-      "{A} wants to charge ahead without discussing it. {B} would rather talk it through first."
+      "{A} wants to charge ahead without discussing it. {B} would rather talk it through first.",
+      "{A} pushes forward. {B} asks for alignment.",
+      "{A} acts on impulse. {B} requests context.",
+      "{A} jumps into action. {B} wants a plan.",
+      "{A} charges in. {B} asks for a moment."
     ],
     "reply": [
-      "Can we at least talk about it first, {A}?"
+      "Can we at least talk about it first, {A}?",
+      "Talk before action, {A}.",
+      "We need clarity, {A}.",
+      "Let's plan first, {A}.",
+      "One moment, {A}. Let's think."
     ]
   },
   "Explorer+Sentinel": {
     "speaker": "A",
     "lines": [
-      "{A} improvises, again. {B} mentally notes the protocol deviation."
+      "{A} improvises, again. {B} mentally notes the protocol deviation.",
+      "{A} breaks protocol again. {B} marks it mentally.",
+      "{A} takes another detour. {B} frowns.",
+      "{A} ignores the plan. {B} mutters about procedure.",
+      "{A} changes course. {B} notes the deviation."
     ],
     "reply": [
-      "That wasn't procedure, {A}. Again."
+      "That wasn't procedure, {A}. Again.",
+      "Protocol exists for a reason, {A}.",
+      "We can't improvise everything, {A}.",
+      "Follow the steps, {A}.",
+      "Stay on the path, {A}."
     ]
   },
   "Analyst+Analyst": {
     "speaker": "A",
     "lines": [
-      "{A} disputes {B}'s interpretation of the numbers, politely but firmly."
+      "{A} disputes {B}'s interpretation of the numbers, politely but firmly.",
+      "{A} disputes a coefficient. {B} cites a source.",
+      "{A} questions a margin. {B} recalculates.",
+      "{A} proposes a new model. {B} critiques it.",
+      "{A} adjusts parameters. {B} does likewise."
     ],
     "reply": [
-      "Your data is good, {A}, but your reading is incomplete."
+      "Your data is good, {A}, but your reading is incomplete.",
+      "Your assumptions need refinement, {A}.",
+      "We need more context, {A}.",
+      "Your model lacks depth, {A}.",
+      "Let's analyze further, {A}."
     ]
   },
   "Diplomat+Diplomat": {
     "speaker": "A",
     "lines": [
-      "{A} lets {B} speak first. {B} insists it should be the other way around."
+      "{A} lets {B} speak first. {B} insists it should be the other way around.",
+      "{A} gestures for {B} to begin. {B} gestures back.",
+      "{A} tries to yield. {B} tries harder.",
+      "{A} suggests {B} talk. {B} suggests the opposite.",
+      "{A} pauses to let {B} speak. {B} pauses too."
     ],
     "reply": [
-      "No, no, you go ahead, {A}, please."
+      "No, no, you go ahead, {A}, please.",
+      "Please, {A}, you speak first.",
+      "I insist, {A}. Truly.",
+      "No, {A}, after you.",
+      "You begin, {A}. I insist."
     ]
   },
   "Sentinel+Sentinel": {
     "speaker": "A",
     "lines": [
-      "{A} and {B} disagree on which of them is actually running the operation."
+      "{A} and {B} disagree on which of them is actually running the operation.",
+      "{A} references a rule. {B} references another.",
+      "{A} insists their version is correct. {B} insists harder.",
+      "{A} quotes regulation. {B} quotes stricter regulation.",
+      "{A} asserts command. {B} asserts higher command."
     ],
     "reply": [
-      "I'm the one with the current protocol, {A}, not you."
+      "I'm the one with the current protocol, {A}, not you.",
+      "Your version is outdated, {A}.",
+      "I have senior authority on this, {A}.",
+      "My regulation supersedes yours, {A}.",
+      "I'm following the correct procedure, {A}."
     ]
   },
   "Explorer+Explorer": {
     "speaker": "A",
     "lines": [
-      "{A} proposes an increasingly questionable plan. {B} thinks it's brilliant."
+      "{A} proposes an increasingly questionable plan. {B} thinks it's brilliant.",
+      "{A} imagines a wild route. {B} is delighted.",
+      "{A} proposes something absurd. {B} is already onboard.",
+      "{A} suggests a risky jump. {B} cheers.",
+      "{A} proposes a mad idea. {B} loves it."
     ],
     "reply": [
-      "Absolutely, {A}, let's go for it."
+      "Absolutely, {A}, let's go for it.",
+      "Let's do it, {A}.",
+      "I love it, {A}. Let's go.",
+      "Brilliant idea, {A}.",
+      "I'm already convinced, {A}."
     ]
   }
 }
