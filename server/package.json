@@ -13,7 +13,8 @@
     "start": "node index.js",
     "dev": "node --watch index.js",
     "test": "jest",
-    "planete": "node scripts/generate-planets.js"
+    "planete": "node scripts/generate-planets.js",
+    "simulate": "node scripts/simulate-missions.js"
   },
   "author": "Cléophée",
   "license": "ISC",
