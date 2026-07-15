@@ -95,6 +95,8 @@
       [value]="panel.terminal?.getInput() ?? ''"
       (input)="onInputChange($event); autoResize($event)"
       (keydown.enter)="onEnterKey($event)"
+      (keydown.arrowup)="onArrowUpKey($event)"
+      (keydown.arrowdown)="onArrowDownKey($event)"
       (focus)="onFocus()"
       placeholder="Enter a command..."
       class="command-input">

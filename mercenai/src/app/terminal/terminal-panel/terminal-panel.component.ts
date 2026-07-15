@@ -116,6 +116,20 @@ export class TerminalPanelComponent implements OnInit, AfterViewChecked, AfterVi
     });
   }
 
+  onArrowUpKey(event: Event): void {
+    // Prevent the browser from moving the caret to the start of the
+    // textarea; we're using ArrowUp to cycle through command history instead.
+    event.preventDefault();
+    this.panel.terminal?.historyPrevious();
+  }
+
+  onArrowDownKey(event: Event): void {
+    // Same as above but for cycling forward through history / back to a
+    // blank line.
+    event.preventDefault();
+    this.panel.terminal?.historyNext();
+  }
+
   onFocus(): void {
     this.layout.setActivePanel(this.getPanelId());
   }
