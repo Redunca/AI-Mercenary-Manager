@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS recruits (
   status     TEXT NOT NULL DEFAULT 'available',
   hp         INT NOT NULL,
   max_hp     INT NOT NULL,
+  original_max_hp INT NOT NULL,
   attributes JSONB NOT NULL,
   perks      JSONB NOT NULL DEFAULT '[]',
   flaws      JSONB NOT NULL DEFAULT '[]',

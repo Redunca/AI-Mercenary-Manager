@@ -3,8 +3,12 @@ const path = require('path')
 const { pool } = require('../db/pool')
 const { rollAction, rollDie, rollInRange } = require('./dice.service')
 const { generateCandidate, rowToCandidate, rowToRecruit, computeMaxHp } = require('../domain/recruit')
+const { buildEnemy, runAutoBattle } = require('../domain/combat')
 const { DURATION_PER_EVENT_MS, travelSegmentMs, eventsSegmentMs, phaseAndProgressFromElapsed } = require('../domain/mission')
-const { insertLogEntries, buildPhaseLogs, buildEventResultLogs, buildBanterLog } = require('./log.service')
+const {
+  insertLogEntries, buildPhaseLogs, buildEventResultLogs, buildBanterLog,
+  buildCombatRoundLog, buildCombatEventLogs,
+} = require('./log.service')
 const { createStarterShip, validateCrewAssignment } = require('../domain/ship')
 const ShipService = require('./ship.service')
 const ConsumableService = require('./consumable.service')
@@ -205,6 +209,24 @@ async function damageRecruit(client, playerId, recruitId, amount, shipId) {
   return updated ? { ...updated, revived } : updated
 }
 
+// Persists a crew member's post-battle hp/max_hp (and, when they died from
+// accumulated injuries, their permanent 'dead' status). Combat never touches
+// a recruit's mission status column otherwise (e.g. 'in_mission' stays put).
+async function applyCombatResult(client, playerId, recruitId, { hp, maxHp, dead }) {
+  const row = await client.query(
+    'SELECT * FROM recruits WHERE player_id = $1 AND id = $2',
+    [playerId, recruitId],
+  )
+  if (row.rows.length === 0) return null
+  const status = dead ? 'dead' : row.rows[0].status
+
+  await client.query(
+    'UPDATE recruits SET hp = $1, max_hp = $2, status = $3 WHERE player_id = $4 AND id = $5',
+    [hp, maxHp, status, playerId, recruitId],
+  )
+  return getRecruit(client, playerId, recruitId)
+}
+
 async function setRecruitStatus(client, playerId, recruitId, status) {
   await client.query(
     `UPDATE recruits SET status = $1
@@ -234,6 +256,70 @@ async function resolveEvents(client, playerId, instance, template, crewMembers) 
     if (activeCrew.length === 0) {
       failed = true
       break
+    }
+
+    // COMBAT events always resolve as a full auto-battle (whole active crew
+    // vs. one enemy scaled to the mission's difficulty) — there is no skill
+    // roll to gate it, and no random failureConsequence pick.
+    if (event.type === 'COMBAT') {
+      const enemy = buildEnemy(template.difficulty, rollInRange)
+      const healCharges = await ConsumableService.countShipInventoryEffect(client, shipId, 'HEAL')
+      const combatResult = runAutoBattle({ crew: activeCrew, enemy, rollAction, healCharges })
+
+      for (const round of combatResult.rounds) {
+        await insertLogEntries(client, playerId, [buildCombatRoundLog({ round, missionId })])
+      }
+
+      for (let h = 0; h < combatResult.healsUsed; h++) {
+        await ConsumableService.consumeFromShipInventory(client, shipId, 'HEAL')
+      }
+
+      for (const outcome of combatResult.crewResults) {
+        const updated = await applyCombatResult(client, playerId, outcome.id, {
+          hp: outcome.hp, maxHp: outcome.maxHp, dead: outcome.status === 'dead',
+        })
+        // Keep this resolveEvents() call's in-memory crew state in sync, so
+        // later events in the same pass see accurate hp/maxHp/status.
+        const local = crewMembers.find(r => String(r.id) === String(outcome.id))
+        if (local && updated) {
+          local.hp = updated.hp
+          local.maxHp = updated.maxHp
+          local.status = updated.status
+        }
+      }
+
+      const result = {
+        eventIndex: i,
+        type: event.type,
+        combat: true,
+        rounds: combatResult.rounds.length,
+        enemyDefeated: combatResult.enemyDefeated,
+        success: combatResult.enemyDefeated,
+        recruitsDied: combatResult.crewResults.filter(c => c.status === 'dead').map(c => c.id),
+      }
+      if (combatResult.enemyDefeated) {
+        result.rewardEarned = event.reward
+      } else {
+        result.consequence = 'FORCED_DEPARTURE'
+        rewardForfeited = true
+      }
+
+      const combatLogs = buildCombatEventLogs({
+        context: buildLogContext({ template, crewMembers }),
+        event,
+        combatResult,
+      })
+      await insertLogEntries(client, playerId, [...combatLogs.mission, ...combatLogs.global])
+
+      currentEventIndex = i + 1
+      eventResults.push(result)
+
+      if (!combatResult.enemyDefeated) {
+        failed = true
+        return { failed, rewardForfeited, currentEventIndex, eventResults, forceReturn: true, completed: false, shipDestroyed: false }
+      }
+
+      continue
     }
 
     const bestRecruit = activeCrew.reduce((best, current) => {
@@ -611,11 +697,12 @@ async function hireCandidate(client, playerId, candidateId) {
 
   await client.query(
     `INSERT INTO recruits
-      (id, player_id, name, job_title, status, hp, max_hp, attributes, perks, flaws, personality)
-     VALUES ($1, $2, $3, $4, 'available', $5, $6, $7, $8, $9, $10)`,
+      (id, player_id, name, job_title, status, hp, max_hp, original_max_hp, attributes, perks, flaws, personality)
+     VALUES ($1, $2, $3, $4, 'available', $5, $6, $7, $8, $9, $10, $11)`,
     [
       recruitId, playerId, candidate.name, candidate.job_title,
-      candidate.hp, candidate.max_hp, JSON.stringify(candidate.attributes), JSON.stringify(candidate.perks), JSON.stringify(candidate.flaws),
+      candidate.hp, candidate.max_hp, candidate.max_hp,
+      JSON.stringify(candidate.attributes), JSON.stringify(candidate.perks), JSON.stringify(candidate.flaws),
       candidate.personality,
     ],
   )

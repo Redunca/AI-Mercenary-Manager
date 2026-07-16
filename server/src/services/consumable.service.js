@@ -103,6 +103,17 @@ function unassignFromShip(client, playerId, consumableId, quantity = 1) {
   return moveStack(client, playerId, consumableId, null, quantity)
 }
 
+// Total quantity of a given effect sitting in a ship's inventory, without
+// spending anything. Used to know upfront how many auto-heals an auto-battle
+// can draw on before actually consuming them one at a time.
+async function countShipInventoryEffect(client, shipId, effect) {
+  const result = await client.query(
+    'SELECT COALESCE(SUM(quantity), 0)::int AS total FROM consumables WHERE assigned_to_ship = $1 AND effect = $2',
+    [shipId, effect]
+  )
+  return result.rows[0]?.total ?? 0
+}
+
 // Looks up and spends one matching consumable from a ship's own inventory.
 // Used for effects that trigger automatically during a mission (attribute
 // advantage, auto-heal, auto-repair) rather than being explicitly "used" by
@@ -131,4 +142,5 @@ module.exports = {
   assignToShip,
   unassignFromShip,
   consumeFromShipInventory,
+  countShipInventoryEffect,
 }

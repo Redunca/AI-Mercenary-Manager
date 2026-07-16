@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path')
 const { rollInRange } = require('../src/services/dice.service')
-const { generateCandidate, computeMaxHp, rowToCandidate, rowToRecruit, ATTRIBUTE_KEYS } = require('../src/domain/recruit')
+const { generateCandidate, computeMaxHp, computeGuard, bestCombatStat, rowToCandidate, rowToRecruit, ATTRIBUTE_KEYS } = require('../src/domain/recruit')
 
 const DATA_DIR = path.join(__dirname, '../data')
 function loadJson(name) {
@@ -93,7 +93,7 @@ describe('rowToRecruit', () => {
 
     expect(rowToRecruit(row)).toEqual({
       id: '7', name: 'Kade', jobTitle: 'Elite Soldier', personality: 'Analyst',
-      attributes: { might: 5 }, hp: 10, maxHp: 22, status: 'available',
+      attributes: { might: 5 }, hp: 10, maxHp: 22, originalMaxHp: 22, status: 'available',
       perks: [], flaws: [{ name: 'Clumsy' }],
     });
   });
@@ -105,5 +105,29 @@ describe('rowToRecruit', () => {
     };
 
     expect(rowToRecruit(row).jobTitle).toBeUndefined();
+  });
+});
+
+describe('computeGuard', () => {
+  test('is 10 + Might + Agility', () => {
+    expect(computeGuard({ might: 3, agility: 5 })).toBe(18)
+  });
+
+  test('treats a missing attribute as 0', () => {
+    expect(computeGuard({ might: 4 })).toBe(14)
+  });
+});
+
+describe('bestCombatStat', () => {
+  test('picks Agility when it is strictly higher than Might', () => {
+    expect(bestCombatStat({ might: 2, agility: 5 })).toEqual({ attribute: 'agility', score: 5 })
+  });
+
+  test('picks Might when it is strictly higher than Agility', () => {
+    expect(bestCombatStat({ might: 6, agility: 3 })).toEqual({ attribute: 'might', score: 6 })
+  });
+
+  test('breaks ties in favor of Might', () => {
+    expect(bestCombatStat({ might: 4, agility: 4 })).toEqual({ attribute: 'might', score: 4 })
   });
 });

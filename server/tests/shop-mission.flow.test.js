@@ -141,9 +141,9 @@ function createFakeClient() {
       return { rows: [{ count: state.recruits.filter(r => r.player_id === params[0]).length }] }
     }
     if (s.includes('INSERT INTO recruits')) {
-      const [id, player_id, name, job_title, hp, max_hp, attributes, perks, flaws, personality] = params
+      const [id, player_id, name, job_title, hp, max_hp, original_max_hp, attributes, perks, flaws, personality] = params
       state.recruits.push({
-        id, player_id, name, job_title, status: 'available', hp, max_hp,
+        id, player_id, name, job_title, status: 'available', hp, max_hp, original_max_hp,
         attributes: JSON.parse(attributes), perks: JSON.parse(perks), flaws: JSON.parse(flaws), personality,
       })
       return { rows: [] }

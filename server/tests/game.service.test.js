@@ -13,9 +13,11 @@ const LogService = require('../src/services/log.service')
 const { setSeed, resetSeed } = require('../src/utils/random')
 
 // Chosen because, with the current data files, it deterministically produces:
-//  - template #1 (ROUTINE): 2 events (fixed by ROUTINE's eventCount; content-independent)
-//  - template #6 (STANDARD): RECON, COMBAT, SURVIVAL — the last with failureConsequence HP_LOSS
-//  - template #11 (HARD): RECON(dc18), RECON(dc17), COMBAT(dc18, FORCED_DEPARTURE), SURVIVAL
+//  - template #1 (ROUTINE): 2 events (fixed by ROUTINE's eventCount; content-independent), no COMBAT
+//  - template #9 (STANDARD): ENGINEERING(HP_LOSS)[dc18], ENGINEERING(HP_LOSS)[dc10], SURVIVAL(HP_LOSS)[dc20], no COMBAT
+//  - template #12 (HARD): RECON(HP_LOSS)[dc17], RECON(FORCED_DEPARTURE)[dc21], BREACH(FORCED_DEPARTURE)[dc15], INFILTRATION(FORCED_DEPARTURE)[dc20], no COMBAT
+//  - template #17 (PERILOUS): RECON(HP_LOSS)[dc20], BREACH(FORCED_DEPARTURE)[dc30], BREACH(SHIP_DAMAGE)[dc30], INFILTRATION(FORCED_DEPARTURE)[dc26], INFILTRATION(HP_LOSS)[dc23]
+//  - template #6 (STANDARD): RECON(HP_LOSS)[dc14], COMBAT(NO_REWARD)[dc13], COMBAT(HP_LOSS)[dc13] — used by the dedicated COMBAT/auto-battle tests
 // If the mission data files (data/*.json) ever change, this seed may need to
 // be re-picked so those templates keep matching the assertions below.
 const MISSION_SEED = 15
@@ -134,6 +136,12 @@ function createFakeClient() {
     if (s.startsWith('SELECT * FROM recruits WHERE player_id = $1 AND id = $2')) {
       return { rows: state.recruits.filter(r => r.player_id === params[0] && sameId(r.id, params[1])) }
     }
+    if (s.includes('UPDATE recruits SET hp = $1, max_hp = $2, status = $3')) {
+      const [hp, max_hp, status, playerId, id] = params
+      const r = state.recruits.find(r => r.player_id === playerId && sameId(r.id, id))
+      if (r) Object.assign(r, { hp, max_hp, status })
+      return { rows: [] }
+    }
     if (s.includes('UPDATE recruits SET hp = $1, status = $2')) {
       const [hp, status, playerId, id] = params
       const r = state.recruits.find(r => r.player_id === playerId && sameId(r.id, id))
@@ -154,9 +162,9 @@ function createFakeClient() {
       return { rows: [{ count: state.recruits.filter(r => r.player_id === params[0]).length }] }
     }
     if (s.includes('INSERT INTO recruits')) {
-      const [id, player_id, name, job_title, hp, max_hp, attributes, perks, flaws, personality] = params
+      const [id, player_id, name, job_title, hp, max_hp, original_max_hp, attributes, perks, flaws, personality] = params
       state.recruits.push({
-        id, player_id, name, job_title, status: 'available', hp, max_hp,
+        id, player_id, name, job_title, status: 'available', hp, max_hp, original_max_hp,
         attributes: JSON.parse(attributes), perks: JSON.parse(perks), flaws: JSON.parse(flaws), personality,
       })
       return { rows: [] }
@@ -297,6 +305,8 @@ describe('GameService', () => {
     rollDie.mockReturnValue(3)
     LogService.buildPhaseLogs.mockReturnValue({ mission: [], global: [] })
     LogService.buildEventResultLogs.mockReturnValue({ mission: [], global: [] })
+    LogService.buildCombatRoundLog.mockReturnValue({ tag: '[SYS]', message: '', missionId: undefined })
+    LogService.buildCombatEventLogs.mockReturnValue({ mission: [], global: [] })
     LogService.insertLogEntries.mockResolvedValue(undefined)
 
     ShipService.getHangar.mockResolvedValue(null)
@@ -304,6 +314,7 @@ describe('GameService', () => {
     ShipService.createDockingStation.mockResolvedValue({})
     ShipService.getShips.mockResolvedValue([])
     ConsumableService.consumeFromShipInventory.mockResolvedValue(null)
+    ConsumableService.countShipInventoryEffect.mockResolvedValue(0)
     ShipService.createShip.mockResolvedValue({})
   })
 
@@ -556,7 +567,7 @@ describe('GameService', () => {
     })
 
     test('an HP_LOSS failure hurts the recruit but still returns the crew and the ship to base', async () => {
-      const instance = await launchMission(6) // template STANDARD (seed 15): RECON, COMBAT, SURVIVAL(HP_LOSS)
+      const instance = await launchMission(9) // template STANDARD (seed 15): ENGINEERING(HP_LOSS), ENGINEERING(HP_LOSS), SURVIVAL(HP_LOSS)
       instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
       rollAction.mockReturnValue({ d20: 1, bonus: 0, diceNotation: '—', total: 1 }) // systematic failure
       rollDie.mockReturnValue(4)
@@ -574,7 +585,7 @@ describe('GameService', () => {
     })
 
     test('the recruit dying on the last HP_LOSS event ends the mission in failure', async () => {
-      const instance = await launchMission(6)
+      const instance = await launchMission(9)
       instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
       rollAction.mockReturnValue({ d20: 1, bonus: 0, diceNotation: '—', total: 1 })
       state.recruits.find(r => r.id === 1).hp = 3 // dies on the first HP_LOSS failure (rollDie -> 3)
@@ -594,12 +605,11 @@ describe('GameService', () => {
     })
 
     test('a FORCED_DEPARTURE failure immediately switches the mission to RETURN phase', async () => {
-      const instance = await launchMission(11) // template HARD (seed 15): RECON(dc18),RECON(dc17),COMBAT(dc18,FORCED_DEPARTURE),SURVIVAL
+      const instance = await launchMission(12) // template HARD (seed 15): RECON(HP_LOSS,dc17), RECON(FORCED_DEPARTURE,dc21), BREACH(FORCED_DEPARTURE,dc15), INFILTRATION(FORCED_DEPARTURE,dc20)
       instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
       rollAction
-        .mockReturnValueOnce({ d20: 20, bonus: 0, diceNotation: '—', total: 20 }) // 1st RECON success (dc18)
-        .mockReturnValueOnce({ d20: 20, bonus: 0, diceNotation: '—', total: 20 }) // 2nd RECON success (dc17)
-        .mockReturnValueOnce({ d20: 1, bonus: 0, diceNotation: '—', total: 1 })   // COMBAT failure -> FORCED_DEPARTURE
+        .mockReturnValueOnce({ d20: 20, bonus: 0, diceNotation: '—', total: 20 }) // 1st RECON success (dc17)
+        .mockReturnValueOnce({ d20: 1, bonus: 0, diceNotation: '—', total: 1 })   // 2nd RECON failure -> FORCED_DEPARTURE
 
       await GameService.syncGame()
       const updated = state.missionInstances[0]
@@ -607,18 +617,17 @@ describe('GameService', () => {
       expect(updated.phase).toBe('RETURN')
       expect(updated.forced_return).toBe(true)
       expect(updated.failed).toBe(true)
-      expect(updated.current_event_index).toBe(3) // stops after the 3rd event (index 2 + 1)
-      expect(updated.event_results).toHaveLength(3)
+      expect(updated.current_event_index).toBe(2) // stops after the 2nd event (index 1 + 1)
+      expect(updated.event_results).toHaveLength(2)
       expect(ShipService.updateShipStatus).not.toHaveBeenCalledWith(expect.anything(), 1, 1, 'docked')
     })
 
     test('once the return trip has elapsed, a FORCED_DEPARTURE failure returns the ship and the surviving recruit to base', async () => {
-      await launchMission(11)
+      await launchMission(12)
       state.missionInstances[0].started_at = new Date(Date.now() - 10 * 60 * 1000)
       rollAction
         .mockReturnValueOnce({ d20: 20, bonus: 0, diceNotation: '—', total: 20 }) // RECON success
-        .mockReturnValueOnce({ d20: 20, bonus: 0, diceNotation: '—', total: 20 }) // INFILTRATION success
-        .mockReturnValueOnce({ d20: 1, bonus: 0, diceNotation: '—', total: 1 })   // COMBAT failure -> FORCED_DEPARTURE
+        .mockReturnValueOnce({ d20: 1, bonus: 0, diceNotation: '—', total: 1 })   // RECON failure -> FORCED_DEPARTURE
       await GameService.syncGame() // switches to RETURN
 
       await GameService.syncGame() // the return trip has already elapsed (progress_at_return already at 100)
@@ -630,6 +639,112 @@ describe('GameService', () => {
       expect(recruit.status).toBe('available')
       expect(ShipService.destroyShip).not.toHaveBeenCalled()
       expect(ShipService.updateShipStatus).toHaveBeenCalledWith(expect.anything(), 1, 1, 'docked')
+    })
+  })
+
+  describe('syncGame — COMBAT auto-battle', () => {
+    async function launchMission(templateId, crewId = 1) {
+      await GameService.initGame()
+      state.recruits[0].id = crewId
+      ShipService.getShip.mockResolvedValue({ id: 1, player_id: 1, crew: [crewId], status: 'docked', deleted_at: null })
+      await GameService.startMission(templateId, 1)
+      return state.missionInstances[0]
+    }
+
+    // template #6 (STANDARD, seed 15): RECON(HP_LOSS)[dc14], COMBAT(NO_REWARD)[dc13], COMBAT(HP_LOSS)[dc13]
+    // The hired recruit (default 'specialized' archetype under the seeded mocks)
+    // has agility 4, might 2 -> Guard 16.
+
+    test('the crew defeats the enemy: the event succeeds, the reward is earned, and one SYS log is written per round', async () => {
+      const instance = await launchMission(6)
+      instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
+      // A single overwhelming roll: the RECON check succeeds, and in both
+      // COMBAT events the recruit (tied on agility with the enemy, so acting
+      // first) one-shots the enemy before it ever gets a turn.
+      rollAction.mockReturnValue({ d20: 20, bonus: 0, diceNotation: '—', total: 60 })
+      rollInRange.mockReturnValue(0) // enemy Guard 0, Might primary (still tied vs recruit's agility 4)
+
+      await GameService.syncGame()
+      const recruit = state.recruits.find(r => r.id === 1)
+      const updated = state.missionInstances[0]
+
+      expect(updated.status).toBe('success')
+      expect(updated.event_results).toHaveLength(3)
+      const combatResults = updated.event_results.filter(r => r.combat)
+      expect(combatResults).toHaveLength(2)
+      expect(combatResults.every(r => r.enemyDefeated && r.success)).toBe(true)
+      expect(recruit.hp).toBe(recruit.max_hp) // the enemy never got a turn
+      expect(LogService.buildCombatRoundLog).toHaveBeenCalledTimes(2) // one round per COMBAT event
+      expect(LogService.buildCombatEventLogs).toHaveBeenCalledTimes(2)
+    })
+
+    test('the crew loses a COMBAT event: the mission is forced to return and the recruit permanently loses 1 max HP', async () => {
+      const instance = await launchMission(6)
+      instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
+      rollAction.mockReturnValue({ d20: 17, bonus: 0, diceNotation: '—', total: 17 })
+      // Enemy Agility primary (6, faster than the recruit's 4) so it always
+      // strikes first, and its roll (17) beats the recruit's Guard (16) for a
+      // clamped-to-3 hit every round; the crew's roll (17) never beats the
+      // enemy's rolled Guard (25), so it can never fight back. The recruit
+      // grinds down over several rounds until finally knocked out once.
+      rollInRange.mockReturnValue(25)
+      ConsumableService.countShipInventoryEffect.mockResolvedValue(0) // no HEAL available
+
+      await GameService.syncGame()
+      const recruit = state.recruits.find(r => r.id === 1)
+      const updated = state.missionInstances[0]
+
+      expect(updated.phase).toBe('RETURN')
+      expect(updated.forced_return).toBe(true)
+      expect(updated.failed).toBe(true)
+      expect(updated.current_event_index).toBe(2) // stops after the 2nd event (RECON success, then COMBAT loss)
+      expect(updated.event_results.at(-1).consequence).toBe('FORCED_DEPARTURE')
+      expect(recruit.max_hp).toBe(25) // 26 -> 25, permanently, from the single knockout suffered
+      expect(recruit.hp).toBe(25) // patched back up to the new max once the fight ends
+      expect(recruit.status).not.toBe('dead')
+    })
+
+    test('a HEAL consumable intercepts a would-be knockout during combat, preventing that knockout\'s permanent injury', async () => {
+      const instance = await launchMission(6)
+      instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
+      const recruit = state.recruits.find(r => r.id === 1)
+      recruit.hp = 5 // one big hit would otherwise knock them out
+      // Enemy Agility primary (6) so it acts first and hits hard (total 999);
+      // its Guard is rolled at 0, so the crew (going second) then finishes it
+      // off in the very same round.
+      rollAction.mockReturnValue({ d20: 20, bonus: 0, diceNotation: '—', total: 999 })
+      rollInRange.mockReturnValueOnce(0).mockReturnValueOnce(1)
+      ConsumableService.countShipInventoryEffect.mockResolvedValue(1) // one HEAL charge available
+
+      await GameService.syncGame()
+      const finalRecruit = state.recruits.find(r => r.id === 1)
+      const updated = state.missionInstances[0]
+      const combatResult = updated.event_results.find(r => r.combat)
+
+      expect(ConsumableService.consumeFromShipInventory).toHaveBeenCalledWith(expect.anything(), 1, 'HEAL')
+      expect(finalRecruit.max_hp).toBe(26) // no permanent reduction: the HEAL charge intercepted the only knockout
+      expect(finalRecruit.hp).toBe(26)
+      expect(combatResult.enemyDefeated).toBe(true)
+    })
+
+    test('a knockout that drops max HP to half the original (or below) kills the recruit', async () => {
+      const instance = await launchMission(6)
+      instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
+      const recruit = state.recruits.find(r => r.id === 1)
+      recruit.max_hp = 4
+      recruit.hp = 3 // original_max_hp is still 26 from hiring, so half of it is 13
+      rollAction.mockReturnValue({ d20: 17, bonus: 0, diceNotation: '—', total: 17 })
+      rollInRange.mockReturnValue(25) // enemy strikes first and hits for a clamped 3 damage
+      ConsumableService.countShipInventoryEffect.mockResolvedValue(0)
+
+      await GameService.syncGame()
+      const updated = state.missionInstances[0]
+
+      expect(recruit.status).toBe('dead')
+      expect(recruit.hp).toBe(0)
+      expect(recruit.max_hp).toBe(3) // 4 -> 3, still recorded even though the recruit died
+      expect(updated.failed).toBe(true)
+      expect(updated.event_results.at(-1).recruitsDied).toEqual([1])
     })
   })
 
@@ -660,12 +775,12 @@ describe('GameService', () => {
     })
 
     test('a HEAL consumable revives a recruit that would otherwise die, instead of ending the mission', async () => {
-      // STANDARD (seed 15): RECON[perception]dc14 HP_LOSS, COMBAT[agility]dc13 NO_REWARD, COMBAT[might]dc13 HP_LOSS.
+      // STANDARD (seed 15): ENGINEERING(HP_LOSS)[dc18], ENGINEERING(HP_LOSS)[dc10], SURVIVAL(HP_LOSS)[dc20].
       // Only the first event is made to fail, isolating the one lethal hit the HEAL item should intercept.
-      const instance = await launchMission(6)
+      const instance = await launchMission(9)
       instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
       rollAction
-        .mockReturnValueOnce({ d20: 1, bonus: 0, diceNotation: '—', total: 1 })   // RECON(HP_LOSS) failure
+        .mockReturnValueOnce({ d20: 1, bonus: 0, diceNotation: '—', total: 1 })   // ENGINEERING(HP_LOSS) failure
         .mockReturnValue({ d20: 20, bonus: 0, diceNotation: '—', total: 20 })     // remaining events succeed
       state.recruits.find(r => r.id === 1).hp = 3
       rollDie.mockReturnValue(3) // lethal hit, exactly at the recruit's remaining HP

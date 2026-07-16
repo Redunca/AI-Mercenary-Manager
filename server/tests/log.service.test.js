@@ -1,4 +1,7 @@
-const { insertLogEntries, buildPhaseLogs, buildEventResultLogs, pickPlanetTagQuote, buildBanterLog } = require('../src/services/log.service')
+const {
+  insertLogEntries, buildPhaseLogs, buildEventResultLogs, pickPlanetTagQuote, buildBanterLog,
+  buildCombatRoundLog, buildCombatEventLogs,
+} = require('../src/services/log.service')
 const planetTags = require('../data/planet-tags.json')
 const banterPairs = require('../data/banter/pairs.json')
 const personalityPairs = require('../data/banter/personality-pairs.json')
@@ -333,6 +336,95 @@ describe('buildEventResultLogs', () => {
 
     expect(['Intermediate objective validated.', 'Result matches projections.', 'Nominal execution.'])
       .toContain(mission[1].message)
+  })
+})
+
+describe('buildCombatRoundLog', () => {
+  test('produces a single [SYS] line summarizing every attack in the round', () => {
+    const round = {
+      round: 2,
+      entries: [
+        { actor: 'crew', actorId: 1, actorName: 'Vex', attribute: 'agility', hit: true, damage: 7, enemyHpAfter: 33 },
+        { actor: 'enemy', targetId: 2, targetName: 'Sable', hit: true, damage: 4, targetHpAfter: 12 },
+      ],
+    }
+
+    const log = buildCombatRoundLog({ round, missionId: 5 })
+
+    expect(log.tag).toBe('[SYS]')
+    expect(log.missionId).toBe(5)
+    expect(log.message).toContain('Round 2')
+    expect(log.message).toContain('Vex')
+    expect(log.message).toContain('7')
+    expect(log.message).toContain('Sable')
+  })
+
+  test('reports misses distinctly from hits, for both sides', () => {
+    const round = {
+      round: 1,
+      entries: [
+        { actor: 'crew', actorId: 1, actorName: 'Vex', attribute: 'might', hit: false },
+        { actor: 'enemy', targetId: 2, targetName: 'Sable', hit: false },
+      ],
+    }
+
+    const log = buildCombatRoundLog({ round, missionId: 5 })
+
+    expect(log.message).toContain('misses')
+    expect(log.message).toContain('miss')
+  })
+
+  test('flags a downed or killed target distinctly from a normal hit', () => {
+    const downedRound = { round: 3, entries: [{ actor: 'enemy', targetId: 2, targetName: 'Sable', hit: true, damage: 5, downed: true }] }
+    const deadRound = { round: 4, entries: [{ actor: 'enemy', targetId: 2, targetName: 'Sable', hit: true, damage: 5, died: true }] }
+    const revivedRound = { round: 5, entries: [{ actor: 'enemy', targetId: 2, targetName: 'Sable', hit: true, damage: 5, revived: true }] }
+
+    expect(buildCombatRoundLog({ round: downedRound, missionId: 1 }).message).toContain('down')
+    expect(buildCombatRoundLog({ round: deadRound, missionId: 1 }).message).toContain('KILLED IN ACTION')
+    expect(buildCombatRoundLog({ round: revivedRound, missionId: 1 }).message).toContain('revived')
+  })
+})
+
+describe('buildCombatEventLogs', () => {
+  const context = {
+    missionId: 1,
+    missionName: 'Corridor Patrol',
+    crew: [{ id: 1, name: 'Vex', perks: [], flaws: [], personality: 'Explorer' }],
+  }
+
+  test('victory: [SYS] + [IA] + a survivor line, reward mentioned, no global casualty log', () => {
+    const combatResult = {
+      enemyDefeated: true,
+      rounds: [{ round: 1, entries: [] }],
+      crewResults: [{ id: 1, status: 'active' }],
+    }
+    const event = { type: 'AMBUSH', reward: { type: 'CREDITS', amount: 250 } }
+
+    const { mission, global } = buildCombatEventLogs({ context, event, combatResult })
+
+    expect(mission[0].tag).toBe('[SYS]')
+    expect(mission[0].message).toContain('VICTORY')
+    expect(mission[0].message).toContain('250')
+    expect(mission[1].tag).toBe('[IA]')
+    expect(mission[2].tag).toBe('[VEX]')
+    expect(global).toEqual([])
+  })
+
+  test('defeat with a casualty: adds a last-words line and a global death log', () => {
+    const combatResult = {
+      enemyDefeated: false,
+      rounds: [{ round: 1, entries: [] }, { round: 2, entries: [] }],
+      crewResults: [{ id: 1, status: 'dead' }],
+    }
+    const event = { type: 'AMBUSH' }
+
+    const { mission, global } = buildCombatEventLogs({ context, event, combatResult })
+
+    expect(mission[0].message).toContain('DEFEAT')
+    expect(mission.some(m => m.tag === '[VEX]')).toBe(true)
+    expect(global).toEqual([
+      { tag: '[SYS]', message: 'Vex died during mission "Corridor Patrol".' },
+    ])
   })
 })
 

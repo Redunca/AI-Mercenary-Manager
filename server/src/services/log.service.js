@@ -115,6 +115,10 @@ const EVENT_PHRASES = {
   ship_broken_recruit: ["We're not flying this thing again anytime soon.", "That's it, she's done."],
   ship_repaired_ia: ["Auto-patch engaged. Hull integrity restored.", "Repair systems compensated for the damage."],
   ship_repaired_recruit: ["Patched up and still flying.", "Good thing we packed spares."],
+  combat_won_ia: ["Hostile threat neutralized.", "Engagement resolved in our favor."],
+  combat_won_recruit: ["Didn't even break a sweat.", "That's one less problem."],
+  combat_lost_ia: ["Engagement untenable. Withdrawal required.", "Hostile force too strong. Pulling back."],
+  combat_lost_recruit: ["We need to fall back, now!", "This fight's not winnable."],
 }
 
 function pick(arr) {
@@ -266,6 +270,71 @@ function buildEventResultLogs({ context, eventResult }) {
   }
 
   return { mission: entries, global: [] }
+}
+
+// --- Auto-battle combat logs ---
+
+// Summarizes one attack within a combat round into a short clause. Combat
+// rounds only ever produce [SYS] log lines (see buildCombatRoundLog), so this
+// intentionally carries no [IA]/recruit flavor of its own.
+function summarizeCombatEntry(entry) {
+  if (entry.actor === 'crew') {
+    return entry.hit
+      ? `${entry.actorName} (${entry.attribute}) hits Hostiles for ${entry.damage} (${entry.enemyHpAfter} HP left)`
+      : `${entry.actorName} (${entry.attribute}) misses Hostiles`
+  }
+
+  if (!entry.hit) return `Hostiles miss ${entry.targetName}`
+  if (entry.revived) return `Hostiles hit ${entry.targetName} for ${entry.damage} — revived by nanites`
+  if (entry.died) return `Hostiles hit ${entry.targetName} for ${entry.damage} — KILLED IN ACTION`
+  if (entry.downed) return `Hostiles hit ${entry.targetName} for ${entry.damage} — down, max HP -1`
+  return `Hostiles hit ${entry.targetName} for ${entry.damage} (${entry.targetHpAfter} HP left)`
+}
+
+// One [SYS]-only log line per combat round (a round is ~6s of game time),
+// deliberately throttled — no [IA]/recruit banter mid-fight.
+function buildCombatRoundLog({ round, missionId }) {
+  const summary = round.entries.map(summarizeCombatEntry).join(' · ')
+  return { tag: '[SYS]', message: `Round ${round.round} — ${summary}`, missionId }
+}
+
+// The final [SYS]/[IA]/[RECRUIT] summary once a COMBAT event's auto-battle
+// concludes, mirroring the shape of buildEventResultLogs for every other
+// event type.
+function buildCombatEventLogs({ context, event, combatResult }) {
+  const { missionId, missionName, crew } = context
+  const won = combatResult.enemyDefeated
+  const deadThisFight = combatResult.crewResults.filter(r => r.status === 'dead')
+  const survivors = crew.filter(c => !deadThisFight.some(d => String(d.id) === String(c.id)))
+
+  const rewardStr = won && event.reward ? ` [+${event.reward.amount} ${event.reward.type}]` : ''
+  const entries = [
+    {
+      tag: '[SYS]',
+      message: `${event.type} — ${won ? 'VICTORY' : 'DEFEAT'} vs Hostiles (${combatResult.rounds.length} round${combatResult.rounds.length === 1 ? '' : 's'})${rewardStr}`,
+      missionId,
+    },
+    { tag: '[IA]', message: pick(won ? EVENT_PHRASES.combat_won_ia : EVENT_PHRASES.combat_lost_ia), missionId },
+  ]
+
+  const spokesperson = survivors.length > 0 ? pick(survivors) : null
+  if (spokesperson) {
+    entries.push({
+      tag: `[${spokesperson.name.toUpperCase()}]`,
+      message: `"${pick(won ? EVENT_PHRASES.combat_won_recruit : EVENT_PHRASES.combat_lost_recruit)}"`,
+      missionId,
+    })
+  }
+
+  const global = []
+  for (const dead of deadThisFight) {
+    const recruit = crew.find(c => String(c.id) === String(dead.id))
+    const name = recruit?.name ?? 'A recruit'
+    entries.push({ tag: `[${name.toUpperCase()}]`, message: `"${pick(EVENT_PHRASES.last_words)}"`, missionId })
+    global.push({ tag: '[SYS]', message: `${name} died during mission "${missionName}".` })
+  }
+
+  return { mission: entries, global }
 }
 
 // --- Recruit-to-recruit banter (task 5) ---
@@ -433,4 +502,6 @@ module.exports = {
   buildEventResultLogs,
   pickPlanetTagQuote,
   buildBanterLog,
+  buildCombatRoundLog,
+  buildCombatEventLogs,
 }

@@ -33,6 +33,28 @@ describe('Consumable Service', () => {
     expect(result).toEqual([{ id: 1, assigned_to_ship: 5 }]);
   });
 
+  describe('countShipInventoryEffect', () => {
+    test('returns the summed quantity for the matching effect', async () => {
+      mockClient.query.mockResolvedValue({ rows: [{ total: 3 }] });
+
+      const result = await ConsumableService.countShipInventoryEffect(mockClient, 5, 'HEAL');
+
+      expect(mockClient.query).toHaveBeenCalledWith(
+        expect.stringContaining('WHERE assigned_to_ship = $1 AND effect = $2'),
+        [5, 'HEAL']
+      );
+      expect(result).toBe(3);
+    });
+
+    test('returns 0 when nothing matches', async () => {
+      mockClient.query.mockResolvedValue({ rows: [{ total: 0 }] });
+
+      const result = await ConsumableService.countShipInventoryEffect(mockClient, 5, 'HEAL');
+
+      expect(result).toBe(0);
+    });
+  });
+
   describe('addToStash', () => {
     test('creates a new row when no stack exists yet', async () => {
       mockClient.query

@@ -39,16 +39,22 @@ export interface MissionEvent {
 export interface EventResult {
   eventIndex: number;
   type: EventType;
-  d20: number;
-  bonus: number;
-  diceNotation: string;
-  total: number;
-  dc: number;
+  d20?: number;
+  bonus?: number;
+  diceNotation?: string;
+  total?: number;
+  dc?: number;
   success: boolean;
   rewardEarned?: MissionReward;
   consequence?: FailureConsequence;
   hpLost?: number;
   recruitDied?: boolean;
+  // COMBAT events resolve as a full auto-battle instead of a single skill
+  // check; these fields are only present when `combat` is true.
+  combat?: boolean;
+  rounds?: number;
+  enemyDefeated?: boolean;
+  recruitsDied?: number[];
 }
 
 export interface Mission {

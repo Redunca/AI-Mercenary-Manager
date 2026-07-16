@@ -30,6 +30,22 @@ function computeMaxHp(attributes) {
   return 2 * (attributes.fortitude + attributes.presence + attributes.will) + 10
 }
 
+// Guard = 10 + Might + Agility (Armor term reserved for when gear/ships grant
+// it; there's no such bonus yet, so it's omitted rather than added as 0).
+function computeGuard(attributes) {
+  return 10 + (attributes.might || 0) + (attributes.agility || 0)
+}
+
+// Physical combat always uses whichever of Might/Agility is higher. Ties go
+// to Might so results are deterministic.
+function bestCombatStat(attributes) {
+  const might = attributes.might || 0
+  const agility = attributes.agility || 0
+  return might >= agility
+    ? { attribute: 'might', score: might }
+    : { attribute: 'agility', score: agility }
+}
+
 function shuffle(arr, rollInRange) {
   for (let i = arr.length - 1; i > 0; i--) {
     const j = rollInRange(0, i)
@@ -104,6 +120,7 @@ function rowToRecruit(row) {
     attributes: row.attributes,
     hp: row.hp,
     maxHp: row.max_hp,
+    originalMaxHp: row.original_max_hp ?? row.max_hp,
     status: row.status,
     perks: row.perks,
     flaws: row.flaws,
@@ -113,6 +130,8 @@ function rowToRecruit(row) {
 module.exports = {
   ATTRIBUTE_KEYS,
   computeMaxHp,
+  computeGuard,
+  bestCombatStat,
   generateCandidate,
   rowToCandidate,
   rowToRecruit,
