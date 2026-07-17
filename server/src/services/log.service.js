@@ -354,7 +354,7 @@ function parseTrigger(trigger) {
 
 function loadBanterPairs() {
   try {
-    return JSON.parse(fs.readFileSync(path.join(DATA_DIR, 'banter', 'pairs.json'), 'utf8'))
+    return require(path.join(DATA_DIR, 'banter', 'pairs.json'))
   } catch {
     return []
   }
@@ -362,7 +362,7 @@ function loadBanterPairs() {
 
 function loadPersonalityPairs() {
   try {
-    return JSON.parse(fs.readFileSync(path.join(DATA_DIR, 'banter', 'personality-pairs.json'), 'utf8'))
+    return require(path.join(DATA_DIR, 'banter', 'personality-pairs.json'))
   } catch {
     return {}
   }

@@ -710,10 +710,10 @@ describe('GameService', () => {
       const recruit = state.recruits.find(r => r.id === 1)
       recruit.hp = 5 // one big hit would otherwise knock them out
       // Enemy Agility primary (6) so it acts first and hits hard (total 999);
-      // its Guard is rolled at 0, so the crew (going second) then finishes it
-      // off in the very same round.
+      // Guard is rolled at 25 (irrelevant here since 999 clears it easily), so
+      // the crew (going second) then finishes the enemy off the same round.
       rollAction.mockReturnValue({ d20: 20, bonus: 0, diceNotation: '—', total: 999 })
-      rollInRange.mockReturnValueOnce(0).mockReturnValueOnce(1)
+      rollInRange.mockReturnValue(25)
       ConsumableService.countShipInventoryEffect.mockResolvedValue(1) // one HEAL charge available
 
       await GameService.syncGame()
@@ -744,7 +744,7 @@ describe('GameService', () => {
       expect(recruit.hp).toBe(0)
       expect(recruit.max_hp).toBe(3) // 4 -> 3, still recorded even though the recruit died
       expect(updated.failed).toBe(true)
-      expect(updated.event_results.at(-1).recruitsDied).toEqual([1])
+      expect(updated.event_results.at(-1).recruitsDied).toEqual(['1'])
     })
   })
 
