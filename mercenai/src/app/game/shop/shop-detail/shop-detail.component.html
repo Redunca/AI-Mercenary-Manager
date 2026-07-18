@@ -6,6 +6,7 @@
   <div class="indent-one">"type"        : "{{ item.type === 'ship' ? 'SHIP' : 'CONSUMABLE' }}",</div>
   <div class="indent-one">"rarity"      : <span [class]="'rarity-' + item.rarity">"{{ item.rarity }}"</span>,</div>
   <div class="indent-one">"price"       : {{ item.price }},</div>
+  <div class="indent-one">"stock"       : <span [class.stock-sold]="isSoldOut(item)">{{ isSoldOut(item) ? '"SOLD"' : (item.remaining_stock + '/' + item.max_stock) }}</span>,</div>
   <div class="indent-one">"description" : "{{ item.description }}",</div>
 
   <ng-container *ngIf="item.type === 'ship'">
@@ -23,4 +24,5 @@
   <div class="indent-one muted">Item not found.</div>
 </ng-template>
 <div>{{ '}' }}</div>
-<div class="hint">Terminal usage: buy | buy &lt;quantity&gt;</div>
+<div class="hint">Terminal usage: buy | buy &lt;quantity&gt; (unavailable once SOLD)</div>
+<div *ngIf="buyError" class="error">{{ buyError }}</div>

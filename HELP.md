@@ -66,11 +66,11 @@
 |-------------------------------|----------------------------------------------------------|
 | `shop list`                 | List of ships and equipment available for purchase       |
 | `shop detail <id>`          | Detail of an item: price, stats, description             |
-| `shop buy <id>`             | Buys a ship or equipment item (1 unit)                    |
+| `shop buy <id>`             | Buys a ship or equipment item (1 unit); fails on sold-out items |
 | `wallet`                    | Shows the current credit balance                          |
 | `detail <id>`               | *(shop-list panel)* Shortcut to detail                    |
-| `buy <id> [quantity]`       | *(shop-list panel)* Buys an item by its ID                |
-| `buy [quantity]`            | *(shop-detail panel)* Buys this item                       |
+| `buy <id> [quantity]`       | *(shop-list panel)* Buys an item by its ID; blocked if sold out |
+| `buy [quantity]`            | *(shop-detail panel)* Buys this item; blocked if sold out  |
 
 ## Missions
 

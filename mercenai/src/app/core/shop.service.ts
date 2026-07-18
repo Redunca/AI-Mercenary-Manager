@@ -13,7 +13,22 @@ export interface ShopItem {
   effect?: string;
   effect_data?: Record<string, unknown>;
   quantity?: number;
-  available: boolean;
+  // How many units of this listing are still purchasable in the player's
+  // current 15-minute shop rotation, out of max_stock. 0 = sold out.
+  // NOTE: shop_items.available (a legacy column) is no longer read by the
+  // backend (see server/src/db/migrations/V013__shop_rotation.sql) and is
+  // intentionally not modeled here — remaining_stock is the source of truth.
+  remaining_stock: number;
+  max_stock: number;
+}
+
+// Items rotate out entirely (or restock) on a 15-minute wall-clock server
+// cycle. This is unrelated to GameSyncService's mission-driven polling, so
+// shop panels poll on their own cadence to catch that boundary while open.
+export const SHOP_ITEMS_REFRESH_INTERVAL_MS = 30_000;
+
+export function isSoldOut(item: Pick<ShopItem, 'remaining_stock'>): boolean {
+  return item.remaining_stock <= 0;
 }
 
 @Injectable({ providedIn: 'root' })

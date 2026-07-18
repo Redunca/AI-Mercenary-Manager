@@ -16,6 +16,17 @@
 
 .muted { opacity: 0.5; }
 
+.stock { opacity: 0.6; font-size: 0.9em; }
+.stock-sold { color: #cf7e7e; font-weight: bold; opacity: 1; }
+
+.item-entry.sold {
+  opacity: 0.5;
+  text-decoration: line-through;
+}
+.item-entry.sold .stock-sold {
+  text-decoration: none;
+}
+
 .hint {
   margin-top: 0.5rem;
   opacity: 0.5;
