@@ -1,6 +1,8 @@
-<div>TASK: [<span class="task-title">List missions</span>] ******************************************</div>
+<div>TASK: [<span class="task-title">{{ completed ? 'Mission history' : 'List missions' }}</span>] ******************************************</div>
 <div>ok ==> {{ '{' }}</div>
-<table class="indent-one">
+<div *ngIf="completed && historyLoading" class="indent-one muted">Loading mission history...</div>
+<div *ngIf="completed && historyError" class="indent-one flaw">{{ historyError }}</div>
+<table class="indent-one" *ngIf="!(completed && historyLoading)">
   <tr>
     <th>ID</th>
     <th>Name</th>
@@ -17,5 +19,10 @@
     <td>{{ m.status === 'in_progress' ? (missionService.getState(m.id)?.progress ?? 0) + '%' : '' }}</td>
     <td>{{ m.assignedShipId ?? '—' }}</td>
   </tr>
+  <tr *ngIf="completed && !historyLoading && !historyError && missions.length === 0">
+    <td colspan="6" class="indent-one muted">No completed missions yet</td>
+  </tr>
 </table>
 <div>{{ '}' }}</div>
+<div class="hint" *ngIf="!completed">[ mission -c ] to view completed mission history</div>
+<div class="hint" *ngIf="completed">[ mission list ] to return to the live mission batch</div>

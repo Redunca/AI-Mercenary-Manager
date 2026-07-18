@@ -112,6 +112,30 @@ describe('Game Routes', () => {
     })
   })
 
+  describe('GET /api/game/missions/history', () => {
+    test('returns the full mission history', async () => {
+      const mockHistory = [
+        { id: 1, name: 'Test Mission', status: 'success', assignedShipId: 5 },
+        { id: 2, name: 'Other Mission', status: 'failed', assignedShipId: 7 },
+      ]
+      GameService.getMissionHistory.mockResolvedValue(mockHistory)
+
+      const res = await request(app).get('/api/game/missions/history')
+
+      expect(res.status).toBe(200)
+      expect(res.body.missions).toEqual(mockHistory)
+      expect(GameService.getMissionHistory).toHaveBeenCalledTimes(1)
+    })
+
+    test('returns 500 if the service fails', async () => {
+      GameService.getMissionHistory.mockRejectedValue(new Error('DB unavailable'))
+
+      const res = await request(app).get('/api/game/missions/history')
+
+      expect(res.status).toBe(500)
+    })
+  })
+
   describe('POST /api/game/missions/:templateId/start', () => {
     test('starts a mission with a valid ship', async () => {
       GameService.startMission.mockResolvedValue({ state: {} })

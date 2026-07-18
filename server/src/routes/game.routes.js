@@ -57,6 +57,19 @@ router.post('/candidates/:id/hire', async (req, res, next) => {
   }
 })
 
+// Full mission history (every template ever started, regardless of the
+// batch it belonged to) — kept as its own endpoint rather than folded into
+// /state or /sync since it's fetched on demand by `mission list --completed`
+// and can grow unbounded, unlike the constant-size live sync payload.
+router.get('/missions/history', async (_req, res, next) => {
+  try {
+    const missions = await game.getMissionHistory()
+    res.json({ missions })
+  } catch (err) {
+    next(err)
+  }
+})
+
 router.post('/missions/:templateId/start', async (req, res, next) => {
   try {
     const shipId = Number(req.body.shipId)

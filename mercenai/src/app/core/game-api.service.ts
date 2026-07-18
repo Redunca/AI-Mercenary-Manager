@@ -4,6 +4,7 @@ import { firstValueFrom, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { GameSnapshot } from '../models/game-state';
 import { Recruit } from '../models/recruit';
+import { Mission } from '../models/mission';
 
 interface StateResponse {
   state?: GameSnapshot;
@@ -57,5 +58,9 @@ export class GameApiService {
 
   getMissionLogs(templateId: number): Promise<{ logs: { tag: string; message: string }[] }> {
     return firstValueFrom(this.http.get<{ logs: { tag: string; message: string }[] }>(`${this.base}/missions/${templateId}/logs`));
+  }
+
+  getMissionHistory(): Promise<{ missions: Mission[] }> {
+    return firstValueFrom(this.http.get<{ missions: Mission[] }>(`${this.base}/missions/history`));
   }
 }

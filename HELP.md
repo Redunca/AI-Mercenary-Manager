@@ -77,12 +77,14 @@
 | Command                              | Description                                          |
 |----------------------------------------|----------------------------------------------------------|
 | `mission list`                       | List of missions with status and progress             |
+| `mission list --completed`           | Full mission history (success/failed); also `mission -c` |
 | `mission detail <id>`                | Detail of a mission: phase and progress bar            |
 | `mission start <missionId> <shipId>` | Launches a mission with a ship                         |
 | `mission stop <missionId>`           | Cancels a mission and frees up the crew                |
 | `mission logs <id>`                  | Detailed logs of a mission                             |
 | `stop`                               | *(mission-detail panel)* Triggers a forced return      |
 | `detail <id>`                        | *(mission-list panel)* Shortcut to detail              |
+| `completed`                          | *(mission-list panel)* Shortcut to mission history     |
 
 ## Logs
 

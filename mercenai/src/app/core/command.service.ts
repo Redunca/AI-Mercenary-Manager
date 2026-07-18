@@ -156,8 +156,18 @@ export class CommandService {
   switch (action) {
     case "list":
     case "-l":
-    case "--list":
-      this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.MissionList);
+    case "--list": {
+      const completed = args[0] === "--completed" || args[0] === "-c";
+      this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.MissionList, completed ? { completed: true } : undefined);
+      break;
+    }
+
+    // Bare shorthand for "mission list --completed", mirroring how -l/--list
+    // is itself a shorthand for "list" — lets "mission -c" work on its own
+    // without needing "list" spelled out.
+    case "-c":
+    case "--completed":
+      this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.MissionList, { completed: true });
       break;
 
     case "start":
@@ -185,7 +195,7 @@ export class CommandService {
       break;
 
     default:
-      console.warn('Usage: mission list | mission start <shipId> <missionId> | mission stop <id> | mission detail <id> | mission logs <id>');
+      console.warn('Usage: mission list [--completed|-c] | mission start <shipId> <missionId> | mission stop <id> | mission detail <id> | mission logs <id>');
   }
 }
 

@@ -1163,4 +1163,68 @@ describe('GameService', () => {
       expect(logs).toEqual([{ tag: '[SYS]', message: 'Departure' }])
     })
   })
+
+  describe('getMissionHistory', () => {
+    test('includes only templates that were started, tagged with their instance status', async () => {
+      seedTemplate(state, { id: 1, events: [] })
+      seedTemplate(state, { id: 2, events: [] })
+      seedTemplate(state, { id: 3, events: [] }) // never started — must be excluded
+
+      state.missionInstances.push(
+        {
+          id: 1000, player_id: 1, template_id: 1, ship_id: 5, status: 'success',
+          phase: 'COMPLETED', progress: 100, current_event_index: 0, event_results: [],
+          failed: false, reward_forfeited: false,
+        },
+        {
+          id: 1001, player_id: 1, template_id: 2, ship_id: 7, status: 'failed',
+          phase: 'COMPLETED', progress: 100, current_event_index: 0, event_results: [],
+          failed: true, reward_forfeited: false,
+        },
+      )
+
+      const history = await GameService.getMissionHistory()
+
+      expect(history).toHaveLength(2)
+      expect(history.find(m => m.id === 1)).toMatchObject({ status: 'success', assignedShipId: 5 })
+      expect(history.find(m => m.id === 2)).toMatchObject({ status: 'failed', assignedShipId: 7 })
+      expect(history.some(m => m.id === 3)).toBe(false)
+    })
+
+    test('reports an in-progress mission with its live status, not just success/failed', async () => {
+      seedTemplate(state, { id: 4, events: [] })
+      state.missionInstances.push({
+        id: 1002, player_id: 1, template_id: 4, ship_id: 2, status: 'in_progress',
+        phase: 'EVENT', progress: 40, current_event_index: 1, event_results: [],
+        failed: false, reward_forfeited: false,
+      })
+
+      const history = await GameService.getMissionHistory()
+
+      expect(history).toEqual([
+        expect.objectContaining({ id: 4, status: 'in_progress', assignedShipId: 2 }),
+      ])
+    })
+
+    test('returns an empty array when nothing has ever been started', async () => {
+      seedTemplate(state, { id: 5, events: [] })
+
+      const history = await GameService.getMissionHistory()
+
+      expect(history).toEqual([])
+    })
+
+    test('only returns history for the requesting player, not other players\' instances', async () => {
+      seedTemplate(state, { id: 6, events: [] })
+      state.missionInstances.push({
+        id: 1003, player_id: 999, template_id: 6, ship_id: 1, status: 'success',
+        phase: 'COMPLETED', progress: 100, current_event_index: 0, event_results: [],
+        failed: false, reward_forfeited: false,
+      })
+
+      const history = await GameService.getMissionHistory()
+
+      expect(history).toEqual([])
+    })
+  })
 })

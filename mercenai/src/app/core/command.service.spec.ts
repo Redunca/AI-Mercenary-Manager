@@ -57,6 +57,39 @@ describe('CommandService', () => {
     expect(layout.getPanelById(panelId)?.data).toEqual({ id: '3' });
   });
 
+  it('routes "mission list" and "mission -l" to the mission-list panel with no completed flag', () => {
+    const panelId = layout.addPanel(PanelModule.Dashboard);
+    layout.setActivePanel(panelId);
+
+    service.routeCommand('mission list', panelId);
+    expect(layout.getPanelById(panelId)?.module).toBe(PanelModule.MissionList);
+    expect(layout.getPanelById(panelId)?.data).toBeFalsy();
+
+    layout.setPanelModule(panelId, PanelModule.Dashboard);
+    service.routeCommand('mission -l', panelId);
+    expect(layout.getPanelById(panelId)?.module).toBe(PanelModule.MissionList);
+    expect(layout.getPanelById(panelId)?.data).toBeFalsy();
+  });
+
+  it('routes "mission list --completed", "mission -c" and "mission --completed" to the mission-list panel with completed: true', () => {
+    const panelId = layout.addPanel(PanelModule.Dashboard);
+    layout.setActivePanel(panelId);
+
+    service.routeCommand('mission list --completed', panelId);
+    expect(layout.getPanelById(panelId)?.module).toBe(PanelModule.MissionList);
+    expect(layout.getPanelById(panelId)?.data).toEqual({ completed: true });
+
+    layout.setPanelModule(panelId, PanelModule.Dashboard);
+    service.routeCommand('mission -c', panelId);
+    expect(layout.getPanelById(panelId)?.module).toBe(PanelModule.MissionList);
+    expect(layout.getPanelById(panelId)?.data).toEqual({ completed: true });
+
+    layout.setPanelModule(panelId, PanelModule.Dashboard);
+    service.routeCommand('mission --completed', panelId);
+    expect(layout.getPanelById(panelId)?.module).toBe(PanelModule.MissionList);
+    expect(layout.getPanelById(panelId)?.data).toEqual({ completed: true });
+  });
+
   it('does not throw when a global command is routed against an unresolved panel id', () => {
     // Regression test: routeCommand used to do `panel.terminal?.setInput('')`
     // (missing optional chaining on `panel` itself). getPanelById(panelId)

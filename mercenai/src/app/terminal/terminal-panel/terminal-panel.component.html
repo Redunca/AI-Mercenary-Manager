@@ -19,7 +19,8 @@
 
       <app-mission-list 
         #moduleInstance 
-        *ngSwitchCase="'mission-list'">
+        *ngSwitchCase="'mission-list'"
+        [completed]="panel.data?.completed">
       </app-mission-list>
 
       <app-mission-detail 

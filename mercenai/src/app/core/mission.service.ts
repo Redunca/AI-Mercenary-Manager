@@ -41,4 +41,13 @@ export class MissionService {
   getState(missionId: number): MissionState | undefined {
     return this.missionStates[missionId];
   }
+
+  // Fetched on demand (not part of the periodic sync payload) since the
+  // full history can grow unbounded, unlike the live batch. Always hits the
+  // API fresh rather than caching, so a re-opened completed view reflects
+  // missions finished since the last fetch.
+  async getMissionHistory(): Promise<Mission[]> {
+    const result = await this.api.getMissionHistory();
+    return result.missions;
+  }
 }
