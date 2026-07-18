@@ -2,18 +2,116 @@ const { pool } = require('../db/pool')
 const ShipService = require('./ship.service')
 const ConsumableService = require('./consumable.service')
 const { ATTRIBUTE_KEYS } = require('../domain/recruit')
+const { sampleWithCoverage, pickOne } = require('../utils/random')
+const { isRefreshDue, currentIntervalBoundary } = require('../utils/refreshWindow')
 
-async function getShopItems(client) {
+// The shop only has ever had one player (see V012's comment on
+// next_template_id / mission_refresh_at for the same rationale) — this
+// constant exists purely so getShopItems()/getShopItem() can be called with
+// their old, player-implicit signatures from routes.js.
+const DEFAULT_PLAYER_ID = 1
+
+// 5 shop_items are live per player at a time, drawn from the permanent
+// master catalog and replaced every 15 minutes (aligned to wall-clock
+// :00/:15/:30/:45 boundaries, same as mission batching — see
+// refreshWindow.js). Tracked independently from the mission refresh clock
+// via players.shop_refresh_at.
+const SHOP_ROTATION_SIZE = 5
+const SHOP_REFRESH_INTERVAL_MS = 15 * 60 * 1000
+
+/**
+ * Draws the next live rotation from the master catalog: exactly one ship
+ * (uniform-random among ships in the pool, if any exist), plus enough
+ * additional items - uniform-random from the rest of the pool, ships
+ * included - to fill out the rotation. Capped at the pool size so small
+ * pools (e.g. in tests) don't blow up.
+ *
+ * Pure function of the pool passed in; exported for direct unit testing.
+ */
+function drawShopRotation(masterPool, rotationSize = SHOP_ROTATION_SIZE) {
+  if (!masterPool || masterPool.length === 0) return []
+
+  const ships = masterPool.filter(item => item.type === 'ship')
+  const guaranteedShip = ships.length > 0 ? pickOne(ships) : null
+
+  const remainingSlots = rotationSize - (guaranteedShip ? 1 : 0)
+  const rest = guaranteedShip
+    ? masterPool.filter(item => item.id !== guaranteedShip.id)
+    : masterPool
+
+  const fillers = sampleWithCoverage(rest, Math.min(remainingSlots, rest.length))
+
+  return guaranteedShip ? [guaranteedShip, ...fillers] : fillers
+}
+
+// Discards this player's current 5 live listings and draws a fresh set from
+// the permanent master catalog (which is never deleted from). Anything
+// still unbought in the old rotation is simply dropped from the row set;
+// shop_items rows themselves persist regardless (purchase_history.item_id
+// has a hard FK to them). The newly drawn rotation starts each item back at
+// its full max_stock.
+async function refreshShopRotation(client, playerId, now) {
+  const pool = (await client.query('SELECT * FROM shop_items ORDER BY id')).rows
+  const chosen = drawShopRotation(pool)
+
+  await client.query('DELETE FROM shop_rotation WHERE player_id = $1', [playerId])
+  for (const item of chosen) {
+    await client.query(
+      'INSERT INTO shop_rotation (player_id, shop_item_id, remaining_stock) VALUES ($1, $2, $3)',
+      [playerId, item.id, item.max_stock],
+    )
+  }
+
+  const refreshedAt = new Date(currentIntervalBoundary(now, SHOP_REFRESH_INTERVAL_MS))
+  await client.query('UPDATE players SET shop_refresh_at = $1 WHERE id = $2', [refreshedAt, playerId])
+  return refreshedAt
+}
+
+// Computed lazily, at state read/purchase time: no background scheduler. If
+// the wall-clock 15-minute boundary has moved on since the last recorded
+// refresh (or nothing has been drawn yet), draw a new rotation.
+async function ensureShopRotation(client, playerId, now = new Date()) {
+  const result = await client.query('SELECT shop_refresh_at FROM players WHERE id = $1', [playerId])
+  const shopRefreshAt = result.rows[0]?.shop_refresh_at
+  if (isRefreshDue(shopRefreshAt, now, SHOP_REFRESH_INTERVAL_MS)) {
+    await refreshShopRotation(client, playerId, now)
+  }
+}
+
+async function getShopItems(client, playerId = DEFAULT_PLAYER_ID, now = new Date()) {
+  await ensureShopRotation(client, playerId, now)
   const result = await client.query(
-    'SELECT * FROM shop_items WHERE available = TRUE ORDER BY type, rarity, price'
+    `SELECT si.*, sr.remaining_stock FROM shop_items si
+     JOIN shop_rotation sr ON sr.shop_item_id = si.id
+     WHERE sr.player_id = $1
+     ORDER BY si.type, si.rarity, si.price`,
+    [playerId],
   )
   return result.rows
 }
 
-async function getShopItem(client, itemId) {
+async function getShopItem(client, itemId, playerId = DEFAULT_PLAYER_ID, now = new Date()) {
+  await ensureShopRotation(client, playerId, now)
   const result = await client.query(
-    'SELECT * FROM shop_items WHERE id = $1 AND available = TRUE',
-    [itemId]
+    `SELECT si.*, sr.remaining_stock FROM shop_items si
+     JOIN shop_rotation sr ON sr.shop_item_id = si.id
+     WHERE sr.player_id = $1 AND si.id = $2`,
+    [playerId, itemId],
+  )
+  return result.rows[0] || null
+}
+
+// Same as getShopItem, but locks the rotation row (FOR UPDATE) so a
+// concurrent purchase of the same listing can't both read stock as
+// available before either one writes back the decrement. Only used from
+// the buy* functions, which run inside a transaction.
+async function lockRotationItem(client, playerId, itemId) {
+  const result = await client.query(
+    `SELECT si.*, sr.remaining_stock FROM shop_items si
+     JOIN shop_rotation sr ON sr.shop_item_id = si.id
+     WHERE sr.player_id = $1 AND si.id = $2
+     FOR UPDATE OF sr`,
+    [playerId, itemId],
   )
   return result.rows[0] || null
 }
@@ -26,16 +124,24 @@ async function getPlayerWallet(client, playerId) {
   return result.rows[0]?.wallet || 0
 }
 
-async function buyShip(client, playerId, shopItemId) {
+async function buyShip(client, playerId, shopItemId, now = new Date()) {
   const player = await client.query(
-    'SELECT wallet FROM players WHERE id = $1 FOR UPDATE',
+    'SELECT wallet, shop_refresh_at FROM players WHERE id = $1 FOR UPDATE',
     [playerId]
   )
   if (player.rows.length === 0) return { error: 'Player not found' }
 
-  const item = await getShopItem(client, shopItemId)
+  if (isRefreshDue(player.rows[0].shop_refresh_at, now, SHOP_REFRESH_INTERVAL_MS)) {
+    await refreshShopRotation(client, playerId, now)
+  }
+
+  const item = await lockRotationItem(client, playerId, shopItemId)
   if (!item || item.type !== 'ship') {
     return { error: 'Ship not found' }
+  }
+
+  if (item.remaining_stock <= 0) {
+    return { error: 'Ship already purchased' }
   }
 
   if (player.rows[0].wallet < item.price) {
@@ -73,6 +179,12 @@ async function buyShip(client, playerId, shopItemId) {
     [playerId, shopItemId, 'ship', item.price]
   )
 
+  // Ships are single-buy: this always takes remaining_stock to 0.
+  await client.query(
+    'UPDATE shop_rotation SET remaining_stock = remaining_stock - 1 WHERE player_id = $1 AND shop_item_id = $2',
+    [playerId, shopItemId]
+  )
+
   return { 
     success: true, 
     ship: await ShipService.getShip(client, playerId, shipId),
@@ -80,16 +192,24 @@ async function buyShip(client, playerId, shopItemId) {
   }
 }
 
-async function buyConsumable(client, playerId, shopItemId, quantity = 1) {
+async function buyConsumable(client, playerId, shopItemId, quantity = 1, now = new Date()) {
   const player = await client.query(
-    'SELECT wallet FROM players WHERE id = $1 FOR UPDATE',
+    'SELECT wallet, shop_refresh_at FROM players WHERE id = $1 FOR UPDATE',
     [playerId]
   )
   if (player.rows.length === 0) return { error: 'Player not found' }
 
-  const item = await getShopItem(client, shopItemId)
+  if (isRefreshDue(player.rows[0].shop_refresh_at, now, SHOP_REFRESH_INTERVAL_MS)) {
+    await refreshShopRotation(client, playerId, now)
+  }
+
+  const item = await lockRotationItem(client, playerId, shopItemId)
   if (!item || item.type !== 'consumable') {
     return { error: 'Consumable not found' }
+  }
+
+  if (item.remaining_stock < quantity) {
+    return { error: 'Not enough stock remaining' }
   }
 
   const totalCost = item.price * quantity
@@ -123,6 +243,11 @@ async function buyConsumable(client, playerId, shopItemId, quantity = 1) {
     [playerId, shopItemId, 'consumable', totalCost]
   )
 
+  await client.query(
+    'UPDATE shop_rotation SET remaining_stock = remaining_stock - $1 WHERE player_id = $2 AND shop_item_id = $3',
+    [quantity, playerId, shopItemId]
+  )
+
   return {
     success: true,
     consumable,
@@ -141,6 +266,15 @@ const ATTRIBUTE_ITEM_NAMES = {
   deception: 'Deception Mask',
   persuasion: 'Persuasion Chip',
   presence: 'Presence Aura',
+}
+
+// Uncommon consumables (the 10 attribute boosts + Overdrive Injector) get 3
+// units of stock per rotation cycle; rare consumables (Trauma Nanites, Hull
+// Auto-Patch) get 2. Kept in sync with V013__shop_rotation.sql's UPDATEs,
+// which backfill the same values for rows seeded before this column existed.
+const MAX_STOCK_BY_RARITY = {
+  uncommon: 3,
+  rare: 2,
 }
 
 function buildAttributeConsumables() {
@@ -216,19 +350,20 @@ async function seedShopItems(client) {
 
   for (const ship of ships) {
     await client.query(
-      `INSERT INTO shop_items (name, description, type, rarity, price, stats, available)
-       VALUES ($1, $2, $3, $4, $5, $6, TRUE)
+      `INSERT INTO shop_items (name, description, type, rarity, price, stats, available, max_stock)
+       VALUES ($1, $2, $3, $4, $5, $6, TRUE, 1)
        ON CONFLICT DO NOTHING`,
       [ship.name, ship.description, ship.type, ship.rarity, ship.price, JSON.stringify(ship.stats)]
     )
   }
 
   for (const item of consumables) {
+    const maxStock = MAX_STOCK_BY_RARITY[item.rarity] || 1
     await client.query(
-      `INSERT INTO shop_items (name, description, type, rarity, price, effect, effect_data, available)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, TRUE)
+      `INSERT INTO shop_items (name, description, type, rarity, price, effect, effect_data, available, max_stock)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, TRUE, $8)
        ON CONFLICT DO NOTHING`,
-      [item.name, item.description, item.type, item.rarity, item.price, item.effect, JSON.stringify(item.effectData)]
+      [item.name, item.description, item.type, item.rarity, item.price, item.effect, JSON.stringify(item.effectData), maxStock]
     )
   }
 }
@@ -240,4 +375,9 @@ module.exports = {
   buyShip,
   buyConsumable,
   seedShopItems,
+  drawShopRotation,
+  ensureShopRotation,
+  refreshShopRotation,
+  SHOP_ROTATION_SIZE,
+  SHOP_REFRESH_INTERVAL_MS,
 }

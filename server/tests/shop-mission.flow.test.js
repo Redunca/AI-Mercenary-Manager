@@ -25,6 +25,7 @@ function createFakeClient() {
     hangars: [],
     dockingStations: [],
     shopItems: [],
+    shopRotation: [],
     consumables: [],
     purchaseHistory: [],
     logEntries: [],
@@ -75,6 +76,17 @@ function createFakeClient() {
     }
     if (s === 'SELECT wallet FROM players WHERE id = $1 FOR UPDATE' || s === 'SELECT wallet FROM players WHERE id = $1') {
       return { rows: state.players.filter(p => p.id === params[0]).map(p => ({ wallet: p.wallet })) }
+    }
+    if (s === 'SELECT wallet, shop_refresh_at FROM players WHERE id = $1 FOR UPDATE') {
+      return { rows: state.players.filter(p => p.id === params[0]).map(p => ({ wallet: p.wallet, shop_refresh_at: p.shop_refresh_at })) }
+    }
+    if (s === 'SELECT shop_refresh_at FROM players WHERE id = $1') {
+      return { rows: state.players.filter(p => p.id === params[0]).map(p => ({ shop_refresh_at: p.shop_refresh_at })) }
+    }
+    if (s === 'UPDATE players SET shop_refresh_at = $1 WHERE id = $2') {
+      const [shop_refresh_at, id] = params
+      Object.assign(state.players.find(p => p.id === id), { shop_refresh_at })
+      return { rows: [] }
     }
     if (s === 'SELECT next_ship_id FROM players WHERE id = $1') {
       return { rows: state.players.filter(p => p.id === params[0]).map(p => ({ next_ship_id: p.next_ship_id })) }
@@ -302,12 +314,38 @@ function createFakeClient() {
       return { rows: [station] }
     }
 
-    // shop_items
-    if (s === 'SELECT * FROM shop_items WHERE available = TRUE ORDER BY type, rarity, price') {
-      return { rows: state.shopItems.filter(i => i.available) }
+    // shop_items / shop_rotation
+    if (s === 'SELECT * FROM shop_items ORDER BY id') {
+      return { rows: state.shopItems }
     }
-    if (s === 'SELECT * FROM shop_items WHERE id = $1 AND available = TRUE') {
-      return { rows: state.shopItems.filter(i => i.id === params[0] && i.available) }
+    if (s === 'DELETE FROM shop_rotation WHERE player_id = $1') {
+      state.shopRotation = state.shopRotation.filter(r => r.player_id !== params[0])
+      return { rows: [] }
+    }
+    if (s === 'INSERT INTO shop_rotation (player_id, shop_item_id, remaining_stock) VALUES ($1, $2, $3)') {
+      const [player_id, shop_item_id, remaining_stock] = params
+      state.shopRotation.push({ player_id, shop_item_id, remaining_stock })
+      return { rows: [] }
+    }
+    if (s.startsWith('SELECT si.*, sr.remaining_stock FROM shop_items si')) {
+      // Covers getShopItems (rotation.player_id = $1 only), getShopItem, and
+      // lockRotationItem (both `sr.player_id = $1 AND si.id = $2`) — the
+      // fake client doesn't model row locking, so FOR UPDATE OF sr is a no-op.
+      const joined = state.shopRotation
+        .filter(r => r.player_id === params[0])
+        .map(r => ({ ...state.shopItems.find(i => i.id === r.shop_item_id), remaining_stock: r.remaining_stock }))
+      const rows = params.length > 1 ? joined.filter(i => i.id === params[1]) : joined
+      return { rows }
+    }
+    if (s === 'UPDATE shop_rotation SET remaining_stock = remaining_stock - 1 WHERE player_id = $1 AND shop_item_id = $2') {
+      const [player_id, shop_item_id] = params
+      state.shopRotation.find(r => r.player_id === player_id && r.shop_item_id === shop_item_id).remaining_stock -= 1
+      return { rows: [] }
+    }
+    if (s === 'UPDATE shop_rotation SET remaining_stock = remaining_stock - $1 WHERE player_id = $2 AND shop_item_id = $3') {
+      const [qty, player_id, shop_item_id] = params
+      state.shopRotation.find(r => r.player_id === player_id && r.shop_item_id === shop_item_id).remaining_stock -= qty
+      return { rows: [] }
     }
 
     // consumables
@@ -391,7 +429,7 @@ function createFakeClient() {
   })
 
   return { client: { query, release: jest.fn() }, state, seedShopItem(item) {
-    const row = { id: nextShopItemId++, available: true, stats: null, effect: null, effect_data: {}, ...item }
+    const row = { id: nextShopItemId++, available: true, stats: null, effect: null, effect_data: {}, max_stock: 1, ...item }
     state.shopItems.push(row)
     return row
   } }
