@@ -6,6 +6,7 @@ const TagContext = require('./context');
 const { generatePlanet } = require('./planetGenerator');
 const { resolveProvideValue } = require('./nameGenerator');
 const { generateEvent } = require('./eventGenerator');
+const { pickWeightedDifficulty } = require('../utils/missionDifficulty');
 
 const DIFFICULTIES = ['ROUTINE', 'STANDARD', 'HARD', 'PERILOUS', 'EPIC'];
 const BEAT_ORDER = { INFILTRATION: 1, EXECUTION: 2, EXTRACTION: 3 };
@@ -29,7 +30,7 @@ function pickFlavorTemplate(pool, difficulty) {
 function generateMission(data, options = {}) {
   const { entityNames, planets, missionTypes, events, missionNames, missionDescriptions, difficultyTables } = data;
 
-  const difficulty = options.difficulty || pickOne(DIFFICULTIES);
+  const difficulty = options.difficulty || pickWeightedDifficulty();
   if (!difficultyTables[difficulty]) {
     throw new Error(`Unknown difficulty "${difficulty}". Expected one of: ${DIFFICULTIES.join(', ')}`);
   }

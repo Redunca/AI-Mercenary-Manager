@@ -16,14 +16,15 @@ const ConsumableService = require('./consumable.service')
 
 const { loadData } = require('../dataLoader')
 const { generateMission } = require('../engine/missionGenerator')
-const MISSION_TEMPLATE_COUNT = 25
-const SEED_DIFFICULTIES = [
-  'ROUTINE', 'ROUTINE', 'ROUTINE', 'ROUTINE', 'ROUTINE',
-  'STANDARD', 'STANDARD', 'STANDARD', 'STANDARD', 'STANDARD',
-  'HARD', 'HARD', 'HARD', 'HARD', 'HARD', 'HARD',
-  'PERILOUS', 'PERILOUS', 'PERILOUS', 'PERILOUS', 'PERILOUS',
-  'EPIC', 'EPIC', 'EPIC', 'EPIC', 'EPIC',
-]
+const { isRefreshDue, currentIntervalBoundary } = require('../utils/refreshWindow')
+
+// 5 mission templates are generated per batch, replaced every 15 minutes
+// (aligned to wall-clock :00/:15/:30/:45 boundaries — see refreshWindow.js).
+// Only *unstarted* templates from the previous batch are discarded on
+// refresh; anything started (in progress, succeeded, or failed) persists
+// forever regardless of batching.
+const MISSION_BATCH_SIZE = 5
+const MISSION_REFRESH_INTERVAL_MS = 15 * 60 * 1000
 
 const DEFAULT_PLAYER_ID = 1
 const DATA_DIR = path.join(__dirname, '../../data')
@@ -61,28 +62,54 @@ function buildLogContext({ template, crewMembers = [], actingRecruit = null }) {
   }
 }
 
-async function seedMissionTemplates(client) {
-  const existing = await client.query('SELECT COUNT(*)::int AS count FROM mission_templates')
-  if (existing.rows[0].count > 0) return
+// Discards every mission_template that was never started (no mission_instance
+// exists for it) and replaces them with MISSION_BATCH_SIZE freshly generated
+// ones, using the player's monotonically increasing next_template_id counter
+// (templates persist forever once started, so ids can't be reset/reused the
+// way refreshCandidates resets next_candidate_id).
+async function generateMissionBatch(client, player, now) {
+  const startedTemplateIds = new Set(
+    (await client.query(
+      'SELECT DISTINCT template_id FROM mission_instances WHERE player_id = $1',
+      [player.id],
+    )).rows.map(row => row.template_id),
+  )
+  const existingTemplateIds = (await client.query('SELECT id FROM mission_templates')).rows.map(row => row.id)
+  const unstartedTemplateIds = existingTemplateIds.filter(id => !startedTemplateIds.has(id))
+  if (unstartedTemplateIds.length > 0) {
+    await client.query('DELETE FROM mission_templates WHERE id = ANY($1::int[])', [unstartedTemplateIds])
+  }
 
   const data = loadData()
-  for (let i = 0; i < MISSION_TEMPLATE_COUNT; i++) {
-    const id = i + 1
-    const mission = generateMission(data, { difficulty: SEED_DIFFICULTIES[i] })
+  let nextId = player.next_template_id
+  for (let i = 0; i < MISSION_BATCH_SIZE; i++) {
+    const mission = generateMission(data, {})
     await client.query(
       `INSERT INTO mission_templates (id, name, description, difficulty, events, planet)
-       VALUES ($1, $2, $3, $4, $5, $6)
-       ON CONFLICT (id) DO UPDATE SET
-         name = EXCLUDED.name,
-         description = EXCLUDED.description,
-         difficulty = EXCLUDED.difficulty,
-         events = EXCLUDED.events,
-         planet = EXCLUDED.planet`,
+       VALUES ($1, $2, $3, $4, $5, $6)`,
       [
-        id, mission.name, mission.description, mission.difficulty,
+        nextId, mission.name, mission.description, mission.difficulty,
         JSON.stringify(mission.events), JSON.stringify(mission.planet),
       ],
     )
+    nextId++
+  }
+
+  const refreshedAt = new Date(currentIntervalBoundary(now, MISSION_REFRESH_INTERVAL_MS))
+  await client.query(
+    'UPDATE players SET next_template_id = $1, mission_refresh_at = $2 WHERE id = $3',
+    [nextId, refreshedAt, player.id],
+  )
+  player.next_template_id = nextId
+  player.mission_refresh_at = refreshedAt
+}
+
+// Computed lazily, at state read/sync time: no background scheduler. If the
+// wall-clock 15-minute boundary has moved on since the last recorded
+// refresh (or nothing has ever been generated yet), generate a new batch.
+async function ensureMissionBatch(client, player, now = new Date()) {
+  if (isRefreshDue(player.mission_refresh_at, now, MISSION_REFRESH_INTERVAL_MS)) {
+    await generateMissionBatch(client, player, now)
   }
 }
 
@@ -123,8 +150,8 @@ async function generateCandidatesForPlayer(client, player, count = 5) {
 }
 
 async function bootstrapPlayer(client) {
-  await seedMissionTemplates(client)
   const player = await ensurePlayer(client)
+  await ensureMissionBatch(client, player)
 
   // Ensure hangar exists
   const hangar = await ShipService.getHangar(client, player.id)
@@ -998,6 +1025,40 @@ async function buildGameState(client, playerId) {
   }
 }
 
+// Full mission history for a player: every template that was ever started
+// (in_progress, success, or failed), regardless of which batch it originally
+// belonged to. Templates that were never started aren't "history" — they're
+// either part of the current batch (see buildGameState's `missions`) or
+// already discarded by a refresh. Kept separate from buildGameState (rather
+// than a param on it) since it serves a different, batch-agnostic need: the
+// upcoming `mission list --completed` frontend command.
+async function getMissionHistory(client, playerId) {
+  const templatesResult = await client.query('SELECT * FROM mission_templates ORDER BY id')
+  const instancesResult = await client.query(
+    'SELECT * FROM mission_instances WHERE player_id = $1',
+    [playerId],
+  )
+  const instanceByTemplate = Object.fromEntries(
+    instancesResult.rows.map(row => [row.template_id, row]),
+  )
+
+  return templatesResult.rows
+    .map(t => {
+      const instance = instanceByTemplate[t.id]
+      if (!instance) return null
+      return {
+        id: t.id,
+        name: t.name,
+        description: t.description,
+        difficulty: t.difficulty,
+        events: t.events,
+        assignedShipId: instance.ship_id,
+        status: instance.status === 'in_progress' ? 'in_progress' : instance.status,
+      }
+    })
+    .filter(Boolean)
+}
+
 async function withTransaction(fn) {
   const client = await pool.connect()
   try {
@@ -1050,6 +1111,7 @@ module.exports = {
   syncGame,
   getGameState,
   getMissionLogs: (missionId) => getMissionLogs(DEFAULT_PLAYER_ID, missionId),
+  getMissionHistory: () => getMissionHistory(pool, DEFAULT_PLAYER_ID),
   hireCandidate: (candidateId) => withTransaction(async (client) => {
     await bootstrapPlayer(client)
     const recruit = await hireCandidate(client, DEFAULT_PLAYER_ID, candidateId)

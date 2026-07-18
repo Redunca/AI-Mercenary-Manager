@@ -73,6 +73,26 @@ function pickN(array, count) {
   return result;
 }
 
+/**
+ * Picks one value from `items` (each `{ value, weight }`), with probability
+ * proportional to `weight`. Weights don't need to sum to 1 or 100 — they're
+ * normalized against their total. Used for e.g. weighted mission-difficulty
+ * selection instead of a uniform pickOne(DIFFICULTIES).
+ */
+function pickWeighted(items) {
+  if (!items || items.length === 0) return undefined;
+  const total = items.reduce((sum, item) => sum + item.weight, 0);
+  if (total <= 0) return undefined;
+  let roll = rng() * total;
+  for (const item of items) {
+    if (roll < item.weight) return item.value;
+    roll -= item.weight;
+  }
+  // Floating-point edge case: roll landed exactly on (or past, due to
+  // rounding) the total. Fall back to the last item rather than undefined.
+  return items[items.length - 1].value;
+}
+
 function rollWithVariance(base, variance) {
   return base + randInt(-variance, variance);
 }
@@ -121,6 +141,6 @@ function randGaussianInt(mean, min, max, stdDev = 1.3) {
 }
 
 module.exports = {
-  randInt, pickOne, pickN, rollWithVariance, sampleWithCoverage, randGaussian, randGaussianInt,
+  randInt, pickOne, pickN, pickWeighted, rollWithVariance, sampleWithCoverage, randGaussian, randGaussianInt,
   setSeed, resetSeed, createSeededRng,
 };

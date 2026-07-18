@@ -46,6 +46,7 @@ function createFakeClient() {
         id, display_name, wallet: 10000,
         max_recruits: 5, max_available_missions: 5,
         next_candidate_id: 1, next_recruit_id: 1, next_ship_id: 1,
+        next_template_id: 1, mission_refresh_at: null, shop_refresh_at: null,
       }
       state.players.push(player)
       return { rows: [player] }
@@ -169,6 +170,23 @@ function createFakeClient() {
     }
     if (s === 'SELECT * FROM mission_templates ORDER BY id') {
       return { rows: [...state.missionTemplates].sort((a, b) => a.id - b.id) }
+    }
+    if (s === 'SELECT id FROM mission_templates') {
+      return { rows: state.missionTemplates.map(t => ({ id: t.id })) }
+    }
+    if (s === 'DELETE FROM mission_templates WHERE id = ANY($1::int[])') {
+      const ids = new Set(params[0])
+      state.missionTemplates = state.missionTemplates.filter(t => !ids.has(t.id))
+      return { rows: [] }
+    }
+    if (s === 'SELECT DISTINCT template_id FROM mission_instances WHERE player_id = $1') {
+      const ids = new Set(state.missionInstances.filter(i => i.player_id === params[0]).map(i => i.template_id))
+      return { rows: [...ids].map(template_id => ({ template_id })) }
+    }
+    if (s === 'UPDATE players SET next_template_id = $1, mission_refresh_at = $2 WHERE id = $3') {
+      const [next_template_id, mission_refresh_at, id] = params
+      Object.assign(state.players.find(p => p.id === id), { next_template_id, mission_refresh_at })
+      return { rows: [] }
     }
 
     // mission_instances

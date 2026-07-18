@@ -1,4 +1,4 @@
-const { randGaussian, randGaussianInt } = require('../src/utils/random');
+const { randGaussian, randGaussianInt, pickWeighted, setSeed, resetSeed } = require('../src/utils/random');
 
 describe('randGaussian', () => {
   test('returns exactly the mean when Box-Muller angle cancels out (v = 0.25)', () => {
@@ -66,5 +66,64 @@ describe('randGaussianInt', () => {
     // 4 even after clamping; a uniform 0-5 roll would average close to 2.5.
     expect(average).toBeGreaterThan(3.3);
     expect(average).toBeLessThanOrEqual(5);
+  });
+});
+
+describe('pickWeighted', () => {
+  afterEach(() => {
+    resetSeed();
+  });
+
+  test('returns undefined for an empty or missing list', () => {
+    expect(pickWeighted([])).toBeUndefined();
+    expect(pickWeighted(undefined)).toBeUndefined();
+  });
+
+  test('returns undefined when every weight is zero (or the total is non-positive)', () => {
+    expect(pickWeighted([{ value: 'A', weight: 0 }, { value: 'B', weight: 0 }])).toBeUndefined();
+  });
+
+  test('always returns the only item when it is the only one with positive weight', () => {
+    const items = [{ value: 'A', weight: 0 }, { value: 'B', weight: 5 }, { value: 'C', weight: 0 }];
+    for (let i = 0; i < 50; i++) {
+      expect(pickWeighted(items)).toBe('B');
+    }
+  });
+
+  test('respects roll boundaries: a roll just under a weight boundary picks that item, just at/over it picks the next', () => {
+    // weights A=30, B=70 (total 100). rng() * 100 = roll.
+    const items = [{ value: 'A', weight: 30 }, { value: 'B', weight: 70 }];
+
+    jest.spyOn(global.Math, 'random').mockReturnValueOnce(0.2999); // roll ~29.99 -> A
+    expect(pickWeighted(items)).toBe('A');
+    jest.restoreAllMocks();
+
+    jest.spyOn(global.Math, 'random').mockReturnValueOnce(0.3); // roll = 30 -> B (not < 30)
+    expect(pickWeighted(items)).toBe('B');
+    jest.restoreAllMocks();
+  });
+
+  test('over a large sample, lands within a reasonable tolerance of the configured weights', () => {
+    setSeed(42);
+    const items = [
+      { value: 'ROUTINE', weight: 40 },
+      { value: 'STANDARD', weight: 30 },
+      { value: 'HARD', weight: 15 },
+      { value: 'PERILOUS', weight: 10 },
+      { value: 'EPIC', weight: 5 },
+    ];
+    const counts = { ROUTINE: 0, STANDARD: 0, HARD: 0, PERILOUS: 0, EPIC: 0 };
+    const sampleSize = 20000;
+    for (let i = 0; i < sampleSize; i++) {
+      counts[pickWeighted(items)]++;
+    }
+
+    // Loose tolerance (+/- 2 percentage points) — this is testing statistical
+    // shape, not pinning an exact seeded sequence.
+    expect(counts.ROUTINE / sampleSize).toBeCloseTo(0.40, 1);
+    expect(counts.STANDARD / sampleSize).toBeCloseTo(0.30, 1);
+    expect(counts.HARD / sampleSize).toBeCloseTo(0.15, 1);
+    expect(counts.PERILOUS / sampleSize).toBeCloseTo(0.10, 1);
+    expect(counts.EPIC / sampleSize).toBeCloseTo(0.05, 1);
   });
 });

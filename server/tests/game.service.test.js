@@ -12,14 +12,14 @@ const LogService = require('../src/services/log.service')
 // roll the right outcome.
 const { setSeed, resetSeed } = require('../src/utils/random')
 
-// Chosen because, with the current data files, it deterministically produces:
-//  - template #1 (ROUTINE): 2 events (fixed by ROUTINE's eventCount; content-independent), no COMBAT
-//  - template #9 (STANDARD): ENGINEERING(HP_LOSS)[dc18], ENGINEERING(HP_LOSS)[dc10], SURVIVAL(HP_LOSS)[dc20], no COMBAT
-//  - template #12 (HARD): RECON(HP_LOSS)[dc17], RECON(FORCED_DEPARTURE)[dc21], BREACH(FORCED_DEPARTURE)[dc15], INFILTRATION(FORCED_DEPARTURE)[dc20], no COMBAT
-//  - template #17 (PERILOUS): RECON(HP_LOSS)[dc20], BREACH(FORCED_DEPARTURE)[dc30], BREACH(SHIP_DAMAGE)[dc30], INFILTRATION(FORCED_DEPARTURE)[dc26], INFILTRATION(HP_LOSS)[dc23]
-//  - template #6 (STANDARD): RECON(HP_LOSS)[dc14], COMBAT(NO_REWARD)[dc13], COMBAT(HP_LOSS)[dc13] — used by the dedicated COMBAT/auto-battle tests
-// If the mission data files (data/*.json) ever change, this seed may need to
-// be re-picked so those templates keep matching the assertions below.
+// Mission templates are now generated in weighted-random batches of 5 (see
+// game.service.js's generateMissionBatch), so a seed no longer pins specific
+// content to specific template ids the way the old fixed 25-template seed
+// did. This seed is kept only so batch-generation itself (count, shape,
+// reproducibility) is deterministic across runs; tests that need specific
+// event content build synthetic templates directly (see seedTemplate/
+// buildEvent below) rather than relying on what a given seed happens to
+// produce.
 const MISSION_SEED = 15
 
 jest.mock('../src/db/pool', () => ({ pool: { connect: jest.fn(), query: jest.fn() } }))
@@ -61,6 +61,7 @@ function createFakeClient() {
         id, display_name, wallet: 10000,
         max_recruits: 5, max_available_missions: 5,
         next_candidate_id: 1, next_recruit_id: 1, next_ship_id: 1,
+        next_template_id: 1, mission_refresh_at: null, shop_refresh_at: null,
       }
       state.players.push(player)
       return { rows: [player] }
@@ -201,6 +202,23 @@ function createFakeClient() {
     if (s === 'SELECT * FROM mission_templates ORDER BY id') {
       return { rows: [...state.missionTemplates].sort((a, b) => a.id - b.id) }
     }
+    if (s === 'SELECT id FROM mission_templates') {
+      return { rows: state.missionTemplates.map(t => ({ id: t.id })) }
+    }
+    if (s === 'DELETE FROM mission_templates WHERE id = ANY($1::int[])') {
+      const ids = new Set(params[0])
+      state.missionTemplates = state.missionTemplates.filter(t => !ids.has(t.id))
+      return { rows: [] }
+    }
+    if (s === 'SELECT DISTINCT template_id FROM mission_instances WHERE player_id = $1') {
+      const ids = new Set(state.missionInstances.filter(i => i.player_id === params[0]).map(i => i.template_id))
+      return { rows: [...ids].map(template_id => ({ template_id })) }
+    }
+    if (s === 'UPDATE players SET next_template_id = $1, mission_refresh_at = $2 WHERE id = $3') {
+      const [next_template_id, mission_refresh_at, id] = params
+      Object.assign(state.players.find(p => p.id === id), { next_template_id, mission_refresh_at })
+      return { rows: [] }
+    }
 
     // mission_instances
     if (s === 'SELECT * FROM mission_instances WHERE player_id = $1 AND template_id = $2') {
@@ -286,11 +304,48 @@ function createFakeClient() {
   return { client: { query, release: jest.fn() }, state }
 }
 
+// Mission-resolution tests (HP_LOSS chains, FORCED_DEPARTURE, COMBAT,
+// SHIP_DAMAGE, consumable interactions...) need specific, stable event
+// content to assert against. Under the old fixed 25-template seed, that
+// content came from generateMission() at a known template id with a known
+// RNG seed. Now that templates are generated in weighted-random batches of
+// 5, that coupling is gone — chasing a seed that "happens" to produce a
+// given difficulty/event combo at a given id would be fragile and would
+// silently break again the next time data/*.json changes. Instead, these
+// tests build synthetic templates directly, in the same shape
+// missionGenerator.js produces, and insert them straight into the fake
+// client's state (at ids the natural weighted batch won't use, since a
+// fresh batch only ever occupies ids 1-5).
+function buildEvent({ id = 'test-event', beat = 'EXECUTION', type, attribute = null, dc = 10, failureConsequence = null, rewardAmount = 100 }) {
+  return {
+    id,
+    beat,
+    type,
+    attribute,
+    dc,
+    description: `Test ${type} event`,
+    reward: { type: 'CREDITS', amount: rewardAmount, description: 'Test reward' },
+    failureConsequence,
+  }
+}
+
+function seedTemplate(state, { id, difficulty = 'STANDARD', events, name = 'Test Mission', description = 'A test mission.', planet = null }) {
+  const template = { id, name, description, difficulty, events, planet }
+  const existing = state.missionTemplates.find(t => t.id === id)
+  if (existing) Object.assign(existing, template)
+  else state.missionTemplates.push(template)
+  return template
+}
+
 describe('GameService', () => {
   let state
 
   afterAll(() => {
     resetSeed()
+  })
+
+  afterEach(() => {
+    jest.useRealTimers()
   })
 
   beforeEach(() => {
@@ -333,33 +388,26 @@ describe('GameService', () => {
       expect(state.recruits[0].status).toBe('available')
     })
 
-    test('seeds the 25 mission templates from missions.json', async () => {
+    test('seeds an initial batch of 5 mission templates', async () => {
       await GameService.initGame()
-      expect(state.missionTemplates).toHaveLength(25)
+      expect(state.missionTemplates).toHaveLength(5)
     })
 
     test('persists the planet object (with tags) of each generated mission template', async () => {
-      // Reproduces exactly what seedMissionTemplates() does internally (same
-      // seed, same loadData()/generateMission() calls) so we can assert the
-      // persisted planet matches what the generator actually produced,
-      // instead of asserting on hardcoded tag values.
+      // Reproduces exactly what generateMissionBatch() does internally (same
+      // seed, same loadData()/generateMission() calls, same call count) so we
+      // can assert the persisted planet matches what the generator actually
+      // produced, instead of asserting on hardcoded tag values.
       setSeed(MISSION_SEED)
       const { loadData } = require('../src/dataLoader')
       const { generateMission } = require('../src/engine/missionGenerator')
-      const SEED_DIFFICULTIES = [
-        'ROUTINE', 'ROUTINE', 'ROUTINE', 'ROUTINE', 'ROUTINE',
-        'STANDARD', 'STANDARD', 'STANDARD', 'STANDARD', 'STANDARD',
-        'HARD', 'HARD', 'HARD', 'HARD', 'HARD', 'HARD',
-        'PERILOUS', 'PERILOUS', 'PERILOUS', 'PERILOUS', 'PERILOUS',
-        'EPIC', 'EPIC', 'EPIC', 'EPIC', 'EPIC',
-      ]
       const data = loadData()
-      const expectedMissions = SEED_DIFFICULTIES.map(difficulty => generateMission(data, { difficulty }))
+      const expectedMissions = Array.from({ length: 5 }, () => generateMission(data, {}))
 
       setSeed(MISSION_SEED)
       await GameService.initGame()
 
-      expect(state.missionTemplates).toHaveLength(25)
+      expect(state.missionTemplates).toHaveLength(5)
       state.missionTemplates
         .sort((a, b) => a.id - b.id)
         .forEach((tpl, i) => {
@@ -377,6 +425,81 @@ describe('GameService', () => {
       expect(state.players).toHaveLength(1)
       expect(state.recruits).toHaveLength(1)
       expect(state.candidates).toHaveLength(4)
+    })
+  })
+
+  describe('mission batch refresh (lazy, wall-clock aligned)', () => {
+    test('does not regenerate the batch or move next_template_id/mission_refresh_at before the next 15-minute boundary', async () => {
+      jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] })
+      jest.setSystemTime(new Date('2026-01-01T10:00:00Z'))
+      await GameService.initGame()
+      const firstBatchIds = state.missionTemplates.map(t => t.id).sort((a, b) => a - b)
+      const refreshAtAfterFirst = state.players[0].mission_refresh_at
+      const nextTemplateIdAfterFirst = state.players[0].next_template_id
+
+      jest.setSystemTime(new Date('2026-01-01T10:14:59Z')) // still inside the same 15-minute window
+      await GameService.initGame()
+      await GameService.getGameState()
+      await GameService.syncGame()
+
+      expect(state.missionTemplates.map(t => t.id).sort((a, b) => a - b)).toEqual(firstBatchIds)
+      expect(state.players[0].mission_refresh_at).toEqual(refreshAtAfterFirst)
+      expect(state.players[0].next_template_id).toBe(nextTemplateIdAfterFirst)
+    })
+
+    test('at the next wall-clock boundary, discards only unstarted templates from the previous batch and generates a fresh batch of 5', async () => {
+      jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] })
+      jest.setSystemTime(new Date('2026-01-01T10:00:00Z'))
+      await GameService.initGame()
+      const firstBatchIds = state.missionTemplates.map(t => t.id).sort((a, b) => a - b)
+      expect(firstBatchIds).toHaveLength(5)
+
+      // Start one template from the first batch so it should survive the refresh.
+      const startedId = firstBatchIds[0]
+      state.recruits[0].id = 1
+      ShipService.getShip.mockResolvedValue({ id: 1, player_id: 1, crew: [1], status: 'docked', deleted_at: null })
+      await GameService.startMission(startedId, 1)
+
+      jest.setSystemTime(new Date('2026-01-01T10:15:00Z')) // exactly the next 15-minute boundary
+      await GameService.initGame()
+
+      const templateIds = state.missionTemplates.map(t => t.id).sort((a, b) => a - b)
+      // the started template persists...
+      expect(templateIds).toContain(startedId)
+      // ...but the other, never-started templates from the first batch are gone
+      const discardedIds = firstBatchIds.filter(id => id !== startedId)
+      for (const id of discardedIds) {
+        expect(templateIds).not.toContain(id)
+      }
+      // a fresh batch of exactly 5 new, unstarted templates now exists alongside the started one
+      const startedTemplateIds = new Set(state.missionInstances.map(i => i.template_id))
+      const unstarted = state.missionTemplates.filter(t => !startedTemplateIds.has(t.id))
+      expect(unstarted).toHaveLength(5)
+      expect(state.missionTemplates).toHaveLength(6) // 1 persisted (started) + 5 new
+      // ids are never reused: the counter continues past the highest id ever issued
+      expect(state.players[0].next_template_id).toBe(Math.max(...firstBatchIds) + 1 + 5)
+      expect(new Date(state.players[0].mission_refresh_at).toISOString()).toBe('2026-01-01T10:15:00.000Z')
+    })
+
+    test('a completed (succeeded) template also survives a refresh, exactly like an in-progress one', async () => {
+      jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] })
+      jest.setSystemTime(new Date('2026-01-01T10:00:00Z'))
+      await GameService.initGame()
+      const firstBatchIds = state.missionTemplates.map(t => t.id).sort((a, b) => a - b)
+      const completedId = firstBatchIds[0]
+
+      state.recruits[0].id = 1
+      ShipService.getShip.mockResolvedValue({ id: 1, player_id: 1, crew: [1], status: 'docked', deleted_at: null })
+      await GameService.startMission(completedId, 1)
+      state.missionInstances[0].started_at = new Date(Date.now() - 60 * 60 * 1000) // well past the mission's duration
+      rollAction.mockReturnValue({ d20: 20, bonus: 0, diceNotation: '—', total: 9999 }) // trivially wins/succeeds every event, combat included
+      await GameService.syncGame()
+      expect(state.missionInstances[0].status).toBe('success')
+
+      jest.setSystemTime(new Date('2026-01-01T10:15:00Z')) // next 15-minute boundary
+      await GameService.initGame()
+
+      expect(state.missionTemplates.map(t => t.id)).toContain(completedId)
     })
   })
 
@@ -539,17 +662,32 @@ describe('GameService', () => {
   })
 
   describe('syncGame — mission resolution', () => {
-    async function launchMission(templateId, crewId = 1) {
-      await GameService.initGame()
+    async function launchSeededMission(templateDef, crewId = 1) {
+      await GameService.initGame() // creates the natural batch first
+      seedTemplate(state, templateDef) // ...then add the custom template, so it isn't discarded as an "unstarted leftover"
       state.recruits[0].id = crewId
       ShipService.getShip.mockResolvedValue({ id: 1, player_id: 1, crew: [crewId], status: 'docked', deleted_at: null })
-      await GameService.startMission(templateId, 1)
+      await GameService.startMission(templateDef.id, 1)
       return state.missionInstances[0]
     }
 
+    // Custom template ids (100+) so they never collide with the natural
+    // weighted-random batch, which only ever occupies ids 1-5 — see the
+    // seedTemplate/buildEvent comment above.
+    const TWO_EVENT_TEMPLATE_ID = 101
+    const HP_LOSS_TEMPLATE_ID = 102
+    const FORCED_DEPARTURE_TEMPLATE_ID = 103
+
     test('a successful mission returns the crew and the ship to base once time has elapsed', async () => {
-      const instance = await launchMission(1) // template ROUTINE (seed 15): 2 events, NO_REWARD consequence only (fixed by difficulty-tables.json)
-      instance.started_at = new Date(Date.now() - 10 * 60 * 1000) // well past 2 * 15s
+      const instance = await launchSeededMission({
+        id: TWO_EVENT_TEMPLATE_ID,
+        difficulty: 'ROUTINE',
+        events: [
+          buildEvent({ id: 'e1', type: 'RECON', attribute: 'perception', dc: 10, failureConsequence: 'HP_LOSS', rewardAmount: 100 }),
+          buildEvent({ id: 'e2', type: 'BREACH', attribute: 'engineering', dc: 10, failureConsequence: 'HP_LOSS', rewardAmount: 150 }),
+        ],
+      })
+      instance.started_at = new Date(Date.now() - 10 * 60 * 1000) // well past the mission's duration
       rollAction.mockReturnValue({ d20: 20, bonus: 0, diceNotation: '—', total: 20 })
 
       await GameService.syncGame()
@@ -567,7 +705,15 @@ describe('GameService', () => {
     })
 
     test('an HP_LOSS failure hurts the recruit but still returns the crew and the ship to base', async () => {
-      const instance = await launchMission(9) // template STANDARD (seed 15): ENGINEERING(HP_LOSS), ENGINEERING(HP_LOSS), SURVIVAL(HP_LOSS)
+      const instance = await launchSeededMission({
+        id: HP_LOSS_TEMPLATE_ID,
+        difficulty: 'STANDARD',
+        events: [
+          buildEvent({ id: 'e1', type: 'ENGINEERING', attribute: 'engineering', dc: 18, failureConsequence: 'HP_LOSS' }),
+          buildEvent({ id: 'e2', type: 'ENGINEERING', attribute: 'engineering', dc: 10, failureConsequence: 'HP_LOSS' }),
+          buildEvent({ id: 'e3', type: 'SURVIVAL', attribute: 'survival', dc: 20, failureConsequence: 'HP_LOSS' }),
+        ],
+      })
       instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
       rollAction.mockReturnValue({ d20: 1, bonus: 0, diceNotation: '—', total: 1 }) // systematic failure
       rollDie.mockReturnValue(4)
@@ -584,8 +730,16 @@ describe('GameService', () => {
       expect(ShipService.updateShipStatus).toHaveBeenCalledWith(expect.anything(), 1, 1, 'docked')
     })
 
-    test('the recruit dying on the last HP_LOSS event ends the mission in failure', async () => {
-      const instance = await launchMission(9)
+    test('the recruit dying on an HP_LOSS event ends the mission in failure', async () => {
+      const instance = await launchSeededMission({
+        id: HP_LOSS_TEMPLATE_ID,
+        difficulty: 'STANDARD',
+        events: [
+          buildEvent({ id: 'e1', type: 'ENGINEERING', attribute: 'engineering', dc: 18, failureConsequence: 'HP_LOSS' }),
+          buildEvent({ id: 'e2', type: 'ENGINEERING', attribute: 'engineering', dc: 10, failureConsequence: 'HP_LOSS' }),
+          buildEvent({ id: 'e3', type: 'SURVIVAL', attribute: 'survival', dc: 20, failureConsequence: 'HP_LOSS' }),
+        ],
+      })
       instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
       rollAction.mockReturnValue({ d20: 1, bonus: 0, diceNotation: '—', total: 1 })
       state.recruits.find(r => r.id === 1).hp = 3 // dies on the first HP_LOSS failure (rollDie -> 3)
@@ -605,7 +759,14 @@ describe('GameService', () => {
     })
 
     test('a FORCED_DEPARTURE failure immediately switches the mission to RETURN phase', async () => {
-      const instance = await launchMission(12) // template HARD (seed 15): RECON(HP_LOSS,dc17), RECON(FORCED_DEPARTURE,dc21), BREACH(FORCED_DEPARTURE,dc15), INFILTRATION(FORCED_DEPARTURE,dc20)
+      const instance = await launchSeededMission({
+        id: FORCED_DEPARTURE_TEMPLATE_ID,
+        difficulty: 'HARD',
+        events: [
+          buildEvent({ id: 'e1', type: 'RECON', attribute: 'perception', dc: 17, failureConsequence: 'HP_LOSS' }),
+          buildEvent({ id: 'e2', type: 'RECON', attribute: 'perception', dc: 21, failureConsequence: 'FORCED_DEPARTURE' }),
+        ],
+      })
       instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
       rollAction
         .mockReturnValueOnce({ d20: 20, bonus: 0, diceNotation: '—', total: 20 }) // 1st RECON success (dc17)
@@ -623,7 +784,14 @@ describe('GameService', () => {
     })
 
     test('once the return trip has elapsed, a FORCED_DEPARTURE failure returns the ship and the surviving recruit to base', async () => {
-      await launchMission(12)
+      await launchSeededMission({
+        id: FORCED_DEPARTURE_TEMPLATE_ID,
+        difficulty: 'HARD',
+        events: [
+          buildEvent({ id: 'e1', type: 'RECON', attribute: 'perception', dc: 17, failureConsequence: 'HP_LOSS' }),
+          buildEvent({ id: 'e2', type: 'RECON', attribute: 'perception', dc: 21, failureConsequence: 'FORCED_DEPARTURE' }),
+        ],
+      })
       state.missionInstances[0].started_at = new Date(Date.now() - 10 * 60 * 1000)
       rollAction
         .mockReturnValueOnce({ d20: 20, bonus: 0, diceNotation: '—', total: 20 }) // RECON success
@@ -643,20 +811,34 @@ describe('GameService', () => {
   })
 
   describe('syncGame — COMBAT auto-battle', () => {
-    async function launchMission(templateId, crewId = 1) {
-      await GameService.initGame()
+    // Custom template id (see the seedTemplate/buildEvent comment above):
+    // RECON(HP_LOSS)[dc14], COMBAT, COMBAT.
+    // The hired recruit (default 'specialized' archetype under the seeded mocks)
+    // has agility 4, might 2 -> Guard 16.
+    const COMBAT_TEMPLATE_ID = 106
+    function seedCombatTemplate() {
+      seedTemplate(state, {
+        id: COMBAT_TEMPLATE_ID,
+        difficulty: 'STANDARD',
+        events: [
+          buildEvent({ id: 'e1', type: 'RECON', attribute: 'perception', dc: 14, failureConsequence: 'HP_LOSS' }),
+          buildEvent({ id: 'e2', type: 'COMBAT' }),
+          buildEvent({ id: 'e3', type: 'COMBAT' }),
+        ],
+      })
+    }
+
+    async function launchCombatMission(crewId = 1) {
+      await GameService.initGame() // creates the natural batch first
+      seedCombatTemplate() // ...then add the custom template, so it isn't discarded as an "unstarted leftover"
       state.recruits[0].id = crewId
       ShipService.getShip.mockResolvedValue({ id: 1, player_id: 1, crew: [crewId], status: 'docked', deleted_at: null })
-      await GameService.startMission(templateId, 1)
+      await GameService.startMission(COMBAT_TEMPLATE_ID, 1)
       return state.missionInstances[0]
     }
 
-    // template #6 (STANDARD, seed 15): RECON(HP_LOSS)[dc14], COMBAT(NO_REWARD)[dc13], COMBAT(HP_LOSS)[dc13]
-    // The hired recruit (default 'specialized' archetype under the seeded mocks)
-    // has agility 4, might 2 -> Guard 16.
-
     test('the crew defeats the enemy: the event succeeds, the reward is earned, and one SYS log is written per round', async () => {
-      const instance = await launchMission(6)
+      const instance = await launchCombatMission()
       instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
       // A single overwhelming roll: the RECON check succeeds, and in both
       // COMBAT events the recruit (tied on agility with the enemy, so acting
@@ -679,7 +861,7 @@ describe('GameService', () => {
     })
 
     test('the crew loses a COMBAT event: the mission is forced to return and the recruit permanently loses 1 max HP', async () => {
-      const instance = await launchMission(6)
+      const instance = await launchCombatMission()
       instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
       rollAction.mockReturnValue({ d20: 17, bonus: 0, diceNotation: '—', total: 17 })
       // Enemy Agility primary (6, faster than the recruit's 4) so it always
@@ -705,7 +887,7 @@ describe('GameService', () => {
     })
 
     test('a HEAL consumable intercepts a would-be knockout during combat, preventing that knockout\'s permanent injury', async () => {
-      const instance = await launchMission(6)
+      const instance = await launchCombatMission()
       instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
       const recruit = state.recruits.find(r => r.id === 1)
       recruit.hp = 5 // one big hit would otherwise knock them out
@@ -728,7 +910,7 @@ describe('GameService', () => {
     })
 
     test('a knockout that drops max HP to half the original (or below) kills the recruit', async () => {
-      const instance = await launchMission(6)
+      const instance = await launchCombatMission()
       instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
       const recruit = state.recruits.find(r => r.id === 1)
       recruit.max_hp = 4
@@ -749,16 +931,28 @@ describe('GameService', () => {
   })
 
   describe('syncGame — consumable effects', () => {
-    async function launchMission(templateId, crewId = 1) {
-      await GameService.initGame()
+    async function launchSeededMission(templateDef, crewId = 1) {
+      await GameService.initGame() // creates the natural batch first
+      seedTemplate(state, templateDef) // ...then add the custom template, so it isn't discarded as an "unstarted leftover"
       state.recruits[0].id = crewId
       ShipService.getShip.mockResolvedValue({ id: 1, player_id: 1, crew: [crewId], status: 'docked', deleted_at: null })
-      await GameService.startMission(templateId, 1)
+      await GameService.startMission(templateDef.id, 1)
       return state.missionInstances[0]
     }
 
+    const ATTRIBUTE_BOOST_TEMPLATE_ID = 107
+    const HEAL_TEMPLATE_ID = 108
+    const SHIP_DAMAGE_TEMPLATE_ID = 109
+
     test('an ATTRIBUTE_BOOST consumable in the ship inventory grants advantage only on the matching attribute', async () => {
-      const instance = await launchMission(1) // ROUTINE (seed 15): BREACH[learning] dc15, INFILTRATION[agility] dc10
+      const instance = await launchSeededMission({
+        id: ATTRIBUTE_BOOST_TEMPLATE_ID,
+        difficulty: 'ROUTINE',
+        events: [
+          buildEvent({ id: 'e1', type: 'BREACH', attribute: 'learning', dc: 15, failureConsequence: 'HP_LOSS' }),
+          buildEvent({ id: 'e2', type: 'INFILTRATION', attribute: 'agility', dc: 10, failureConsequence: 'HP_LOSS' }),
+        ],
+      })
       instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
       rollAction.mockReturnValue({ d20: 20, bonus: 0, diceNotation: '—', total: 20 })
       ConsumableService.consumeFromShipInventory.mockImplementation((client, shipId, effect, matcher) => {
@@ -775,9 +969,16 @@ describe('GameService', () => {
     })
 
     test('a HEAL consumable revives a recruit that would otherwise die, instead of ending the mission', async () => {
-      // STANDARD (seed 15): ENGINEERING(HP_LOSS)[dc18], ENGINEERING(HP_LOSS)[dc10], SURVIVAL(HP_LOSS)[dc20].
       // Only the first event is made to fail, isolating the one lethal hit the HEAL item should intercept.
-      const instance = await launchMission(9)
+      const instance = await launchSeededMission({
+        id: HEAL_TEMPLATE_ID,
+        difficulty: 'STANDARD',
+        events: [
+          buildEvent({ id: 'e1', type: 'ENGINEERING', attribute: 'engineering', dc: 18, failureConsequence: 'HP_LOSS' }),
+          buildEvent({ id: 'e2', type: 'ENGINEERING', attribute: 'engineering', dc: 10, failureConsequence: 'HP_LOSS' }),
+          buildEvent({ id: 'e3', type: 'SURVIVAL', attribute: 'survival', dc: 20, failureConsequence: 'HP_LOSS' }),
+        ],
+      })
       instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
       rollAction
         .mockReturnValueOnce({ d20: 1, bonus: 0, diceNotation: '—', total: 1 })   // ENGINEERING(HP_LOSS) failure
@@ -797,9 +998,15 @@ describe('GameService', () => {
     })
 
     test('a SHIP_DAMAGE failure auto-repairs when a REPAIR consumable is available, and the mission continues', async () => {
-      // PERILOUS (seed 15): RECON[perception]dc20 HP_LOSS, BREACH[learning]dc30 FORCED_DEPARTURE,
-      // BREACH[learning]dc30 SHIP_DAMAGE, INFILTRATION[agility]dc26 FORCED_DEPARTURE, INFILTRATION[agility]dc23 HP_LOSS
-      const instance = await launchMission(17)
+      const instance = await launchSeededMission({
+        id: SHIP_DAMAGE_TEMPLATE_ID,
+        difficulty: 'PERILOUS',
+        events: [
+          buildEvent({ id: 'e1', type: 'RECON', attribute: 'perception', dc: 20, failureConsequence: 'HP_LOSS' }),
+          buildEvent({ id: 'e2', type: 'BREACH', attribute: 'learning', dc: 30, failureConsequence: 'FORCED_DEPARTURE' }),
+          buildEvent({ id: 'e3', type: 'BREACH', attribute: 'learning', dc: 30, failureConsequence: 'SHIP_DAMAGE' }),
+        ],
+      })
       instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
       rollAction
         .mockReturnValueOnce({ d20: 30, bonus: 0, diceNotation: '—', total: 30 }) // RECON success
@@ -821,7 +1028,15 @@ describe('GameService', () => {
     })
 
     test('a SHIP_DAMAGE failure without a REPAIR item breaks the ship and forces a return', async () => {
-      const instance = await launchMission(17)
+      const instance = await launchSeededMission({
+        id: SHIP_DAMAGE_TEMPLATE_ID,
+        difficulty: 'PERILOUS',
+        events: [
+          buildEvent({ id: 'e1', type: 'RECON', attribute: 'perception', dc: 20, failureConsequence: 'HP_LOSS' }),
+          buildEvent({ id: 'e2', type: 'BREACH', attribute: 'learning', dc: 30, failureConsequence: 'FORCED_DEPARTURE' }),
+          buildEvent({ id: 'e3', type: 'BREACH', attribute: 'learning', dc: 30, failureConsequence: 'SHIP_DAMAGE' }),
+        ],
+      })
       instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
       rollAction
         .mockReturnValueOnce({ d20: 30, bonus: 0, diceNotation: '—', total: 30 }) // RECON success
