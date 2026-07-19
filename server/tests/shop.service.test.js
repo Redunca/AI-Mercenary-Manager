@@ -3,7 +3,7 @@ const ShipService = require('../src/services/ship.service');
 const ConsumableService = require('../src/services/consumable.service');
 const { setSeed, resetSeed } = require('../src/utils/random');
 
- jest.mock('../src/db/pool');
+jest.mock('../src/db/pool');
 jest.mock('../src/services/ship.service');
 jest.mock('../src/services/consumable.service');
 

@@ -1,4 +1,4 @@
-import { AfterViewChecked, AfterViewInit, Component, ElementRef, inject, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, Component, ElementRef, forwardRef, inject, Input, OnInit, ViewChild } from '@angular/core';
 import { Panel, PanelModule } from '../../models/panel';
 import { CommonModule } from '@angular/common';
 import { CommandService } from '../../core/command.service';
@@ -37,7 +37,7 @@ import { ShopDetailComponent } from '../../game/shop/shop-detail/shop-detail.com
     CandidateDetailComponent,
     ShipListComponent,
     ShipDetailComponent,
-    LayoutNodeComponent,
+    forwardRef(() => LayoutNodeComponent),
     ShopListComponent,
     ShopDetailComponent
   ],

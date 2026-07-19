@@ -9,6 +9,7 @@
 const ShopService = require('../src/services/shop.service')
 const ShipService = require('../src/services/ship.service')
 const ConsumableService = require('../src/services/consumable.service')
+const { setSeed, resetSeed } = require('../src/utils/random')
 
 jest.mock('../src/services/ship.service')
 jest.mock('../src/services/consumable.service')
@@ -192,8 +193,17 @@ describe('Shop rotation lifecycle', () => {
   test('a consumable purchase that exceeds remaining stock is rejected without partially succeeding', async () => {
     const { client, state } = createFakeClient(buildMasterCatalog())
 
+    // drawShopRotation only guarantees one ship; which other 4 items land in
+    // the live rotation is otherwise random, so a rare consumable (the only
+    // items with max_stock 2, needed below to test an over-quantity buy)
+    // isn't guaranteed to be drawn on every run. Seed deterministically to a
+    // value confirmed (see drawShopRotation tests above) to draw both rare
+    // consumables, so this test isn't flaky.
+    setSeed(5)
     const items = await ShopService.getShopItems(client, 1, T0)
+    resetSeed()
     const rare = items.find(i => i.rarity === 'rare' && i.type === 'consumable') // max_stock 2
+    expect(rare).toBeDefined()
 
     const result = await ShopService.buyConsumable(client, 1, rare.id, 3, T0_PLUS_5)
 

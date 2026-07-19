@@ -501,6 +501,77 @@ describe('GameService', () => {
 
       expect(state.missionTemplates.map(t => t.id)).toContain(completedId)
     })
+
+    // Integration check spanning the mission-batching (discard-unstarted-on-
+    // refresh) and mission-history (`mission list --completed`) features
+    // together: a mission started just before a refresh boundary must stay
+    // visible in the live view while in progress, survive the refresh that
+    // discards its unstarted siblings, still be visible in the live view
+    // and in history once it crosses that boundary, then move from the live
+    // view into history (never disappearing from either data source) once
+    // it actually completes.
+    test('a mission started right before a refresh boundary remains visible in the live view while running, survives the refresh, and moves into history (without ever vanishing from both) once it completes', async () => {
+      jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] })
+      jest.setSystemTime(new Date('2026-01-01T10:00:00Z'))
+      await GameService.initGame()
+      const firstBatchIds = state.missionTemplates.map(t => t.id).sort((a, b) => a - b)
+      const startedId = firstBatchIds[0]
+
+      state.recruits[0].id = 1
+      ShipService.getShip.mockResolvedValue({ id: 1, player_id: 1, crew: [1], status: 'docked', deleted_at: null })
+      await GameService.startMission(startedId, 1)
+
+      // Still inside the same window: live view shows it in progress, and
+      // history already reports the same live status too.
+      let live = await GameService.getGameState()
+      expect(live.missions.find(m => m.id === startedId)).toMatchObject({ status: 'in_progress' })
+      let history = await GameService.getMissionHistory()
+      expect(history.find(m => m.id === startedId)).toMatchObject({ status: 'in_progress' })
+
+      // Cross the wall-clock boundary: unstarted siblings from the first
+      // batch get discarded and replaced, but the started template must
+      // persist and keep reporting 'in_progress' in both views. Uses
+      // initGame() (like the sibling tests above), not syncGame(), so the
+      // mission-resolution clock (15s/event) doesn't also race ahead of the
+      // 15-minute refresh clock and resolve the mission early — the two are
+      // deliberately kept independent here to isolate what's under test.
+      jest.setSystemTime(new Date('2026-01-01T10:15:00Z'))
+      await GameService.initGame()
+
+      live = await GameService.getGameState()
+      expect(live.missions.map(m => m.id)).toContain(startedId)
+      expect(live.missions.find(m => m.id === startedId)).toMatchObject({ status: 'in_progress' })
+      const discardedIds = firstBatchIds.filter(id => id !== startedId)
+      for (const id of discardedIds) {
+        expect(live.missions.map(m => m.id)).not.toContain(id)
+      }
+
+      history = await GameService.getMissionHistory()
+      expect(history.find(m => m.id === startedId)).toMatchObject({ status: 'in_progress' })
+
+      // Let the mission actually finish, still after the refresh boundary.
+      state.missionInstances[0].started_at = new Date(Date.now() - 60 * 60 * 1000)
+      rollAction.mockReturnValue({ d20: 20, bonus: 0, diceNotation: '—', total: 9999 })
+      await GameService.syncGame()
+      expect(state.missionInstances[0].status).toBe('success')
+
+      // Once resolved, it must drop out of the live batch view (only
+      // available/in_progress templates are shown there) but must still be
+      // reachable, tagged 'success', from the full history — never absent
+      // from both at once.
+      live = await GameService.getGameState()
+      expect(live.missions.some(m => m.id === startedId)).toBe(false)
+
+      history = await GameService.getMissionHistory()
+      expect(history.find(m => m.id === startedId)).toMatchObject({ status: 'success' })
+
+      // A further refresh (a second 15-minute boundary) must not discard it
+      // from history either, since it was started (and completed).
+      jest.setSystemTime(new Date('2026-01-01T10:30:00Z'))
+      await GameService.initGame()
+      history = await GameService.getMissionHistory()
+      expect(history.find(m => m.id === startedId)).toMatchObject({ status: 'success' })
+    })
   })
 
   describe('getGameState', () => {
