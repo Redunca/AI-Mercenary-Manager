@@ -8,5 +8,6 @@ export interface Player {
   maxNumberOfRecruits : number;
   maxAvailableMissions : number;
   credits : number;
+  tokens : number;
   dockingStations : DockingStation[]
 }

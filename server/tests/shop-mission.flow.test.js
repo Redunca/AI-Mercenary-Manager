@@ -44,7 +44,7 @@ function createFakeClient() {
     if (s.includes('INSERT INTO players')) {
       const [id, display_name] = params
       const player = {
-        id, display_name, wallet: 10000,
+        id, display_name, wallet: 10000, tokens: 0,
         max_recruits: 5, max_available_missions: 5,
         next_candidate_id: 1, next_recruit_id: 1, next_ship_id: 1,
         next_template_id: 1, mission_refresh_at: null, shop_refresh_at: null,
@@ -52,9 +52,9 @@ function createFakeClient() {
       state.players.push(player)
       return { rows: [player] }
     }
-    if (s.includes('SELECT max_recruits, max_available_missions FROM players')) {
+    if (s.includes('SELECT max_recruits, max_available_missions, wallet, tokens FROM players')) {
       const p = state.players.find(p => p.id === params[0])
-      return { rows: p ? [{ max_recruits: p.max_recruits, max_available_missions: p.max_available_missions }] : [] }
+      return { rows: p ? [{ max_recruits: p.max_recruits, max_available_missions: p.max_available_missions, wallet: p.wallet, tokens: p.tokens }] : [] }
     }
     if (s.includes('UPDATE players SET next_candidate_id = $1 WHERE id = $2')) {
       Object.assign(state.players.find(p => p.id === params[1]), { next_candidate_id: params[0] })
@@ -74,8 +74,8 @@ function createFakeClient() {
     if (s === 'SELECT * FROM players WHERE id = $1') {
       return { rows: state.players.filter(p => p.id === params[0]) }
     }
-    if (s === 'SELECT wallet FROM players WHERE id = $1 FOR UPDATE' || s === 'SELECT wallet FROM players WHERE id = $1') {
-      return { rows: state.players.filter(p => p.id === params[0]).map(p => ({ wallet: p.wallet })) }
+    if (s === 'SELECT wallet, tokens FROM players WHERE id = $1 FOR UPDATE') {
+      return { rows: state.players.filter(p => p.id === params[0]).map(p => ({ wallet: p.wallet, tokens: p.tokens })) }
     }
     if (s === 'SELECT wallet, shop_refresh_at FROM players WHERE id = $1 FOR UPDATE') {
       return { rows: state.players.filter(p => p.id === params[0]).map(p => ({ wallet: p.wallet, shop_refresh_at: p.shop_refresh_at })) }
@@ -100,6 +100,11 @@ function createFakeClient() {
     if (s === 'UPDATE players SET wallet = $1 WHERE id = $2') {
       const [wallet, id] = params
       Object.assign(state.players.find(p => p.id === id), { wallet })
+      return { rows: [] }
+    }
+    if (s === 'UPDATE players SET wallet = $1, tokens = $2 WHERE id = $3') {
+      const [wallet, tokens, id] = params
+      Object.assign(state.players.find(p => p.id === id), { wallet, tokens })
       return { rows: [] }
     }
 

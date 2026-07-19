@@ -6,6 +6,7 @@ import { CandidateService } from './candidate.service';
 import { ShipService } from './ship.service';
 import { ShopService } from './shop.service';
 import { GameSyncService } from './game-sync.service';
+import { GameService } from './game.service';
 
 @Injectable({ providedIn: 'root' })
 export class CommandService {
@@ -27,6 +28,7 @@ export class CommandService {
   shipService = inject(ShipService);
   shopService = inject(ShopService);
   private gameSync = inject(GameSyncService);
+  private game = inject(GameService);
 
   private input = '';
   private history: string[] = [];
@@ -314,9 +316,7 @@ export class CommandService {
   }
 
   private handleWallet() {
-    this.shopService.getWallet().subscribe(wallet => {
-      console.log(`💰 Current credit: ${wallet} ₹`);
-    });
+    console.log(`💰 Current credit: ${this.game.player$.value.credits} ₹`);
   }
 
 }

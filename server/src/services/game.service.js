@@ -17,6 +17,7 @@ const ConsumableService = require('./consumable.service')
 const { loadData } = require('../dataLoader')
 const { generateMission } = require('../engine/missionGenerator')
 const { isRefreshDue, currentIntervalBoundary } = require('../utils/refreshWindow')
+const { calculateTokenReward } = require('../utils/tokenReward')
 
 // 5 mission templates are generated per batch, replaced every 15 minutes
 // (aligned to wall-clock :00/:15/:30/:45 boundaries — see refreshWindow.js).
@@ -496,19 +497,30 @@ async function completeMission(client, playerId, instance, template, failed, shi
     await ShipService.updateShipStatus(client, playerId, instance.ship_id, 'docked')
   }
 
-  if (!failed && !instance.reward_forfeited) {
-    const creditsWon = instance.event_results
+  // Credits and tokens are two independent reward tracks paid out from the
+  // same completion event, so they're read and written together in one
+  // locked round trip rather than two: credits are gated on
+  // !instance.reward_forfeited (an event mid-mission can zero them out even
+  // on an otherwise-successful run), while tokens are gated only on
+  // !failed — reward_forfeited is deliberately NOT checked for tokens,
+  // since the success-ratio formula below already prices in a bad event.
+  if (!failed) {
+    const totalEvents = template.events.length
+    const tokenBase = loadJson('difficulty-tables.json')[template.difficulty]?.tokenBase ?? 0
+    const tokensWon = calculateTokenReward(tokenBase, instance.event_results, totalEvents)
+
+    const creditsWon = instance.reward_forfeited ? 0 : instance.event_results
       .filter(r => r.rewardEarned?.type === 'CREDITS')
       .reduce((sum, r) => sum + r.rewardEarned.amount, 0)
 
-    if (creditsWon > 0) {
+    if (creditsWon > 0 || tokensWon > 0) {
       const player = await client.query(
-        'SELECT wallet FROM players WHERE id = $1 FOR UPDATE',
+        'SELECT wallet, tokens FROM players WHERE id = $1 FOR UPDATE',
         [playerId],
       )
       await client.query(
-        'UPDATE players SET wallet = $1 WHERE id = $2',
-        [player.rows[0].wallet + creditsWon, playerId],
+        'UPDATE players SET wallet = $1, tokens = $2 WHERE id = $3',
+        [player.rows[0].wallet + creditsWon, player.rows[0].tokens + tokensWon, playerId],
       )
     }
   }
@@ -926,7 +938,7 @@ async function renameRecruit(client, playerId, recruitId, newName) {
 
 async function buildGameState(client, playerId) {
   const playerResult = await client.query(
-    'SELECT max_recruits, max_available_missions FROM players WHERE id = $1',
+    'SELECT max_recruits, max_available_missions, wallet, tokens FROM players WHERE id = $1',
     [playerId],
   )
   const player = playerResult.rows[0]
@@ -1014,6 +1026,8 @@ async function buildGameState(client, playerId) {
     player: {
       maxNumberOfRecruits: player.max_recruits,
       maxAvailableMissions: player.max_available_missions,
+      credits: player.wallet,
+      tokens: player.tokens,
     },
     recruits: recruitsResult.rows.map(rowToRecruit),
     candidates: candidatesResult.rows.map(rowToCandidate),

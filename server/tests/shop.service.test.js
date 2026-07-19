@@ -172,20 +172,6 @@ describe('Shop Service', () => {
     });
   });
 
-  describe('getPlayerWallet', () => {
-    test('returns the player balance', async () => {
-      mockClient.query.mockResolvedValue({ rows: [{ wallet: 8000 }] });
-      const result = await shop.getPlayerWallet(mockClient, 1);
-      expect(result).toBe(8000);
-    });
-
-    test('returns 0 if the player cannot be found', async () => {
-      mockClient.query.mockResolvedValue({ rows: [] });
-      const result = await shop.getPlayerWallet(mockClient, 99);
-      expect(result).toBe(0);
-    });
-  });
-
   describe('buyShip', () => {
     test('returns an error if the player cannot be found', async () => {
       mockClient.query.mockResolvedValueOnce({ rows: [] }); // player lookup FOR UPDATE

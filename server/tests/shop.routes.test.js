@@ -51,18 +51,6 @@ describe('Shop Routes', () => {
     })
   })
 
-  describe('GET /api/shop/wallet', () => {
-    test('returns the default player balance', async () => {
-      shop.getPlayerWallet.mockResolvedValue(8000)
-
-      const res = await request(app).get('/api/shop/wallet')
-
-      expect(res.status).toBe(200)
-      expect(res.body).toBe(8000)
-      expect(shop.getPlayerWallet).toHaveBeenCalledWith(mockClient, 1)
-    })
-  })
-
   describe('POST /api/shop/buy/:itemId', () => {
     test('delegates to buyShip when the item is a ship', async () => {
       shop.getShopItem.mockResolvedValue({ id: 1, type: 'ship' })

@@ -7,6 +7,8 @@ import { Ship } from './ship';
 export interface PlayerSnapshot {
   maxNumberOfRecruits: number;
   maxAvailableMissions: number;
+  credits: number;
+  tokens: number;
 }
 
 export interface GameSnapshot {

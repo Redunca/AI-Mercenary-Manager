@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ShopService, ShopItem, SHOP_ITEMS_REFRESH_INTERVAL_MS, isSoldOut } from '../../../core/shop.service';
 import { LayoutService } from '../../../core/layout.service';
 import { GameSyncService } from '../../../core/game-sync.service';
+import { GameService } from '../../../core/game.service';
 import { PanelModule } from '../../../models/panel';
 
 @Component({
@@ -16,15 +17,17 @@ export class ShopListComponent implements OnInit, OnDestroy {
   private shopService = inject(ShopService);
   private layout = inject(LayoutService);
   private gameSync = inject(GameSyncService);
+  private game = inject(GameService);
   items: ShopItem[] = [];
-  wallet = 0;
+
+  get wallet(): number {
+    return this.game.player$.value.credits;
+  }
 
   private refreshTimer: ReturnType<typeof setInterval> | null = null;
 
   ngOnInit() {
     this.refreshItems();
-    this.shopService.wallet$.subscribe(wallet => { this.wallet = wallet; });
-    this.shopService.refreshWallet();
 
     // The live rotation can swap out from under the player on the server's
     // 15-minute cycle; poll while this panel is open so it doesn't show a

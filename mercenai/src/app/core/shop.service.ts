@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 
 export interface ShopItem {
   id: number;
@@ -35,23 +35,12 @@ export function isSoldOut(item: Pick<ShopItem, 'remaining_stock'>): boolean {
 export class ShopService {
   private http = inject(HttpClient);
 
-  private walletSubject = new BehaviorSubject<number>(0);
-  public wallet$ = this.walletSubject.asObservable();
-
   getShopItems(): Observable<ShopItem[]> {
     return this.http.get<ShopItem[]>('/api/shop/items');
   }
 
   getShopItem(id: number): Observable<ShopItem> {
     return this.http.get<ShopItem>(`/api/shop/items/${id}`);
-  }
-
-  getWallet(): Observable<number> {
-    return this.http.get<number>('/api/shop/wallet');
-  }
-
-  refreshWallet(): void {
-    this.getWallet().subscribe(wallet => this.walletSubject.next(wallet));
   }
 
   buyItem(itemId: number, quantity: number = 1): Promise<any> {

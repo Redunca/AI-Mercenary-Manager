@@ -4,34 +4,39 @@
     "dcVariance": 5,
     "eventCount": 2,
     "rewardRange": { "min": 220, "max": 350 },
-    "failureConsequences": ["NO_REWARD"]
+    "failureConsequences": ["NO_REWARD"],
+    "tokenBase": 10
   },
   "STANDARD": {
     "dcBase": 15,
     "dcVariance": 5,
     "eventCount": 3,
     "rewardRange": { "min": 350, "max": 500 },
-    "failureConsequences": ["NO_REWARD", "HP_LOSS"]
+    "failureConsequences": ["NO_REWARD", "HP_LOSS"],
+    "tokenBase": 15
   },
   "HARD": {
     "dcBase": 20,
     "dcVariance": 5,
     "eventCount": 4,
     "rewardRange": { "min": 520, "max": 750 },
-    "failureConsequences": ["HP_LOSS", "FORCED_DEPARTURE"]
+    "failureConsequences": ["HP_LOSS", "FORCED_DEPARTURE"],
+    "tokenBase": 20
   },
   "PERILOUS": {
     "dcBase": 25,
     "dcVariance": 5,
     "eventCount": 5,
     "rewardRange": { "min": 820, "max": 1150 },
-    "failureConsequences": ["HP_LOSS", "FORCED_DEPARTURE", "SHIP_DAMAGE"]
+    "failureConsequences": ["HP_LOSS", "FORCED_DEPARTURE", "SHIP_DAMAGE"],
+    "tokenBase": 30
   },
   "EPIC": {
     "dcBase": 30,
     "dcVariance": 5,
     "eventCount": 7,
     "rewardRange": { "min": 1150, "max": 1900 },
-    "failureConsequences": ["HP_LOSS", "FORCED_DEPARTURE", "SHIP_DAMAGE"]
+    "failureConsequences": ["HP_LOSS", "FORCED_DEPARTURE", "SHIP_DAMAGE"],
+    "tokenBase": 40
   }
 }

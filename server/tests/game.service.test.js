@@ -58,7 +58,7 @@ function createFakeClient() {
     if (s.includes('INSERT INTO players')) {
       const [id, display_name] = params
       const player = {
-        id, display_name, wallet: 10000,
+        id, display_name, wallet: 10000, tokens: 0,
         max_recruits: 5, max_available_missions: 5,
         next_candidate_id: 1, next_recruit_id: 1, next_ship_id: 1,
         next_template_id: 1, mission_refresh_at: null, shop_refresh_at: null,
@@ -66,9 +66,9 @@ function createFakeClient() {
       state.players.push(player)
       return { rows: [player] }
     }
-    if (s.includes('SELECT max_recruits, max_available_missions FROM players')) {
+    if (s.includes('SELECT max_recruits, max_available_missions, wallet, tokens FROM players')) {
       const p = state.players.find(p => p.id === params[0])
-      return { rows: p ? [{ max_recruits: p.max_recruits, max_available_missions: p.max_available_missions }] : [] }
+      return { rows: p ? [{ max_recruits: p.max_recruits, max_available_missions: p.max_available_missions, wallet: p.wallet, tokens: p.tokens }] : [] }
     }
     if (s.includes('UPDATE players SET next_candidate_id = $1 WHERE id = $2')) {
       const [nextId, id] = params
@@ -93,12 +93,12 @@ function createFakeClient() {
     if (s === 'SELECT * FROM players WHERE id = $1') {
       return { rows: state.players.filter(p => p.id === params[0]) }
     }
-    if (s === 'SELECT wallet FROM players WHERE id = $1 FOR UPDATE') {
-      return { rows: state.players.filter(p => p.id === params[0]).map(p => ({ wallet: p.wallet })) }
+    if (s === 'SELECT wallet, tokens FROM players WHERE id = $1 FOR UPDATE') {
+      return { rows: state.players.filter(p => p.id === params[0]).map(p => ({ wallet: p.wallet, tokens: p.tokens })) }
     }
-    if (s === 'UPDATE players SET wallet = $1 WHERE id = $2') {
-      const [wallet, id] = params
-      Object.assign(state.players.find(p => p.id === id), { wallet })
+    if (s === 'UPDATE players SET wallet = $1, tokens = $2 WHERE id = $3') {
+      const [wallet, tokens, id] = params
+      Object.assign(state.players.find(p => p.id === id), { wallet, tokens })
       return { rows: [] }
     }
 
@@ -578,7 +578,7 @@ describe('GameService', () => {
     test('exposes the recruits, candidates, available missions and player limits', async () => {
       const result = await GameService.getGameState()
 
-      expect(result.player).toEqual({ maxNumberOfRecruits: 5, maxAvailableMissions: 5 })
+      expect(result.player).toEqual({ maxNumberOfRecruits: 5, maxAvailableMissions: 5, credits: 10000, tokens: 0 })
       expect(result.recruits).toHaveLength(1)
       expect(result.candidates).toHaveLength(4)
       expect(result.missions.length).toBeLessThanOrEqual(5)
@@ -773,6 +773,88 @@ describe('GameService', () => {
 
       const totalReward = updated.event_results.reduce((sum, r) => sum + r.rewardEarned.amount, 0)
       expect(state.players[0].wallet).toBe(10000 + totalReward)
+      // ROUTINE tokenBase is 10; both of 2 events succeeded -> 10 * (0.5 + 2/2) = 15
+      expect(state.players[0].tokens).toBe(15)
+    })
+
+    test('a failed mission leaves tokens unchanged', async () => {
+      const instance = await launchSeededMission({
+        id: HP_LOSS_TEMPLATE_ID,
+        difficulty: 'STANDARD',
+        events: [
+          buildEvent({ id: 'e1', type: 'ENGINEERING', attribute: 'engineering', dc: 18, failureConsequence: 'HP_LOSS' }),
+          buildEvent({ id: 'e2', type: 'ENGINEERING', attribute: 'engineering', dc: 10, failureConsequence: 'HP_LOSS' }),
+          buildEvent({ id: 'e3', type: 'SURVIVAL', attribute: 'survival', dc: 20, failureConsequence: 'HP_LOSS' }),
+        ],
+      })
+      instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
+      rollAction.mockReturnValue({ d20: 1, bonus: 0, diceNotation: '—', total: 1 })
+      state.recruits.find(r => r.id === 1).hp = 3 // dies on the first HP_LOSS failure (rollDie -> 3)
+      rollDie.mockReturnValue(3)
+
+      await GameService.syncGame()
+      const updated = state.missionInstances[0]
+
+      expect(updated.status).toBe('failed')
+      expect(state.players[0].tokens).toBe(0)
+    })
+
+    test('a successful mission with a mix of passed and failed events awards the correctly-scaled token amount', async () => {
+      // STANDARD tokenBase is 15, 3 events. 2 of 3 succeed, none of them
+      // HP_LOSS-lethal, so the mission still ends in success:
+      // 15 * (0.5 + 2/3) = 17.4999... -> rounds to 17
+      const instance = await launchSeededMission({
+        id: HP_LOSS_TEMPLATE_ID,
+        difficulty: 'STANDARD',
+        events: [
+          buildEvent({ id: 'e1', type: 'ENGINEERING', attribute: 'engineering', dc: 5, failureConsequence: 'HP_LOSS' }),
+          buildEvent({ id: 'e2', type: 'ENGINEERING', attribute: 'engineering', dc: 5, failureConsequence: 'HP_LOSS' }),
+          buildEvent({ id: 'e3', type: 'SURVIVAL', attribute: 'survival', dc: 30, failureConsequence: 'HP_LOSS' }),
+        ],
+      })
+      instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
+      rollAction
+        .mockReturnValueOnce({ d20: 20, bonus: 0, diceNotation: '—', total: 20 }) // e1 success
+        .mockReturnValueOnce({ d20: 20, bonus: 0, diceNotation: '—', total: 20 }) // e2 success
+        .mockReturnValueOnce({ d20: 1, bonus: 0, diceNotation: '—', total: 1 })   // e3 failure (HP_LOSS)
+      rollDie.mockReturnValue(4) // survivable HP loss
+
+      await GameService.syncGame()
+      const updated = state.missionInstances[0]
+
+      expect(updated.status).toBe('success')
+      expect(updated.event_results.filter(r => r.success)).toHaveLength(2)
+      expect(state.players[0].tokens).toBe(17)
+    })
+
+    // This is the one behavior most likely to look like a bug at review
+    // time: reward_forfeited zeroes out credits but NOT tokens. That's
+    // intentional — the token formula already prices in a bad event via the
+    // success ratio, so there's no need to also zero it out the way credits
+    // are. See tokenReward.js and the completeMission gating for the
+    // reasoning.
+    test('a successful-but-reward_forfeited mission still awards tokens, even though credits are zero', async () => {
+      const instance = await launchSeededMission({
+        id: TWO_EVENT_TEMPLATE_ID,
+        difficulty: 'ROUTINE',
+        events: [
+          buildEvent({ id: 'e1', type: 'RECON', attribute: 'perception', dc: 30, failureConsequence: 'NO_REWARD', rewardAmount: 100 }),
+          buildEvent({ id: 'e2', type: 'BREACH', attribute: 'engineering', dc: 5, failureConsequence: 'NO_REWARD', rewardAmount: 150 }),
+        ],
+      })
+      instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
+      rollAction
+        .mockReturnValueOnce({ d20: 1, bonus: 0, diceNotation: '—', total: 1 })   // e1 fails -> NO_REWARD, rewardForfeited = true
+        .mockReturnValueOnce({ d20: 20, bonus: 0, diceNotation: '—', total: 20 }) // e2 succeeds
+
+      await GameService.syncGame()
+      const updated = state.missionInstances[0]
+
+      expect(updated.status).toBe('success')
+      expect(updated.reward_forfeited).toBe(true)
+      expect(state.players[0].wallet).toBe(10000) // credits are forfeited
+      // ROUTINE tokenBase is 10; 1 of 2 events succeeded -> 10 * (0.5 + 1/2) = 10
+      expect(state.players[0].tokens).toBe(10)
     })
 
     test('an HP_LOSS failure hurts the recruit but still returns the crew and the ship to base', async () => {

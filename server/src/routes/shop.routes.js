@@ -33,18 +33,6 @@ router.get('/items/:id', async (req, res, next) => {
   }
 })
 
-router.get('/wallet', async (_req, res, next) => {
-  const client = await pool.connect()
-  try {
-    const wallet = await shop.getPlayerWallet(client, PLAYER_ID)
-    res.json(wallet)
-  } catch (err) {
-    next(err)
-  } finally {
-    client.release()
-  }
-})
-
 router.post('/buy/:itemId', async (req, res, next) => {
   const client = await pool.connect()
   try {

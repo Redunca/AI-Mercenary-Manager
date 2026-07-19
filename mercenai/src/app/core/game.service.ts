@@ -14,7 +14,8 @@ export class GameService {
   recruitHired$ = new Subject<Recruit>();
   recruits: Recruit[] = [];
   player$ = new BehaviorSubject<Player>({
-      credits:0,
+      credits: 0,
+      tokens: 0,
       dockingStations: [],
       maxAvailableMissions: 5,
       maxNumberOfRecruits: 5
@@ -25,7 +26,8 @@ export class GameService {
   applyState(state: GameSnapshot): void {
     this.recruits = state.recruits;
     this.player$.next({
-      credits: 0,
+      credits: state.player.credits,
+      tokens: state.player.tokens,
       dockingStations: [],
       maxNumberOfRecruits: state.player.maxNumberOfRecruits,
       maxAvailableMissions: state.player.maxAvailableMissions,

@@ -116,14 +116,6 @@ async function lockRotationItem(client, playerId, itemId) {
   return result.rows[0] || null
 }
 
-async function getPlayerWallet(client, playerId) {
-  const result = await client.query(
-    'SELECT wallet FROM players WHERE id = $1',
-    [playerId]
-  )
-  return result.rows[0]?.wallet || 0
-}
-
 async function buyShip(client, playerId, shopItemId, now = new Date()) {
   const player = await client.query(
     'SELECT wallet, shop_refresh_at FROM players WHERE id = $1 FOR UPDATE',
@@ -371,7 +363,6 @@ async function seedShopItems(client) {
 module.exports = {
   getShopItems,
   getShopItem,
-  getPlayerWallet,
   buyShip,
   buyConsumable,
   seedShopItems,
