@@ -16,6 +16,7 @@ export enum PanelModule{
   ShipDetail = "ship-detail",
   ShopList = "shop-list",
   ShopDetail = "shop-detail",
+  Self = "self",
 }
 
 export interface Panel {

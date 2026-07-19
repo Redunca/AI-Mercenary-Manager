@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "name": "Recruit Bay Expansion",
+    "description": "Increases the number of recruits you can have at once.",
+    "appliesTo": "players.max_recruits",
+    "baseValue": 5,
+    "increment": 1,
+    "maxValue": 20,
+    "costs": [50, 65, 80, 100, 125, 155, 195, 245, 305, 380, 475, 595, 745, 930, 1165]
+  },
+  {
+    "id": 2,
+    "name": "Mission Board Expansion",
+    "description": "Increases the number of missions available on the board at once.",
+    "appliesTo": "players.max_available_missions",
+    "baseValue": 5,
+    "increment": 1,
+    "maxValue": 20,
+    "costs": [50, 65, 80, 100, 125, 155, 195, 245, 305, 380, 475, 595, 745, 930, 1165]
+  },
+  {
+    "id": 3,
+    "name": "Docking Station Expansion",
+    "description": "Adds a new docking station, increasing the number of ships you can own at once.",
+    "appliesTo": "docking_stations (insert capacity:1 row)",
+    "baseValue": 5,
+    "increment": 1,
+    "maxValue": 10,
+    "costs": [60, 90, 135, 200, 300]
+  },
+  {
+    "id": 4,
+    "name": "Shop Rotation Expansion",
+    "description": "Increases the number of items listed in the shop at once.",
+    "appliesTo": "players.shop_rotation_size",
+    "baseValue": 5,
+    "increment": 1,
+    "maxValueSource": "shopCatalogCount",
+    "costs": [70, 90, 115, 145, 185, 235, 295, 370, 465, 580, 725]
+  },
+  {
+    "id": 5,
+    "name": "Stash Expansion",
+    "description": "Increases the number of distinct consumable stacks you can hold in your stash at once.",
+    "appliesTo": "players.inventory_capacity",
+    "baseValue": 5,
+    "increment": 1,
+    "maxValueSource": "consumableCatalogCount",
+    "costs": [60, 75, 95, 120, 150, 190, 240, 300]
+  },
+  {
+    "id": 6,
+    "name": "Shop Refresh Accelerator",
+    "description": "Shortens the interval between shop rotation refreshes.",
+    "appliesTo": "players.shop_refresh_interval_ms",
+    "baseValueMs": 900000,
+    "decrementMs": 30000,
+    "floorMs": 600000,
+    "costs": [80, 100, 125, 155, 195, 245, 305, 380, 475, 595]
+  },
+  {
+    "id": 7,
+    "name": "Mission Refresh Accelerator",
+    "description": "Shortens the interval between mission board refreshes.",
+    "appliesTo": "players.mission_refresh_interval_ms",
+    "baseValueMs": 900000,
+    "decrementMs": 30000,
+    "floorMs": 600000,
+    "costs": [80, 100, 125, 155, 195, 245, 305, 380, 475, 595]
+  }
+]

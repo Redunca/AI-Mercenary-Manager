@@ -55,10 +55,34 @@ describe('Consumable Service', () => {
     });
   });
 
+  describe('hasStashRoom', () => {
+    test('returns true when the stash has fewer distinct stacks than capacity', async () => {
+      mockClient.query
+        .mockResolvedValueOnce({ rows: [{ inventory_capacity: 5 }] })
+        .mockResolvedValueOnce({ rows: [{ count: 4 }] });
+
+      const result = await ConsumableService.hasStashRoom(mockClient, 1);
+
+      expect(result).toBe(true);
+    });
+
+    test('returns false once the stash is at capacity', async () => {
+      mockClient.query
+        .mockResolvedValueOnce({ rows: [{ inventory_capacity: 5 }] })
+        .mockResolvedValueOnce({ rows: [{ count: 5 }] });
+
+      const result = await ConsumableService.hasStashRoom(mockClient, 1);
+
+      expect(result).toBe(false);
+    });
+  });
+
   describe('addToStash', () => {
-    test('creates a new row when no stack exists yet', async () => {
+    test('creates a new row when no stack exists yet and the stash has room', async () => {
       mockClient.query
         .mockResolvedValueOnce({ rows: [] }) // lookup existing stack
+        .mockResolvedValueOnce({ rows: [{ inventory_capacity: 5 }] }) // hasStashRoom: capacity
+        .mockResolvedValueOnce({ rows: [{ count: 2 }] }) // hasStashRoom: count
         .mockResolvedValueOnce({ rows: [{ id: 1, name: 'Agility Stimpack', quantity: 1 }] }); // insert
 
       const result = await ConsumableService.addToStash(mockClient, 1, {
@@ -88,19 +112,48 @@ describe('Consumable Service', () => {
       );
       expect(result.quantity).toBe(3);
     });
+
+    test('returns null (no insert) when no stack exists yet and the stash is full', async () => {
+      mockClient.query
+        .mockResolvedValueOnce({ rows: [] }) // lookup existing stack
+        .mockResolvedValueOnce({ rows: [{ inventory_capacity: 5 }] }) // hasStashRoom: capacity
+        .mockResolvedValueOnce({ rows: [{ count: 5 }] }); // hasStashRoom: count, at capacity
+
+      const result = await ConsumableService.addToStash(mockClient, 1, {
+        name: 'Agility Stimpack', rarity: 'uncommon', price: 400, effect: 'ATTRIBUTE_BOOST',
+      });
+
+      expect(result).toBeNull();
+      expect(mockClient.query).not.toHaveBeenCalledWith(
+        expect.stringContaining('INSERT INTO consumables'), expect.any(Array),
+      );
+    });
+
+    test('restocking an existing stack is always allowed, even at capacity', async () => {
+      mockClient.query
+        .mockResolvedValueOnce({ rows: [{ id: 7, quantity: 5 }] }) // existing stack found
+        .mockResolvedValueOnce({ rows: [{ id: 7, quantity: 6 }] }); // UPDATE — no capacity check queried at all
+
+      const result = await ConsumableService.addToStash(mockClient, 1, {
+        name: 'Overdrive Injector', rarity: 'uncommon', price: 1200, effect: 'SPEED_BOOST', quantity: 1,
+      });
+
+      expect(mockClient.query).toHaveBeenCalledTimes(2); // lookup + update only, no hasStashRoom queries
+      expect(result.quantity).toBe(6);
+    });
   });
 
   describe('assignToShip / unassignFromShip', () => {
-    test('moves a full stack from the stash onto a ship', async () => {
+    test('moves a full stack from the stash onto a ship (no capacity check: destination is a ship, not the stash)', async () => {
       mockClient.query
         .mockResolvedValueOnce({ rows: [{ id: 1, player_id: 1, name: 'Trauma Nanites', quantity: 1, assigned_to_ship: null }] }) // getConsumable
-        .mockResolvedValueOnce({ rows: [] }) // DELETE (quantity === requested)
         .mockResolvedValueOnce({ rows: [] }) // lookup existing ship stack
+        .mockResolvedValueOnce({ rows: [] }) // DELETE (quantity === requested)
         .mockResolvedValueOnce({ rows: [{ id: 2, assigned_to_ship: 9, quantity: 1 }] }); // insert onto ship
 
       const result = await ConsumableService.assignToShip(mockClient, 1, 1, 9, 1);
 
-      expect(mockClient.query).toHaveBeenNthCalledWith(2,
+      expect(mockClient.query).toHaveBeenNthCalledWith(3,
         expect.stringContaining('DELETE FROM consumables'), [1]);
       expect(result.assigned_to_ship).toBe(9);
     });
@@ -123,16 +176,45 @@ describe('Consumable Service', () => {
 
     test('unassignFromShip moves a stack back to the stash (assigned_to_ship IS NULL)', async () => {
       mockClient.query
-        .mockResolvedValueOnce({ rows: [{ id: 1, player_id: 1, name: 'Trauma Nanites', quantity: 1, assigned_to_ship: 9 }] })
-        .mockResolvedValueOnce({ rows: [] })
-        .mockResolvedValueOnce({ rows: [] })
-        .mockResolvedValueOnce({ rows: [{ id: 3, assigned_to_ship: null, quantity: 1 }] });
+        .mockResolvedValueOnce({ rows: [{ id: 1, player_id: 1, name: 'Trauma Nanites', quantity: 1, assigned_to_ship: 9 }] }) // getConsumable
+        .mockResolvedValueOnce({ rows: [] }) // lookup existing stash stack (none) -> triggers hasStashRoom
+        .mockResolvedValueOnce({ rows: [{ inventory_capacity: 5 }] }) // hasStashRoom: capacity
+        .mockResolvedValueOnce({ rows: [{ count: 1 }] }) // hasStashRoom: count
+        .mockResolvedValueOnce({ rows: [] }) // DELETE
+        .mockResolvedValueOnce({ rows: [{ id: 3, assigned_to_ship: null, quantity: 1 }] }); // insert into stash
 
-      const result = await ConsumableService.unassignFromShip(mockClient, 1, 1, 1);
+      const result = await ConsumableService.unassignFromShip(mockClient, 1, 1, 1)
 
-      expect(mockClient.query).toHaveBeenNthCalledWith(3,
+      expect(mockClient.query).toHaveBeenNthCalledWith(2,
         expect.stringContaining('assigned_to_ship IS NULL'), [1, 'Trauma Nanites']);
       expect(result.assigned_to_ship).toBeNull();
+    });
+
+    test('unassignFromShip is blocked when the stash is full and no matching stack exists to merge into', async () => {
+      mockClient.query
+        .mockResolvedValueOnce({ rows: [{ id: 1, player_id: 1, name: 'Trauma Nanites', quantity: 1, assigned_to_ship: 9 }] })
+        .mockResolvedValueOnce({ rows: [] }) // no existing stash stack
+        .mockResolvedValueOnce({ rows: [{ inventory_capacity: 5 }] })
+        .mockResolvedValueOnce({ rows: [{ count: 5 }] }); // at capacity
+
+      const result = await ConsumableService.unassignFromShip(mockClient, 1, 1, 1)
+
+      expect(result).toBeNull()
+      expect(mockClient.query).not.toHaveBeenCalledWith(
+        expect.stringContaining('DELETE FROM consumables'), expect.any(Array),
+      )
+    });
+
+    test('unassignFromShip merging into an existing stash stack is always allowed, even at capacity', async () => {
+      mockClient.query
+        .mockResolvedValueOnce({ rows: [{ id: 1, player_id: 1, name: 'Trauma Nanites', quantity: 1, assigned_to_ship: 9 }] }) // getConsumable
+        .mockResolvedValueOnce({ rows: [{ id: 5, quantity: 2 }] }) // existing stash stack found -> no capacity check
+        .mockResolvedValueOnce({ rows: [] }) // DELETE
+        .mockResolvedValueOnce({ rows: [{ id: 5, assigned_to_ship: null, quantity: 3 }] }); // UPDATE existing stack
+
+      const result = await ConsumableService.unassignFromShip(mockClient, 1, 1, 1)
+
+      expect(result.quantity).toBe(3)
     });
   });
 

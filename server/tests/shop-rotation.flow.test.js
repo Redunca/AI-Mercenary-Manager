@@ -39,24 +39,39 @@ function buildMasterCatalog() {
 
 function createFakeClient(catalog, wallet = 100000) {
   const state = {
-    players: [{ id: 1, wallet, shop_refresh_at: null, next_ship_id: 1 }],
+    players: [{
+      id: 1, wallet, shop_refresh_at: null, next_ship_id: 1,
+      shop_rotation_size: 5, shop_refresh_interval_ms: 15 * 60 * 1000,
+    }],
     shopItems: catalog.map((item, i) => ({ id: i + 1, description: '', stats: null, effect: null, effect_data: {}, ...item })),
     shopRotation: [],
     purchaseHistory: [],
+    ships: [],
+    dockingStations: [{ id: 1, player_id: 1, capacity: 5 }],
   }
 
   const query = jest.fn(async (sql, params = []) => {
     const s = sql.replace(/\s+/g, ' ').trim()
 
-    if (s === 'SELECT wallet, shop_refresh_at FROM players WHERE id = $1 FOR UPDATE') {
-      return { rows: state.players.filter(p => p.id === params[0]).map(p => ({ wallet: p.wallet, shop_refresh_at: p.shop_refresh_at })) }
+    if (s === 'SELECT wallet, shop_refresh_at, shop_refresh_interval_ms FROM players WHERE id = $1 FOR UPDATE') {
+      return { rows: state.players.filter(p => p.id === params[0]).map(p => ({ wallet: p.wallet, shop_refresh_at: p.shop_refresh_at, shop_refresh_interval_ms: p.shop_refresh_interval_ms })) }
     }
-    if (s === 'SELECT shop_refresh_at FROM players WHERE id = $1') {
-      return { rows: state.players.filter(p => p.id === params[0]).map(p => ({ shop_refresh_at: p.shop_refresh_at })) }
+    if (s === 'SELECT shop_refresh_at, shop_refresh_interval_ms FROM players WHERE id = $1') {
+      return { rows: state.players.filter(p => p.id === params[0]).map(p => ({ shop_refresh_at: p.shop_refresh_at, shop_refresh_interval_ms: p.shop_refresh_interval_ms })) }
+    }
+    if (s === 'SELECT shop_rotation_size, shop_refresh_interval_ms FROM players WHERE id = $1') {
+      return { rows: state.players.filter(p => p.id === params[0]).map(p => ({ shop_rotation_size: p.shop_rotation_size, shop_refresh_interval_ms: p.shop_refresh_interval_ms })) }
     }
     if (s === 'UPDATE players SET shop_refresh_at = $1 WHERE id = $2') {
       Object.assign(state.players.find(p => p.id === params[1]), { shop_refresh_at: params[0] })
       return { rows: [] }
+    }
+    if (s === 'SELECT COUNT(*)::int AS count FROM ships WHERE player_id = $1 AND deleted_at IS NULL') {
+      return { rows: [{ count: state.ships.filter(sh => sh.player_id === params[0] && !sh.deleted_at).length }] }
+    }
+    if (s === 'SELECT COALESCE(SUM(capacity), 0)::int AS capacity FROM docking_stations WHERE player_id = $1') {
+      const capacity = state.dockingStations.filter(d => d.player_id === params[0]).reduce((sum, d) => sum + d.capacity, 0)
+      return { rows: [{ capacity }] }
     }
     if (s === 'SELECT next_ship_id FROM players WHERE id = $1') {
       return { rows: state.players.filter(p => p.id === params[0]).map(p => ({ next_ship_id: p.next_ship_id })) }
@@ -188,6 +203,31 @@ describe('Shop rotation lifecycle', () => {
 
     const secondBuy = await ShopService.buyShip(client, 1, ship.id, T0_PLUS_5)
     expect(secondBuy.error).toBe('Ship already purchased')
+  })
+
+  test('buyShip is blocked once docking capacity is full, and succeeds again after a dockedShips upgrade raises it', async () => {
+    const { client, state } = createFakeClient(buildMasterCatalog())
+    // Fill the starter 5-capacity station with 5 already-owned ships.
+    state.ships = Array.from({ length: 5 }, (_, i) => ({ id: i + 1, player_id: 1, deleted_at: null }))
+
+    const items = await ShopService.getShopItems(client, 1, T0)
+    const ship = items.find(i => i.type === 'ship')
+
+    const blocked = await ShopService.buyShip(client, 1, ship.id, T0)
+    expect(blocked.error).toBe('Docking capacity full')
+
+    // Mirrors self.service.js#applyUpgradeEffect's dockedShips case: insert
+    // one more capacity:1 docking_stations row.
+    state.dockingStations.push({ id: 2, player_id: 1, capacity: 1 })
+    ShipService.createShip.mockImplementationOnce((_client, playerId, shipData) => {
+      const created = { id: shipData.id, player_id: playerId, deleted_at: null }
+      state.ships.push(created)
+      return Promise.resolve(created)
+    })
+
+    const succeeded = await ShopService.buyShip(client, 1, ship.id, T0)
+    expect(succeeded.error).toBeUndefined()
+    expect(succeeded.success).toBe(true)
   })
 
   test('a consumable purchase that exceeds remaining stock is rejected without partially succeeding', async () => {

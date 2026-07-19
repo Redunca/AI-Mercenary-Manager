@@ -72,6 +72,14 @@
 | `buy <id> [quantity]`       | *(shop-list panel)* Buys an item by its ID; blocked if sold out |
 | `buy [quantity]`            | *(shop-detail panel)* Buys this item; blocked if sold out  |
 
+## Self
+
+| Command              | Description                                                          |
+|------------------------|-----------------------------------------------------------------------|
+| `self`               | Opens the self-upgrade panel: capacity/speed upgrades bought with tokens |
+| `self buy <id>`      | Buys the next tier of an upgrade by its ID; fails if maxed or tokens are insufficient |
+| `buy <id>`           | *(self panel)* Shortcut for `self buy <id>`                          |
+
 ## Missions
 
 | Command                              | Description                                          |

@@ -1,0 +1,12 @@
+<div>TASK: [<span class="task-title">Self</span>] ******************************************</div>
+<div>ok ==> {{ '{' }}</div>
+<div class="indent-one">"tokens" : {{ tokens }},</div>
+<div class="indent-one">"upgrades" : [</div>
+<div *ngFor="let u of upgrades" class="indent-two upgrade-entry" [class.maxed]="u.maxed">
+  <div>[{{ u.id }}] <span class="upgrade-name">{{ u.name }}</span> — tier {{ u.tier }} — current: {{ u.currentValue }} — <span class="cost" [class.cost-maxed]="u.maxed">{{ u.maxed ? 'MAXED' : (u.nextCost + ' tokens') }}</span></div>
+  <div class="indent-three muted">{{ u.description }}</div>
+</div>
+<div *ngIf="upgrades.length === 0" class="indent-two muted">— loading —</div>
+<div class="indent-one">]</div>
+<div>{{ '}' }}</div>
+<div class="hint">Terminal usage: self buy &lt;id&gt;</div>

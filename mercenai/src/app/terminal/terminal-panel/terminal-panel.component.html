@@ -77,13 +77,18 @@
         *ngSwitchCase="'shop-list'">
       </app-shop-list>
 
-      <app-shop-detail 
-        #moduleInstance 
+      <app-shop-detail
+        #moduleInstance
         *ngSwitchCase="'shop-detail'"
         [id]="panel.data?.id">
       </app-shop-detail>
 
-      <app-dashboard 
+      <app-self
+        #moduleInstance
+        *ngSwitchCase="'self'">
+      </app-self>
+
+      <app-dashboard
         #moduleInstance 
         *ngSwitchDefault>
       </app-dashboard>

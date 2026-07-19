@@ -19,13 +19,14 @@ const { generateMission } = require('../engine/missionGenerator')
 const { isRefreshDue, currentIntervalBoundary } = require('../utils/refreshWindow')
 const { calculateTokenReward } = require('../utils/tokenReward')
 
-// 5 mission templates are generated per batch, replaced every 15 minutes
-// (aligned to wall-clock :00/:15/:30/:45 boundaries — see refreshWindow.js).
-// Only *unstarted* templates from the previous batch are discarded on
-// refresh; anything started (in progress, succeeded, or failed) persists
-// forever regardless of batching.
+// A floor of 5 mission templates is generated per batch (more if
+// player.max_available_missions is higher — see generateMissionBatch),
+// replaced on a per-player wall-clock interval (player.mission_refresh_interval_ms,
+// 15 minutes by default — see refreshWindow.js and V015). Only *unstarted*
+// templates from the previous batch are discarded on refresh; anything
+// started (in progress, succeeded, or failed) persists forever regardless
+// of batching.
 const MISSION_BATCH_SIZE = 5
-const MISSION_REFRESH_INTERVAL_MS = 15 * 60 * 1000
 
 const DEFAULT_PLAYER_ID = 1
 const DATA_DIR = path.join(__dirname, '../../data')
@@ -64,10 +65,15 @@ function buildLogContext({ template, crewMembers = [], actingRecruit = null }) {
 }
 
 // Discards every mission_template that was never started (no mission_instance
-// exists for it) and replaces them with MISSION_BATCH_SIZE freshly generated
-// ones, using the player's monotonically increasing next_template_id counter
-// (templates persist forever once started, so ids can't be reset/reused the
-// way refreshCandidates resets next_candidate_id).
+// exists for it) and replaces them with a freshly generated batch, using the
+// player's monotonically increasing next_template_id counter (templates
+// persist forever once started, so ids can't be reset/reused the way
+// refreshCandidates resets next_candidate_id).
+//
+// Batch size is max(MISSION_BATCH_SIZE, player.max_available_missions): the
+// "missionList" self-upgrade grows how many missions are visible at once
+// (players.max_available_missions), so the batch must be at least that big
+// or a maxed-out board would just show fewer available missions per cycle.
 async function generateMissionBatch(client, player, now) {
   const startedTemplateIds = new Set(
     (await client.query(
@@ -83,7 +89,8 @@ async function generateMissionBatch(client, player, now) {
 
   const data = loadData()
   let nextId = player.next_template_id
-  for (let i = 0; i < MISSION_BATCH_SIZE; i++) {
+  const batchSize = Math.max(MISSION_BATCH_SIZE, player.max_available_missions)
+  for (let i = 0; i < batchSize; i++) {
     const mission = generateMission(data, {})
     await client.query(
       `INSERT INTO mission_templates (id, name, description, difficulty, events, planet)
@@ -96,7 +103,16 @@ async function generateMissionBatch(client, player, now) {
     nextId++
   }
 
-  const refreshedAt = new Date(currentIntervalBoundary(now, MISSION_REFRESH_INTERVAL_MS))
+  // The refresh clock is still floored to the *fixed* wall-clock grid
+  // implied by the interval, not to whatever moment this refresh actually
+  // ran at. Once mission_refresh_interval_ms is shortened below 15 minutes
+  // by the "missionRefreshSpeed" upgrade, those boundaries stop landing on
+  // tidy :00/:15/:30/:45 marks for that player — e.g. a 10-minute interval
+  // floors to :00/:10/:20/:30/:40/:50. That's an accepted tradeoff: reusing
+  // currentIntervalBoundary keeps refresh timing deterministic and testable
+  // without per-player special-casing, at the cost of "clean" clock times
+  // once a player has upgraded their refresh speed.
+  const refreshedAt = new Date(currentIntervalBoundary(now, player.mission_refresh_interval_ms))
   await client.query(
     'UPDATE players SET next_template_id = $1, mission_refresh_at = $2 WHERE id = $3',
     [nextId, refreshedAt, player.id],
@@ -106,10 +122,11 @@ async function generateMissionBatch(client, player, now) {
 }
 
 // Computed lazily, at state read/sync time: no background scheduler. If the
-// wall-clock 15-minute boundary has moved on since the last recorded
-// refresh (or nothing has ever been generated yet), generate a new batch.
+// wall-clock boundary (at the player's current mission_refresh_interval_ms)
+// has moved on since the last recorded refresh (or nothing has ever been
+// generated yet), generate a new batch.
 async function ensureMissionBatch(client, player, now = new Date()) {
-  if (isRefreshDue(player.mission_refresh_at, now, MISSION_REFRESH_INTERVAL_MS)) {
+  if (isRefreshDue(player.mission_refresh_at, now, player.mission_refresh_interval_ms)) {
     await generateMissionBatch(client, player, now)
   }
 }
@@ -416,12 +433,7 @@ async function resolveEvents(client, playerId, instance, template, crewMembers) 
         eventResults.push(result)
         logs.push(buildEventResultLogs({
           eventResult: result,
-          missionId,
-          missionName: template.name,
-          recruitName: bestRecruit.name,
-          recruitPerks: bestRecruit.perks,
-          recruitFlaws: bestRecruit.flaws,
-          recruitPersonality: bestRecruit.personality,
+          context: buildLogContext({ template, crewMembers, actingRecruit: bestRecruit }),
         }))
         await insertLogEntries(client, playerId, [
           ...logs[logs.length - 1].mission,
@@ -443,12 +455,7 @@ async function resolveEvents(client, playerId, instance, template, crewMembers) 
             eventResults.push(result)
             logs.push(buildEventResultLogs({
               eventResult: result,
-              missionId,
-              missionName: template.name,
-              recruitName: bestRecruit.name,
-              recruitPerks: bestRecruit.perks,
-              recruitFlaws: bestRecruit.flaws,
-              recruitPersonality: bestRecruit.personality,
+              context: buildLogContext({ template, crewMembers, actingRecruit: bestRecruit }),
             }))
             await insertLogEntries(client, playerId, [
               ...logs[logs.length - 1].mission,

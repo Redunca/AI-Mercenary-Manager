@@ -48,6 +48,8 @@ function createFakeClient() {
         max_recruits: 5, max_available_missions: 5,
         next_candidate_id: 1, next_recruit_id: 1, next_ship_id: 1,
         next_template_id: 1, mission_refresh_at: null, shop_refresh_at: null,
+        mission_refresh_interval_ms: 900000, shop_refresh_interval_ms: 900000,
+        shop_rotation_size: 5, inventory_capacity: 5,
       }
       state.players.push(player)
       return { rows: [player] }
@@ -77,16 +79,32 @@ function createFakeClient() {
     if (s === 'SELECT wallet, tokens FROM players WHERE id = $1 FOR UPDATE') {
       return { rows: state.players.filter(p => p.id === params[0]).map(p => ({ wallet: p.wallet, tokens: p.tokens })) }
     }
-    if (s === 'SELECT wallet, shop_refresh_at FROM players WHERE id = $1 FOR UPDATE') {
-      return { rows: state.players.filter(p => p.id === params[0]).map(p => ({ wallet: p.wallet, shop_refresh_at: p.shop_refresh_at })) }
+    if (s === 'SELECT wallet, shop_refresh_at, shop_refresh_interval_ms FROM players WHERE id = $1 FOR UPDATE') {
+      return { rows: state.players.filter(p => p.id === params[0]).map(p => ({ wallet: p.wallet, shop_refresh_at: p.shop_refresh_at, shop_refresh_interval_ms: p.shop_refresh_interval_ms })) }
     }
-    if (s === 'SELECT shop_refresh_at FROM players WHERE id = $1') {
-      return { rows: state.players.filter(p => p.id === params[0]).map(p => ({ shop_refresh_at: p.shop_refresh_at })) }
+    if (s === 'SELECT shop_refresh_at, shop_refresh_interval_ms FROM players WHERE id = $1') {
+      return { rows: state.players.filter(p => p.id === params[0]).map(p => ({ shop_refresh_at: p.shop_refresh_at, shop_refresh_interval_ms: p.shop_refresh_interval_ms })) }
+    }
+    if (s === 'SELECT shop_rotation_size, shop_refresh_interval_ms FROM players WHERE id = $1') {
+      return { rows: state.players.filter(p => p.id === params[0]).map(p => ({ shop_rotation_size: p.shop_rotation_size, shop_refresh_interval_ms: p.shop_refresh_interval_ms })) }
     }
     if (s === 'UPDATE players SET shop_refresh_at = $1 WHERE id = $2') {
       const [shop_refresh_at, id] = params
       Object.assign(state.players.find(p => p.id === id), { shop_refresh_at })
       return { rows: [] }
+    }
+    if (s === 'SELECT inventory_capacity FROM players WHERE id = $1') {
+      return { rows: state.players.filter(p => p.id === params[0]).map(p => ({ inventory_capacity: p.inventory_capacity })) }
+    }
+    if (s === 'SELECT COUNT(*)::int AS count FROM consumables WHERE player_id = $1 AND assigned_to_ship IS NULL') {
+      return { rows: [{ count: state.consumables.filter(c => c.player_id === params[0] && c.assigned_to_ship == null).length }] }
+    }
+    if (s === 'SELECT COUNT(*)::int AS count FROM ships WHERE player_id = $1 AND deleted_at IS NULL') {
+      return { rows: [{ count: state.ships.filter(sh => sh.player_id === params[0] && !sh.deleted_at).length }] }
+    }
+    if (s === 'SELECT COALESCE(SUM(capacity), 0)::int AS capacity FROM docking_stations WHERE player_id = $1') {
+      const capacity = state.dockingStations.filter(d => d.player_id === params[0]).reduce((sum, d) => sum + d.capacity, 0)
+      return { rows: [{ capacity }] }
     }
     if (s === 'SELECT next_ship_id FROM players WHERE id = $1') {
       return { rows: state.players.filter(p => p.id === params[0]).map(p => ({ next_ship_id: p.next_ship_id })) }

@@ -6,7 +6,7 @@ import { TerminalPanelComponent } from '../terminal-panel/terminal-panel.compone
 @Component({
   selector: 'app-layout-node',
   standalone: true,
-  imports: [CommonModule, TerminalPanelComponent, forwardRef(() => LayoutNodeComponent)],
+  imports: [CommonModule, forwardRef(() => TerminalPanelComponent), forwardRef(() => LayoutNodeComponent)],
   templateUrl: './layout-node.component.html',
   styleUrl: './layout-node.component.scss'
 })

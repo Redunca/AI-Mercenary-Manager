@@ -8,6 +8,7 @@ const gameRoutes = require('./src/routes/game.routes')
 const shopRoutes = require('./src/routes/shop.routes')
 const shipRoutes = require('./src/routes/ship.routes')
 const consumableRoutes = require('./src/routes/consumable.routes')
+const selfRoutes = require('./src/routes/self.routes')
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -23,6 +24,7 @@ app.use('/api/game', gameRoutes)
 app.use('/api/shop', shopRoutes)
 app.use('/api/ships', shipRoutes)
 app.use('/api/consumables', consumableRoutes)
+app.use('/api/self', selfRoutes)
 
 app.use((err, _req, res, _next) => {
   console.error(err)

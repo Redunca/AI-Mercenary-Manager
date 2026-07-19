@@ -30,6 +30,19 @@ async function getShipInventory(client, shipId) {
   return result.rows
 }
 
+// Whether the player's stash has room for one more *distinct* stack
+// (existing-stack restocks are always allowed regardless of count — this is
+// only consulted on the "would create a new row" path).
+async function hasStashRoom(client, playerId) {
+  const capacityResult = await client.query('SELECT inventory_capacity FROM players WHERE id = $1', [playerId])
+  const capacity = capacityResult.rows[0]?.inventory_capacity ?? 0
+  const countResult = await client.query(
+    'SELECT COUNT(*)::int AS count FROM consumables WHERE player_id = $1 AND assigned_to_ship IS NULL',
+    [playerId]
+  )
+  return countResult.rows[0].count < capacity
+}
+
 // Purchased consumables land in the player's stash (assigned_to_ship IS NULL),
 // merging into an existing stack of the same item rather than creating a
 // duplicate row.
@@ -47,6 +60,8 @@ async function addToStash(client, playerId, { name, description, rarity, price, 
     return updated.rows[0]
   }
 
+  if (!(await hasStashRoom(client, playerId))) return null
+
   const inserted = await client.query(
     `INSERT INTO consumables (player_id, name, description, rarity, price, effect, effect_data, quantity)
      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
@@ -60,12 +75,6 @@ async function moveStack(client, playerId, consumableId, destinationShipId, quan
   const source = await getConsumable(client, consumableId)
   if (!source || source.player_id !== playerId || source.quantity < quantity) return null
 
-  if (source.quantity === quantity) {
-    await client.query('DELETE FROM consumables WHERE id = $1', [source.id])
-  } else {
-    await client.query('UPDATE consumables SET quantity = quantity - $1 WHERE id = $2', [quantity, source.id])
-  }
-
   const destinationQuery = destinationShipId === null
     ? client.query(
       'SELECT * FROM consumables WHERE player_id = $1 AND name = $2 AND assigned_to_ship IS NULL',
@@ -76,6 +85,17 @@ async function moveStack(client, playerId, consumableId, destinationShipId, quan
       [playerId, source.name, destinationShipId]
     )
   const destination = await destinationQuery
+
+  // Only the "create a new stash stack" path is capacity-gated: merging into
+  // an existing stack (stash or ship) is always allowed regardless of count.
+  const creatingNewStashStack = destinationShipId === null && destination.rows.length === 0
+  if (creatingNewStashStack && !(await hasStashRoom(client, playerId))) return null
+
+  if (source.quantity === quantity) {
+    await client.query('DELETE FROM consumables WHERE id = $1', [source.id])
+  } else {
+    await client.query('UPDATE consumables SET quantity = quantity - $1 WHERE id = $2', [quantity, source.id])
+  }
 
   if (destination.rows.length > 0) {
     const updated = await client.query(
@@ -138,6 +158,7 @@ module.exports = {
   getPlayerConsumables,
   getConsumable,
   getShipInventory,
+  hasStashRoom,
   addToStash,
   assignToShip,
   unassignFromShip,

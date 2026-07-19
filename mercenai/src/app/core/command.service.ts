@@ -5,6 +5,7 @@ import { MissionService } from './mission.service';
 import { CandidateService } from './candidate.service';
 import { ShipService } from './ship.service';
 import { ShopService } from './shop.service';
+import { SelfService } from './self.service';
 import { GameSyncService } from './game-sync.service';
 import { GameService } from './game.service';
 
@@ -21,12 +22,14 @@ export class CommandService {
     this.registerGlobalCommands('candidate', this.handleCandidate.bind(this));
     this.registerGlobalCommands('shop', this.handleShop.bind(this));
     this.registerGlobalCommands('wallet', this.handleWallet.bind(this));
+    this.registerGlobalCommands('self', this.handleSelf.bind(this));
   }
 
   missionService = inject(MissionService);
   candidateService = inject(CandidateService);
   shipService = inject(ShipService);
   shopService = inject(ShopService);
+  selfService = inject(SelfService);
   private gameSync = inject(GameSyncService);
   private game = inject(GameService);
 
@@ -317,6 +320,28 @@ export class CommandService {
 
   private handleWallet() {
     console.log(`💰 Current credit: ${this.game.player$.value.credits} ₹`);
+  }
+
+  private handleSelf(action?: string, ...args: string[]) {
+    if (!action) {
+      this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.Self);
+      return;
+    }
+
+    if (action === 'buy' && args[0]) {
+      void this.selfService.buyUpgrade(Number(args[0])).then(result => {
+        if (result?.error) {
+          console.warn('Purchase failed:', result.error);
+          return;
+        }
+        void this.gameSync.sync().then(() => {
+          this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.Self);
+        });
+      });
+      return;
+    }
+
+    console.warn('Usage: self | self buy <id>');
   }
 
 }

@@ -11,11 +11,12 @@ const { isRefreshDue, currentIntervalBoundary } = require('../utils/refreshWindo
 // their old, player-implicit signatures from routes.js.
 const DEFAULT_PLAYER_ID = 1
 
-// 5 shop_items are live per player at a time, drawn from the permanent
-// master catalog and replaced every 15 minutes (aligned to wall-clock
-// :00/:15/:30/:45 boundaries, same as mission batching — see
-// refreshWindow.js). Tracked independently from the mission refresh clock
-// via players.shop_refresh_at.
+// Historical defaults for the rotation size and refresh interval: as of the
+// self-upgrades session these are per-player, stored on players.shop_rotation_size
+// / players.shop_refresh_interval_ms (see V015) and grown by the "shopItems"
+// / "shopRefreshSpeed" upgrades in self.service.js. These constants now only
+// seed those columns' defaults (see V015) — refreshShopRotation() reads the
+// live per-player values instead.
 const SHOP_ROTATION_SIZE = 5
 const SHOP_REFRESH_INTERVAL_MS = 15 * 60 * 1000
 
@@ -51,8 +52,14 @@ function drawShopRotation(masterPool, rotationSize = SHOP_ROTATION_SIZE) {
 // has a hard FK to them). The newly drawn rotation starts each item back at
 // its full max_stock.
 async function refreshShopRotation(client, playerId, now) {
+  const playerResult = await client.query(
+    'SELECT shop_rotation_size, shop_refresh_interval_ms FROM players WHERE id = $1',
+    [playerId],
+  )
+  const { shop_rotation_size: rotationSize, shop_refresh_interval_ms: refreshIntervalMs } = playerResult.rows[0]
+
   const pool = (await client.query('SELECT * FROM shop_items ORDER BY id')).rows
-  const chosen = drawShopRotation(pool)
+  const chosen = drawShopRotation(pool, rotationSize)
 
   await client.query('DELETE FROM shop_rotation WHERE player_id = $1', [playerId])
   for (const item of chosen) {
@@ -62,18 +69,22 @@ async function refreshShopRotation(client, playerId, now) {
     )
   }
 
-  const refreshedAt = new Date(currentIntervalBoundary(now, SHOP_REFRESH_INTERVAL_MS))
+  const refreshedAt = new Date(currentIntervalBoundary(now, refreshIntervalMs))
   await client.query('UPDATE players SET shop_refresh_at = $1 WHERE id = $2', [refreshedAt, playerId])
   return refreshedAt
 }
 
 // Computed lazily, at state read/purchase time: no background scheduler. If
-// the wall-clock 15-minute boundary has moved on since the last recorded
-// refresh (or nothing has been drawn yet), draw a new rotation.
+// the wall-clock boundary (at the player's current shop_refresh_interval_ms)
+// has moved on since the last recorded refresh (or nothing has been drawn
+// yet), draw a new rotation.
 async function ensureShopRotation(client, playerId, now = new Date()) {
-  const result = await client.query('SELECT shop_refresh_at FROM players WHERE id = $1', [playerId])
-  const shopRefreshAt = result.rows[0]?.shop_refresh_at
-  if (isRefreshDue(shopRefreshAt, now, SHOP_REFRESH_INTERVAL_MS)) {
+  const result = await client.query(
+    'SELECT shop_refresh_at, shop_refresh_interval_ms FROM players WHERE id = $1',
+    [playerId],
+  )
+  const row = result.rows[0]
+  if (isRefreshDue(row?.shop_refresh_at, now, row?.shop_refresh_interval_ms)) {
     await refreshShopRotation(client, playerId, now)
   }
 }
@@ -118,12 +129,12 @@ async function lockRotationItem(client, playerId, itemId) {
 
 async function buyShip(client, playerId, shopItemId, now = new Date()) {
   const player = await client.query(
-    'SELECT wallet, shop_refresh_at FROM players WHERE id = $1 FOR UPDATE',
+    'SELECT wallet, shop_refresh_at, shop_refresh_interval_ms FROM players WHERE id = $1 FOR UPDATE',
     [playerId]
   )
   if (player.rows.length === 0) return { error: 'Player not found' }
 
-  if (isRefreshDue(player.rows[0].shop_refresh_at, now, SHOP_REFRESH_INTERVAL_MS)) {
+  if (isRefreshDue(player.rows[0].shop_refresh_at, now, player.rows[0].shop_refresh_interval_ms)) {
     await refreshShopRotation(client, playerId, now)
   }
 
@@ -138,6 +149,23 @@ async function buyShip(client, playerId, shopItemId, now = new Date()) {
 
   if (player.rows[0].wallet < item.price) {
     return { error: 'Insufficient credit' }
+  }
+
+  // Docked-ship cap is total ships owned (deleted_at IS NULL), not "currently
+  // at the station" — there's no separate docked/in-mission distinction for
+  // capacity purposes. Effective cap is SUM(docking_stations.capacity),
+  // grown by the "dockedShips" self-upgrade (see self.service.js), which
+  // inserts an extra capacity:1 row rather than updating a single column.
+  const shipCount = (await client.query(
+    'SELECT COUNT(*)::int AS count FROM ships WHERE player_id = $1 AND deleted_at IS NULL',
+    [playerId],
+  )).rows[0].count
+  const dockingCapacity = (await client.query(
+    'SELECT COALESCE(SUM(capacity), 0)::int AS capacity FROM docking_stations WHERE player_id = $1',
+    [playerId],
+  )).rows[0].capacity
+  if (shipCount >= dockingCapacity) {
+    return { error: 'Docking capacity full' }
   }
 
   // Create ship from shop item
@@ -186,12 +214,12 @@ async function buyShip(client, playerId, shopItemId, now = new Date()) {
 
 async function buyConsumable(client, playerId, shopItemId, quantity = 1, now = new Date()) {
   const player = await client.query(
-    'SELECT wallet, shop_refresh_at FROM players WHERE id = $1 FOR UPDATE',
+    'SELECT wallet, shop_refresh_at, shop_refresh_interval_ms FROM players WHERE id = $1 FOR UPDATE',
     [playerId]
   )
   if (player.rows.length === 0) return { error: 'Player not found' }
 
-  if (isRefreshDue(player.rows[0].shop_refresh_at, now, SHOP_REFRESH_INTERVAL_MS)) {
+  if (isRefreshDue(player.rows[0].shop_refresh_at, now, player.rows[0].shop_refresh_interval_ms)) {
     await refreshShopRotation(client, playerId, now)
   }
 
@@ -220,6 +248,9 @@ async function buyConsumable(client, playerId, shopItemId, quantity = 1, now = n
     effectData: item.effect_data,
     quantity,
   })
+  if (!consumable) {
+    return { error: 'Stash is full' }
+  }
 
   // Deduct from wallet
   const newWallet = player.rows[0].wallet - totalCost

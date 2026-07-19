@@ -1,9 +1,11 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 import { CommandService } from './command.service';
 import { LayoutService } from './layout.service';
+import { SelfService } from './self.service';
+import { GameSyncService } from './game-sync.service';
 import { PanelModule } from '../models/panel';
 
 describe('CommandService', () => {
@@ -103,6 +105,49 @@ describe('CommandService', () => {
     expect(() => service.routeCommand('this-command-does-not-exist', 999999)).not.toThrow();
     expect(warnSpy).toHaveBeenCalled();
   });
+
+  it('routes bare "self" to the self panel', () => {
+    const panelId = layout.addPanel(PanelModule.Dashboard);
+    layout.setActivePanel(panelId);
+
+    service.routeCommand('self', panelId);
+
+    expect(layout.getPanelById(panelId)?.module).toBe(PanelModule.Self);
+  });
+
+  it('"self buy <id>" calls SelfService.buyUpgrade and resyncs on success', fakeAsync(() => {
+    const panelId = layout.addPanel(PanelModule.Dashboard);
+    layout.setActivePanel(panelId);
+
+    const selfService = TestBed.inject(SelfService);
+    const gameSync = TestBed.inject(GameSyncService);
+    spyOn(selfService, 'buyUpgrade').and.resolveTo({ success: true });
+    spyOn(gameSync, 'sync').and.resolveTo({} as any);
+
+    service.routeCommand('self buy 3', panelId);
+    tick();
+
+    expect(selfService.buyUpgrade).toHaveBeenCalledWith(3);
+    expect(gameSync.sync).toHaveBeenCalled();
+    expect(layout.getPanelById(panelId)?.module).toBe(PanelModule.Self);
+  }));
+
+  it('"self buy <id>" logs the error and does not resync on failure', fakeAsync(() => {
+    const panelId = layout.addPanel(PanelModule.Dashboard);
+    layout.setActivePanel(panelId);
+
+    const selfService = TestBed.inject(SelfService);
+    const gameSync = TestBed.inject(GameSyncService);
+    spyOn(selfService, 'buyUpgrade').and.resolveTo({ error: 'Insufficient tokens' });
+    spyOn(gameSync, 'sync').and.resolveTo({} as any);
+    const warnSpy = spyOn(console, 'warn');
+
+    service.routeCommand('self buy 3', panelId);
+    tick();
+
+    expect(warnSpy).toHaveBeenCalledWith('Purchase failed:', 'Insufficient tokens');
+    expect(gameSync.sync).not.toHaveBeenCalled();
+  }));
 
   it('characterizes why a leaked newline corrupts the next command (motivates the UI fix)', () => {
     // Before the terminal-panel Enter-key preventDefault() fix, a trailing

@@ -89,17 +89,20 @@ describe('Shop Service', () => {
 
   describe('ensureShopRotation / refreshShopRotation', () => {
     test('does nothing if the refresh is not due yet', async () => {
-      mockClient.query.mockResolvedValueOnce({ rows: [{ shop_refresh_at: SAME_WINDOW_REFRESH_AT }] });
+      mockClient.query.mockResolvedValueOnce({
+        rows: [{ shop_refresh_at: SAME_WINDOW_REFRESH_AT, shop_refresh_interval_ms: 15 * 60 * 1000 }],
+      });
 
       await shop.ensureShopRotation(mockClient, 1, NOT_DUE);
 
-      expect(mockClient.query).toHaveBeenCalledTimes(1); // only the shop_refresh_at lookup
+      expect(mockClient.query).toHaveBeenCalledTimes(1); // only the shop_refresh_at/interval lookup
     });
 
     test('draws a fresh rotation if nothing has ever been refreshed', async () => {
       const pool = [{ id: 1, type: 'ship', max_stock: 1 }, { id: 2, type: 'consumable', max_stock: 3 }];
       mockClient.query
-        .mockResolvedValueOnce({ rows: [{ shop_refresh_at: null }] }) // lookup
+        .mockResolvedValueOnce({ rows: [{ shop_refresh_at: null, shop_refresh_interval_ms: 15 * 60 * 1000 }] }) // lookup
+        .mockResolvedValueOnce({ rows: [{ shop_rotation_size: 5, shop_refresh_interval_ms: 15 * 60 * 1000 }] }) // refreshShopRotation's player lookup
         .mockResolvedValueOnce({ rows: pool })                        // SELECT * FROM shop_items
         .mockResolvedValueOnce({ rows: [] })                          // DELETE FROM shop_rotation
         .mockResolvedValue({ rows: [] });                             // INSERTs + UPDATE players
@@ -125,7 +128,8 @@ describe('Shop Service', () => {
       const previousWindow = new Date('2026-01-01T09:45:00.000Z');
       const pool = [{ id: 1, type: 'ship', max_stock: 1 }];
       mockClient.query
-        .mockResolvedValueOnce({ rows: [{ shop_refresh_at: previousWindow }] })
+        .mockResolvedValueOnce({ rows: [{ shop_refresh_at: previousWindow, shop_refresh_interval_ms: 15 * 60 * 1000 }] })
+        .mockResolvedValueOnce({ rows: [{ shop_rotation_size: 5, shop_refresh_interval_ms: 15 * 60 * 1000 }] })
         .mockResolvedValueOnce({ rows: pool })
         .mockResolvedValue({ rows: [] });
 
@@ -133,12 +137,44 @@ describe('Shop Service', () => {
 
       expect(mockClient.query).toHaveBeenCalledWith('DELETE FROM shop_rotation WHERE player_id = $1', [1]);
     });
+
+    test('uses the player\'s shop_rotation_size instead of the historical default', async () => {
+      const pool = [
+        { id: 1, type: 'ship', max_stock: 1 },
+        ...Array.from({ length: 8 }, (_, i) => ({ id: 10 + i, type: 'consumable', max_stock: 3 })),
+      ];
+      mockClient.query
+        .mockResolvedValueOnce({ rows: [{ shop_rotation_size: 8, shop_refresh_interval_ms: 15 * 60 * 1000 }] })
+        .mockResolvedValueOnce({ rows: pool })
+        .mockResolvedValueOnce({ rows: [] })
+        .mockResolvedValue({ rows: [] });
+
+      await shop.refreshShopRotation(mockClient, 1, NOT_DUE);
+
+      const insertCalls = mockClient.query.mock.calls.filter(([sql]) =>
+        sql === 'INSERT INTO shop_rotation (player_id, shop_item_id, remaining_stock) VALUES ($1, $2, $3)');
+      expect(insertCalls).toHaveLength(8);
+    });
+
+    test('uses the player\'s shop_refresh_interval_ms instead of the historical default when computing the next boundary', async () => {
+      const pool = [{ id: 1, type: 'ship', max_stock: 1 }];
+      mockClient.query
+        .mockResolvedValueOnce({ rows: [{ shop_rotation_size: 5, shop_refresh_interval_ms: 10 * 60 * 1000 }] })
+        .mockResolvedValueOnce({ rows: pool })
+        .mockResolvedValueOnce({ rows: [] })
+        .mockResolvedValue({ rows: [] });
+
+      const refreshedAt = await shop.refreshShopRotation(mockClient, 1, new Date('2026-01-01T10:05:00.000Z'));
+
+      // Floored to a 10-minute boundary (:00/:10/:20/...), not the historical 15-minute one.
+      expect(refreshedAt.toISOString()).toBe('2026-01-01T10:00:00.000Z');
+    });
   });
 
   describe('getShopItems', () => {
     test('ensures the rotation is fresh, then returns the live 5 items via the join', async () => {
       mockClient.query
-        .mockResolvedValueOnce({ rows: [{ shop_refresh_at: SAME_WINDOW_REFRESH_AT }] }) // ensureShopRotation lookup (not due)
+        .mockResolvedValueOnce({ rows: [{ shop_refresh_at: SAME_WINDOW_REFRESH_AT, shop_refresh_interval_ms: 15 * 60 * 1000 }] }) // ensureShopRotation lookup (not due)
         .mockResolvedValueOnce({ rows: [{ id: 1, name: 'Corsair' }] });                  // join query
 
       const result = await shop.getShopItems(mockClient, 1, NOT_DUE);
@@ -154,7 +190,7 @@ describe('Shop Service', () => {
   describe('getShopItem', () => {
     test('returns null if the item is not in the current rotation', async () => {
       mockClient.query
-        .mockResolvedValueOnce({ rows: [{ shop_refresh_at: SAME_WINDOW_REFRESH_AT }] })
+        .mockResolvedValueOnce({ rows: [{ shop_refresh_at: SAME_WINDOW_REFRESH_AT, shop_refresh_interval_ms: 15 * 60 * 1000 }] })
         .mockResolvedValueOnce({ rows: [] });
 
       const result = await shop.getShopItem(mockClient, 999, 1, NOT_DUE);
@@ -164,7 +200,7 @@ describe('Shop Service', () => {
     test('returns the item if it is live', async () => {
       const item = { id: 1, name: 'Corsair', type: 'ship', price: 5000, remaining_stock: 1 };
       mockClient.query
-        .mockResolvedValueOnce({ rows: [{ shop_refresh_at: SAME_WINDOW_REFRESH_AT }] })
+        .mockResolvedValueOnce({ rows: [{ shop_refresh_at: SAME_WINDOW_REFRESH_AT, shop_refresh_interval_ms: 15 * 60 * 1000 }] })
         .mockResolvedValueOnce({ rows: [item] });
 
       const result = await shop.getShopItem(mockClient, 1, 1, NOT_DUE);
@@ -181,7 +217,7 @@ describe('Shop Service', () => {
 
     test('returns an error if the ship is not in the current rotation', async () => {
       mockClient.query
-        .mockResolvedValueOnce({ rows: [{ wallet: 10000, shop_refresh_at: SAME_WINDOW_REFRESH_AT }] }) // player FOR UPDATE
+        .mockResolvedValueOnce({ rows: [{ wallet: 10000, shop_refresh_at: SAME_WINDOW_REFRESH_AT, shop_refresh_interval_ms: 15 * 60 * 1000 }] }) // player FOR UPDATE
         .mockResolvedValueOnce({ rows: [] });                                                            // lockRotationItem → not found
 
       const result = await shop.buyShip(mockClient, 1, 99, NOT_DUE);
@@ -191,7 +227,7 @@ describe('Shop Service', () => {
     test('returns an error if the item is not a ship', async () => {
       const item = { id: 1, type: 'consumable', remaining_stock: 3 };
       mockClient.query
-        .mockResolvedValueOnce({ rows: [{ wallet: 10000, shop_refresh_at: SAME_WINDOW_REFRESH_AT }] })
+        .mockResolvedValueOnce({ rows: [{ wallet: 10000, shop_refresh_at: SAME_WINDOW_REFRESH_AT, shop_refresh_interval_ms: 15 * 60 * 1000 }] })
         .mockResolvedValueOnce({ rows: [item] });
 
       const result = await shop.buyShip(mockClient, 1, 1, NOT_DUE);
@@ -201,7 +237,7 @@ describe('Shop Service', () => {
     test('rejects a second purchase of an already-purchased ship', async () => {
       const item = { id: 1, type: 'ship', price: 5000, name: 'Corsair', rarity: 'common', stats: {}, remaining_stock: 0 };
       mockClient.query
-        .mockResolvedValueOnce({ rows: [{ wallet: 10000, shop_refresh_at: SAME_WINDOW_REFRESH_AT }] })
+        .mockResolvedValueOnce({ rows: [{ wallet: 10000, shop_refresh_at: SAME_WINDOW_REFRESH_AT, shop_refresh_interval_ms: 15 * 60 * 1000 }] })
         .mockResolvedValueOnce({ rows: [item] });
 
       const result = await shop.buyShip(mockClient, 1, 1, NOT_DUE);
@@ -211,19 +247,34 @@ describe('Shop Service', () => {
     test('returns an error if credit is insufficient', async () => {
       const item = { id: 1, type: 'ship', price: 5000, name: 'Corsair', rarity: 'common', stats: {}, remaining_stock: 1 };
       mockClient.query
-        .mockResolvedValueOnce({ rows: [{ wallet: 100, shop_refresh_at: SAME_WINDOW_REFRESH_AT }] })
+        .mockResolvedValueOnce({ rows: [{ wallet: 100, shop_refresh_at: SAME_WINDOW_REFRESH_AT, shop_refresh_interval_ms: 15 * 60 * 1000 }] })
         .mockResolvedValueOnce({ rows: [item] });
 
       const result = await shop.buyShip(mockClient, 1, 1, NOT_DUE);
       expect(result.error).toBe('Insufficient credit');
     });
 
+    test('rejects a purchase when the docking capacity is already full', async () => {
+      const item = { id: 1, type: 'ship', price: 5000, name: 'Corsair', rarity: 'common', stats: {}, remaining_stock: 1 };
+      mockClient.query
+        .mockResolvedValueOnce({ rows: [{ wallet: 10000, shop_refresh_at: SAME_WINDOW_REFRESH_AT, shop_refresh_interval_ms: 15 * 60 * 1000 }] }) // player FOR UPDATE
+        .mockResolvedValueOnce({ rows: [item] })            // lockRotationItem
+        .mockResolvedValueOnce({ rows: [{ count: 5 }] })     // ships owned
+        .mockResolvedValueOnce({ rows: [{ capacity: 5 }] }); // SUM(docking_stations.capacity)
+
+      const result = await shop.buyShip(mockClient, 1, 1, NOT_DUE);
+      expect(result.error).toBe('Docking capacity full');
+      expect(ShipService.createShip).not.toHaveBeenCalled();
+    });
+
     test('buys a ship successfully, deducts the wallet, and closes out its stock', async () => {
       const item = { id: 1, type: 'ship', price: 5000, name: 'Corsair', rarity: 'common', stats: { speed: 120, durability: 8 }, remaining_stock: 1 };
       const createdShip = { id: 2, name: 'Corsair' };
       mockClient.query
-        .mockResolvedValueOnce({ rows: [{ wallet: 10000, shop_refresh_at: SAME_WINDOW_REFRESH_AT }] }) // player FOR UPDATE
+        .mockResolvedValueOnce({ rows: [{ wallet: 10000, shop_refresh_at: SAME_WINDOW_REFRESH_AT, shop_refresh_interval_ms: 15 * 60 * 1000 }] }) // player FOR UPDATE
         .mockResolvedValueOnce({ rows: [item] })                                                         // lockRotationItem
+        .mockResolvedValueOnce({ rows: [{ count: 1 }] })                                                 // ships owned
+        .mockResolvedValueOnce({ rows: [{ capacity: 5 }] })                                              // SUM(docking_stations.capacity)
         .mockResolvedValueOnce({ rows: [{ next_ship_id: 2 }] })                                          // SELECT next_ship_id
         .mockResolvedValue({ rows: [] });                                                                // UPDATE wallet, INSERT purchase_history, UPDATE shop_rotation
 
@@ -243,8 +294,10 @@ describe('Shop Service', () => {
     test('calls createShip with the correct data, filling in max_durability', async () => {
       const item = { id: 1, type: 'ship', price: 5000, name: 'Corsair', rarity: 'common', stats: { speed: 120, durability: 8 }, remaining_stock: 1 };
       mockClient.query
-        .mockResolvedValueOnce({ rows: [{ wallet: 10000, shop_refresh_at: SAME_WINDOW_REFRESH_AT }] })
+        .mockResolvedValueOnce({ rows: [{ wallet: 10000, shop_refresh_at: SAME_WINDOW_REFRESH_AT, shop_refresh_interval_ms: 15 * 60 * 1000 }] })
         .mockResolvedValueOnce({ rows: [item] })
+        .mockResolvedValueOnce({ rows: [{ count: 1 }] })
+        .mockResolvedValueOnce({ rows: [{ capacity: 5 }] })
         .mockResolvedValueOnce({ rows: [{ next_ship_id: 3 }] })
         .mockResolvedValue({ rows: [] });
 
@@ -266,8 +319,10 @@ describe('Shop Service', () => {
     test('keeps an explicit max_durability from the shop listing instead of overwriting it', async () => {
       const item = { id: 1, type: 'ship', price: 5000, name: 'Corsair', rarity: 'common', stats: { durability: 8, max_durability: 20 }, remaining_stock: 1 };
       mockClient.query
-        .mockResolvedValueOnce({ rows: [{ wallet: 10000, shop_refresh_at: SAME_WINDOW_REFRESH_AT }] })
+        .mockResolvedValueOnce({ rows: [{ wallet: 10000, shop_refresh_at: SAME_WINDOW_REFRESH_AT, shop_refresh_interval_ms: 15 * 60 * 1000 }] })
         .mockResolvedValueOnce({ rows: [item] })
+        .mockResolvedValueOnce({ rows: [{ count: 1 }] })
+        .mockResolvedValueOnce({ rows: [{ capacity: 5 }] })
         .mockResolvedValueOnce({ rows: [{ next_ship_id: 3 }] })
         .mockResolvedValue({ rows: [] });
 
@@ -285,7 +340,7 @@ describe('Shop Service', () => {
   describe('buyConsumable', () => {
     test('returns an error if the consumable is not in the current rotation', async () => {
       mockClient.query
-        .mockResolvedValueOnce({ rows: [{ wallet: 10000, shop_refresh_at: SAME_WINDOW_REFRESH_AT }] })
+        .mockResolvedValueOnce({ rows: [{ wallet: 10000, shop_refresh_at: SAME_WINDOW_REFRESH_AT, shop_refresh_interval_ms: 15 * 60 * 1000 }] })
         .mockResolvedValueOnce({ rows: [] }); // lockRotationItem → not found
 
       const result = await shop.buyConsumable(mockClient, 1, 99, 1, NOT_DUE);
@@ -295,7 +350,7 @@ describe('Shop Service', () => {
     test('returns an error if credit is insufficient', async () => {
       const item = { id: 2, type: 'consumable', price: 1000, name: 'Hull Auto-Patch', rarity: 'rare', effect: 'REPAIR', remaining_stock: 2 };
       mockClient.query
-        .mockResolvedValueOnce({ rows: [{ wallet: 100, shop_refresh_at: SAME_WINDOW_REFRESH_AT }] })
+        .mockResolvedValueOnce({ rows: [{ wallet: 100, shop_refresh_at: SAME_WINDOW_REFRESH_AT, shop_refresh_interval_ms: 15 * 60 * 1000 }] })
         .mockResolvedValueOnce({ rows: [item] });
 
       const result = await shop.buyConsumable(mockClient, 1, 2, 1, NOT_DUE);
@@ -305,7 +360,7 @@ describe('Shop Service', () => {
     test('rejects a purchase that would exceed remaining stock', async () => {
       const item = { id: 2, type: 'consumable', price: 400, name: 'Agility Stimpack', rarity: 'uncommon', remaining_stock: 1 };
       mockClient.query
-        .mockResolvedValueOnce({ rows: [{ wallet: 10000, shop_refresh_at: SAME_WINDOW_REFRESH_AT }] })
+        .mockResolvedValueOnce({ rows: [{ wallet: 10000, shop_refresh_at: SAME_WINDOW_REFRESH_AT, shop_refresh_interval_ms: 15 * 60 * 1000 }] })
         .mockResolvedValueOnce({ rows: [item] });
 
       const result = await shop.buyConsumable(mockClient, 1, 2, 2, NOT_DUE); // asking for 2, only 1 left
@@ -315,7 +370,7 @@ describe('Shop Service', () => {
     test('rejects a purchase once stock is fully depleted', async () => {
       const item = { id: 2, type: 'consumable', price: 400, name: 'Agility Stimpack', rarity: 'uncommon', remaining_stock: 0 };
       mockClient.query
-        .mockResolvedValueOnce({ rows: [{ wallet: 10000, shop_refresh_at: SAME_WINDOW_REFRESH_AT }] })
+        .mockResolvedValueOnce({ rows: [{ wallet: 10000, shop_refresh_at: SAME_WINDOW_REFRESH_AT, shop_refresh_interval_ms: 15 * 60 * 1000 }] })
         .mockResolvedValueOnce({ rows: [item] });
 
       const result = await shop.buyConsumable(mockClient, 1, 2, 1, NOT_DUE);
@@ -325,7 +380,7 @@ describe('Shop Service', () => {
     test('adds the consumable to the player stash, deducts the wallet, and reduces stock', async () => {
       const item = { id: 2, type: 'consumable', price: 500, name: 'Agility Stimpack', rarity: 'uncommon', effect: 'ATTRIBUTE_BOOST', effect_data: { attribute: 'agility', advantage: 1 }, remaining_stock: 3 };
       mockClient.query
-        .mockResolvedValueOnce({ rows: [{ wallet: 10000, shop_refresh_at: SAME_WINDOW_REFRESH_AT }] }) // player FOR UPDATE
+        .mockResolvedValueOnce({ rows: [{ wallet: 10000, shop_refresh_at: SAME_WINDOW_REFRESH_AT, shop_refresh_interval_ms: 15 * 60 * 1000 }] }) // player FOR UPDATE
         .mockResolvedValueOnce({ rows: [item] })                                                         // lockRotationItem
         .mockResolvedValue({ rows: [] });                                                                // UPDATE wallet, INSERT purchase_history, UPDATE shop_rotation
 
@@ -344,10 +399,26 @@ describe('Shop Service', () => {
       );
     });
 
+    test('rejects a purchase when the stash has no room for a new stack, without charging the wallet', async () => {
+      const item = { id: 2, type: 'consumable', price: 500, name: 'Agility Stimpack', rarity: 'uncommon', remaining_stock: 3 };
+      mockClient.query
+        .mockResolvedValueOnce({ rows: [{ wallet: 10000, shop_refresh_at: SAME_WINDOW_REFRESH_AT, shop_refresh_interval_ms: 15 * 60 * 1000 }] })
+        .mockResolvedValueOnce({ rows: [item] });
+
+      ConsumableService.addToStash.mockResolvedValue(null); // stash full, no matching stack to merge into
+
+      const result = await shop.buyConsumable(mockClient, 1, 2, 1, NOT_DUE);
+
+      expect(result.error).toBe('Stash is full');
+      expect(mockClient.query).not.toHaveBeenCalledWith(
+        'UPDATE players SET wallet = $1 WHERE id = $2', expect.any(Array),
+      );
+    });
+
     test('honors the requested quantity for the total cost and stock decrement', async () => {
       const item = { id: 2, type: 'consumable', price: 500, name: 'Agility Stimpack', rarity: 'uncommon', remaining_stock: 3 };
       mockClient.query
-        .mockResolvedValueOnce({ rows: [{ wallet: 10000, shop_refresh_at: SAME_WINDOW_REFRESH_AT }] })
+        .mockResolvedValueOnce({ rows: [{ wallet: 10000, shop_refresh_at: SAME_WINDOW_REFRESH_AT, shop_refresh_interval_ms: 15 * 60 * 1000 }] })
         .mockResolvedValueOnce({ rows: [item] })
         .mockResolvedValue({ rows: [] });
 

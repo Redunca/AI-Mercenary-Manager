@@ -19,6 +19,7 @@ import { LayoutService } from '../../core/layout.service';
 import { LayoutNodeComponent } from '../layout-node/layout-node.component';
 import { ShopListComponent } from '../../game/shop/shop-list/shop-list.component';
 import { ShopDetailComponent } from '../../game/shop/shop-detail/shop-detail.component';
+import { SelfComponent } from '../../game/self/self.component';
 
 @Component({
   selector: 'app-terminal-panel',
@@ -39,7 +40,8 @@ import { ShopDetailComponent } from '../../game/shop/shop-detail/shop-detail.com
     ShipDetailComponent,
     forwardRef(() => LayoutNodeComponent),
     ShopListComponent,
-    ShopDetailComponent
+    ShopDetailComponent,
+    SelfComponent
   ],
   templateUrl: './terminal-panel.component.html',
   styleUrl: './terminal-panel.component.scss',
@@ -168,6 +170,8 @@ export class TerminalPanelComponent implements OnInit, AfterViewChecked, AfterVi
         return ShopListComponent;
       case PanelModule.ShopDetail:
         return ShopDetailComponent;
+      case PanelModule.Self:
+        return SelfComponent;
       default:
         return DashboardComponent;
     }

@@ -62,6 +62,8 @@ function createFakeClient() {
         max_recruits: 5, max_available_missions: 5,
         next_candidate_id: 1, next_recruit_id: 1, next_ship_id: 1,
         next_template_id: 1, mission_refresh_at: null, shop_refresh_at: null,
+        mission_refresh_interval_ms: 900000, shop_refresh_interval_ms: 900000,
+        shop_rotation_size: 5, inventory_capacity: 5,
       }
       state.players.push(player)
       return { rows: [player] }
@@ -479,6 +481,38 @@ describe('GameService', () => {
       // ids are never reused: the counter continues past the highest id ever issued
       expect(state.players[0].next_template_id).toBe(Math.max(...firstBatchIds) + 1 + 5)
       expect(new Date(state.players[0].mission_refresh_at).toISOString()).toBe('2026-01-01T10:15:00.000Z')
+    })
+
+    // Covers the "missionList" self-upgrade: raising players.max_available_missions
+    // must grow the generated batch to match, not just how many of a
+    // still-5-sized batch are shown.
+    test('the generated batch size scales up to match max_available_missions once it exceeds the historical default of 5', async () => {
+      jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] })
+      jest.setSystemTime(new Date('2026-01-01T10:00:00Z'))
+      await GameService.initGame()
+      expect(state.missionTemplates).toHaveLength(5)
+
+      state.players[0].max_available_missions = 8
+
+      jest.setSystemTime(new Date('2026-01-01T10:15:00Z')) // next wall-clock boundary -> forces a fresh batch
+      await GameService.initGame()
+
+      expect(state.missionTemplates).toHaveLength(8)
+    })
+
+    // The batch size is a floor of MISSION_BATCH_SIZE (5), not a ceiling: a
+    // player who hasn't upgraded missionList still gets the historical 5.
+    test('the generated batch size stays at the historical default of 5 when max_available_missions is below it', async () => {
+      jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] })
+      jest.setSystemTime(new Date('2026-01-01T10:00:00Z'))
+      await GameService.initGame()
+
+      state.players[0].max_available_missions = 3
+
+      jest.setSystemTime(new Date('2026-01-01T10:15:00Z'))
+      await GameService.initGame()
+
+      expect(state.missionTemplates.filter(t => t.id > 5)).toHaveLength(5)
     })
 
     test('a completed (succeeded) template also survives a refresh, exactly like an in-progress one', async () => {
@@ -934,6 +968,19 @@ describe('GameService', () => {
       expect(updated.current_event_index).toBe(2) // stops after the 2nd event (index 1 + 1)
       expect(updated.event_results).toHaveLength(2)
       expect(ShipService.updateShipStatus).not.toHaveBeenCalledWith(expect.anything(), 1, 1, 'docked')
+
+      // Regression check: this branch used to pass buildEventResultLogs a
+      // flat { missionId, missionName, recruitName, ... } bag instead of the
+      // { context } shape the real (unmocked) log.service.js requires,
+      // crashing with "Cannot destructure property 'missionId' of 'context'
+      // as it is undefined" the moment a mission actually hit this path.
+      // The mock here can't catch a wrong-shaped call by itself, so assert
+      // directly on what it was called with.
+      expect(LogService.buildEventResultLogs).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          context: expect.objectContaining({ missionId: FORCED_DEPARTURE_TEMPLATE_ID, actingRecruit: expect.objectContaining({ name: expect.any(String) }) }),
+        }),
+      )
     })
 
     test('once the return trip has elapsed, a FORCED_DEPARTURE failure returns the ship and the surviving recruit to base', async () => {
@@ -1205,6 +1252,15 @@ describe('GameService', () => {
       expect(updated.phase).toBe('RETURN')
       expect(updated.forced_return).toBe(true)
       expect(updated.event_results.at(-1).shipBroken).toBe(true)
+
+      // Regression check: same wrong-shaped-call bug as the FORCED_DEPARTURE
+      // branch above (see that test's comment) — this SHIP_DAMAGE/shipBroken
+      // branch used to pass a flat args bag instead of { context }.
+      expect(LogService.buildEventResultLogs).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          context: expect.objectContaining({ missionId: SHIP_DAMAGE_TEMPLATE_ID, actingRecruit: expect.objectContaining({ name: expect.any(String) }) }),
+        }),
+      )
     })
   })
 
