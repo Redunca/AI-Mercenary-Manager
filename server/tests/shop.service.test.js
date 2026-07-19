@@ -440,7 +440,7 @@ describe('Shop Service', () => {
       await shop.seedShopItems(mockClient);
 
       const shipCalls = mockClient.query.mock.calls.filter(([sql]) =>
-        sql.includes('stats, available, max_stock'));
+        sql.includes('stats, available, max_stock') && sql.includes('TRUE, 1)'));
       const consumableCalls = mockClient.query.mock.calls.filter(([sql]) =>
         sql.includes('effect, effect_data, available, max_stock'));
       expect(shipCalls).toHaveLength(3);
@@ -478,10 +478,25 @@ describe('Shop Service', () => {
       await shop.seedShopItems(mockClient);
 
       const shipCalls = mockClient.query.mock.calls.filter(([sql]) =>
-        sql.includes('stats, available, max_stock'));
+        sql.includes('stats, available, max_stock') && sql.includes('TRUE, 1)'));
       expect(shipCalls).toHaveLength(3);
       for (const [sql] of shipCalls) {
         expect(sql).toContain('VALUES ($1, $2, $3, $4, $5, $6, TRUE, 1)');
+      }
+    });
+
+    test('inserts the 5 default armor items from the Open Legend armor table', async () => {
+      mockClient.query.mockResolvedValue({ rows: [] });
+
+      await shop.seedShopItems(mockClient);
+
+      const armorCalls = mockClient.query.mock.calls.filter(([sql]) => sql.includes("'armor'"));
+      expect(armorCalls).toHaveLength(5);
+      for (const [, params] of armorCalls) {
+        const stats = JSON.parse(params[4]);
+        expect(['light', 'medium', 'heavy']).toContain(stats.armorType);
+        expect(typeof stats.guardBonus).toBe('number');
+        expect(typeof stats.requiredFortitude).toBe('number');
       }
     });
   });

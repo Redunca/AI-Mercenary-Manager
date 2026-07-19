@@ -12,6 +12,7 @@ const {
 const { createStarterShip, validateCrewAssignment } = require('../domain/ship')
 const ShipService = require('./ship.service')
 const ConsumableService = require('./consumable.service')
+const EquipmentService = require('./equipment.service')
 
 
 const { loadData } = require('../dataLoader')
@@ -250,6 +251,9 @@ async function damageRecruit(client, playerId, recruitId, amount, shipId) {
     'UPDATE recruits SET hp = $1, status = $2 WHERE player_id = $3 AND id = $4',
     [hp, status, playerId, recruitId],
   )
+  if (status === 'dead') {
+    await EquipmentService.destroyEquipmentForRecruit(client, playerId, recruitId)
+  }
   const updated = await getRecruit(client, playerId, recruitId)
   return updated ? { ...updated, revived } : updated
 }
@@ -269,6 +273,9 @@ async function applyCombatResult(client, playerId, recruitId, { hp, maxHp, dead 
     'UPDATE recruits SET hp = $1, max_hp = $2, status = $3 WHERE player_id = $4 AND id = $5',
     [hp, maxHp, status, playerId, recruitId],
   )
+  if (dead) {
+    await EquipmentService.destroyEquipmentForRecruit(client, playerId, recruitId)
+  }
   return getRecruit(client, playerId, recruitId)
 }
 
@@ -309,7 +316,9 @@ async function resolveEvents(client, playerId, instance, template, crewMembers) 
     if (event.type === 'COMBAT') {
       const enemy = buildEnemy(template.difficulty, rollInRange)
       const healCharges = await ConsumableService.countShipInventoryEffect(client, shipId, 'HEAL')
-      const combatResult = runAutoBattle({ crew: activeCrew, enemy, rollAction, healCharges })
+      const armorByRecruit = await EquipmentService.getEquippedByRecruitIds(client, playerId, activeCrew.map(r => r.id))
+      const armedCrew = activeCrew.map(r => ({ ...r, equippedArmor: armorByRecruit.get(String(r.id)) || null }))
+      const combatResult = runAutoBattle({ crew: armedCrew, enemy, rollAction, healCharges })
 
       for (const round of combatResult.rounds) {
         await insertLogEntries(client, playerId, [buildCombatRoundLog({ round, missionId })])

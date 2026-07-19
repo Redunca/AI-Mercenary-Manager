@@ -36,10 +36,27 @@
     <div class="indent-two flaw">{{ f.name }} — {{ f.description }}</div>
   </ng-container>
   <div *ngIf="!recruit.flaws?.length" class="indent-two muted">—</div>
+  <div class="indent-one">],</div>
+
+  <div class="indent-one">"armor" : {{ '{' }}</div>
+  <ng-container *ngIf="equippedArmor as armor; else noArmor">
+    <div class="indent-two">"name"              : "{{ armor.name }}",</div>
+    <div class="indent-two">"guardBonus"        : +{{ armor.guard_bonus }},</div>
+    <div class="indent-two">"requiredFortitude" : {{ armor.required_fortitude }}<span class="muted" *ngIf="recruit.attributes.fortitude < armor.required_fortitude"> (NOT MET — bonus inactive)</span></div>
+  </ng-container>
+  <ng-template #noArmor>
+    <div class="indent-two muted">— empty slot —</div>
+  </ng-template>
+  <div class="indent-one">{{ '}' }},</div>
+
+  <div class="indent-one">"armorStash" : [</div>
+  <div *ngFor="let a of armorStash" class="indent-two">[{{ a.id }}] {{ a.name }} — guard +{{ a.guard_bonus }}, req. fortitude {{ a.required_fortitude }}</div>
+  <div *ngIf="!armorStash.length" class="indent-two muted">—</div>
   <div class="indent-one">]</div>
 </ng-container>
 <ng-template #notFound>
   <div class="indent-one muted">Recruit not found: {{ id }}</div>
 </ng-template>
 <div>{{ '}' }}</div>
-<div class="hint">[ rename &lt;name&gt; ] to rename this recruit</div>
+<div class="hint">[ rename &lt;name&gt; | equip &lt;equipmentId&gt; | unequip ]</div>
+<div *ngIf="equipError" class="error">{{ equipError }}</div>

@@ -116,6 +116,14 @@ describe('computeGuard', () => {
   test('treats a missing attribute as 0', () => {
     expect(computeGuard({ might: 4 })).toBe(14)
   });
+
+  test('defaults the armor bonus to 0 when omitted', () => {
+    expect(computeGuard({ might: 3, agility: 5 })).toBe(computeGuard({ might: 3, agility: 5 }, 0))
+  });
+
+  test('adds an explicit armor bonus on top of the base Guard', () => {
+    expect(computeGuard({ might: 3, agility: 5 }, 2)).toBe(20)
+  });
 });
 
 describe('bestCombatStat', () => {

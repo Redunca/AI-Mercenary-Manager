@@ -8,6 +8,7 @@ const gameRoutes = require('./src/routes/game.routes')
 const shopRoutes = require('./src/routes/shop.routes')
 const shipRoutes = require('./src/routes/ship.routes')
 const consumableRoutes = require('./src/routes/consumable.routes')
+const equipmentRoutes = require('./src/routes/equipment.routes')
 const selfRoutes = require('./src/routes/self.routes')
 
 const app = express()
@@ -24,6 +25,7 @@ app.use('/api/game', gameRoutes)
 app.use('/api/shop', shopRoutes)
 app.use('/api/ships', shipRoutes)
 app.use('/api/consumables', consumableRoutes)
+app.use('/api/equipment', equipmentRoutes)
 app.use('/api/self', selfRoutes)
 
 app.use((err, _req, res, _next) => {

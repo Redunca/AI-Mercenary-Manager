@@ -1,4 +1,5 @@
 const { computeGuard, bestCombatStat } = require('./recruit')
+const { computeArmorGuardBonus } = require('./equipment')
 
 // Enemies represent the whole "enemy group" named by a COMBAT event
 // (e.g. enemyGroupName) as a single combatant, built using the Boss NPC
@@ -50,7 +51,7 @@ function resolveAttack({ attackerScore, advantage = 0, defenderGuard, rollAction
  * Purely functional given its inputs — no I/O, no randomness besides what's
  * injected via rollAction — so it can be unit tested deterministically.
  *
- * @param {Array<{id, name, attributes, hp, maxHp, originalMaxHp}>} crew
+ * @param {Array<{id, name, attributes, hp, maxHp, originalMaxHp, equippedArmor}>} crew
  * @param {object} enemy - as returned by buildEnemy()
  * @param {(score:number, advantage?:number) => {d20,bonus,diceNotation,total}} rollAction
  * @param {number} healCharges - number of HEAL consumables available to intercept a KO this battle
@@ -64,6 +65,7 @@ function runAutoBattle({ crew, enemy, rollAction, healCharges = 0, pickTarget })
     hp: c.hp,
     maxHp: c.maxHp,
     originalMaxHp: c.originalMaxHp ?? c.maxHp,
+    equippedArmor: c.equippedArmor ?? null,
     status: 'active', // active | downed | dead
     revived: 0,
   }))
@@ -111,7 +113,7 @@ function runAutoBattle({ crew, enemy, rollAction, healCharges = 0, pickTarget })
         const targets = activeCrew()
         if (targets.length === 0) continue
         const target = choose(targets)
-        const targetGuard = computeGuard(target.attributes)
+        const targetGuard = computeGuard(target.attributes, computeArmorGuardBonus(target.attributes, target.equippedArmor))
         const { roll, hit, damage } = resolveAttack({
           attackerScore: enemyStat.score, advantage: enemy.bossEdge, defenderGuard: targetGuard, rollAction,
         })

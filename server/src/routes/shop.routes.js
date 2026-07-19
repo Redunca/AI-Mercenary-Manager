@@ -46,7 +46,9 @@ router.post('/buy/:itemId', async (req, res, next) => {
     const quantity = Number(req.body?.quantity ?? 1)
     const result = item.type === 'ship'
       ? await shop.buyShip(client, PLAYER_ID, Number(req.params.itemId))
-      : await shop.buyConsumable(client, PLAYER_ID, Number(req.params.itemId), quantity)
+      : item.type === 'armor'
+        ? await shop.buyArmor(client, PLAYER_ID, Number(req.params.itemId))
+        : await shop.buyConsumable(client, PLAYER_ID, Number(req.params.itemId), quantity)
     if (result.error) {
       await client.query('ROLLBACK')
       res.status(400).json(result)
@@ -67,6 +69,26 @@ router.post('/buy/ship/:itemId', async (req, res, next) => {
   try {
     await client.query('BEGIN')
     const result = await shop.buyShip(client, PLAYER_ID, Number(req.params.itemId))
+    if (result.error) {
+      await client.query('ROLLBACK')
+      res.status(400).json(result)
+      return
+    }
+    await client.query('COMMIT')
+    res.json(result)
+  } catch (err) {
+    await client.query('ROLLBACK').catch(() => {})
+    next(err)
+  } finally {
+    client.release()
+  }
+})
+
+router.post('/buy/armor/:itemId', async (req, res, next) => {
+  const client = await pool.connect()
+  try {
+    await client.query('BEGIN')
+    const result = await shop.buyArmor(client, PLAYER_ID, Number(req.params.itemId))
     if (result.error) {
       await client.query('ROLLBACK')
       res.status(400).json(result)

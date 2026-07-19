@@ -30,10 +30,11 @@ function computeMaxHp(attributes) {
   return 2 * (attributes.fortitude + attributes.presence + attributes.will) + 10
 }
 
-// Guard = 10 + Might + Agility (Armor term reserved for when gear/ships grant
-// it; there's no such bonus yet, so it's omitted rather than added as 0).
-function computeGuard(attributes) {
-  return 10 + (attributes.might || 0) + (attributes.agility || 0)
+// Guard = 10 + Might + Agility + equipped armor's Guard bonus (see
+// domain/equipment.js's computeArmorGuardBonus for how that bonus is
+// gated behind the armor's Required Fortitude).
+function computeGuard(attributes, armorBonus = 0) {
+  return 10 + (attributes.might || 0) + (attributes.agility || 0) + armorBonus
 }
 
 // Physical combat always uses whichever of Might/Agility is higher. Ties go

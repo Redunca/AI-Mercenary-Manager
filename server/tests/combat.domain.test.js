@@ -190,4 +190,38 @@ describe('combat domain — runAutoBattle', () => {
     expect(pickTarget.mock.calls[0][0].map(t => t.id).sort()).toEqual([1, 2])
     expect(pickTarget.mock.calls[1][0].map(t => t.id)).toEqual([2])
   })
+
+  describe('equipped armor', () => {
+    // Guard 100 so the crew's own attacks never land on the enemy -- these
+    // tests only care about the enemy's attacks landing (or not) on the crew.
+    function unhittableEnemy() {
+      return buildEnemy('ROUTINE', () => 100)
+    }
+
+    test('raises effective Guard enough to turn a would-be hit into a miss', () => {
+      const enemy = unhittableEnemy()
+      const rollAction = fixedRollAction(11) // > base Guard (10) but not > Guard+2 (12)
+
+      const unarmored = recruit({ attributes: { might: 0, agility: 0 } })
+      const armored = recruit({ id: 2, attributes: { might: 0, agility: 0 }, equippedArmor: { guardBonus: 2, requiredFortitude: 0 } })
+
+      const withoutArmor = runAutoBattle({ crew: [unarmored], enemy, rollAction })
+      const withArmor = runAutoBattle({ crew: [armored], enemy, rollAction })
+
+      expect(withoutArmor.crewResults[0].hp).toBeLessThan(26)
+      expect(withArmor.crewResults[0].hp).toBe(26)
+    })
+
+    test('grants no bonus when the wearer\'s Fortitude is below the armor\'s requirement', () => {
+      const enemy = unhittableEnemy()
+      const rollAction = fixedRollAction(11)
+      const underqualified = recruit({
+        attributes: { might: 0, agility: 0, fortitude: 1 },
+        equippedArmor: { guardBonus: 2, requiredFortitude: 3 },
+      })
+
+      const result = runAutoBattle({ crew: [underqualified], enemy, rollAction })
+      expect(result.crewResults[0].hp).toBeLessThan(26)
+    })
+  })
 })

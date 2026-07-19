@@ -1,6 +1,7 @@
 const { pool } = require('../db/pool')
 const ShipService = require('./ship.service')
 const ConsumableService = require('./consumable.service')
+const EquipmentService = require('./equipment.service')
 const { ATTRIBUTE_KEYS } = require('../domain/recruit')
 const { sampleWithCoverage, pickOne } = require('../utils/random')
 const { isRefreshDue, currentIntervalBoundary } = require('../utils/refreshWindow')
@@ -278,6 +279,56 @@ async function buyConsumable(client, playerId, shopItemId, quantity = 1, now = n
   }
 }
 
+async function buyArmor(client, playerId, shopItemId, now = new Date()) {
+  const player = await client.query(
+    'SELECT wallet, shop_refresh_at, shop_refresh_interval_ms FROM players WHERE id = $1 FOR UPDATE',
+    [playerId]
+  )
+  if (player.rows.length === 0) return { error: 'Player not found' }
+
+  if (isRefreshDue(player.rows[0].shop_refresh_at, now, player.rows[0].shop_refresh_interval_ms)) {
+    await refreshShopRotation(client, playerId, now)
+  }
+
+  const item = await lockRotationItem(client, playerId, shopItemId)
+  if (!item || item.type !== 'armor') {
+    return { error: 'Armor not found' }
+  }
+
+  if (item.remaining_stock <= 0) {
+    return { error: 'Armor already purchased' }
+  }
+
+  if (player.rows[0].wallet < item.price) {
+    return { error: 'Insufficient credit' }
+  }
+
+  const equipment = await EquipmentService.buyArmor(client, playerId, item, item.price)
+
+  const newWallet = player.rows[0].wallet - item.price
+  await client.query(
+    'UPDATE players SET wallet = $1 WHERE id = $2',
+    [newWallet, playerId]
+  )
+
+  await client.query(
+    `INSERT INTO purchase_history (player_id, item_id, item_type, price_paid)
+     VALUES ($1, $2, $3, $4)`,
+    [playerId, shopItemId, 'armor', item.price]
+  )
+
+  await client.query(
+    'UPDATE shop_rotation SET remaining_stock = remaining_stock - 1 WHERE player_id = $1 AND shop_item_id = $2',
+    [playerId, shopItemId]
+  )
+
+  return {
+    success: true,
+    equipment,
+    wallet: newWallet
+  }
+}
+
 const ATTRIBUTE_ITEM_NAMES = {
   agility: 'Agility Stimpack',
   fortitude: 'Fortitude Draught',
@@ -371,12 +422,66 @@ async function seedShopItems(client) {
     },
   ]
 
+  // Open Legend core rules, armor table (06-wealth-equipment): 5 base
+  // archetypes seeded as a static catalog, not procedurally generated.
+  const armors = [
+    {
+      name: 'Leather Armor',
+      description: 'Light armor. Requires Fortitude 0 to benefit from its protection.',
+      rarity: 'common',
+      price: 600,
+      stats: { armorType: 'light', guardBonus: 1, requiredFortitude: 0, speedPenalty: 0 },
+      maxStock: 3,
+    },
+    {
+      name: 'Armored Trench Coat',
+      description: 'Medium armor. Requires Fortitude 2 to benefit from its protection.',
+      rarity: 'rare',
+      price: 3000,
+      stats: { armorType: 'medium', guardBonus: 2, requiredFortitude: 2, speedPenalty: 0 },
+      maxStock: 2,
+    },
+    {
+      name: 'Chainmail',
+      description: 'Medium armor. Requires Fortitude 3 to benefit from its protection.',
+      rarity: 'uncommon',
+      price: 1800,
+      stats: { armorType: 'medium', guardBonus: 2, requiredFortitude: 3, speedPenalty: 0 },
+      maxStock: 2,
+    },
+    {
+      name: 'Plate Mail',
+      description: 'Heavy armor. Requires Fortitude 3 to benefit from its protection.',
+      rarity: 'uncommon',
+      price: 2200,
+      stats: { armorType: 'heavy', guardBonus: 3, requiredFortitude: 3, speedPenalty: 5 },
+      maxStock: 1,
+    },
+    {
+      name: 'Power Armor',
+      description: 'Heavy armor. Requires Fortitude 1 to benefit from its protection.',
+      rarity: 'epic',
+      price: 6000,
+      stats: { armorType: 'heavy', guardBonus: 3, requiredFortitude: 1, speedPenalty: 0 },
+      maxStock: 1,
+    },
+  ]
+
   for (const ship of ships) {
     await client.query(
       `INSERT INTO shop_items (name, description, type, rarity, price, stats, available, max_stock)
        VALUES ($1, $2, $3, $4, $5, $6, TRUE, 1)
        ON CONFLICT DO NOTHING`,
       [ship.name, ship.description, ship.type, ship.rarity, ship.price, JSON.stringify(ship.stats)]
+    )
+  }
+
+  for (const armor of armors) {
+    await client.query(
+      `INSERT INTO shop_items (name, description, type, rarity, price, stats, available, max_stock)
+       VALUES ($1, $2, 'armor', $3, $4, $5, TRUE, $6)
+       ON CONFLICT DO NOTHING`,
+      [armor.name, armor.description, armor.rarity, armor.price, JSON.stringify(armor.stats), armor.maxStock]
     )
   }
 
@@ -396,6 +501,7 @@ module.exports = {
   getShopItem,
   buyShip,
   buyConsumable,
+  buyArmor,
   seedShopItems,
   drawShopRotation,
   ensureShopRotation,

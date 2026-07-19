@@ -6,7 +6,7 @@ export interface ShopItem {
   id: number;
   name: string;
   description: string;
-  type: 'ship' | 'consumable';
+  type: 'ship' | 'consumable' | 'armor';
   rarity: string;
   price: number;
   stats?: any;
@@ -53,5 +53,9 @@ export class ShopService {
 
   buyConsumable(itemId: number, quantity: number = 1): Promise<any> {
     return this.http.post(`/api/shop/buy/consumable/${itemId}`, { quantity }).toPromise() as Promise<any>;
+  }
+
+  buyArmor(itemId: number): Promise<any> {
+    return this.http.post(`/api/shop/buy/armor/${itemId}`, {}).toPromise() as Promise<any>;
   }
 }
