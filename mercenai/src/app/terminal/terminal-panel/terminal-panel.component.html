@@ -88,6 +88,17 @@
         *ngSwitchCase="'self'">
       </app-self>
 
+      <app-opera-list
+        #moduleInstance
+        *ngSwitchCase="'opera-list'">
+      </app-opera-list>
+
+      <app-opera-detail
+        #moduleInstance
+        *ngSwitchCase="'opera-detail'"
+        [id]="panel.data?.id">
+      </app-opera-detail>
+
       <app-dashboard
         #moduleInstance 
         *ngSwitchDefault>

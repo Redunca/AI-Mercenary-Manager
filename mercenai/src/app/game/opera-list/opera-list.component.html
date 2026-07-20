@@ -1,0 +1,21 @@
+<div>TASK: [<span class="task-title">List operas</span>] ******************************************</div>
+<div>ok ==> {{ '{' }}</div>
+<table class="indent-one">
+  <tr>
+    <th>ID</th>
+    <th>Title</th>
+    <th>Status</th>
+    <th>Progress</th>
+  </tr>
+  <tr *ngFor="let o of operas">
+    <td>{{ o.id }}</td>
+    <td>{{ o.title }}</td>
+    <td>{{ o.status }}</td>
+    <td>{{ completedStepCount(o) }}/{{ o.steps.length }}</td>
+  </tr>
+  <tr *ngIf="operas.length === 0">
+    <td colspan="4" class="indent-one muted">No operas yet</td>
+  </tr>
+</table>
+<div>{{ '}' }}</div>
+<div class="hint">[ detail &lt;id&gt; ] for details, [ start &lt;id&gt; ] to begin an opt-in opera</div>

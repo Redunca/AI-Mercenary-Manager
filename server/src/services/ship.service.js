@@ -1,5 +1,6 @@
 const { pool } = require('../db/pool')
 const { createStarterShip, generateGalacticId } = require('../domain/ship')
+const OperaService = require('./opera.service')
 
 async function getShips(client, playerId) {
   const result = await client.query(
@@ -148,6 +149,9 @@ async function appendCrewMember(client, playerId, shipId, recruitId) {
      RETURNING *`,
     [playerId, shipId, recruitId]
   )
+  if (result.rows[0]) {
+    await OperaService.recordOperaAction(client, playerId, 'assign_crew_to_ship', { shipId, recruitId })
+  }
   return result.rows[0]
 }
 

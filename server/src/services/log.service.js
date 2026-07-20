@@ -133,8 +133,8 @@ function formatRoll(r) {
 async function insertLogEntries(client, playerId, entries) {
   for (const entry of entries) {
     await client.query(
-      `INSERT INTO log_entries (player_id, tag, message, mission_id) VALUES ($1, $2, $3, $4)`,
-      [playerId, entry.tag, entry.message, entry.missionId ?? null],
+      `INSERT INTO log_entries (player_id, tag, message, mission_id, opera_id) VALUES ($1, $2, $3, $4, $5)`,
+      [playerId, entry.tag, entry.message, entry.missionId ?? null, entry.operaId ?? null],
     )
   }
 }

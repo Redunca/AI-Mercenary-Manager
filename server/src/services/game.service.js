@@ -13,6 +13,7 @@ const { createStarterShip, validateCrewAssignment } = require('../domain/ship')
 const ShipService = require('./ship.service')
 const ConsumableService = require('./consumable.service')
 const EquipmentService = require('./equipment.service')
+const OperaService = require('./opera.service')
 
 
 const { loadData } = require('../dataLoader')
@@ -211,6 +212,8 @@ async function bootstrapPlayer(client) {
       await hireCandidate(client, player.id, String(firstCandidate.rows[0].id))
     }
   }
+
+  await OperaService.ensureOperasForPlayer(client, player.id)
 
   return player
 }
@@ -557,6 +560,10 @@ async function completeMission(client, playerId, instance, template, failed, shi
     context: buildLogContext({ template, crewMembers }),
   })
   await insertLogEntries(client, playerId, [...completedLogs.mission, ...completedLogs.global])
+
+  if (!failed) {
+    await OperaService.recordOperaAction(client, playerId, 'complete_quest', { templateId: template.id })
+  }
 }
 
 async function advanceMission(client, playerId, instance, template, now) {
@@ -770,6 +777,8 @@ async function hireCandidate(client, playerId, candidateId) {
     [playerId],
   )
 
+  await OperaService.recordOperaAction(client, playerId, 'hire_recruit', { recruitId })
+
   return getRecruit(client, playerId, recruitId)
 }
 
@@ -864,6 +873,10 @@ async function startMission(client, playerId, templateId, shipId, speedConsumabl
 
   const banterLogs = await buildBanterLog(client, playerId, logContext)
   if (banterLogs) await insertLogEntries(client, playerId, banterLogs.mission)
+
+  await OperaService.recordOperaAction(client, playerId, 'send_recruit_to_quest', {
+    templateId, recruitIds: ship.crew,
+  })
 
   return { instance: inserted.rows[0] }
 }
@@ -1038,6 +1051,20 @@ async function buildGameState(client, playerId) {
     .filter(m => m.status !== 'failed' && m.status !== 'success')
     .slice(0, player.max_available_missions)
 
+  // Opera state enriches the synced snapshot but must never be a hard
+  // dependency for it: buildGameState() backs virtually every screen in the
+  // game, so a bug here falls back to "no operas" rather than breaking
+  // mission/recruit/ship visibility entirely (same isolation principle as
+  // recordOperaAction()/ensureOperasForPlayer()).
+  let operas = []
+  let operaLogs = {}
+  try {
+    operas = await OperaService.getOperaState(client, playerId)
+    operaLogs = await OperaService.getOperaLogs(client, playerId)
+  } catch (err) {
+    console.error('[opera] failed to load opera state for game snapshot', err)
+  }
+
   return {
     player: {
       maxNumberOfRecruits: player.max_recruits,
@@ -1052,6 +1079,8 @@ async function buildGameState(client, playerId) {
     missionStates,
     globalLogs,
     missionLogs,
+    operas,
+    operaLogs,
   }
 }
 

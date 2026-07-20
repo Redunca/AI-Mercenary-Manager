@@ -63,4 +63,18 @@ export class GameApiService {
   getMissionHistory(): Promise<{ missions: Mission[] }> {
     return firstValueFrom(this.http.get<{ missions: Mission[] }>(`${this.base}/missions/history`));
   }
+
+  startOpera(id: string): Promise<{ success?: boolean; error?: string }> {
+    return firstValueFrom(
+      this.http.post<{ success?: boolean; error?: string }>(`/api/opera/${id}/start`, {})
+        .pipe(catchError(err => of(this.onError(err))))
+    );
+  }
+
+  // Fire-and-forget telemetry hook, not a player-facing action: swallow
+  // errors rather than surfacing them, since command responsiveness must
+  // never depend on Opera tracking (see command.service.ts's routeCommand()).
+  recordOperaCommand(command: string, args: string[]): void {
+    this.http.post('/api/opera/command', { command, args }).pipe(catchError(() => of(null))).subscribe();
+  }
 }

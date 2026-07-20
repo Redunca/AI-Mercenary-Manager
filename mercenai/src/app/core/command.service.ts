@@ -8,6 +8,7 @@ import { ShopService } from './shop.service';
 import { SelfService } from './self.service';
 import { GameSyncService } from './game-sync.service';
 import { GameService } from './game.service';
+import { OperaService } from './opera.service';
 
 @Injectable({ providedIn: 'root' })
 export class CommandService {
@@ -23,6 +24,7 @@ export class CommandService {
     this.registerGlobalCommands('shop', this.handleShop.bind(this));
     this.registerGlobalCommands('wallet', this.handleWallet.bind(this));
     this.registerGlobalCommands('self', this.handleSelf.bind(this));
+    this.registerGlobalCommands('opera', this.handleOpera.bind(this));
   }
 
   missionService = inject(MissionService);
@@ -30,6 +32,7 @@ export class CommandService {
   shipService = inject(ShipService);
   shopService = inject(ShopService);
   selfService = inject(SelfService);
+  operaService = inject(OperaService);
   private gameSync = inject(GameSyncService);
   private game = inject(GameService);
 
@@ -90,6 +93,12 @@ export class CommandService {
 
   routeCommand(input: string, panelId: number) {
     const { command, args } = this.parse(input);
+
+    // Fire-and-forget: reports every command (local or global) so
+    // execute_command Opera steps can be detected, including commands like
+    // split-h/split-v/help that have no other backend correlate. Never
+    // blocks command dispatch below.
+    if (command) this.operaService.recordCommand(command, args);
 
     // 1. local commands
     const panel = this.layout.getPanelById(panelId);
@@ -278,8 +287,17 @@ export class CommandService {
         }
         break;
 
+      case 'load':
+        if (args[0] && args[1]) {
+          void this.shipService.loadConsumableOntoShip(Number(args[0]), Number(args[1]), args[2] ? Number(args[2]) : 1)
+            .then(() => this.gameSync.sync())
+            .then(() => this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShipDetail, { id: args[0] }))
+            .catch(err => console.error('[ship load]', err?.error?.error ?? err?.message ?? err));
+        }
+        break;
+
       default:
-        console.warn('Usage: ship list | ship detail <id> | ship assign <shipId> <recruitId> | ship unassign <shipId> <recruitId> | ship rename <shipId> <newName>');
+        console.warn('Usage: ship list | ship detail <id> | ship assign <shipId> <recruitId> | ship unassign <shipId> <recruitId> | ship rename <shipId> <newName> | ship load <shipId> <consumableId> [quantity]');
     }
   }
 
@@ -342,6 +360,36 @@ export class CommandService {
     }
 
     console.warn('Usage: self | self buy <id>');
+  }
+
+  private handleOpera(action: string, ...args: string[]) {
+    switch (action) {
+      case 'list':
+      case '-l':
+      case '--list':
+        this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.OperaList);
+        break;
+
+      case 'detail':
+      case '-d':
+      case '--detail':
+        if (args[0]) {
+          this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.OperaDetail, { id: args[0] });
+        }
+        break;
+
+      case 'start':
+        if (args[0]) {
+          void this.operaService.startOpera(args[0]).then(err => {
+            if (err) { console.error(`[opera start] ${err}`); return; }
+            this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.OperaDetail, { id: args[0] });
+          });
+        }
+        break;
+
+      default:
+        console.warn('Usage: opera list | opera detail <id> | opera start <id>');
+    }
   }
 
 }

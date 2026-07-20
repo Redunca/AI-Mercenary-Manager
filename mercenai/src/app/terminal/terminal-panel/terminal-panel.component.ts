@@ -20,6 +20,8 @@ import { LayoutNodeComponent } from '../layout-node/layout-node.component';
 import { ShopListComponent } from '../../game/shop/shop-list/shop-list.component';
 import { ShopDetailComponent } from '../../game/shop/shop-detail/shop-detail.component';
 import { SelfComponent } from '../../game/self/self.component';
+import { OperaListComponent } from '../../game/opera-list/opera-list.component';
+import { OperaDetailComponent } from '../../game/opera-detail/opera-detail.component';
 
 @Component({
   selector: 'app-terminal-panel',
@@ -41,7 +43,9 @@ import { SelfComponent } from '../../game/self/self.component';
     forwardRef(() => LayoutNodeComponent),
     ShopListComponent,
     ShopDetailComponent,
-    SelfComponent
+    SelfComponent,
+    OperaListComponent,
+    OperaDetailComponent
   ],
   templateUrl: './terminal-panel.component.html',
   styleUrl: './terminal-panel.component.scss',
@@ -172,6 +176,10 @@ export class TerminalPanelComponent implements OnInit, AfterViewChecked, AfterVi
         return ShopDetailComponent;
       case PanelModule.Self:
         return SelfComponent;
+      case PanelModule.OperaList:
+        return OperaListComponent;
+      case PanelModule.OperaDetail:
+        return OperaDetailComponent;
       default:
         return DashboardComponent;
     }

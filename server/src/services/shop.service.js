@@ -2,6 +2,7 @@ const { pool } = require('../db/pool')
 const ShipService = require('./ship.service')
 const ConsumableService = require('./consumable.service')
 const EquipmentService = require('./equipment.service')
+const OperaService = require('./opera.service')
 const { ATTRIBUTE_KEYS } = require('../domain/recruit')
 const { sampleWithCoverage, pickOne } = require('../utils/random')
 const { isRefreshDue, currentIntervalBoundary } = require('../utils/refreshWindow')
@@ -23,10 +24,11 @@ const SHOP_REFRESH_INTERVAL_MS = 15 * 60 * 1000
 
 /**
  * Draws the next live rotation from the master catalog: exactly one ship
- * (uniform-random among ships in the pool, if any exist), plus enough
- * additional items - uniform-random from the rest of the pool, ships
- * included - to fill out the rotation. Capped at the pool size so small
- * pools (e.g. in tests) don't blow up.
+ * (uniform-random among ships in the pool, if any exist), every item
+ * flagged is_quest_item (so an Opera step targeting one by name is never
+ * stuck waiting on rotation luck), plus enough additional items -
+ * uniform-random from the rest of the pool - to fill out the rotation.
+ * Capped at the pool size so small pools (e.g. in tests) don't blow up.
  *
  * Pure function of the pool passed in; exported for direct unit testing.
  */
@@ -36,14 +38,19 @@ function drawShopRotation(masterPool, rotationSize = SHOP_ROTATION_SIZE) {
   const ships = masterPool.filter(item => item.type === 'ship')
   const guaranteedShip = ships.length > 0 ? pickOne(ships) : null
 
-  const remainingSlots = rotationSize - (guaranteedShip ? 1 : 0)
-  const rest = guaranteedShip
-    ? masterPool.filter(item => item.id !== guaranteedShip.id)
-    : masterPool
+  const guaranteedQuestItems = masterPool.filter(item => (
+    item.is_quest_item && (!guaranteedShip || item.id !== guaranteedShip.id)
+  ))
 
-  const fillers = sampleWithCoverage(rest, Math.min(remainingSlots, rest.length))
+  const guaranteed = guaranteedShip ? [guaranteedShip, ...guaranteedQuestItems] : guaranteedQuestItems
+  const guaranteedIds = new Set(guaranteed.map(item => item.id))
 
-  return guaranteedShip ? [guaranteedShip, ...fillers] : fillers
+  const remainingSlots = rotationSize - guaranteed.length
+  const rest = masterPool.filter(item => !guaranteedIds.has(item.id))
+
+  const fillers = sampleWithCoverage(rest, Math.min(Math.max(remainingSlots, 0), rest.length))
+
+  return [...guaranteed, ...fillers]
 }
 
 // Discards this player's current 5 live listings and draws a fresh set from
@@ -200,6 +207,11 @@ async function buyShip(client, playerId, shopItemId, now = new Date()) {
     [playerId, shopItemId, 'ship', item.price]
   )
 
+  await OperaService.recordOperaAction(client, playerId, 'purchase_item', { itemName: item.name, itemType: item.type })
+  if (item.is_quest_item) {
+    await OperaService.recordOperaAction(client, playerId, 'purchase_quest_item', { itemName: item.name })
+  }
+
   // Ships are single-buy: this always takes remaining_stock to 0.
   await client.query(
     'UPDATE shop_rotation SET remaining_stock = remaining_stock - 1 WHERE player_id = $1 AND shop_item_id = $2',
@@ -267,6 +279,11 @@ async function buyConsumable(client, playerId, shopItemId, quantity = 1, now = n
     [playerId, shopItemId, 'consumable', totalCost]
   )
 
+  await OperaService.recordOperaAction(client, playerId, 'purchase_item', { itemName: item.name, itemType: item.type })
+  if (item.is_quest_item) {
+    await OperaService.recordOperaAction(client, playerId, 'purchase_quest_item', { itemName: item.name })
+  }
+
   await client.query(
     'UPDATE shop_rotation SET remaining_stock = remaining_stock - $1 WHERE player_id = $2 AND shop_item_id = $3',
     [quantity, playerId, shopItemId]
@@ -316,6 +333,11 @@ async function buyArmor(client, playerId, shopItemId, now = new Date()) {
      VALUES ($1, $2, $3, $4)`,
     [playerId, shopItemId, 'armor', item.price]
   )
+
+  await OperaService.recordOperaAction(client, playerId, 'purchase_item', { itemName: item.name, itemType: item.type })
+  if (item.is_quest_item) {
+    await OperaService.recordOperaAction(client, playerId, 'purchase_quest_item', { itemName: item.name })
+  }
 
   await client.query(
     'UPDATE shop_rotation SET remaining_stock = remaining_stock - 1 WHERE player_id = $1 AND shop_item_id = $2',

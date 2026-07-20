@@ -1,0 +1,107 @@
+{
+  "id": "tutorial",
+  "title": "Basic Operations",
+  "description": "A guided walkthrough of the terminal and the core loop: crew, missions, gear, and the shop.",
+  "auto_start": true,
+  "step_order": "sequential",
+  "on_start_message": "Welcome aboard, Commander. This log will walk you through the basics.",
+  "on_complete_message": "Basic training complete. You're on your own from here, Commander.",
+  "steps": [
+    {
+      "id": "learn-split-v",
+      "type": "execute_command",
+      "description": "Split this panel vertically.",
+      "on_start_message": "This terminal is made of panels. Try splitting this one vertically: type split-v.",
+      "on_complete_message": "Panel split vertically.",
+      "match": { "command": "split-v" }
+    },
+    {
+      "id": "learn-split-h",
+      "type": "execute_command",
+      "description": "Split this panel horizontally.",
+      "on_start_message": "Now try splitting a panel horizontally: type split-h.",
+      "on_complete_message": "Panel split horizontally.",
+      "match": { "command": "split-h" }
+    },
+    {
+      "id": "learn-help",
+      "type": "execute_command",
+      "description": "Open the help panel.",
+      "on_start_message": "If you ever forget a command, type help.",
+      "on_complete_message": "Help panel opened. It's always there if you need it.",
+      "match": { "command": "help" }
+    },
+    {
+      "id": "hire-a-recruit",
+      "type": "hire_recruit",
+      "description": "Hire a recruit.",
+      "on_start_message": "Time to build your crew. Open a candidate and type hire, or use recruit hire <id>.",
+      "on_complete_message": "New recruit hired.",
+      "match": { "scope": "any" }
+    },
+    {
+      "id": "assign-recruit-to-ship",
+      "type": "assign_crew_to_ship",
+      "description": "Assign that recruit to a ship.",
+      "on_start_message": "A recruit isn't much use standing around the hangar. Assign them to a ship: ship assign <shipId> <recruitId>.",
+      "on_complete_message": "Recruit assigned to ship.",
+      "match": { "scope": "any" }
+    },
+    {
+      "id": "complete-a-mission",
+      "type": "complete_quest",
+      "description": "Complete a mission.",
+      "on_start_message": "Send that crewed ship on a mission: mission start <templateId> <shipId>.",
+      "on_complete_message": "First mission complete.",
+      "match": { "scope": "any" }
+    },
+    {
+      "id": "buy-seeded-equipment",
+      "type": "purchase_quest_item",
+      "description": "Buy the Recruit Training Vest from the shop.",
+      "on_start_message": "The shop always stocks a Recruit Training Vest. Buy one: shop buy <itemId>.",
+      "on_complete_message": "Recruit Training Vest purchased.",
+      "match": { "itemName": "Recruit Training Vest" }
+    },
+    {
+      "id": "equip-vest-to-recruit",
+      "type": "equip_item",
+      "description": "Equip it to a recruit.",
+      "on_start_message": "Gear doesn't help anyone in the stash. Equip it from a recruit's detail panel: equip <equipmentId>.",
+      "on_complete_message": "Vest equipped.",
+      "match": { "scope": "any" }
+    },
+    {
+      "id": "buy-seeded-item",
+      "type": "purchase_quest_item",
+      "description": "Buy the Encrypted Data Chip from the shop.",
+      "on_start_message": "The shop also always stocks an Encrypted Data Chip. Buy one: shop buy <itemId>.",
+      "on_complete_message": "Encrypted Data Chip purchased.",
+      "match": { "itemName": "Encrypted Data Chip" }
+    },
+    {
+      "id": "load-item-onto-ship",
+      "type": "assign_item_to_ship",
+      "description": "Load it onto a ship.",
+      "on_start_message": "Items in the stash do nothing. Load it onto a ship: ship load <shipId> <consumableId>.",
+      "on_complete_message": "Item loaded onto ship.",
+      "match": { "scope": "any" }
+    },
+    {
+      "id": "complete-another-mission",
+      "type": "complete_quest",
+      "description": "Complete another mission.",
+      "on_start_message": "Send your crew out again: mission start <templateId> <shipId>.",
+      "on_complete_message": "Second mission complete.",
+      "match": { "scope": "any" }
+    },
+    {
+      "id": "open-self",
+      "type": "execute_command",
+      "description": "Open the self panel.",
+      "on_start_message": "One more thing: type self to see your own upgrades.",
+      "on_complete_message": "Self panel opened.",
+      "match": { "command": "self" }
+    }
+  ]
+}

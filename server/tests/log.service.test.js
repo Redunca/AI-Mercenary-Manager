@@ -20,12 +20,12 @@ describe('insertLogEntries', () => {
     expect(client.query).toHaveBeenNthCalledWith(
       1,
       expect.stringContaining('INSERT INTO log_entries'),
-      [1, '[SYS]', 'A message', 5],
+      [1, '[SYS]', 'A message', 5, null],
     )
     expect(client.query).toHaveBeenNthCalledWith(
       2,
       expect.stringContaining('INSERT INTO log_entries'),
-      [1, '[IA]', 'Another message', null],
+      [1, '[IA]', 'Another message', null, null],
     )
   })
 })
@@ -450,7 +450,9 @@ describe('perk/flaw-specific event quote files', () => {
     .filter(f => fs.statSync(path.join(DATA_DIR, f)).isDirectory())
     // banter/ holds relationship-dialogue files (pairs.json, personality-pairs.json) keyed by
     // trait *pairs* or personality combos, not a single perk/flaw name — out of scope here.
-    .filter(f => f !== 'banter')
+    // operas/ holds Opera definitions (tutorial.json, ...) keyed by opera id, not a
+    // perk/flaw name either — also out of scope here.
+    .filter(f => f !== 'banter' && f !== 'operas')
 
   // Discover every perk/flaw-specific file across every event-type folder, and pair each
   // with the perk/flaw it's supposed to represent (via the reverse of the slug lookup above).

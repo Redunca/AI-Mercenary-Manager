@@ -1,3 +1,5 @@
+const OperaService = require('./opera.service')
+
 // Owned armor lives entirely in the `equipment` table: rows with
 // assigned_to_recruit_id IS NULL are "in the stash", rows with it set are
 // equipped to that recruit's 'armor' slot. Unlike consumables, equipment is
@@ -71,6 +73,9 @@ async function equipArmor(client, playerId, equipmentId, recruitId) {
     'UPDATE equipment SET assigned_to_recruit_id = $1 WHERE player_id = $2 AND id = $3 RETURNING *',
     [recruitId, playerId, equipmentId],
   )
+
+  await OperaService.recordOperaAction(client, playerId, 'equip_item', { recruitId, itemName: target.name })
+
   return { success: true, equipment: updated.rows[0] }
 }
 

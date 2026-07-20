@@ -49,6 +49,12 @@ export class ShipDetailComponent implements OnInit {
           .then(() => this.gameSync.sync())
           .catch(err => console.error('[ship rename]', err?.error?.error ?? err?.message ?? err));
       },
+      'load': (consumableId: string, quantity?: string) => {
+        if (!this.ship || !consumableId) { console.warn('Usage: load <consumableId> [quantity]'); return; }
+        void this.shipService.loadConsumableOntoShip(this.ship.id, Number(consumableId), quantity ? Number(quantity) : 1)
+          .then(() => this.gameSync.sync())
+          .catch(err => console.error('[ship load]', err?.error?.error ?? err?.message ?? err));
+      },
     };
   }
 }

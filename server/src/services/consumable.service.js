@@ -1,4 +1,5 @@
 const { pool } = require('../db/pool')
+const OperaService = require('./opera.service')
 
 async function getPlayerConsumables(client, playerId, unassignedOnly = false) {
   let query = 'SELECT * FROM consumables WHERE player_id = $1'
@@ -115,8 +116,12 @@ async function moveStack(client, playerId, consumableId, destinationShipId, quan
   return inserted.rows[0]
 }
 
-function assignToShip(client, playerId, consumableId, shipId, quantity = 1) {
-  return moveStack(client, playerId, consumableId, shipId, quantity)
+async function assignToShip(client, playerId, consumableId, shipId, quantity = 1) {
+  const result = await moveStack(client, playerId, consumableId, shipId, quantity)
+  if (result) {
+    await OperaService.recordOperaAction(client, playerId, 'assign_item_to_ship', { shipId, itemName: result.name })
+  }
+  return result
 }
 
 function unassignFromShip(client, playerId, consumableId, quantity = 1) {

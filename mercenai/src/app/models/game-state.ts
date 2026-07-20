@@ -1,6 +1,7 @@
 import { Candidate } from './candidate';
 import { LogEntry } from './log';
 import { Mission, MissionState } from './mission';
+import { OperaSummary } from './opera';
 import { Recruit } from './recruit';
 import { Ship } from './ship';
 
@@ -20,4 +21,6 @@ export interface GameSnapshot {
   missionStates: Record<number, MissionState>;
   globalLogs: LogEntry[];
   missionLogs: Record<number, LogEntry[]>;
+  operas: OperaSummary[];
+  operaLogs: Record<string, LogEntry[]>;
 }

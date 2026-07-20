@@ -4,12 +4,14 @@ const express = require('express')
 const cors = require('cors')
 const { migrate } = require('./src/db/migrate')
 const { initGame } = require('./src/services/game.service')
+const { loadOperaDefinitions } = require('./src/operaLoader')
 const gameRoutes = require('./src/routes/game.routes')
 const shopRoutes = require('./src/routes/shop.routes')
 const shipRoutes = require('./src/routes/ship.routes')
 const consumableRoutes = require('./src/routes/consumable.routes')
 const equipmentRoutes = require('./src/routes/equipment.routes')
 const selfRoutes = require('./src/routes/self.routes')
+const operaRoutes = require('./src/routes/opera.routes')
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -27,6 +29,7 @@ app.use('/api/ships', shipRoutes)
 app.use('/api/consumables', consumableRoutes)
 app.use('/api/equipment', equipmentRoutes)
 app.use('/api/self', selfRoutes)
+app.use('/api/opera', operaRoutes)
 
 app.use((err, _req, res, _next) => {
   console.error(err)
@@ -35,6 +38,7 @@ app.use((err, _req, res, _next) => {
 
 async function start() {
   await migrate()
+  loadOperaDefinitions() // crash loudly on a malformed opera file, before the server ever listens
   await initGame()
   app.listen(port, () => {
     console.log(`Mercenai server listening on port ${port}`)
