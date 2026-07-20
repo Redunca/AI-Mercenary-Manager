@@ -51,6 +51,8 @@
           [view]="'auto'"
           [connection]="connectionSettings"
           [background]="{ type: 'dots', color: '#3a3b3f', gap: 24 }"
+          [elevateNodesOnSelect]="false"
+          [elevateEdgesOnSelect]="false"
           (onNodesChange)="onNodesChange($event)"
           (onEdgesChange)="onEdgesChange($event)"
           (connect)="onConnect($event)"

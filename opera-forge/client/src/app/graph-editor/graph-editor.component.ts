@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, input, output, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, inject, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -23,7 +23,7 @@ type VNode = HtmlTemplateNode<GraphNode>;
   templateUrl: './graph-editor.component.html',
   styleUrl: './graph-editor.component.scss',
 })
-export class GraphEditorComponent implements OnInit {
+export class GraphEditorComponent implements OnInit, OnDestroy {
   readonly graphId = input.required<string>();
   readonly back = output<void>();
 
@@ -35,33 +35,67 @@ export class GraphEditorComponent implements OnInit {
     validator: (connection: Connection) => connection.source !== connection.target,
   };
 
+  // ngx-vflow reconciles [nodes]/[edges] by object identity, not just id --
+  // handing it a brand new wrapper object for every entry on every graph
+  // edit causes it to tear down and remount unrelated nodes (visible as a
+  // "grow" flicker, and fatal to an in-progress drag, since the DOM element
+  // d3-drag is bound to gets swapped out mid-gesture). Since unedited nodes
+  // keep the same object reference across our immutable domain updates
+  // (see GraphService.mutate), we cache wrappers keyed by that reference so
+  // only genuinely-changed nodes/links get a new wrapper.
+  private nodeWrapperCache = new Map<string, { domainNode: GraphNode; vnode: VNode }>();
+  private linkWrapperCache = new Map<string, { domainLink: GraphLink; edge: Edge<GraphLink> }>();
+  private positionDebounceTimers = new Map<string, ReturnType<typeof setTimeout>>();
+
   readonly vflowNodes = computed<VNode[]>(() => {
     const def = this.graphService.graph();
     if (!def) return [];
-    return def.nodes.map(node => ({
-      id: node.id,
-      type: 'html-template',
-      point: node.position ?? { x: 0, y: 0 },
-      width: 220,
-      height: 96,
-      draggable: true,
-      data: node,
-    }));
+    const nextCache = new Map<string, { domainNode: GraphNode; vnode: VNode }>();
+    const nodes = def.nodes.map(node => {
+      const cached = this.nodeWrapperCache.get(node.id);
+      const entry = cached && cached.domainNode === node ? cached : {
+        domainNode: node,
+        vnode: {
+          id: node.id,
+          type: 'html-template',
+          point: node.position ?? { x: 0, y: 0 },
+          width: 220,
+          height: 96,
+          draggable: true,
+          data: node,
+        } as VNode,
+      };
+      nextCache.set(node.id, entry);
+      return entry.vnode;
+    });
+    this.nodeWrapperCache = nextCache;
+    return nodes;
   });
 
   readonly vflowEdges = computed<Edge<GraphLink>[]>(() => {
     const def = this.graphService.graph();
     if (!def) return [];
-    return def.links.map(link => ({
-      id: link.id,
-      source: link.from,
-      target: link.to,
-      type: 'default',
-      data: link,
-      edgeLabels: {
-        center: { type: 'default', text: this.linkSummary(link) },
-      },
-    }));
+    const nextCache = new Map<string, { domainLink: GraphLink; edge: Edge<GraphLink> }>();
+    const edges = def.links.map(link => {
+      const cached = this.linkWrapperCache.get(link.id);
+      const entry = cached && cached.domainLink === link ? cached : {
+        domainLink: link,
+        edge: {
+          id: link.id,
+          source: link.from,
+          target: link.to,
+          type: 'default' as const,
+          data: link,
+          edgeLabels: {
+            center: { type: 'default' as const, text: this.linkSummary(link) },
+          },
+        },
+      };
+      nextCache.set(link.id, entry);
+      return entry.edge;
+    });
+    this.linkWrapperCache = nextCache;
+    return edges;
   });
 
   async ngOnInit(): Promise<void> {
@@ -107,12 +141,33 @@ export class GraphEditorComponent implements OnInit {
   onNodesChange(changes: NodeChange[]): void {
     for (const change of changes) {
       if (change.type === 'position') {
-        this.graphService.moveNode(change.id, change.point);
+        // ngx-vflow's own NodeModel signal drives the node's visual
+        // position live while dragging -- it doesn't need our [nodes]
+        // input to change frame-by-frame. Committing every intermediate
+        // point straight into the domain model would rebuild the whole
+        // wrapper cache mid-gesture and (per the comment above) tear down
+        // the very node being dragged, killing the drag. Debounce so we
+        // only persist once the pointer settles.
+        this.debouncedMoveNode(change.id, change.point);
       } else if (change.type === 'select') {
         if (change.selected) this.graphService.selectNode(change.id);
         else if (this.graphService.selectedNodeId() === change.id) this.graphService.selectNode(null);
       }
     }
+  }
+
+  private debouncedMoveNode(id: string, point: { x: number; y: number }): void {
+    const existing = this.positionDebounceTimers.get(id);
+    if (existing) clearTimeout(existing);
+    this.positionDebounceTimers.set(id, setTimeout(() => {
+      this.positionDebounceTimers.delete(id);
+      this.graphService.moveNode(id, point);
+    }, 250));
+  }
+
+  ngOnDestroy(): void {
+    for (const timer of this.positionDebounceTimers.values()) clearTimeout(timer);
+    this.positionDebounceTimers.clear();
   }
 
   onEdgesChange(changes: EdgeChange[]): void {
