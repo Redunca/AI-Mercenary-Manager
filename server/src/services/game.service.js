@@ -283,9 +283,12 @@ async function applyCombatResult(client, playerId, recruitId, { hp, maxHp, dead 
   return getRecruit(client, playerId, recruitId)
 }
 
+// Every status change also resets last_hp_regen_at to NOW(), so a mission's
+// elapsed wall-clock time is never retroactively credited as passive HP
+// regen the instant a recruit returns (see regenerateRecruits()).
 async function setRecruitStatus(client, playerId, recruitId, status) {
   await client.query(
-    `UPDATE recruits SET status = $1
+    `UPDATE recruits SET status = $1, last_hp_regen_at = NOW()
      WHERE player_id = $2 AND id = $3 AND status != 'dead'`,
     [status, playerId, recruitId],
   )
@@ -740,6 +743,39 @@ async function syncMissions(client, playerId) {
   await client.query('UPDATE players SET last_tick_at = NOW() WHERE id = $1', [playerId])
 }
 
+// Passive HP regen for recruits not currently on a mission (or dead): +1 HP
+// per players.hp_regen_interval_ms elapsed since their last_hp_regen_at,
+// computed lazily here rather than via a background scheduler (same
+// approach as mission/shop refreshes). last_hp_regen_at is advanced by
+// whole ticks rather than snapped to `now`, so a leftover fractional tick
+// isn't lost to poll-cadence rounding.
+async function regenerateRecruits(client, playerId, now = new Date()) {
+  const player = (await client.query(
+    'SELECT hp_regen_interval_ms FROM players WHERE id = $1',
+    [playerId],
+  )).rows[0]
+  const intervalMs = player.hp_regen_interval_ms
+
+  const recruits = (await client.query(
+    `SELECT * FROM recruits
+     WHERE player_id = $1 AND status NOT IN ('in_mission', 'dead') AND hp < max_hp`,
+    [playerId],
+  )).rows
+
+  for (const row of recruits) {
+    const lastRegenAt = new Date(row.last_hp_regen_at)
+    const ticks = Math.floor((now - lastRegenAt) / intervalMs)
+    if (ticks <= 0) continue
+
+    const newHp = Math.min(row.max_hp, row.hp + ticks)
+    const newLastRegenAt = new Date(lastRegenAt.getTime() + ticks * intervalMs)
+    await client.query(
+      'UPDATE recruits SET hp = $1, last_hp_regen_at = $2 WHERE player_id = $3 AND id = $4',
+      [newHp, newLastRegenAt, playerId, row.id],
+    )
+  }
+}
+
 async function hireCandidate(client, playerId, candidateId) {
   const player = (await client.query('SELECT * FROM players WHERE id = $1', [playerId])).rows[0]
   const recruitCount = (await client.query(
@@ -1179,6 +1215,7 @@ async function syncGame() {
   return withTransaction(async (client) => {
     await bootstrapPlayer(client)
     await syncMissions(client, DEFAULT_PLAYER_ID)
+    await regenerateRecruits(client, DEFAULT_PLAYER_ID)
     return buildGameState(client, DEFAULT_PLAYER_ID)
   })
 }

@@ -7,7 +7,7 @@
 //
 // Ids mirror server/data/upgrades.json: 1 recruits, 2 missionList,
 // 3 dockedShips, 4 shopItems, 5 inventorySpace, 6 shopRefreshSpeed,
-// 7 missionRefreshSpeed.
+// 7 missionRefreshSpeed, 8 hpRegenSpeed.
 const SelfService = require('../src/services/self.service')
 
 const RECRUITS = 1
@@ -17,6 +17,7 @@ const SHOP_ITEMS = 4
 const INVENTORY_SPACE = 5
 const SHOP_REFRESH_SPEED = 6
 const MISSION_REFRESH_SPEED = 7
+const HP_REGEN_SPEED = 8
 
 function createFakeClient({ tokens = 1000, tiers = {}, shopCatalogCount = 16, consumableCatalogCount = 13, playerExists = true } = {}) {
   const state = { tokens, tiers: { ...tiers }, dockingStationInserts: [], columnUpdates: {} }
@@ -110,6 +111,15 @@ describe('SelfService', () => {
 
       const upgrade = result.upgrades.find(u => u.id === MISSION_REFRESH_SPEED)
       expect(upgrade).toMatchObject({ currentValue: 840000, maxed: false, nextCost: 125 }) // 900000 - 2*30000, costs[2]
+    })
+
+    test('hpRegenSpeed starts at the 1/minute base rate and floors at 1/10s', async () => {
+      const { client } = createFakeClient()
+
+      const result = await SelfService.getUpgradeCatalog(client, 1)
+
+      const upgrade = result.upgrades.find(u => u.id === HP_REGEN_SPEED)
+      expect(upgrade).toMatchObject({ currentValue: 60000, maxValue: 10000, maxed: false, nextCost: 80 })
     })
 
     test('uses the live shop_items count as the dynamic ceiling for shopItems', async () => {
@@ -237,6 +247,12 @@ describe('SelfService', () => {
       const { client, state } = createFakeClient({ tokens: 1000 })
       await SelfService.buyUpgrade(client, 1, MISSION_REFRESH_SPEED)
       expect(state.columnUpdates.mission_refresh_interval_ms).toBe(870000) // 900000 - 1*30000
+    })
+
+    test('applies the hpRegenSpeed effect to players.hp_regen_interval_ms, decremented by 5s per tier', async () => {
+      const { client, state } = createFakeClient({ tokens: 1000 })
+      await SelfService.buyUpgrade(client, 1, HP_REGEN_SPEED)
+      expect(state.columnUpdates.hp_regen_interval_ms).toBe(55000) // 60000 - 1*5000
     })
 
     test('applies the dockedShips effect by inserting a capacity:1 docking_stations row instead of updating a column', async () => {

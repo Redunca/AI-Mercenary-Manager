@@ -76,9 +76,19 @@ export class GameSyncService implements OnDestroy {
       .some(s => s.phase !== 'COMPLETED');
   }
 
+  // Recruits not on a mission (or dead) passively regenerate HP over real
+  // time (see server's regenerateRecruits()) — keep polling for those too,
+  // otherwise a player with no active mission never sees the healing tick
+  // in until they trigger some other sync.
+  private hasRegeneratingRecruits(): boolean {
+    if (!this.lastState) return false;
+    return this.lastState.recruits.some(r => r.status !== 'in_mission' && r.status !== 'dead' && r.hp < r.maxHp);
+  }
+
   private pollIntervalMs(): number | null {
-    if (!this.hasActiveMissions()) return null;
-    return this.watchCount > 0 ? MISSION_WATCH_INTERVAL_MS : POLL_INTERVAL_MS;
+    if (this.hasActiveMissions()) return this.watchCount > 0 ? MISSION_WATCH_INTERVAL_MS : POLL_INTERVAL_MS;
+    if (this.hasRegeneratingRecruits()) return POLL_INTERVAL_MS;
+    return null;
   }
 
   private reconcilePolling(): void {

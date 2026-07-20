@@ -65,10 +65,13 @@ function createFakeClient() {
         next_candidate_id: 1, next_recruit_id: 1, next_ship_id: 1,
         next_template_id: 1, mission_refresh_at: null, shop_refresh_at: null,
         mission_refresh_interval_ms: 900000, shop_refresh_interval_ms: 900000,
-        shop_rotation_size: 5, inventory_capacity: 5,
+        shop_rotation_size: 5, inventory_capacity: 5, hp_regen_interval_ms: 60000,
       }
       state.players.push(player)
       return { rows: [player] }
+    }
+    if (s === 'SELECT hp_regen_interval_ms FROM players WHERE id = $1') {
+      return { rows: state.players.filter(p => p.id === params[0]).map(p => ({ hp_regen_interval_ms: p.hp_regen_interval_ms })) }
     }
     if (s.includes('SELECT max_recruits, max_available_missions, wallet, tokens FROM players')) {
       const p = state.players.find(p => p.id === params[0])
@@ -178,7 +181,16 @@ function createFakeClient() {
     if (s.includes("UPDATE recruits SET status = $1") && s.includes("status != 'dead'")) {
       const [status, playerId, id] = params
       const r = state.recruits.find(r => r.player_id === playerId && sameId(r.id, id))
-      if (r && r.status !== 'dead') r.status = status
+      if (r && r.status !== 'dead') Object.assign(r, { status, last_hp_regen_at: new Date() })
+      return { rows: [] }
+    }
+    if (s === "SELECT * FROM recruits WHERE player_id = $1 AND status NOT IN ('in_mission', 'dead') AND hp < max_hp") {
+      return { rows: state.recruits.filter(r => r.player_id === params[0] && r.status !== 'in_mission' && r.status !== 'dead' && r.hp < r.max_hp) }
+    }
+    if (s === 'UPDATE recruits SET hp = $1, last_hp_regen_at = $2 WHERE player_id = $3 AND id = $4') {
+      const [hp, last_hp_regen_at, playerId, id] = params
+      const r = state.recruits.find(r => r.player_id === playerId && sameId(r.id, id))
+      if (r) Object.assign(r, { hp, last_hp_regen_at })
       return { rows: [] }
     }
     if (s === 'SELECT name FROM recruits WHERE player_id = $1 AND id = $2') {
@@ -193,6 +205,7 @@ function createFakeClient() {
       state.recruits.push({
         id, player_id, name, job_title, status: 'available', hp, max_hp, original_max_hp,
         attributes: JSON.parse(attributes), perks: JSON.parse(perks), flaws: JSON.parse(flaws), personality,
+        last_hp_regen_at: new Date(),
       })
       return { rows: [] }
     }
@@ -1287,6 +1300,94 @@ describe('GameService', () => {
           context: expect.objectContaining({ missionId: SHIP_DAMAGE_TEMPLATE_ID, actingRecruit: expect.objectContaining({ name: expect.any(String) }) }),
         }),
       )
+    })
+  })
+
+  describe('passive HP regen (via syncGame)', () => {
+    test('regenerates 1 HP per elapsed interval for a recruit not on a mission, at the default 1/minute rate', async () => {
+      await GameService.initGame()
+      const recruit = state.recruits[0]
+      recruit.hp = recruit.max_hp - 5
+      recruit.status = 'available'
+      recruit.last_hp_regen_at = new Date(Date.now() - 3.5 * 60000) // 3.5 minutes ago
+
+      const result = await GameService.syncGame()
+
+      expect(state.recruits[0].hp).toBe(recruit.max_hp - 5 + 3) // floor(3.5) = 3 ticks
+      expect(result.recruits[0].hp).toBe(recruit.max_hp - 5 + 3)
+    })
+
+    test('caps regen at max_hp even if more ticks elapsed than HP missing', async () => {
+      await GameService.initGame()
+      const recruit = state.recruits[0]
+      recruit.hp = recruit.max_hp - 1
+      recruit.status = 'available'
+      recruit.last_hp_regen_at = new Date(Date.now() - 10 * 60000)
+
+      await GameService.syncGame()
+
+      expect(state.recruits[0].hp).toBe(recruit.max_hp)
+    })
+
+    test('does not regenerate a recruit currently on a mission', async () => {
+      await GameService.initGame()
+      const recruit = state.recruits[0]
+      recruit.hp = recruit.max_hp - 5
+      recruit.status = 'in_mission'
+      recruit.last_hp_regen_at = new Date(Date.now() - 10 * 60000)
+
+      await GameService.syncGame()
+
+      expect(state.recruits[0].hp).toBe(recruit.max_hp - 5)
+    })
+
+    test('does not regenerate a dead recruit', async () => {
+      await GameService.initGame()
+      const recruit = state.recruits[0]
+      recruit.hp = 0
+      recruit.status = 'dead'
+      recruit.last_hp_regen_at = new Date(Date.now() - 10 * 60000)
+
+      await GameService.syncGame()
+
+      expect(state.recruits[0].hp).toBe(0)
+    })
+
+    test('advances last_hp_regen_at by whole ticks, keeping the fractional remainder for next time', async () => {
+      await GameService.initGame()
+      const recruit = state.recruits[0]
+      recruit.hp = recruit.max_hp - 5
+      recruit.status = 'available'
+      const startedAt = new Date(Date.now() - 3.5 * 60000)
+      recruit.last_hp_regen_at = startedAt
+
+      await GameService.syncGame()
+
+      const expectedNewRegenAt = new Date(startedAt.getTime() + 3 * 60000)
+      expect(new Date(state.recruits[0].last_hp_regen_at).getTime()).toBe(expectedNewRegenAt.getTime())
+    })
+
+    test('resets the regen clock to NOW() when a recruit returns from a mission, instead of crediting the whole mission duration', async () => {
+      await GameService.initGame()
+      seedTemplate(state, {
+        id: 201, difficulty: 'ROUTINE',
+        events: [buildEvent({ id: 'e1', type: 'RECON', attribute: 'perception', dc: 10, failureConsequence: 'HP_LOSS' })],
+      })
+      state.recruits[0].id = 1
+      state.recruits[0].last_hp_regen_at = new Date(Date.now() - 60 * 60000) // stale, from long before the mission
+      ShipService.getShip.mockResolvedValue({ id: 1, player_id: 1, crew: [1], status: 'docked', deleted_at: null })
+      await GameService.startMission(201, 1)
+      rollAction.mockReturnValue({ d20: 20, bonus: 0, diceNotation: '—', total: 20 })
+      state.missionInstances[0].started_at = new Date(Date.now() - 10 * 60 * 1000) // well past the mission's duration
+
+      await GameService.syncGame()
+
+      expect(state.recruits[0].status).toBe('available')
+      // If the stale last_hp_regen_at (60 min ago) had been honored, this
+      // recruit would have instantly regenerated far more than its missing
+      // HP the moment it returned. Assert the clock was reset instead: it's
+      // recent (within the last few seconds), not ~60 minutes old.
+      expect(Date.now() - new Date(state.recruits[0].last_hp_regen_at).getTime()).toBeLessThan(5000)
     })
   })
 

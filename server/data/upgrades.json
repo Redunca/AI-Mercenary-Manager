@@ -68,5 +68,15 @@
     "decrementMs": 30000,
     "floorMs": 600000,
     "costs": [80, 100, 125, 155, 195, 245, 305, 380, 475, 595]
+  },
+  {
+    "id": 8,
+    "name": "Medbay Regeneration",
+    "description": "Speeds up passive HP regeneration for recruits who aren't on a mission.",
+    "appliesTo": "players.hp_regen_interval_ms",
+    "baseValueMs": 60000,
+    "decrementMs": 5000,
+    "floorMs": 10000,
+    "costs": [80, 100, 125, 155, 195, 245, 305, 380, 475, 595]
   }
 ]
