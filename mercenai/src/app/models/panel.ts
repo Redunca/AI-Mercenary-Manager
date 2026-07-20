@@ -19,6 +19,7 @@ export enum PanelModule{
   Self = "self",
   OperaList = "opera-list",
   OperaDetail = "opera-detail",
+  Items = "items",
 }
 
 export interface Panel {

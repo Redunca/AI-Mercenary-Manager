@@ -25,6 +25,7 @@ export class CommandService {
     this.registerGlobalCommands('wallet', this.handleWallet.bind(this));
     this.registerGlobalCommands('self', this.handleSelf.bind(this));
     this.registerGlobalCommands('opera', this.handleOpera.bind(this));
+    this.registerGlobalCommands('items', this.handleItems.bind(this));
   }
 
   missionService = inject(MissionService);
@@ -390,6 +391,10 @@ export class CommandService {
       default:
         console.warn('Usage: opera list | opera detail <id> | opera start <id>');
     }
+  }
+
+  private handleItems() {
+    this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.Items);
   }
 
 }

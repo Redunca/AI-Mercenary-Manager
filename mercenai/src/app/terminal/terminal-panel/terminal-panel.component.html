@@ -99,6 +99,11 @@
         [id]="panel.data?.id">
       </app-opera-detail>
 
+      <app-items
+        #moduleInstance
+        *ngSwitchCase="'items'">
+      </app-items>
+
       <app-dashboard
         #moduleInstance 
         *ngSwitchDefault>

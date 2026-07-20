@@ -23,7 +23,7 @@ export interface Consumable {
   description: string;
   rarity: string;
   price: number;
-  effect: 'ATTRIBUTE_BOOST' | 'HEAL' | 'REPAIR' | 'SPEED_BOOST';
+  effect: 'ATTRIBUTE_BOOST' | 'HEAL' | 'REPAIR' | 'SPEED_BOOST' | 'NONE';
   effect_data: Record<string, unknown>;
   quantity: number;
   assigned_to_ship?: number | null;

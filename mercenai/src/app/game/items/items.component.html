@@ -1,0 +1,16 @@
+<div>TASK: [<span class="task-title">Available items</span>] ******************************************</div>
+<div>ok ==> {{ '{' }}</div>
+
+<div class="indent-one">"armor" : [</div>
+<div *ngFor="let a of armorStash" class="indent-two">[{{ a.id }}] {{ a.name }} — guard +{{ a.guard_bonus }}, req. fortitude {{ a.required_fortitude }}</div>
+<div *ngIf="!armorStash.length" class="indent-two muted">— nothing in stash —</div>
+<div class="indent-one">],</div>
+
+<div class="indent-one">"cargo" : [</div>
+<div *ngFor="let c of cargoStash" class="indent-two">[{{ c.id }}] {{ c.name }} x{{ c.quantity }} — {{ c.description }}</div>
+<div *ngIf="!cargoStash.length" class="indent-two muted">— nothing in stash —</div>
+<div class="indent-one">]</div>
+
+<div>{{ '}' }}</div>
+<div class="hint">[ recruit detail &lt;id&gt; ] then [ equip &lt;equipmentId&gt; ] to equip armor</div>
+<div class="hint">[ ship detail &lt;id&gt; ] then [ load &lt;consumableId&gt; ] to load cargo</div>
