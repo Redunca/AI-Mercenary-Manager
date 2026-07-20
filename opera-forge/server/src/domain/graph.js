@@ -4,15 +4,32 @@
 // orchestration that calls into this module.
 
 const NODE_TYPES = ['start', 'story', 'check', 'end']
-const CONDITION_TYPES = ['chance', 'has_item', 'has_perk', 'has_flaw', 'previous_outcome', 'attribute_threshold']
-const EFFECT_TYPES = ['give_item', 'apply_perk', 'apply_flaw', 'adjust_stat']
-const ROLL_TYPES = ['chance', 'attribute_threshold']
+const CONDITION_TYPES = ['chance', 'has_item', 'previous_outcome']
+// Mirrors the main game's remaining opera STEP_TYPES (server/src/domain/opera.js)
+// so a story graph can require the same real-game beats the tutorial's opera
+// checklist does. execute_command is covered by request_command below;
+// equip_item_to_recruit is omitted because in the main game it's just
+// equip_item under a different match shape, not a distinct action.
+const EFFECT_TYPES = [
+  'give_item', 'adjust_stat', 'start_combat', 'request_command',
+  'hire_recruit', 'assign_crew_to_ship', 'complete_quest',
+  'purchase_item', 'purchase_quest_item', 'equip_item',
+  'assign_item_to_ship', 'send_recruit_to_quest',
+]
+const ROLL_TYPES = ['chance']
 const OUTCOMES = ['success', 'failure', 'neutral']
 const ATTRIBUTES = [
   'agility', 'fortitude', 'might', 'learning', 'logic',
   'perception', 'will', 'deception', 'persuasion', 'presence',
 ]
-const OPERATORS = ['>', '>=', '<', '<=', '==']
+// Mirrors the main game's combat difficulty ladder (server/src/domain/combat.js
+// BOSS_TABLE). Only the difficulty is modeled here -- the main game abstracts
+// a whole encounter into one difficulty-scaled combatant.
+const DIFFICULTIES = ['ROUTINE', 'STANDARD', 'HARD', 'PERILOUS', 'EPIC']
+// Rough win chance per difficulty, used only to resolve a start_combat effect
+// during quick-generation walks -- not a claim about the main game's actual
+// combat math.
+const COMBAT_WIN_CHANCE = { ROUTINE: 90, STANDARD: 75, HARD: 55, PERILOUS: 35, EPIC: 15 }
 
 function isNonEmptyString(value) {
   return typeof value === 'string' && value.trim().length > 0
@@ -33,19 +50,8 @@ function validateConditionParams(type, params, where) {
     case 'has_item':
       if (!isNonEmptyString(p.itemName)) throw new Error(`${where}: condition "has_item" requires an itemName string`)
       return
-    case 'has_perk':
-      if (!isNonEmptyString(p.perkName)) throw new Error(`${where}: condition "has_perk" requires a perkName string`)
-      return
-    case 'has_flaw':
-      if (!isNonEmptyString(p.flawName)) throw new Error(`${where}: condition "has_flaw" requires a flawName string`)
-      return
     case 'previous_outcome':
       if (!OUTCOMES.includes(p.equals)) throw new Error(`${where}: condition "previous_outcome" requires equals to be one of ${OUTCOMES.join(', ')}`)
-      return
-    case 'attribute_threshold':
-      if (!ATTRIBUTES.includes(p.attribute)) throw new Error(`${where}: condition "attribute_threshold" requires a known attribute`)
-      if (!OPERATORS.includes(p.operator)) throw new Error(`${where}: condition "attribute_threshold" requires operator to be one of ${OPERATORS.join(', ')}`)
-      if (!isFiniteNumber(p.value)) throw new Error(`${where}: condition "attribute_threshold" requires a numeric value`)
       return
     default:
       throw new Error(`${where}: unknown condition type "${type}"`)
@@ -58,15 +64,29 @@ function validateEffectParams(type, params, where) {
     case 'give_item':
       if (!isNonEmptyString(p.itemName)) throw new Error(`${where}: effect "give_item" requires an itemName string`)
       return
-    case 'apply_perk':
-      if (!isNonEmptyString(p.perkName)) throw new Error(`${where}: effect "apply_perk" requires a perkName string`)
-      return
-    case 'apply_flaw':
-      if (!isNonEmptyString(p.flawName)) throw new Error(`${where}: effect "apply_flaw" requires a flawName string`)
-      return
     case 'adjust_stat':
       if (!ATTRIBUTES.includes(p.attribute)) throw new Error(`${where}: effect "adjust_stat" requires a known attribute`)
       if (!isFiniteNumber(p.amount)) throw new Error(`${where}: effect "adjust_stat" requires a numeric amount`)
+      return
+    case 'start_combat':
+      if (!DIFFICULTIES.includes(p.difficulty)) throw new Error(`${where}: effect "start_combat" requires difficulty to be one of ${DIFFICULTIES.join(', ')}`)
+      if (p.enemyName !== undefined && typeof p.enemyName !== 'string') throw new Error(`${where}: effect "start_combat" enemyName must be a string`)
+      return
+    case 'request_command':
+      if (!isNonEmptyString(p.command)) throw new Error(`${where}: effect "request_command" requires a command string`)
+      if (p.args !== undefined && typeof p.args !== 'string') throw new Error(`${where}: effect "request_command" args must be a string`)
+      return
+    case 'purchase_quest_item':
+      if (!isNonEmptyString(p.itemName)) throw new Error(`${where}: effect "purchase_quest_item" requires an itemName string`)
+      return
+    case 'hire_recruit':
+    case 'assign_crew_to_ship':
+    case 'complete_quest':
+    case 'purchase_item':
+    case 'equip_item':
+    case 'assign_item_to_ship':
+    case 'send_recruit_to_quest':
+      if (p.label !== undefined && typeof p.label !== 'string') throw new Error(`${where}: effect "${type}" label must be a string`)
       return
     default:
       throw new Error(`${where}: unknown effect type "${type}"`)
@@ -208,17 +228,6 @@ function makeRng(seed) {
   }
 }
 
-function compare(actual, operator, expected) {
-  switch (operator) {
-    case '>': return actual > expected
-    case '>=': return actual >= expected
-    case '<': return actual < expected
-    case '<=': return actual <= expected
-    case '==': return actual === expected
-    default: return false
-  }
-}
-
 function evaluateCondition(condition, { mockState, lastOutcome, rng }) {
   const p = condition.params ?? {}
   switch (condition.type) {
@@ -226,43 +235,55 @@ function evaluateCondition(condition, { mockState, lastOutcome, rng }) {
       return rng() * 100 < p.percentage
     case 'has_item':
       return mockState.items.includes(p.itemName)
-    case 'has_perk':
-      return mockState.perks.includes(p.perkName)
-    case 'has_flaw':
-      return mockState.flaws.includes(p.flawName)
     case 'previous_outcome':
       return lastOutcome === p.equals
-    case 'attribute_threshold':
-      return compare(mockState.attributes[p.attribute] ?? 0, p.operator, p.value)
     default:
       return false
   }
 }
 
-function applyEffect(effect, mockState) {
+// Returns the Effect entry to record in the walk's path (usually the effect
+// itself, but start_combat enriches it with the rolled outcome so the UI can
+// show what happened without re-deriving it from mockState).
+function applyEffect(effect, mockState, ctx) {
   const p = effect.params ?? {}
   switch (effect.type) {
     case 'give_item':
       if (!mockState.items.includes(p.itemName)) mockState.items.push(p.itemName)
-      return
-    case 'apply_perk':
-      if (!mockState.perks.includes(p.perkName)) mockState.perks.push(p.perkName)
-      return
-    case 'apply_flaw':
-      if (!mockState.flaws.includes(p.flawName)) mockState.flaws.push(p.flawName)
-      return
+      return effect
     case 'adjust_stat':
       mockState.attributes[p.attribute] = (mockState.attributes[p.attribute] ?? 0) + p.amount
-      return
+      return effect
+    case 'start_combat': {
+      const outcome = ctx.rng() * 100 < (COMBAT_WIN_CHANCE[p.difficulty] ?? 50) ? 'success' : 'failure'
+      ctx.lastOutcome = outcome
+      mockState.combatsFought.push({ difficulty: p.difficulty, enemyName: p.enemyName || '', outcome })
+      return { type: effect.type, params: { ...p, outcome } }
+    }
+    case 'request_command':
+      mockState.commandsRequested.push({ command: p.command, args: p.args || '' })
+      return effect
+    case 'purchase_quest_item':
+      if (!mockState.items.includes(p.itemName)) mockState.items.push(p.itemName)
+      mockState.actionsTaken.push({ type: effect.type, label: p.itemName })
+      return effect
+    case 'hire_recruit':
+    case 'assign_crew_to_ship':
+    case 'complete_quest':
+    case 'purchase_item':
+    case 'equip_item':
+    case 'assign_item_to_ship':
+    case 'send_recruit_to_quest':
+      mockState.actionsTaken.push({ type: effect.type, label: p.label || '' })
+      return effect
+    default:
+      return effect
   }
 }
 
 function resolveRoll(roll, ctx) {
   if (roll.type === 'chance') {
     return evaluateCondition({ type: 'chance', params: roll.params }, ctx) ? 'success' : 'failure'
-  }
-  if (roll.type === 'attribute_threshold') {
-    return evaluateCondition({ type: 'attribute_threshold', params: roll.params }, ctx) ? 'success' : 'failure'
   }
   return 'failure'
 }
@@ -286,9 +307,10 @@ function runGeneration(def, { initialState, seed } = {}) {
 
   const mockState = {
     items: [...(initialState?.items ?? [])],
-    perks: [...(initialState?.perks ?? [])],
-    flaws: [...(initialState?.flaws ?? [])],
     attributes: { ...(initialState?.attributes ?? {}) },
+    combatsFought: [],
+    commandsRequested: [],
+    actionsTaken: [],
   }
   const rng = makeRng(seed)
   const ctx = { mockState, lastOutcome: null, rng }
@@ -303,8 +325,7 @@ function runGeneration(def, { initialState, seed } = {}) {
     }
 
     if (current.type === 'story') {
-      const effectsApplied = current.effects ?? []
-      effectsApplied.forEach(effect => applyEffect(effect, mockState))
+      const effectsApplied = (current.effects ?? []).map(effect => applyEffect(effect, mockState, ctx))
       path.push({ nodeId: current.id, type: current.type, text: current.text, effectsApplied })
     } else if (current.type === 'check') {
       ctx.lastOutcome = resolveRoll(current.roll, ctx)
@@ -337,7 +358,7 @@ module.exports = {
   ROLL_TYPES,
   OUTCOMES,
   ATTRIBUTES,
-  OPERATORS,
+  DIFFICULTIES,
   validateGraphDefinition,
   analyzeGraph,
   runGeneration,

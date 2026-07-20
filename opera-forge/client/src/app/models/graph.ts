@@ -5,13 +5,29 @@
 export const NODE_TYPES = ['start', 'story', 'check', 'end'] as const;
 export type NodeType = (typeof NODE_TYPES)[number];
 
-export const CONDITION_TYPES = ['chance', 'has_item', 'has_perk', 'has_flaw', 'previous_outcome', 'attribute_threshold'] as const;
+export const CONDITION_TYPES = ['chance', 'has_item', 'previous_outcome'] as const;
 export type ConditionType = (typeof CONDITION_TYPES)[number];
 
-export const EFFECT_TYPES = ['give_item', 'apply_perk', 'apply_flaw', 'adjust_stat'] as const;
+// Mirrors the main game's remaining opera STEP_TYPES (server/src/domain/opera.js)
+// so a story graph can require the same real-game beats the tutorial's opera
+// checklist does. execute_command is covered by request_command below;
+// equip_item_to_recruit is omitted because in the main game it's just
+// equip_item under a different match shape, not a distinct action.
+export const EFFECT_TYPES = [
+  'give_item', 'adjust_stat', 'start_combat', 'request_command',
+  'hire_recruit', 'assign_crew_to_ship', 'complete_quest',
+  'purchase_item', 'purchase_quest_item', 'equip_item',
+  'assign_item_to_ship', 'send_recruit_to_quest',
+] as const;
 export type EffectType = (typeof EFFECT_TYPES)[number];
 
-export const ROLL_TYPES = ['chance', 'attribute_threshold'] as const;
+// Mirrors the main game's combat difficulty ladder (server/src/domain/combat.js
+// BOSS_TABLE). Only the difficulty is modeled here -- the main game abstracts
+// a whole encounter into one difficulty-scaled combatant.
+export const DIFFICULTIES = ['ROUTINE', 'STANDARD', 'HARD', 'PERILOUS', 'EPIC'] as const;
+export type Difficulty = (typeof DIFFICULTIES)[number];
+
+export const ROLL_TYPES = ['chance'] as const;
 export type RollType = (typeof ROLL_TYPES)[number];
 
 export const OUTCOMES = ['success', 'failure', 'neutral'] as const;
@@ -22,9 +38,6 @@ export const ATTRIBUTES = [
   'perception', 'will', 'deception', 'persuasion', 'presence',
 ] as const;
 export type Attribute = (typeof ATTRIBUTES)[number];
-
-export const OPERATORS = ['>', '>=', '<', '<=', '=='] as const;
-export type Operator = (typeof OPERATORS)[number];
 
 export interface Position {
   x: number;
@@ -82,11 +95,38 @@ export interface GraphSummary {
   updatedAt: string;
 }
 
-export interface MockState {
+export interface CombatRecord {
+  difficulty: Difficulty;
+  enemyName: string;
+  outcome: Outcome;
+}
+
+export interface CommandRecord {
+  command: string;
+  args: string;
+}
+
+// A logged occurrence of one of the STEP_TYPES-mirroring "beat" effects
+// (hire_recruit, complete_quest, equip_item, etc.) -- these have no other
+// state to mutate, so applying one just appends here.
+export interface ActionRecord {
+  type: EffectType;
+  label: string;
+}
+
+// The player state seeded before a quick-generation walk starts.
+export interface InitialMockState {
   items: string[];
-  perks: string[];
-  flaws: string[];
   attributes: Partial<Record<Attribute, number>>;
+}
+
+// InitialMockState plus what a walk accumulates as it runs -- combats,
+// requested commands, and logged beats are only ever produced by effects
+// along the path, never seeded up front.
+export interface MockState extends InitialMockState {
+  combatsFought: CombatRecord[];
+  commandsRequested: CommandRecord[];
+  actionsTaken: ActionRecord[];
 }
 
 export interface GenerationStep {
@@ -105,7 +145,7 @@ export interface GenerationResult {
 }
 
 export function emptyMockState(): MockState {
-  return { items: [], perks: [], flaws: [], attributes: {} };
+  return { items: [], attributes: {}, combatsFought: [], commandsRequested: [], actionsTaken: [] };
 }
 
 export function defaultParamsFor(kind: 'condition', type: ConditionType): Record<string, unknown>
@@ -116,19 +156,24 @@ export function defaultParamsFor(_kind: 'condition' | 'effect', type: string): R
       return { percentage: 50 };
     case 'has_item':
     case 'give_item':
+    case 'purchase_quest_item':
       return { itemName: '' };
-    case 'has_perk':
-    case 'apply_perk':
-      return { perkName: '' };
-    case 'has_flaw':
-    case 'apply_flaw':
-      return { flawName: '' };
     case 'previous_outcome':
       return { equals: 'success' };
-    case 'attribute_threshold':
-      return { attribute: 'agility', operator: '>=', value: 0 };
     case 'adjust_stat':
       return { attribute: 'agility', amount: 1 };
+    case 'start_combat':
+      return { difficulty: 'STANDARD', enemyName: '' };
+    case 'request_command':
+      return { command: '', args: '' };
+    case 'hire_recruit':
+    case 'assign_crew_to_ship':
+    case 'complete_quest':
+    case 'purchase_item':
+    case 'equip_item':
+    case 'assign_item_to_ship':
+    case 'send_recruit_to_quest':
+      return { label: '' };
     default:
       return {};
   }

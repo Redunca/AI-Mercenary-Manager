@@ -120,11 +120,22 @@ describe('validateGraphDefinition', () => {
     expect(() => validateGraphDefinition(def)).toThrow(/has_item.*itemName/)
   })
 
-  test('rejects an attribute_threshold condition with a bad operator', () => {
+  test('rejects a chance condition with a percentage out of range', () => {
     const def = makeDef({
-      links: [{ id: 'l1', from: 'start', to: 'story-1', conditions: [{ type: 'attribute_threshold', params: { attribute: 'agility', operator: '!=', value: 3 } }] }],
+      links: [{ id: 'l1', from: 'start', to: 'story-1', conditions: [{ type: 'chance', params: { percentage: 150 } }] }],
     })
-    expect(() => validateGraphDefinition(def)).toThrow(/operator to be one of/)
+    expect(() => validateGraphDefinition(def)).toThrow(/percentage between 0 and 100/)
+  })
+
+  test('rejects a hire_recruit effect with a non-string label', () => {
+    const def = makeDef({
+      nodes: [
+        { id: 'start', type: 'start' },
+        { id: 'story-1', type: 'story', text: 'A candidate walks in.', effects: [{ type: 'hire_recruit', params: { label: 42 } }] },
+        { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
+      ],
+    })
+    expect(() => validateGraphDefinition(def)).toThrow(/hire_recruit.*label/)
   })
 
   test('rejects a story node effect of unknown type', () => {
@@ -195,6 +206,117 @@ describe('runGeneration', () => {
     })
     const result = runGeneration(def, { seed: 'test' })
     expect(result.finalState.items).toContain('Chip')
+  })
+
+  test('rejects a start_combat effect with an unknown difficulty', () => {
+    const def = makeDef({
+      nodes: [
+        { id: 'start', type: 'start' },
+        { id: 'story-1', type: 'story', text: 'A fight breaks out.', effects: [{ type: 'start_combat', params: { difficulty: 'IMPOSSIBLE' } }] },
+        { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
+      ],
+    })
+    expect(() => validateGraphDefinition(def)).toThrow(/start_combat/)
+  })
+
+  test('rejects a request_command effect without a command', () => {
+    const def = makeDef({
+      nodes: [
+        { id: 'start', type: 'start' },
+        { id: 'story-1', type: 'story', text: 'Try the terminal.', effects: [{ type: 'request_command', params: {} }] },
+        { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
+      ],
+    })
+    expect(() => validateGraphDefinition(def)).toThrow(/request_command/)
+  })
+
+  test('a start_combat effect resolves an outcome and routes via previous_outcome, like a check node', () => {
+    const def = {
+      id: 'g',
+      title: 'g',
+      nodes: [
+        { id: 'start', type: 'start' },
+        { id: 'fight', type: 'story', text: 'A bandit attacks.', effects: [{ type: 'start_combat', params: { difficulty: 'ROUTINE', enemyName: 'Bandit' } }] },
+        { id: 'won', type: 'end', outcome: 'success', text: 'won' },
+        { id: 'lost', type: 'end', outcome: 'failure', text: 'lost' },
+      ],
+      links: [
+        { id: 'l1', from: 'start', to: 'fight', priority: 0, conditions: [] },
+        { id: 'l2', from: 'fight', to: 'won', priority: 0, conditions: [{ type: 'previous_outcome', params: { equals: 'success' } }] },
+        { id: 'l3', from: 'fight', to: 'lost', priority: 1, conditions: [{ type: 'previous_outcome', params: { equals: 'failure' } }] },
+      ],
+    }
+    const result = runGeneration(def, { seed: 'test' })
+    expect(result.finalState.combatsFought).toEqual([{ difficulty: 'ROUTINE', enemyName: 'Bandit', outcome: result.finalState.combatsFought[0].outcome }])
+    expect(result.endedAt).toBe(result.finalState.combatsFought[0].outcome === 'success' ? 'won' : 'lost')
+    const [applied] = result.path.find(step => step.nodeId === 'fight').effectsApplied
+    expect(applied.params.outcome).toBe(result.finalState.combatsFought[0].outcome)
+  })
+
+  test('a request_command effect records the requested command without altering routing', () => {
+    const def = {
+      id: 'g',
+      title: 'g',
+      nodes: [
+        { id: 'start', type: 'start' },
+        { id: 'hint', type: 'story', text: 'Try typing self.', effects: [{ type: 'request_command', params: { command: 'self', args: '' } }] },
+        { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
+      ],
+      links: [
+        { id: 'l1', from: 'start', to: 'hint', priority: 0, conditions: [] },
+        { id: 'l2', from: 'hint', to: 'end-1', priority: 0, conditions: [] },
+      ],
+    }
+    const result = runGeneration(def, { seed: 'test' })
+    expect(result.finalState.commandsRequested).toEqual([{ command: 'self', args: '' }])
+    expect(result.endedAt).toBe('end-1')
+  })
+
+  test('a purchase_quest_item effect adds the item and logs the beat', () => {
+    const def = makeDef({
+      nodes: [
+        { id: 'start', type: 'start' },
+        { id: 'story-1', type: 'story', text: 'You buy a vest.', effects: [{ type: 'purchase_quest_item', params: { itemName: 'Recruit Training Vest' } }] },
+        { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
+      ],
+    })
+    const result = runGeneration(def, { seed: 'test' })
+    expect(result.finalState.items).toContain('Recruit Training Vest')
+    expect(result.finalState.actionsTaken).toEqual([{ type: 'purchase_quest_item', label: 'Recruit Training Vest' }])
+  })
+
+  test('STEP_TYPES-style effects log a beat in actionsTaken without altering routing', () => {
+    const def = makeDef({
+      nodes: [
+        { id: 'start', type: 'start' },
+        {
+          id: 'story-1',
+          type: 'story',
+          text: 'Onboarding montage.',
+          effects: [
+            { type: 'hire_recruit', params: { label: 'Jax' } },
+            { type: 'assign_crew_to_ship', params: {} },
+            { type: 'complete_quest', params: { label: 'Milk Run' } },
+            { type: 'equip_item', params: {} },
+            { type: 'assign_item_to_ship', params: {} },
+            { type: 'send_recruit_to_quest', params: {} },
+            { type: 'purchase_item', params: {} },
+          ],
+        },
+        { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
+      ],
+    })
+    const result = runGeneration(def, { seed: 'test' })
+    expect(result.endedAt).toBe('end-1')
+    expect(result.finalState.actionsTaken).toEqual([
+      { type: 'hire_recruit', label: 'Jax' },
+      { type: 'assign_crew_to_ship', label: '' },
+      { type: 'complete_quest', label: 'Milk Run' },
+      { type: 'equip_item', label: '' },
+      { type: 'assign_item_to_ship', label: '' },
+      { type: 'send_recruit_to_quest', label: '' },
+      { type: 'purchase_item', label: '' },
+    ])
   })
 
   test('a has_item condition sees items granted earlier in the same walk', () => {

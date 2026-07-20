@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import { GenerationResult, GraphDefinition, GraphSummary, MockState } from '../models/graph';
+import { GenerationResult, GraphDefinition, GraphSummary, InitialMockState } from '../models/graph';
 
 @Injectable({ providedIn: 'root' })
 export class GraphApiService {
@@ -32,7 +32,7 @@ export class GraphApiService {
     return firstValueFrom(this.http.get<{ warnings: string[] }>(`${this.base}/${id}/analyze`));
   }
 
-  generate(id: string, initialState: MockState, seed: string): Promise<GenerationResult> {
+  generate(id: string, initialState: InitialMockState, seed: string): Promise<GenerationResult> {
     return firstValueFrom(this.http.post<GenerationResult>(`${this.base}/${id}/generate`, { initialState, seed }));
   }
 }

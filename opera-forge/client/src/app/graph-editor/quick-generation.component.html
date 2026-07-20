@@ -6,14 +6,6 @@
     Items (comma separated)
     <input type="text" [ngModel]="itemsText()" (ngModelChange)="itemsText.set($event)" />
   </label>
-  <label>
-    Perks (comma separated)
-    <input type="text" [ngModel]="perksText()" (ngModelChange)="perksText.set($event)" />
-  </label>
-  <label>
-    Flaws (comma separated)
-    <input type="text" [ngModel]="flawsText()" (ngModelChange)="flawsText.set($event)" />
-  </label>
 
   <h3>Attributes</h3>
   <div class="attr-grid">
@@ -68,8 +60,24 @@
 
       <h3>Final state</h3>
       <p class="muted">Items: {{ r.finalState.items.join(', ') || '—' }}</p>
-      <p class="muted">Perks: {{ r.finalState.perks.join(', ') || '—' }}</p>
-      <p class="muted">Flaws: {{ r.finalState.flaws.join(', ') || '—' }}</p>
+      <p class="muted">
+        Combats: {{ r.finalState.combatsFought.length === 0 ? '—' : '' }}
+        @for (c of r.finalState.combatsFought; track $index) {
+          {{ c.difficulty }}{{ c.enemyName ? ' (' + c.enemyName + ')' : '' }}: {{ c.outcome }}@if (!$last) { , }
+        }
+      </p>
+      <p class="muted">
+        Commands requested: {{ r.finalState.commandsRequested.length === 0 ? '—' : '' }}
+        @for (c of r.finalState.commandsRequested; track $index) {
+          {{ c.command }}{{ c.args ? ' ' + c.args : '' }}@if (!$last) { , }
+        }
+      </p>
+      <p class="muted">
+        Beats completed: {{ r.finalState.actionsTaken.length === 0 ? '—' : '' }}
+        @for (a of r.finalState.actionsTaken; track $index) {
+          {{ a.type }}{{ a.label ? ' (' + a.label + ')' : '' }}@if (!$last) { , }
+        }
+      </p>
     </div>
   }
 </div>

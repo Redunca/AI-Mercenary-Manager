@@ -116,9 +116,6 @@ export class GraphEditorComponent implements OnInit, OnDestroy {
     if (node.type === 'check') {
       const roll = node.roll;
       if (roll?.type === 'chance') return `Roll: ${roll.params['percentage']}% chance`;
-      if (roll?.type === 'attribute_threshold') {
-        return `Roll: ${roll.params['attribute']} ${roll.params['operator']} ${roll.params['value']}`;
-      }
       return 'Roll: unconfigured';
     }
     return `Outcome: ${node.outcome ?? 'unset'} — ${node.text ?? ''}`;

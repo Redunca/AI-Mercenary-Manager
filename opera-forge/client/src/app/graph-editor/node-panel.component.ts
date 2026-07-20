@@ -2,7 +2,7 @@ import { Component, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GraphService } from '../core/graph.service';
-import { ATTRIBUTES, EFFECT_TYPES, Effect, EffectType, GraphNode, OPERATORS, OUTCOMES, Outcome, RollType, defaultParamsFor } from '../models/graph';
+import { ATTRIBUTES, DIFFICULTIES, EFFECT_TYPES, Effect, EffectType, GraphNode, OUTCOMES, Outcome, defaultParamsFor } from '../models/graph';
 
 @Component({
   selector: 'app-node-panel',
@@ -18,8 +18,8 @@ export class NodePanelComponent {
 
   readonly effectTypes = EFFECT_TYPES;
   readonly attributes = ATTRIBUTES;
-  readonly operators = OPERATORS;
   readonly outcomes = OUTCOMES;
+  readonly difficulties = DIFFICULTIES;
 
   setText(text: string): void {
     this.graphService.updateNode(this.node().id, { text });
@@ -27,10 +27,6 @@ export class NodePanelComponent {
 
   setOutcome(outcome: Outcome): void {
     this.graphService.updateNode(this.node().id, { outcome });
-  }
-
-  setRollType(type: RollType): void {
-    this.graphService.updateNode(this.node().id, { roll: { type, params: defaultParamsFor('condition', type) } });
   }
 
   setRollParam(key: string, value: unknown): void {

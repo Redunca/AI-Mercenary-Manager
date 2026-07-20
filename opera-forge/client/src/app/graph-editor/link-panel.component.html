@@ -23,31 +23,12 @@
         @case ('has_item') {
           <input type="text" placeholder="Item name" [ngModel]="condition.params['itemName']" (ngModelChange)="setConditionParam($index, 'itemName', $event)" />
         }
-        @case ('has_perk') {
-          <input type="text" placeholder="Perk name" [ngModel]="condition.params['perkName']" (ngModelChange)="setConditionParam($index, 'perkName', $event)" />
-        }
-        @case ('has_flaw') {
-          <input type="text" placeholder="Flaw name" [ngModel]="condition.params['flawName']" (ngModelChange)="setConditionParam($index, 'flawName', $event)" />
-        }
         @case ('previous_outcome') {
           <select [ngModel]="condition.params['equals']" (ngModelChange)="setConditionParam($index, 'equals', $event)">
             @for (o of outcomes; track o) {
               <option [value]="o">{{ o }}</option>
             }
           </select>
-        }
-        @case ('attribute_threshold') {
-          <select [ngModel]="condition.params['attribute']" (ngModelChange)="setConditionParam($index, 'attribute', $event)">
-            @for (a of attributes; track a) {
-              <option [value]="a">{{ a }}</option>
-            }
-          </select>
-          <select [ngModel]="condition.params['operator']" (ngModelChange)="setConditionParam($index, 'operator', $event)">
-            @for (o of operators; track o) {
-              <option [value]="o">{{ o }}</option>
-            }
-          </select>
-          <input type="number" [ngModel]="condition.params['value']" (ngModelChange)="setConditionParam($index, 'value', asNumber($event))" />
         }
       }
 

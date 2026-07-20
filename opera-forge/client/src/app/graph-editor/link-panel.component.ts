@@ -2,7 +2,7 @@ import { Component, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GraphService } from '../core/graph.service';
-import { ATTRIBUTES, CONDITION_TYPES, Condition, ConditionType, GraphLink, OPERATORS, OUTCOMES, defaultParamsFor } from '../models/graph';
+import { CONDITION_TYPES, Condition, ConditionType, GraphLink, OUTCOMES, defaultParamsFor } from '../models/graph';
 
 @Component({
   selector: 'app-link-panel',
@@ -17,8 +17,6 @@ export class LinkPanelComponent {
   private graphService = inject(GraphService);
 
   readonly conditionTypes = CONDITION_TYPES;
-  readonly attributes = ATTRIBUTES;
-  readonly operators = OPERATORS;
   readonly outcomes = OUTCOMES;
 
   setPriority(priority: number): void {
