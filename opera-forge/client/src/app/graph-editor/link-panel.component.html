@@ -1,0 +1,60 @@
+<div class="panel">
+  <h2>Link</h2>
+  <p class="node-id">{{ link().from }} &rarr; {{ link().to }}</p>
+
+  <label>
+    Priority (lower evaluated first)
+    <input type="number" [ngModel]="link().priority" (ngModelChange)="setPriority(asNumber($event))" />
+  </label>
+
+  <h3>Conditions (all must pass)</h3>
+  @for (condition of link().conditions; track $index) {
+    <div class="row">
+      <select [ngModel]="condition.type" (ngModelChange)="setConditionType($index, $event)">
+        @for (t of conditionTypes; track t) {
+          <option [value]="t">{{ t }}</option>
+        }
+      </select>
+
+      @switch (condition.type) {
+        @case ('chance') {
+          <input type="number" min="0" max="100" placeholder="%" [ngModel]="condition.params['percentage']" (ngModelChange)="setConditionParam($index, 'percentage', asNumber($event))" />
+        }
+        @case ('has_item') {
+          <input type="text" placeholder="Item name" [ngModel]="condition.params['itemName']" (ngModelChange)="setConditionParam($index, 'itemName', $event)" />
+        }
+        @case ('has_perk') {
+          <input type="text" placeholder="Perk name" [ngModel]="condition.params['perkName']" (ngModelChange)="setConditionParam($index, 'perkName', $event)" />
+        }
+        @case ('has_flaw') {
+          <input type="text" placeholder="Flaw name" [ngModel]="condition.params['flawName']" (ngModelChange)="setConditionParam($index, 'flawName', $event)" />
+        }
+        @case ('previous_outcome') {
+          <select [ngModel]="condition.params['equals']" (ngModelChange)="setConditionParam($index, 'equals', $event)">
+            @for (o of outcomes; track o) {
+              <option [value]="o">{{ o }}</option>
+            }
+          </select>
+        }
+        @case ('attribute_threshold') {
+          <select [ngModel]="condition.params['attribute']" (ngModelChange)="setConditionParam($index, 'attribute', $event)">
+            @for (a of attributes; track a) {
+              <option [value]="a">{{ a }}</option>
+            }
+          </select>
+          <select [ngModel]="condition.params['operator']" (ngModelChange)="setConditionParam($index, 'operator', $event)">
+            @for (o of operators; track o) {
+              <option [value]="o">{{ o }}</option>
+            }
+          </select>
+          <input type="number" [ngModel]="condition.params['value']" (ngModelChange)="setConditionParam($index, 'value', asNumber($event))" />
+        }
+      }
+
+      <button type="button" class="danger" (click)="removeCondition($index)">&times;</button>
+    </div>
+  }
+  <button type="button" (click)="addCondition()">+ Condition</button>
+
+  <button type="button" class="danger" (click)="deleteLink()">Delete link</button>
+</div>

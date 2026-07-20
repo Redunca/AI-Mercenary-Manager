@@ -1,0 +1,125 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+
+  h2 {
+    margin: 0;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  h3 {
+    margin: 0.5rem 0 0;
+    font-size: 0.85rem;
+    opacity: 0.8;
+  }
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.85em;
+  }
+
+  input, select {
+    padding: 0.35rem;
+  }
+
+  .hint {
+    font-size: 0.8em;
+    opacity: 0.65;
+    margin: 0;
+  }
+
+  .attr-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem;
+
+    .attr {
+      font-size: 0.75em;
+      text-transform: capitalize;
+    }
+  }
+
+  .row {
+    display: flex;
+    gap: 0.3rem;
+
+    input {
+      flex: 1;
+    }
+  }
+
+  button.primary {
+    background: var(--accent, #5b8def);
+    border-color: var(--accent, #5b8def);
+    color: #fff;
+  }
+
+  .error {
+    color: #e05252;
+  }
+
+  .result {
+    border-top: 1px solid var(--border-color, #333);
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+
+    .reason {
+      font-size: 0.85em;
+      opacity: 0.8;
+    }
+  }
+
+  .path {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+
+    li {
+      border-left: 3px solid var(--border-color, #444);
+      padding: 0.3rem 0.5rem;
+      font-size: 0.85em;
+
+      p {
+        margin: 0.2rem 0;
+      }
+
+      .step-type {
+        font-size: 0.7em;
+        text-transform: uppercase;
+        opacity: 0.6;
+      }
+
+      .outcome {
+        font-style: italic;
+      }
+    }
+
+    .step-check {
+      border-left-color: #e6b43c;
+    }
+    .step-end {
+      border-left-color: #e05252;
+    }
+
+    .effects {
+      margin: 0.2rem 0 0;
+      padding-left: 1rem;
+      font-size: 0.9em;
+      opacity: 0.8;
+    }
+  }
+
+  .muted {
+    font-size: 0.85em;
+    opacity: 0.75;
+    margin: 0.15rem 0;
+  }
+}

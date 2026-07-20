@@ -1,0 +1,54 @@
+:root {
+  color-scheme: dark;
+  --bg: #1a1b1e;
+  --fg: #e4e4e7;
+  --border-color: #3a3b3f;
+  --hover-bg: rgba(255, 255, 255, 0.06);
+  --accent: #5b8def;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+button {
+  background: var(--border-color);
+  color: var(--fg);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.9em;
+
+  &:hover {
+    background: var(--hover-bg);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+input, select, textarea {
+  background: #232427;
+  color: var(--fg);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 0.9em;
+}
+
+a {
+  color: var(--accent);
+}

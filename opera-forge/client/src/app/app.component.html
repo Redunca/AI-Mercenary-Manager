@@ -1,0 +1,5 @@
+@if (openGraphId(); as id) {
+  <app-graph-editor [graphId]="id" (back)="closeEditor()" />
+} @else {
+  <app-graph-list (openGraph)="open($event)" />
+}

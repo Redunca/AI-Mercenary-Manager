@@ -1,0 +1,75 @@
+<div class="panel">
+  <h2>Quick Generation</h2>
+  <p class="hint">Set a mock player state and walk the graph to preview a generated story.</p>
+
+  <label>
+    Items (comma separated)
+    <input type="text" [ngModel]="itemsText()" (ngModelChange)="itemsText.set($event)" />
+  </label>
+  <label>
+    Perks (comma separated)
+    <input type="text" [ngModel]="perksText()" (ngModelChange)="perksText.set($event)" />
+  </label>
+  <label>
+    Flaws (comma separated)
+    <input type="text" [ngModel]="flawsText()" (ngModelChange)="flawsText.set($event)" />
+  </label>
+
+  <h3>Attributes</h3>
+  <div class="attr-grid">
+    @for (a of attributes; track a) {
+      <label class="attr">
+        {{ a }}
+        <input type="number" [ngModel]="attributeValues()[a] ?? 0" (ngModelChange)="setAttribute(a, $event)" />
+      </label>
+    }
+  </div>
+
+  <label>
+    Seed
+    <div class="row">
+      <input type="text" [ngModel]="seed()" (ngModelChange)="seed.set($event)" />
+      <button type="button" (click)="randomizeSeed()">&#8635;</button>
+    </div>
+  </label>
+
+  <button type="button" class="primary" (click)="generate()" [disabled]="loading()">
+    {{ loading() ? 'Generating...' : 'Generate' }}
+  </button>
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+
+  @if (result(); as r) {
+    <div class="result">
+      <p class="reason">Ended: {{ r.reason }}@if (r.endedAt) { at "{{ r.endedAt }}" }</p>
+
+      <ol class="path">
+        @for (step of r.path; track $index) {
+          <li [class]="'step-' + step.type">
+            <span class="step-type">{{ step.type }}</span>
+            @if (step.text) {
+              <p>{{ step.text }}</p>
+            }
+            @if (step.outcome) {
+              <p class="outcome">outcome: {{ step.outcome }}</p>
+            }
+            @if (step.effectsApplied && step.effectsApplied.length > 0) {
+              <ul class="effects">
+                @for (e of step.effectsApplied; track $index) {
+                  <li>{{ e.type }}: {{ e.params | json }}</li>
+                }
+              </ul>
+            }
+          </li>
+        }
+      </ol>
+
+      <h3>Final state</h3>
+      <p class="muted">Items: {{ r.finalState.items.join(', ') || '—' }}</p>
+      <p class="muted">Perks: {{ r.finalState.perks.join(', ') || '—' }}</p>
+      <p class="muted">Flaws: {{ r.finalState.flaws.join(', ') || '—' }}</p>
+    </div>
+  }
+</div>

@@ -2,3 +2,7 @@ node_modules/
 server/.env
 mercenai/.angular/
 mercenai/dist/
+opera-forge/server/.env
+opera-forge/client/.angular/
+opera-forge/client/dist/
+opera-forge/server/data/opera-graphs/*.json

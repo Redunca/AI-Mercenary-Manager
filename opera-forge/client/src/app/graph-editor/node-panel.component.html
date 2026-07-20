@@ -1,0 +1,110 @@
+<div class="panel">
+  <h2>{{ node().type }} node</h2>
+  <p class="node-id">{{ node().id }}</p>
+
+  @switch (node().type) {
+    @case ('start') {
+      <p class="hint">The entry point of the graph. Every walk begins here.</p>
+    }
+
+    @case ('story') {
+      <label>
+        Text
+        <textarea rows="4" [ngModel]="node().text" (ngModelChange)="setText($event)"></textarea>
+      </label>
+
+      <h3>Effects</h3>
+      @for (effect of node().effects ?? []; track $index) {
+        <div class="row">
+          <select [ngModel]="effect.type" (ngModelChange)="setEffectType($index, $event)">
+            @for (t of effectTypes; track t) {
+              <option [value]="t">{{ t }}</option>
+            }
+          </select>
+
+          @switch (effect.type) {
+            @case ('give_item') {
+              <input type="text" placeholder="Item name" [ngModel]="effect.params['itemName']" (ngModelChange)="setEffectParam($index, 'itemName', $event)" />
+            }
+            @case ('apply_perk') {
+              <input type="text" placeholder="Perk name" [ngModel]="effect.params['perkName']" (ngModelChange)="setEffectParam($index, 'perkName', $event)" />
+            }
+            @case ('apply_flaw') {
+              <input type="text" placeholder="Flaw name" [ngModel]="effect.params['flawName']" (ngModelChange)="setEffectParam($index, 'flawName', $event)" />
+            }
+            @case ('adjust_stat') {
+              <select [ngModel]="effect.params['attribute']" (ngModelChange)="setEffectParam($index, 'attribute', $event)">
+                @for (a of attributes; track a) {
+                  <option [value]="a">{{ a }}</option>
+                }
+              </select>
+              <input type="number" [ngModel]="effect.params['amount']" (ngModelChange)="setEffectParam($index, 'amount', asNumber($event))" />
+            }
+          }
+
+          <button type="button" class="danger" (click)="removeEffect($index)">&times;</button>
+        </div>
+      }
+      <button type="button" (click)="addEffect()">+ Effect</button>
+    }
+
+    @case ('check') {
+      <label>
+        Roll type
+        <select [ngModel]="node().roll?.type" (ngModelChange)="setRollType($event)">
+          <option value="chance">chance</option>
+          <option value="attribute_threshold">attribute_threshold</option>
+        </select>
+      </label>
+
+      @if (node().roll?.type === 'chance') {
+        <label>
+          Percentage
+          <input type="number" min="0" max="100" [ngModel]="node().roll?.params?.['percentage']" (ngModelChange)="setRollParam('percentage', asNumber($event))" />
+        </label>
+      }
+      @if (node().roll?.type === 'attribute_threshold') {
+        <label>
+          Attribute
+          <select [ngModel]="node().roll?.params?.['attribute']" (ngModelChange)="setRollParam('attribute', $event)">
+            @for (a of attributes; track a) {
+              <option [value]="a">{{ a }}</option>
+            }
+          </select>
+        </label>
+        <label>
+          Operator
+          <select [ngModel]="node().roll?.params?.['operator']" (ngModelChange)="setRollParam('operator', $event)">
+            @for (o of operators; track o) {
+              <option [value]="o">{{ o }}</option>
+            }
+          </select>
+        </label>
+        <label>
+          Value
+          <input type="number" [ngModel]="node().roll?.params?.['value']" (ngModelChange)="setRollParam('value', asNumber($event))" />
+        </label>
+      }
+      <p class="hint">Resolves to success/failure. Route outgoing links with a "previous_outcome" condition.</p>
+    }
+
+    @case ('end') {
+      <label>
+        Outcome
+        <select [ngModel]="node().outcome" (ngModelChange)="setOutcome($event)">
+          @for (o of outcomes; track o) {
+            <option [value]="o">{{ o }}</option>
+          }
+        </select>
+      </label>
+      <label>
+        Text
+        <textarea rows="4" [ngModel]="node().text" (ngModelChange)="setText($event)"></textarea>
+      </label>
+    }
+  }
+
+  @if (node().type !== 'start') {
+    <button type="button" class="danger" (click)="deleteNode()">Delete node</button>
+  }
+</div>

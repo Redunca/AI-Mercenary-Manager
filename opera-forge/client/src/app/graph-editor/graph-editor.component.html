@@ -1,0 +1,97 @@
+<div class="graph-editor">
+  <header>
+    <button type="button" (click)="back.emit()">&larr; Graphs</button>
+
+    @if (graphService.graph(); as def) {
+      <div class="meta">
+        <input
+          type="text"
+          class="title-input"
+          [ngModel]="def.title"
+          (ngModelChange)="graphService.updateMeta($event, def.description ?? '')"
+        />
+        @if (graphService.dirty()) {
+          <span class="dirty-badge">unsaved</span>
+        }
+      </div>
+    }
+
+    <div class="actions">
+      <button type="button" (click)="addNode('story')">+ Story</button>
+      <button type="button" (click)="addNode('check')">+ Check</button>
+      <button type="button" (click)="addNode('end')">+ End</button>
+      <button type="button" (click)="showGeneration.set(!showGeneration())">
+        {{ showGeneration() ? 'Hide' : '' }} Quick Generation
+      </button>
+      <button type="button" class="primary" (click)="save()" [disabled]="graphService.saving()">
+        {{ graphService.saving() ? 'Saving...' : 'Save' }}
+      </button>
+    </div>
+  </header>
+
+  @if (graphService.saveError()) {
+    <p class="error">{{ graphService.saveError() }}</p>
+  }
+  @if (graphService.warnings().length > 0) {
+    <div class="warnings">
+      @for (w of graphService.warnings(); track w) {
+        <p>&#9888; {{ w }}</p>
+      }
+    </div>
+  }
+
+  <div class="body">
+    <div class="canvas">
+      @if (graphService.loadError()) {
+        <p class="error">{{ graphService.loadError() }}</p>
+      } @else if (graphService.graph()) {
+        <vflow
+          [nodes]="vflowNodes()"
+          [edges]="vflowEdges()"
+          [view]="'auto'"
+          [connection]="connectionSettings"
+          [background]="{ type: 'dots', color: '#3a3b3f', gap: 24 }"
+          (onNodesChange)="onNodesChange($event)"
+          (onEdgesChange)="onEdgesChange($event)"
+          (connect)="onConnect($event)"
+        >
+          <ng-template nodeHtml let-ctx>
+            <div
+              class="ogl-node"
+              [class]="'type-' + ctx.node.data.type"
+              [class.selected]="ctx.selected()"
+              (click)="graphService.selectNode(ctx.node.data.id)"
+            >
+              @if (ctx.node.data.type !== 'start') {
+                <handle position="left" type="target"></handle>
+              }
+              <div class="node-header">{{ ctx.node.data.type }}</div>
+              <div class="node-body">{{ nodePreview(ctx.node.data) }}</div>
+              @if (ctx.node.data.type !== 'end') {
+                <handle position="right" type="source"></handle>
+              }
+            </div>
+          </ng-template>
+        </vflow>
+      } @else {
+        <p>Loading...</p>
+      }
+    </div>
+
+    <aside class="side-panel">
+      @if (showGeneration()) {
+        <app-quick-generation [graphId]="graphId()" />
+      } @else {
+        @if (graphService.selectedNode(); as node) {
+          <app-node-panel [node]="node" />
+        } @else {
+          @if (graphService.selectedLink(); as link) {
+            <app-link-panel [link]="link" />
+          } @else {
+            <p class="hint">Select a node or link to edit it. Drag from a node's right handle to another node's left handle to create a link.</p>
+          }
+        }
+      }
+    </aside>
+  </div>
+</div>
