@@ -14,6 +14,7 @@ const ShipService = require('./ship.service')
 const ConsumableService = require('./consumable.service')
 const EquipmentService = require('./equipment.service')
 const OperaService = require('./opera.service')
+const ShopService = require('./shop.service')
 
 
 const { loadData } = require('../dataLoader')
@@ -957,6 +958,41 @@ async function refreshCandidates(client, playerId, count = 5) {
   await generateCandidatesForPlayer(client, { ...player, next_candidate_id: 1 }, count)
 }
 
+// --- Dev/testing helpers ----------------------------------------------
+// Not gated behind an environment check: this is a single-player local
+// game with no auth system anywhere else in the app either.
+
+// Forces every rotating pool (missions, shop, candidates) to refresh right
+// now, bypassing the normal wall-clock isRefreshDue() gate — lets a
+// developer skip waiting out a real refresh interval while testing.
+async function devRefreshPools(client, now = new Date()) {
+  const player = await ensurePlayer(client)
+  await generateMissionBatch(client, player, now)
+  await refreshCandidates(client, player.id, 5)
+  await ShopService.refreshShopRotation(client, player.id, now)
+}
+
+async function devSetCredits(client, playerId, amount) {
+  await client.query('UPDATE players SET wallet = $1 WHERE id = $2', [amount, playerId])
+}
+
+async function devSetTokens(client, playerId, amount) {
+  await client.query('UPDATE players SET tokens = $1 WHERE id = $2', [amount, playerId])
+}
+
+// Wipes every player-scoped row — players cascades to recruits, candidates,
+// ships, mission_instances, log_entries, shop_rotation, consumables,
+// equipment, player_upgrades, and opera_instances/progress (see the FK
+// definitions in db/migrations) — plus the global mission_templates pool,
+// which is orphaned once the mission_instances referencing it are gone.
+// Then bootstraps a brand new player from scratch. shop_items (the master
+// catalog) is deliberately left untouched: it isn't per-player state.
+async function devReboot(client) {
+  await client.query('DELETE FROM players')
+  await client.query('DELETE FROM mission_templates')
+  await bootstrapPlayer(client)
+}
+
 async function renameRecruit(client, playerId, recruitId, newName) {
   const result = await client.query(
     `UPDATE recruits SET name = $1 WHERE player_id = $2 AND id = $3 RETURNING *`,
@@ -1199,6 +1235,26 @@ module.exports = {
   refreshCandidates: (count = 5) => withTransaction(async (client) => {
     await bootstrapPlayer(client)
     await refreshCandidates(client, DEFAULT_PLAYER_ID, count)
+    return { state: await buildGameState(client, DEFAULT_PLAYER_ID) }
+  }),
+  devRefresh: () => withTransaction(async (client) => {
+    await bootstrapPlayer(client)
+    await devRefreshPools(client)
+    await syncMissions(client, DEFAULT_PLAYER_ID)
+    return { state: await buildGameState(client, DEFAULT_PLAYER_ID) }
+  }),
+  devSetCredits: (amount) => withTransaction(async (client) => {
+    await bootstrapPlayer(client)
+    await devSetCredits(client, DEFAULT_PLAYER_ID, amount)
+    return { state: await buildGameState(client, DEFAULT_PLAYER_ID) }
+  }),
+  devSetTokens: (amount) => withTransaction(async (client) => {
+    await bootstrapPlayer(client)
+    await devSetTokens(client, DEFAULT_PLAYER_ID, amount)
+    return { state: await buildGameState(client, DEFAULT_PLAYER_ID) }
+  }),
+  devReboot: () => withTransaction(async (client) => {
+    await devReboot(client)
     return { state: await buildGameState(client, DEFAULT_PLAYER_ID) }
   }),
   renameRecruit: (recruitId, newName) => withTransaction(async (client) => {

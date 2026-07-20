@@ -105,6 +105,28 @@ function createFakeClient() {
       Object.assign(state.players.find(p => p.id === id), { wallet, tokens })
       return { rows: [] }
     }
+    if (s === 'UPDATE players SET wallet = $1 WHERE id = $2') {
+      const [wallet, id] = params
+      Object.assign(state.players.find(p => p.id === id), { wallet })
+      return { rows: [] }
+    }
+    if (s === 'UPDATE players SET tokens = $1 WHERE id = $2') {
+      const [tokens, id] = params
+      Object.assign(state.players.find(p => p.id === id), { tokens })
+      return { rows: [] }
+    }
+    if (s === 'DELETE FROM players') {
+      state.players = []
+      state.recruits = []
+      state.candidates = []
+      state.missionInstances = []
+      state.logEntries = []
+      return { rows: [] }
+    }
+    if (s === 'DELETE FROM mission_templates') {
+      state.missionTemplates = []
+      return { rows: [] }
+    }
 
     // candidates
     if (s.includes('INSERT INTO candidates')) {
@@ -1332,6 +1354,47 @@ describe('GameService', () => {
       expect(state.candidates).toHaveLength(3)
       expect(state.candidates.map(c => c.id)).not.toEqual(previousIds)
       expect(state.players[0].next_candidate_id).toBe(4)
+    })
+  })
+
+  describe('devSetCredits', () => {
+    test('sets the wallet to exactly the given amount', async () => {
+      await GameService.initGame()
+
+      const result = await GameService.devSetCredits(12345)
+
+      expect(state.players[0].wallet).toBe(12345)
+      expect(result.state.player.credits).toBe(12345)
+    })
+  })
+
+  describe('devSetTokens', () => {
+    test('sets the token balance to exactly the given amount', async () => {
+      await GameService.initGame()
+
+      const result = await GameService.devSetTokens(777)
+
+      expect(state.players[0].tokens).toBe(777)
+      expect(result.state.player.tokens).toBe(777)
+    })
+  })
+
+  describe('devReboot', () => {
+    test('wipes existing player state and mission templates, then bootstraps a fresh game', async () => {
+      await GameService.initGame()
+      await GameService.devSetCredits(1)
+      const oldRecruitId = state.recruits[0].id
+      const oldTemplateIds = state.missionTemplates.map(t => t.id)
+
+      const result = await GameService.devReboot()
+
+      expect(state.players).toHaveLength(1)
+      expect(state.players[0].wallet).toBe(10000)
+      expect(state.recruits).toHaveLength(1)
+      expect(state.recruits[0].id).toBe(oldRecruitId) // ids restart from 1, same as a fresh initGame()
+      expect(state.missionTemplates).toHaveLength(5)
+      expect(state.missionTemplates.map(t => t.id)).toEqual(oldTemplateIds)
+      expect(result.state.player.credits).toBe(10000)
     })
   })
 

@@ -77,4 +77,20 @@ export class GameApiService {
   recordOperaCommand(command: string, args: string[]): void {
     this.http.post('/api/opera/command', { command, args }).pipe(catchError(() => of(null))).subscribe();
   }
+
+  devRefresh(): Promise<{ error?: string }> {
+    return firstValueFrom(this.http.post<{ error?: string }>(`${this.base}/dev/refresh`, {}).pipe(catchError(err => of(this.onError(err)))));
+  }
+
+  devSetCredits(amount: number): Promise<{ error?: string }> {
+    return firstValueFrom(this.http.post<{ error?: string }>(`${this.base}/dev/credits`, { amount }).pipe(catchError(err => of(this.onError(err)))));
+  }
+
+  devSetTokens(amount: number): Promise<{ error?: string }> {
+    return firstValueFrom(this.http.post<{ error?: string }>(`${this.base}/dev/tokens`, { amount }).pipe(catchError(err => of(this.onError(err)))));
+  }
+
+  devReboot(): Promise<{ error?: string }> {
+    return firstValueFrom(this.http.post<{ error?: string }>(`${this.base}/dev/reboot`, {}).pipe(catchError(err => of(this.onError(err)))));
+  }
 }

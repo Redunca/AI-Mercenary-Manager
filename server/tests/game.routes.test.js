@@ -231,4 +231,64 @@ describe('Game Routes', () => {
       expect(res.body.error).toBeDefined()
     })
   })
+
+  describe('POST /api/game/dev/refresh', () => {
+    test('triggers a forced refresh and returns the updated state', async () => {
+      GameService.devRefresh.mockResolvedValue({ state: { candidates: [] } })
+
+      const res = await request(app).post('/api/game/dev/refresh')
+
+      expect(res.status).toBe(200)
+      expect(GameService.devRefresh).toHaveBeenCalledTimes(1)
+      expect(res.body.state).toEqual({ candidates: [] })
+    })
+  })
+
+  describe('POST /api/game/dev/credits', () => {
+    test('sets the credit balance to the given amount', async () => {
+      GameService.devSetCredits.mockResolvedValue({ state: {} })
+
+      const res = await request(app).post('/api/game/dev/credits').send({ amount: 5000 })
+
+      expect(res.status).toBe(200)
+      expect(GameService.devSetCredits).toHaveBeenCalledWith(5000)
+    })
+
+    test('rejects a non-numeric amount without calling the service', async () => {
+      const res = await request(app).post('/api/game/dev/credits').send({ amount: 'lots' })
+
+      expect(res.status).toBe(400)
+      expect(GameService.devSetCredits).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('POST /api/game/dev/tokens', () => {
+    test('sets the token balance to the given amount', async () => {
+      GameService.devSetTokens.mockResolvedValue({ state: {} })
+
+      const res = await request(app).post('/api/game/dev/tokens').send({ amount: 250 })
+
+      expect(res.status).toBe(200)
+      expect(GameService.devSetTokens).toHaveBeenCalledWith(250)
+    })
+
+    test('rejects a non-numeric amount without calling the service', async () => {
+      const res = await request(app).post('/api/game/dev/tokens').send({ amount: 'lots' })
+
+      expect(res.status).toBe(400)
+      expect(GameService.devSetTokens).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('POST /api/game/dev/reboot', () => {
+    test('wipes and reinitializes the game', async () => {
+      GameService.devReboot.mockResolvedValue({ state: { recruits: [] } })
+
+      const res = await request(app).post('/api/game/dev/reboot')
+
+      expect(res.status).toBe(200)
+      expect(GameService.devReboot).toHaveBeenCalledTimes(1)
+      expect(res.body.state).toEqual({ recruits: [] })
+    })
+  })
 })

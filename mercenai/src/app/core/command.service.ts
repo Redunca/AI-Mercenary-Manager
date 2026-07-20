@@ -8,6 +8,7 @@ import { ShopService } from './shop.service';
 import { SelfService } from './self.service';
 import { GameSyncService } from './game-sync.service';
 import { GameService } from './game.service';
+import { GameApiService } from './game-api.service';
 import { OperaService } from './opera.service';
 
 @Injectable({ providedIn: 'root' })
@@ -26,6 +27,7 @@ export class CommandService {
     this.registerGlobalCommands('self', this.handleSelf.bind(this));
     this.registerGlobalCommands('opera', this.handleOpera.bind(this));
     this.registerGlobalCommands('items', this.handleItems.bind(this));
+    this.registerGlobalCommands('dev', this.handleDev.bind(this));
   }
 
   missionService = inject(MissionService);
@@ -36,6 +38,7 @@ export class CommandService {
   operaService = inject(OperaService);
   private gameSync = inject(GameSyncService);
   private game = inject(GameService);
+  private gameApi = inject(GameApiService);
 
   private input = '';
   private history: string[] = [];
@@ -395,6 +398,55 @@ export class CommandService {
 
   private handleItems() {
     this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.Items);
+  }
+
+  private handleDev(action?: string, ...args: string[]) {
+    switch (action) {
+      case 'refresh':
+        void this.gameApi.devRefresh().then(result => {
+          if (result?.error) { console.warn('[dev refresh]', result.error); return; }
+          void this.gameSync.sync();
+        });
+        break;
+
+      case 'credit':
+      case 'credits': {
+        const amount = Number(args[0]);
+        if (isNaN(amount)) { console.warn('Usage: dev credit <amount>'); break; }
+        void this.gameApi.devSetCredits(amount).then(result => {
+          if (result?.error) { console.warn('[dev credit]', result.error); return; }
+          void this.gameSync.sync();
+        });
+        break;
+      }
+
+      case 'token':
+      case 'tokens': {
+        const amount = Number(args[0]);
+        if (isNaN(amount)) { console.warn('Usage: dev token <amount>'); break; }
+        void this.gameApi.devSetTokens(amount).then(result => {
+          if (result?.error) { console.warn('[dev token]', result.error); return; }
+          void this.gameSync.sync();
+        });
+        break;
+      }
+
+      case 'reboot':
+        if (args[0] !== 'confirm') {
+          console.warn('This wipes the database and starts a fresh game. Run "dev reboot confirm" to proceed.');
+          break;
+        }
+        void this.gameApi.devReboot().then(result => {
+          if (result?.error) { console.warn('[dev reboot]', result.error); return; }
+          void this.gameSync.sync().then(() => {
+            this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.Dashboard);
+          });
+        });
+        break;
+
+      default:
+        console.warn('Usage: dev refresh | dev credit <amount> | dev token <amount> | dev reboot confirm');
+    }
   }
 
 }

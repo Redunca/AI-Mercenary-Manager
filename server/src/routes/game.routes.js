@@ -121,4 +121,54 @@ router.post('/missions/:templateId/force-return', async (req, res, next) => {
   }
 })
 
+// --- Dev/testing endpoints ---
+// Force-refresh missions/shop/candidates, set credits/tokens directly, or
+// wipe and restart the game — for easy manual testing, not player-facing.
+
+router.post('/dev/refresh', async (_req, res, next) => {
+  try {
+    const result = await game.devRefresh()
+    res.json(result)
+  } catch (err) {
+    next(err)
+  }
+})
+
+router.post('/dev/credits', async (req, res, next) => {
+  try {
+    const amount = Number(req.body?.amount)
+    if (!Number.isFinite(amount)) {
+      res.status(400).json({ error: 'Invalid amount' })
+      return
+    }
+    const result = await game.devSetCredits(amount)
+    res.json(result)
+  } catch (err) {
+    next(err)
+  }
+})
+
+router.post('/dev/tokens', async (req, res, next) => {
+  try {
+    const amount = Number(req.body?.amount)
+    if (!Number.isFinite(amount)) {
+      res.status(400).json({ error: 'Invalid amount' })
+      return
+    }
+    const result = await game.devSetTokens(amount)
+    res.json(result)
+  } catch (err) {
+    next(err)
+  }
+})
+
+router.post('/dev/reboot', async (_req, res, next) => {
+  try {
+    const result = await game.devReboot()
+    res.json(result)
+  } catch (err) {
+    next(err)
+  }
+})
+
 module.exports = router
