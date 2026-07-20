@@ -10,4 +10,6 @@ export interface Player {
   credits : number;
   tokens : number;
   dockingStations : DockingStation[]
+  missionRefreshIntervalMs : number;
+  shopRefreshIntervalMs : number;
 }

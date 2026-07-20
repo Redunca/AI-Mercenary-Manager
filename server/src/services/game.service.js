@@ -1039,7 +1039,9 @@ async function renameRecruit(client, playerId, recruitId, newName) {
 
 async function buildGameState(client, playerId) {
   const playerResult = await client.query(
-    'SELECT max_recruits, max_available_missions, wallet, tokens FROM players WHERE id = $1',
+    `SELECT max_recruits, max_available_missions, wallet, tokens,
+            mission_refresh_interval_ms, shop_refresh_interval_ms
+     FROM players WHERE id = $1`,
     [playerId],
   )
   const player = playerResult.rows[0]
@@ -1143,6 +1145,8 @@ async function buildGameState(client, playerId) {
       maxAvailableMissions: player.max_available_missions,
       credits: player.wallet,
       tokens: player.tokens,
+      missionRefreshIntervalMs: player.mission_refresh_interval_ms,
+      shopRefreshIntervalMs: player.shop_refresh_interval_ms,
     },
     recruits: recruitsResult.rows.map(rowToRecruit),
     candidates: candidatesResult.rows.map(rowToCandidate),

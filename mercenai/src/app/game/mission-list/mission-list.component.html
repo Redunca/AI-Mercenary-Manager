@@ -1,5 +1,6 @@
 <div>TASK: [<span class="task-title">{{ completed ? 'Mission history' : 'List missions' }}</span>] ******************************************</div>
 <div>ok ==> {{ '{' }}</div>
+<div *ngIf="!completed" class="indent-one">"nextRefresh" : "{{ nextRefreshLabel }}",</div>
 <div *ngIf="completed && historyLoading" class="indent-one muted">Loading mission history...</div>
 <div *ngIf="completed && historyError" class="indent-one flaw">{{ historyError }}</div>
 <table class="indent-one" *ngIf="!(completed && historyLoading)">

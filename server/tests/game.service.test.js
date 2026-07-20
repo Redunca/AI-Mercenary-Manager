@@ -73,9 +73,16 @@ function createFakeClient() {
     if (s === 'SELECT hp_regen_interval_ms FROM players WHERE id = $1') {
       return { rows: state.players.filter(p => p.id === params[0]).map(p => ({ hp_regen_interval_ms: p.hp_regen_interval_ms })) }
     }
-    if (s.includes('SELECT max_recruits, max_available_missions, wallet, tokens FROM players')) {
+    if (s.includes('SELECT max_recruits, max_available_missions, wallet, tokens,')) {
       const p = state.players.find(p => p.id === params[0])
-      return { rows: p ? [{ max_recruits: p.max_recruits, max_available_missions: p.max_available_missions, wallet: p.wallet, tokens: p.tokens }] : [] }
+      return {
+        rows: p ? [{
+          max_recruits: p.max_recruits, max_available_missions: p.max_available_missions,
+          wallet: p.wallet, tokens: p.tokens,
+          mission_refresh_interval_ms: p.mission_refresh_interval_ms,
+          shop_refresh_interval_ms: p.shop_refresh_interval_ms,
+        }] : [],
+      }
     }
     if (s.includes('UPDATE players SET next_candidate_id = $1 WHERE id = $2')) {
       const [nextId, id] = params
@@ -651,7 +658,10 @@ describe('GameService', () => {
     test('exposes the recruits, candidates, available missions and player limits', async () => {
       const result = await GameService.getGameState()
 
-      expect(result.player).toEqual({ maxNumberOfRecruits: 5, maxAvailableMissions: 5, credits: 10000, tokens: 0 })
+      expect(result.player).toEqual({
+        maxNumberOfRecruits: 5, maxAvailableMissions: 5, credits: 10000, tokens: 0,
+        missionRefreshIntervalMs: 900000, shopRefreshIntervalMs: 900000,
+      })
       expect(result.recruits).toHaveLength(1)
       expect(result.candidates).toHaveLength(4)
       expect(result.missions.length).toBeLessThanOrEqual(5)

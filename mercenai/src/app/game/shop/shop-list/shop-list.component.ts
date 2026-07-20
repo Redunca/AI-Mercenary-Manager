@@ -1,10 +1,11 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, NgZone, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ShopService, ShopItem, SHOP_ITEMS_REFRESH_INTERVAL_MS, isSoldOut } from '../../../core/shop.service';
 import { LayoutService } from '../../../core/layout.service';
 import { GameSyncService } from '../../../core/game-sync.service';
 import { GameService } from '../../../core/game.service';
 import { PanelModule } from '../../../models/panel';
+import { msUntilNextRefresh, formatCountdown } from '../../../core/refresh-countdown';
 
 @Component({
   selector: 'app-shop-list',
@@ -18,6 +19,7 @@ export class ShopListComponent implements OnInit, OnDestroy {
   private layout = inject(LayoutService);
   private gameSync = inject(GameSyncService);
   private game = inject(GameService);
+  private ngZone = inject(NgZone);
   items: ShopItem[] = [];
 
   get wallet(): number {
@@ -25,14 +27,25 @@ export class ShopListComponent implements OnInit, OnDestroy {
   }
 
   private refreshTimer: ReturnType<typeof setInterval> | null = null;
+  private countdownTimer: ReturnType<typeof setInterval> | null = null;
+  nextRefreshLabel = '—';
 
   ngOnInit() {
     this.refreshItems();
+    this.tickCountdown();
 
     // The live rotation can swap out from under the player on the server's
     // 15-minute cycle; poll while this panel is open so it doesn't show a
     // stale list until reopened.
     this.refreshTimer = setInterval(() => this.refreshItems(), SHOP_ITEMS_REFRESH_INTERVAL_MS);
+
+    // The countdown clock runs outside Angular's zone: it's a display-only
+    // tick with no business being a testability/stability signal, and
+    // ticking it inside the zone would trigger an app-wide change detection
+    // pass every second for no reason.
+    this.ngZone.runOutsideAngular(() => {
+      this.countdownTimer = setInterval(() => this.ngZone.run(() => this.tickCountdown()), 1000);
+    });
   }
 
   ngOnDestroy() {
@@ -40,10 +53,19 @@ export class ShopListComponent implements OnInit, OnDestroy {
       clearInterval(this.refreshTimer);
       this.refreshTimer = null;
     }
+    if (this.countdownTimer) {
+      clearInterval(this.countdownTimer);
+      this.countdownTimer = null;
+    }
   }
 
   private refreshItems(): void {
     this.shopService.getShopItems().subscribe(items => { this.items = items; });
+  }
+
+  private tickCountdown(): void {
+    const intervalMs = this.game.player$.value.shopRefreshIntervalMs;
+    this.nextRefreshLabel = formatCountdown(msUntilNextRefresh(intervalMs));
   }
 
   isSoldOut = isSoldOut;

@@ -54,9 +54,16 @@ function createFakeClient() {
       state.players.push(player)
       return { rows: [player] }
     }
-    if (s.includes('SELECT max_recruits, max_available_missions, wallet, tokens FROM players')) {
+    if (s.includes('SELECT max_recruits, max_available_missions, wallet, tokens,')) {
       const p = state.players.find(p => p.id === params[0])
-      return { rows: p ? [{ max_recruits: p.max_recruits, max_available_missions: p.max_available_missions, wallet: p.wallet, tokens: p.tokens }] : [] }
+      return {
+        rows: p ? [{
+          max_recruits: p.max_recruits, max_available_missions: p.max_available_missions,
+          wallet: p.wallet, tokens: p.tokens,
+          mission_refresh_interval_ms: p.mission_refresh_interval_ms,
+          shop_refresh_interval_ms: p.shop_refresh_interval_ms,
+        }] : [],
+      }
     }
     if (s.includes('UPDATE players SET next_candidate_id = $1 WHERE id = $2')) {
       Object.assign(state.players.find(p => p.id === params[1]), { next_candidate_id: params[0] })

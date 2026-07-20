@@ -10,6 +10,8 @@ export interface PlayerSnapshot {
   maxAvailableMissions: number;
   credits: number;
   tokens: number;
+  missionRefreshIntervalMs: number;
+  shopRefreshIntervalMs: number;
 }
 
 export interface GameSnapshot {

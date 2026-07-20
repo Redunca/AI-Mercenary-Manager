@@ -1,10 +1,12 @@
-import { Component, inject, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Component, inject, Input, NgZone, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { CommonModule, NgFor } from '@angular/common';
 import { MissionService } from '../../core/mission.service';
 import { LayoutService } from '../../core/layout.service';
 import { GameSyncService } from '../../core/game-sync.service';
+import { GameService } from '../../core/game.service';
 import { PanelModule } from '../../models/panel';
 import { Mission } from '../../models/mission';
+import { msUntilNextRefresh, formatCountdown } from '../../core/refresh-countdown';
 
 @Component({
   selector: 'app-mission-list',
@@ -23,13 +25,26 @@ export class MissionListComponent implements OnInit, OnChanges, OnDestroy {
   missionService = inject(MissionService);
   layout = inject(LayoutService);
   private sync = inject(GameSyncService);
+  private game = inject(GameService);
+  private ngZone = inject(NgZone);
 
   completedMissions: Mission[] = [];
   historyLoading = false;
   historyError: string | null = null;
+  nextRefreshLabel = '—';
+
+  private countdownTimer: ReturnType<typeof setInterval> | null = null;
 
   ngOnInit(): void {
     this.sync.watchMissionProgress();
+    this.tickCountdown();
+    // Runs outside Angular's zone: a ticking display clock has no business
+    // being a testability/stability signal (fixture.whenStable() would
+    // otherwise never resolve while this panel is open), and it would
+    // trigger an app-wide change detection pass every second for no reason.
+    this.ngZone.runOutsideAngular(() => {
+      this.countdownTimer = setInterval(() => this.ngZone.run(() => this.tickCountdown()), 1000);
+    });
   }
 
   // Since switching between live and completed mode reuses the same panel
@@ -45,10 +60,19 @@ export class MissionListComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnDestroy(): void {
     this.sync.unwatchMissionProgress();
+    if (this.countdownTimer) {
+      clearInterval(this.countdownTimer);
+      this.countdownTimer = null;
+    }
   }
 
   get missions(): Mission[] {
     return this.completed ? this.completedMissions : this.missionService.missions;
+  }
+
+  private tickCountdown(): void {
+    const intervalMs = this.game.player$.value.missionRefreshIntervalMs;
+    this.nextRefreshLabel = formatCountdown(msUntilNextRefresh(intervalMs));
   }
 
   private async loadHistory(): Promise<void> {

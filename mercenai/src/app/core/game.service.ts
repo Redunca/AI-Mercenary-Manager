@@ -18,7 +18,9 @@ export class GameService {
       tokens: 0,
       dockingStations: [],
       maxAvailableMissions: 5,
-      maxNumberOfRecruits: 5
+      maxNumberOfRecruits: 5,
+      missionRefreshIntervalMs: 900000,
+      shopRefreshIntervalMs: 900000,
     });
 
 
@@ -31,6 +33,8 @@ export class GameService {
       dockingStations: [],
       maxNumberOfRecruits: state.player.maxNumberOfRecruits,
       maxAvailableMissions: state.player.maxAvailableMissions,
+      missionRefreshIntervalMs: state.player.missionRefreshIntervalMs,
+      shopRefreshIntervalMs: state.player.shopRefreshIntervalMs,
     });
   }
 
