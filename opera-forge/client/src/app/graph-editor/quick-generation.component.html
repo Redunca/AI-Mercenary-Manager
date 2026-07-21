@@ -36,6 +36,19 @@
   }
   <button type="button" (click)="addMissionOutcome()">+ Mission outcome</button>
 
+  <h3>Choices made, in order</h3>
+  <p class="hint">
+    A choice node blocks the walk until the player picks an option -- script which option id the walk should pick
+    at each choice node reached, in order; a choice reached past the end of this list defaults to its first option.
+  </p>
+  @for (choice of choicesMade(); track $index) {
+    <div class="row">
+      <input type="text" placeholder="Option id" [ngModel]="choice" (ngModelChange)="setChoiceMade($index, $event)" />
+      <button type="button" class="danger" (click)="removeChoiceMade($index)">&times;</button>
+    </div>
+  }
+  <button type="button" (click)="addChoiceMade()">+ Choice made</button>
+
   <h3>Actions performed, in order</h3>
   <p class="hint">Consumed in order by "action_performed" conditions -- the Nth such condition reached must match the Nth entry here.</p>
   @for (action of actionsPerformed(); track $index) {
@@ -141,6 +154,15 @@
               @if (mission.tags && mission.tags.length > 0) {
                 <p class="muted">tags: {{ mission.tags.join(', ') }}</p>
               }
+            }
+            @if (step.choiceOptions && step.choiceOptions.length > 0) {
+              <ul class="choice-options">
+                @for (opt of step.choiceOptions; track opt.id) {
+                  <li [class.chosen]="opt.id === step.choiceMade">
+                    {{ opt.label }}@if (opt.id === step.choiceMade) { <span class="muted">(chosen)</span> }
+                  </li>
+                }
+              </ul>
             }
             @if (step.outcome) {
               <p class="outcome">outcome: {{ step.outcome }}</p>

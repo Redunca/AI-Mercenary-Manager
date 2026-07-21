@@ -45,6 +45,7 @@ export class QuickGenerationComponent {
   readonly tagValues = signal<Record<string, string>>({});
   readonly shipCrewCount = signal(0);
   readonly missionOutcomes = signal<Outcome[]>([]);
+  readonly choicesMade = signal<string[]>([]);
 
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
@@ -92,6 +93,22 @@ export class QuickGenerationComponent {
 
   removeMissionOutcome(index: number): void {
     this.missionOutcomes.update(outcomes => outcomes.filter((_, i) => i !== index));
+  }
+
+  addChoiceMade(): void {
+    this.choicesMade.update(choices => [...choices, '']);
+  }
+
+  setChoiceMade(index: number, optionId: string): void {
+    this.choicesMade.update(choices => {
+      const next = [...choices];
+      next[index] = optionId;
+      return next;
+    });
+  }
+
+  removeChoiceMade(index: number): void {
+    this.choicesMade.update(choices => choices.filter((_, i) => i !== index));
   }
 
   addAction(): void {
@@ -173,6 +190,7 @@ export class QuickGenerationComponent {
       tags: this.tagValues(),
       shipCrewCount: this.shipCrewCount(),
       missionOutcomes: this.missionOutcomes(),
+      choicesMade: this.choicesMade(),
     };
     try {
       this.result.set(await this.api.generate(this.graphId(), initialState, this.seed()));

@@ -46,6 +46,17 @@
               }
             </select>
           }
+          @case ('choice_made') {
+            @if (choiceOptionsForLink().length > 0) {
+              <select [ngModel]="condition.params['optionId']" (ngModelChange)="setConditionParam($index, 'optionId', $event)">
+                @for (opt of choiceOptionsForLink(); track opt.id) {
+                  <option [value]="opt.id">{{ opt.id }} — {{ opt.label || '(no label)' }}</option>
+                }
+              </select>
+            } @else {
+              <input type="text" placeholder="Option id" [ngModel]="condition.params['optionId']" (ngModelChange)="setConditionParam($index, 'optionId', $event)" />
+            }
+          }
         }
 
         <button type="button" class="danger" (click)="removeCondition($index)">&times;</button>

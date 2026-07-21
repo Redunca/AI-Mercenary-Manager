@@ -28,6 +28,15 @@ export class LinkPanelComponent {
   readonly actionTypes = ACTION_TYPES;
   readonly matchKeys = MATCH_KEYS;
 
+  // The 'choice_made' condition's optionId is defined by the link's source
+  // node (a 'choice' node's own choiceOptions), not a fixed enum like
+  // OUTCOMES -- look it up so the picker can offer a dropdown instead of a
+  // freeform id the author has to retype correctly.
+  choiceOptionsForLink(): { id: string; label: string }[] {
+    const sourceNode = this.graphService.graph()?.nodes.find(n => n.id === this.link().from);
+    return sourceNode?.type === 'choice' ? (sourceNode.choiceOptions ?? []) : [];
+  }
+
   setPriority(priority: number): void {
     this.graphService.updateLink(this.link().id, { priority });
   }

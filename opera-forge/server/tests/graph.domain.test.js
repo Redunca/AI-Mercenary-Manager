@@ -277,6 +277,82 @@ describe('validateGraphDefinition', () => {
     expect(() => validateGraphDefinition(def)).toThrow(/mission tags/)
   })
 
+  const choiceLinks = [
+    { id: 'l1', from: 'start', to: 'choice-1', priority: 0, conditions: [] },
+    { id: 'l2', from: 'choice-1', to: 'end-1', priority: 0, conditions: [] },
+  ]
+
+  test('accepts a well-formed choice node', () => {
+    const def = makeDef({
+      nodes: [
+        { id: 'start', type: 'start' },
+        {
+          id: 'choice-1', type: 'choice', text: 'How do you approach?',
+          choiceOptions: [{ id: 'stealth', label: 'Sneak in' }, { id: 'force', label: 'Force your way in' }],
+        },
+        { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
+      ],
+      links: choiceLinks,
+    })
+    expect(() => validateGraphDefinition(def)).not.toThrow()
+  })
+
+  test('rejects a choice node missing text', () => {
+    const def = makeDef({
+      nodes: [
+        { id: 'start', type: 'start' },
+        { id: 'choice-1', type: 'choice', choiceOptions: [{ id: 'a', label: 'A' }] },
+        { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
+      ],
+      links: choiceLinks,
+    })
+    expect(() => validateGraphDefinition(def)).toThrow(/choice node requires text/)
+  })
+
+  test('rejects a choice node with an empty choiceOptions array', () => {
+    const def = makeDef({
+      nodes: [
+        { id: 'start', type: 'start' },
+        { id: 'choice-1', type: 'choice', text: 'Decide.', choiceOptions: [] },
+        { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
+      ],
+      links: choiceLinks,
+    })
+    expect(() => validateGraphDefinition(def)).toThrow(/non-empty choiceOptions array/)
+  })
+
+  test('rejects a choice option missing a label', () => {
+    const def = makeDef({
+      nodes: [
+        { id: 'start', type: 'start' },
+        { id: 'choice-1', type: 'choice', text: 'Decide.', choiceOptions: [{ id: 'a' }] },
+        { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
+      ],
+      links: choiceLinks,
+    })
+    expect(() => validateGraphDefinition(def)).toThrow(/choiceOptions\[0\] requires a non-empty label/)
+  })
+
+  test('rejects duplicate choice option ids', () => {
+    const def = makeDef({
+      nodes: [
+        { id: 'start', type: 'start' },
+        {
+          id: 'choice-1', type: 'choice', text: 'Decide.',
+          choiceOptions: [{ id: 'a', label: 'First' }, { id: 'a', label: 'Second' }],
+        },
+        { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
+      ],
+      links: choiceLinks,
+    })
+    expect(() => validateGraphDefinition(def)).toThrow(/duplicate choice option id/)
+  })
+
+  test('rejects a choice_made condition with no optionId', () => {
+    const def = makeDef({ links: [{ id: 'l1', from: 'start', to: 'story-1', conditions: [{ type: 'choice_made', params: {} }] }] })
+    expect(() => validateGraphDefinition(def)).toThrow(/choice_made.*optionId/)
+  })
+
   test('accepts a crew_threshold condition with a valid operator and numeric value', () => {
     const def = makeDef({
       links: [{ id: 'l1', from: 'start', to: 'story-1', priority: 0, conditions: [{ type: 'crew_threshold', params: { operator: '>=', value: 6 } }] }],
@@ -409,6 +485,22 @@ describe('analyzeGraph', () => {
     })
     const warnings = analyzeGraph(def)
     expect(warnings.some(w => w.includes('mission-1') && w.includes('missionTitle') && w.includes('{notARealTag}'))).toBe(true)
+    expect(warnings.some(w => w.includes('{planetName}'))).toBe(false)
+  })
+
+  test('flags a choice option label referencing a tag outside the shared catalog', () => {
+    const def = makeDef({
+      nodes: [
+        { id: 'start', type: 'start' },
+        {
+          id: 'choice-1', type: 'choice', text: 'Decide.',
+          choiceOptions: [{ id: 'a', label: 'Head to {planetName}' }, { id: 'b', label: 'Ask {notARealTag} for help' }],
+        },
+        { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
+      ],
+    })
+    const warnings = analyzeGraph(def)
+    expect(warnings.some(w => w.includes('choice-1') && w.includes('choiceOption[1].label') && w.includes('{notARealTag}'))).toBe(true)
     expect(warnings.some(w => w.includes('{planetName}'))).toBe(false)
   })
 })
@@ -709,6 +801,100 @@ describe('runGeneration', () => {
     }
     const result = runGeneration(def, { seed: 'test' })
     expect(result.path[1]).toMatchObject({ mission: { title: 'Find {targetName}' }, missingTags: ['targetName'] })
+  })
+
+  test('routes through a choice node using the scripted initialState.choicesMade queue, in order', () => {
+    const def = {
+      id: 'g',
+      title: 'g',
+      nodes: [
+        { id: 'start', type: 'start' },
+        {
+          id: 'choice-1', type: 'choice', text: 'How do you approach?',
+          choiceOptions: [{ id: 'stealth', label: 'Sneak in' }, { id: 'force', label: 'Force your way in' }],
+        },
+        { id: 'stealth-end', type: 'end', outcome: 'success', text: 'You slip past unseen.' },
+        { id: 'force-end', type: 'end', outcome: 'neutral', text: 'The doors burst open.' },
+      ],
+      links: [
+        { id: 'l1', from: 'start', to: 'choice-1', priority: 0, conditions: [] },
+        { id: 'l2', from: 'choice-1', to: 'stealth-end', priority: 0, conditions: [{ type: 'choice_made', params: { optionId: 'stealth' } }] },
+        { id: 'l3', from: 'choice-1', to: 'force-end', priority: 1, conditions: [{ type: 'choice_made', params: { optionId: 'force' } }] },
+      ],
+    }
+    const sneaking = runGeneration(def, { seed: 'test', initialState: { choicesMade: ['stealth'] } })
+    expect(sneaking.endedAt).toBe('stealth-end')
+    expect(sneaking.path[1]).toMatchObject({
+      nodeId: 'choice-1',
+      choiceMade: 'stealth',
+      choiceOptions: [{ id: 'stealth', label: 'Sneak in' }, { id: 'force', label: 'Force your way in' }],
+    })
+
+    const forcing = runGeneration(def, { seed: 'test', initialState: { choicesMade: ['force'] } })
+    expect(forcing.endedAt).toBe('force-end')
+  })
+
+  test('defaults a choice node to its first option when choicesMade runs out', () => {
+    const def = {
+      id: 'g',
+      title: 'g',
+      nodes: [
+        { id: 'start', type: 'start' },
+        { id: 'choice-1', type: 'choice', text: 'Decide.', choiceOptions: [{ id: 'stealth', label: 'Sneak in' }, { id: 'force', label: 'Force in' }] },
+        { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
+      ],
+      links: [
+        { id: 'l1', from: 'start', to: 'choice-1', priority: 0, conditions: [] },
+        { id: 'l2', from: 'choice-1', to: 'end-1', priority: 0, conditions: [] },
+      ],
+    }
+    const result = runGeneration(def, { seed: 'test' })
+    expect(result.path[1]).toMatchObject({ nodeId: 'choice-1', choiceMade: 'stealth' })
+  })
+
+  test('renders {tagName} placeholders in a choice node text and option labels', () => {
+    const def = {
+      id: 'g',
+      title: 'g',
+      nodes: [
+        { id: 'start', type: 'start' },
+        {
+          id: 'choice-1', type: 'choice', text: 'What do you do on {planetName}?',
+          choiceOptions: [{ id: 'a', label: 'Visit {clientName}' }],
+        },
+        { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
+      ],
+      links: [
+        { id: 'l1', from: 'start', to: 'choice-1', priority: 0, conditions: [] },
+        { id: 'l2', from: 'choice-1', to: 'end-1', priority: 0, conditions: [] },
+      ],
+    }
+    const result = runGeneration(def, {
+      seed: 'test',
+      initialState: { tags: { planetName: 'Kestrel\'s Rest', clientName: 'Kael Voss' } },
+    })
+    expect(result.path[1]).toMatchObject({
+      text: 'What do you do on Kestrel\'s Rest?',
+      choiceOptions: [{ id: 'a', label: 'Visit Kael Voss' }],
+    })
+  })
+
+  test('leaves an unresolved tag in a choice option label in place and reports it as missingTags', () => {
+    const def = {
+      id: 'g',
+      title: 'g',
+      nodes: [
+        { id: 'start', type: 'start' },
+        { id: 'choice-1', type: 'choice', text: 'Decide.', choiceOptions: [{ id: 'a', label: 'Visit {clientName}' }] },
+        { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
+      ],
+      links: [
+        { id: 'l1', from: 'start', to: 'choice-1', priority: 0, conditions: [] },
+        { id: 'l2', from: 'choice-1', to: 'end-1', priority: 0, conditions: [] },
+      ],
+    }
+    const result = runGeneration(def, { seed: 'test' })
+    expect(result.path[1]).toMatchObject({ choiceOptions: [{ id: 'a', label: 'Visit {clientName}' }], missingTags: ['clientName'] })
   })
 
   test('crew_threshold condition compares against initialState.shipCrewCount', () => {

@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GraphService } from '../core/graph.service';
 import {
-  ATTRIBUTES, EFFECT_TYPES, Effect, EffectType, GraphNode, MISSION_DIFFICULTIES, MissionDetails, MissionDifficulty,
-  OUTCOMES, Outcome, Seed, SEED_TARGETS, SeedTarget, defaultParamsFor,
+  ATTRIBUTES, ChoiceOption, EFFECT_TYPES, Effect, EffectType, GraphNode, MISSION_DIFFICULTIES, MissionDetails,
+  MissionDifficulty, OUTCOMES, Outcome, Seed, SEED_TARGETS, SeedTarget, defaultParamsFor,
 } from '../models/graph';
 import { TagTextFieldComponent } from './tag-text-field.component';
 
@@ -58,6 +58,33 @@ export class NodePanelComponent {
   setMissionTagsText(text: string): void {
     const tags = parseTagList(text);
     this.setMission({ tags: tags.length > 0 ? tags : undefined });
+  }
+
+  addChoiceOption(): void {
+    const node = this.node();
+    const options = node.choiceOptions ?? [];
+    const option: ChoiceOption = { id: `option-${options.length + 1}`, label: '' };
+    this.graphService.updateNode(node.id, { choiceOptions: [...options, option] });
+  }
+
+  setChoiceOptionId(index: number, id: string): void {
+    const node = this.node();
+    const options = [...(node.choiceOptions ?? [])];
+    options[index] = { ...options[index], id };
+    this.graphService.updateNode(node.id, { choiceOptions: options });
+  }
+
+  setChoiceOptionLabel(index: number, label: string): void {
+    const node = this.node();
+    const options = [...(node.choiceOptions ?? [])];
+    options[index] = { ...options[index], label };
+    this.graphService.updateNode(node.id, { choiceOptions: options });
+  }
+
+  removeChoiceOption(index: number): void {
+    const node = this.node();
+    const options = (node.choiceOptions ?? []).filter((_, i) => i !== index);
+    this.graphService.updateNode(node.id, { choiceOptions: options });
   }
 
   setRollParam(key: string, value: unknown): void {

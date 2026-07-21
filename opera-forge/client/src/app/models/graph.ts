@@ -2,7 +2,7 @@
 // hand-written copy rather than a shared package -- these are two
 // independent apps (client/server) per the plan.
 
-export const NODE_TYPES = ['start', 'story', 'check', 'seed', 'mission', 'end'] as const;
+export const NODE_TYPES = ['start', 'story', 'check', 'seed', 'mission', 'choice', 'end'] as const;
 export type NodeType = (typeof NODE_TYPES)[number];
 
 // What a 'seed' node can pre-declare for a not-yet-built opera engine to
@@ -10,6 +10,12 @@ export type NodeType = (typeof NODE_TYPES)[number];
 // or a mission (by templateId, same convention action_performed already
 // uses for send_recruit_to_quest/purchase_quest_item match targets). Purely
 // descriptive data today -- it has no effect on MockState or the real game.
+// Fire-and-forget: the walk declares the seed and moves on immediately, it
+// never blocks and there's no outcome to branch on. Contrast with a
+// 'mission' node (see MissionDetails below), which blocks the walk until the
+// seeded-in mission resolves and branches on its outcome like a check node's
+// roll -- seed says "make sure this exists somewhere"; a mission node says
+// "the player must resolve this specific mission right here."
 export const SEED_TARGETS = ['shop', 'mission'] as const;
 export type SeedTarget = (typeof SEED_TARGETS)[number];
 
@@ -18,7 +24,11 @@ export type SeedTarget = (typeof SEED_TARGETS)[number];
 // specific stats; it generates content (missions, shop items, choices) more
 // than it gates on one recruit's build. crew_threshold stays: ship crew
 // count is an aggregate ship stat, not a specific recruit's stat.
-export const CONDITION_TYPES = ['chance', 'has_item', 'previous_outcome', 'crew_threshold', 'action_performed'] as const;
+// choice_made pairs with a 'choice' node exactly the way previous_outcome
+// pairs with a check/mission node's outcome -- it's keyed by optionId
+// instead of success/failure/neutral because a choice node's options are
+// author-defined per node, not a fixed enum.
+export const CONDITION_TYPES = ['chance', 'has_item', 'previous_outcome', 'crew_threshold', 'action_performed', 'choice_made'] as const;
 export type ConditionType = (typeof CONDITION_TYPES)[number];
 
 // Mirrors STEP_TYPES in server/src/domain/opera.js -- the vocabulary of
@@ -107,11 +117,25 @@ export interface Seed {
   note?: string;
 }
 
-// A 'mission' node's personalized mission -- freeform (this is a bespoke,
-// one-off mission the opera itself authors, e.g. "Find the Quasar Key", not
-// a reference into server/data/mission-types.json's generic ESCORT/HEIST/
-// etc. pool). title/description may reference the same {tagName}
-// placeholders as text/completionText (see models/tags.ts).
+// A 'mission' node's personalized mission. Fields split into two different
+// jobs, mirroring how server/data/mission-types.json actually gets picked
+// from (see missionGenerator.js's pickOne/typeCandidates filtering and
+// pickWeightedDifficulty):
+//   - title/description are the opera's own authored narrative hook -- what
+//     THIS node calls the mission in its own story (e.g. "Find the Quasar
+//     Key"), not the name the real generator would eventually produce from
+//     mission-types.json/flavor templates. Freeform, and may reference the
+//     same {tagName} placeholders as text/completionText (see models/tags.ts).
+//   - tags are generation guidelines, not decoration: the same
+//     include-list-with-fallback semantics mission-types.json's
+//     requiresPlanetTags uses to narrow the candidate pool (every listed tag
+//     must be present, but an empty/no-match result falls back to the
+//     unfiltered pool rather than erroring) -- they tell the not-yet-built
+//     opera engine what kind of mission to generate.
+//   - difficulty is a separate, independent knob from tags here exactly as
+//     it is in pickWeightedDifficulty -- it never comes from tags matching,
+//     it's either a direct author override or (left unset) the engine's own
+//     weighted roll.
 export interface MissionDetails {
   title: string;
   description?: string;
@@ -119,18 +143,29 @@ export interface MissionDetails {
   tags?: string[];
 }
 
+// One option of a 'choice' node. label is freeform and may reference the
+// same {tagName} placeholders as text/completionText; id is what choice_made
+// conditions on outgoing links match against, so it must be unique within
+// the node but doesn't need to be globally unique or match any fixed enum
+// (contrast with previous_outcome's fixed success/failure/neutral).
+export interface ChoiceOption {
+  id: string;
+  label: string;
+}
+
 export interface GraphNode {
   id: string;
   type: NodeType;
   position?: Position;
   // start: opera-level "on_start_message" equivalent, shown once on entry.
-  // story/end: the beat's narrative text.
+  // story/end: the beat's narrative text. choice: the prompt shown before
+  // its options.
   text?: string;
   // story
   effects?: Effect[];
-  // story/check/seed/mission: opera-level "on_complete_message" equivalent,
-  // shown once this node's outgoing link is actually taken (regardless of
-  // which condition satisfied it).
+  // story/check/seed/mission/choice: opera-level "on_complete_message"
+  // equivalent, shown once this node's outgoing link is actually taken
+  // (regardless of which condition satisfied it).
   completionText?: string;
   // check
   roll?: Roll;
@@ -141,6 +176,13 @@ export interface GraphNode {
   // list and blocks the walk until it resolves, branching on outcome
   // exactly like a check node's roll (see runGeneration).
   mission?: MissionDetails;
+  // choice: presents the player a decision and blocks the walk until they
+  // pick one, branching on choice_made exactly like a mission/check node
+  // branches on previous_outcome (see runGeneration). The third of the
+  // three generation-capable actions a true Opera needs, alongside seed
+  // (adds shop items/missions) and story effects (mutate player state) --
+  // not a recruit-stats gate.
+  choiceOptions?: ChoiceOption[];
   // end
   outcome?: Outcome;
 }
@@ -201,6 +243,12 @@ export interface MockState {
   // sequential-peek pattern as actionsPerformed/actionCursor. A mission node
   // reached past the end of this list defaults to 'success'.
   missionOutcomes: Outcome[];
+  // Ordered script of option ids for each choice node the walk is expected
+  // to reach -- the player picks, which this preview can't simulate, so the
+  // author scripts it instead, same sequential-peek pattern as
+  // missionOutcomes. A choice node reached past the end of this list
+  // defaults to its first option (there's no 'success' equivalent here).
+  choicesMade: string[];
 }
 
 export interface GenerationStep {
@@ -214,6 +262,10 @@ export interface GenerationStep {
   // mission: the personalized mission (title/description rendered through
   // the tag context) this step resolved.
   mission?: MissionDetails;
+  // choice: the options (labels rendered through the tag context) this step
+  // presented, and which option id was picked.
+  choiceOptions?: ChoiceOption[];
+  choiceMade?: string;
   // {tagName} placeholders referenced by this step's text/completionText
   // that weren't resolved by the Quick Generation tag editor -- present
   // only when non-empty.
@@ -228,11 +280,18 @@ export interface GenerationResult {
 }
 
 export function emptyMockState(): MockState {
-  return { items: [], perks: [], flaws: [], attributes: {}, actionsPerformed: [], tags: {}, shipCrewCount: 0, missionOutcomes: [] };
+  return {
+    items: [], perks: [], flaws: [], attributes: {}, actionsPerformed: [], tags: {}, shipCrewCount: 0,
+    missionOutcomes: [], choicesMade: [],
+  };
 }
 
 export function defaultMissionDetails(): MissionDetails {
   return { title: 'New mission' };
+}
+
+export function defaultChoiceOptions(): ChoiceOption[] {
+  return [{ id: 'option-1', label: 'Option 1' }, { id: 'option-2', label: 'Option 2' }];
 }
 
 export function defaultParamsFor(kind: 'condition', type: ConditionType): Record<string, unknown>
@@ -257,6 +316,8 @@ export function defaultParamsFor(_kind: 'condition' | 'effect' | 'seed', type: s
       return { attribute: 'agility', amount: 1 };
     case 'action_performed':
       return { actionType: 'execute_command', match: { command: '' } };
+    case 'choice_made':
+      return { optionId: '' };
     case 'shop':
       return { itemName: '' };
     case 'mission':

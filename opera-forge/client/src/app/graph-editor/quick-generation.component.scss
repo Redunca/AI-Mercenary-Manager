@@ -183,12 +183,20 @@
     .step-end {
       border-left-color: #e05252;
     }
+    .step-choice {
+      border-left-color: #e07b39;
+    }
 
-    .effects, .seeds {
+    .effects, .seeds, .choice-options {
       margin: 0.2rem 0 0;
       padding-left: 1rem;
       font-size: 0.9em;
       opacity: 0.8;
+    }
+
+    .choice-options .chosen {
+      font-weight: 600;
+      opacity: 1;
     }
   }
 

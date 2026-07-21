@@ -1,6 +1,6 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { GraphApiService } from './graph-api.service';
-import { GraphDefinition, GraphLink, GraphNode, NodeType, defaultMissionDetails } from '../models/graph';
+import { GraphDefinition, GraphLink, GraphNode, NodeType, defaultChoiceOptions, defaultMissionDetails } from '../models/graph';
 
 let nodeCounter = 0;
 let linkCounter = 0;
@@ -94,6 +94,7 @@ export class GraphService {
       type === 'check' ? { ...base, roll: { type: 'chance', params: { percentage: 50 } } } :
       type === 'seed' ? { ...base, seeds: [] } :
       type === 'mission' ? { ...base, mission: defaultMissionDetails() } :
+      type === 'choice' ? { ...base, text: 'What do you do?', choiceOptions: defaultChoiceOptions() } :
       { ...base, outcome: 'neutral', text: 'The end.' };
 
     this.mutate(def => ({ ...def, nodes: [...def.nodes, node] }));
