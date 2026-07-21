@@ -5,12 +5,20 @@
   @switch (node().type) {
     @case ('start') {
       <p class="hint">The entry point of the graph. Every walk begins here.</p>
+      <label>
+        Welcome message (optional)
+        <textarea rows="3" [ngModel]="node().text" (ngModelChange)="setText($event)"></textarea>
+      </label>
     }
 
     @case ('story') {
       <label>
         Text
         <textarea rows="4" [ngModel]="node().text" (ngModelChange)="setText($event)"></textarea>
+      </label>
+      <label>
+        Completion message (optional, shown when this node's outgoing link is taken)
+        <textarea rows="3" [ngModel]="node().completionText" (ngModelChange)="setCompletionText($event)"></textarea>
       </label>
 
       <h3>Effects</h3>
@@ -86,6 +94,53 @@
         </label>
       }
       <p class="hint">Resolves to success/failure. Route outgoing links with a "previous_outcome" condition.</p>
+      <label>
+        Completion message (optional, shown when this node's outgoing link is taken)
+        <textarea rows="3" [ngModel]="node().completionText" (ngModelChange)="setCompletionText($event)"></textarea>
+      </label>
+    }
+
+    @case ('seed') {
+      <p class="hint">
+        Declares shop items / missions this opera wants seeded. This has no effect on the game yet --
+        it's data for the opera engine to read once it exists. For now it only shows up as a step
+        during Quick Generation.
+      </p>
+
+      <h3>Seeds</h3>
+      @for (entry of node().seeds ?? []; track $index) {
+        <div class="row">
+          <select [ngModel]="entry.target" (ngModelChange)="setSeedTarget($index, $event)">
+            @for (t of seedTargets; track t) {
+              <option [value]="t">{{ t }}</option>
+            }
+          </select>
+
+          @switch (entry.target) {
+            @case ('shop') {
+              <input type="text" placeholder="Item name" [ngModel]="entry.params['itemName']" (ngModelChange)="setSeedParam($index, 'itemName', $event)" />
+            }
+            @case ('mission') {
+              <input type="text" placeholder="Mission template id" [ngModel]="entry.params['templateId']" (ngModelChange)="setSeedParam($index, 'templateId', $event)" />
+            }
+          }
+
+          <button type="button" class="danger" (click)="removeSeed($index)">&times;</button>
+        </div>
+        <input
+          type="text"
+          class="seed-note"
+          placeholder="Note (optional, for authors only)"
+          [ngModel]="entry.note"
+          (ngModelChange)="setSeedNote($index, $event)"
+        />
+      }
+      <button type="button" (click)="addSeed()">+ Seed</button>
+
+      <label>
+        Completion message (optional, shown when this node's outgoing link is taken)
+        <textarea rows="3" [ngModel]="node().completionText" (ngModelChange)="setCompletionText($event)"></textarea>
+      </label>
     }
 
     @case ('end') {

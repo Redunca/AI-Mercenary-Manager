@@ -23,8 +23,13 @@
     font-size: 0.85em;
   }
 
-  input, select {
+  input, select, textarea {
     padding: 0.35rem;
+    font-family: inherit;
+  }
+
+  textarea {
+    resize: vertical;
   }
 
   .hint {
@@ -51,6 +56,30 @@
     input {
       flex: 1;
     }
+  }
+
+  .action {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border-color, #333);
+
+    &:last-of-type {
+      border-bottom: none;
+    }
+
+    select {
+      flex: 1;
+    }
+  }
+
+  .action-match {
+    padding-left: 0.5rem;
+  }
+
+  button.danger {
+    color: #e05252;
   }
 
   button.primary {
@@ -100,16 +129,24 @@
       .outcome {
         font-style: italic;
       }
+
+      .completion {
+        font-style: italic;
+        opacity: 0.8;
+      }
     }
 
     .step-check {
       border-left-color: #e6b43c;
     }
+    .step-seed {
+      border-left-color: #8e5be0;
+    }
     .step-end {
       border-left-color: #e05252;
     }
 
-    .effects {
+    .effects, .seeds {
       margin: 0.2rem 0 0;
       padding-left: 1rem;
       font-size: 0.9em;

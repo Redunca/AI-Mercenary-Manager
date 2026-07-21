@@ -92,6 +92,7 @@ export class GraphService {
     const node: GraphNode =
       type === 'story' ? { ...base, text: 'New story beat.', effects: [] } :
       type === 'check' ? { ...base, roll: { type: 'chance', params: { percentage: 50 } } } :
+      type === 'seed' ? { ...base, seeds: [] } :
       { ...base, outcome: 'neutral', text: 'The end.' };
 
     this.mutate(def => ({ ...def, nodes: [...def.nodes, node] }));

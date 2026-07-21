@@ -15,6 +15,43 @@
     <input type="text" [ngModel]="flawsText()" (ngModelChange)="flawsText.set($event)" />
   </label>
 
+  <h3>Actions performed, in order</h3>
+  <p class="hint">Consumed in order by "action_performed" conditions -- the Nth such condition reached must match the Nth entry here.</p>
+  @for (action of actionsPerformed(); track $index) {
+    <div class="action">
+      <div class="row">
+        <select [ngModel]="action.actionType" (ngModelChange)="setActionType($index, $event)">
+          @for (a of actionTypes; track a) {
+            <option [value]="a">{{ a }}</option>
+          }
+        </select>
+        <button type="button" class="danger" (click)="removeAction($index)">&times;</button>
+      </div>
+
+      <div class="row action-match">
+        @if (action.actionType === 'execute_command') {
+          <input type="text" placeholder="Command, e.g. split-v" [ngModel]="matchValue($index, 'command')" (ngModelChange)="setCommand($index, $event)" />
+          <input type="text" placeholder="Args, comma separated (optional)" [ngModel]="argsText($index)" (ngModelChange)="setArgsText($index, $event)" />
+        } @else {
+          @if (actionMatchField(action.actionType); as field) {
+            <input type="text" [placeholder]="field" [ngModel]="matchValue($index, field)" (ngModelChange)="setMatchValue($index, field, $event)" />
+          } @else {
+            <select [ngModel]="matchKind($index)" (ngModelChange)="setMatchKind($index, $event)">
+              <option value="any">Any</option>
+              @for (k of matchKeys; track k) {
+                <option [value]="k">{{ k }}</option>
+              }
+            </select>
+            @if (matchKind($index) !== 'any') {
+              <input type="text" [placeholder]="matchKind($index)" [ngModel]="matchValue($index, matchKind($index))" (ngModelChange)="setMatchValue($index, matchKind($index), $event)" />
+            }
+          }
+        }
+      </div>
+    </div>
+  }
+  <button type="button" (click)="addAction()">+ Action</button>
+
   <h3>Attributes</h3>
   <div class="attr-grid">
     @for (a of attributes; track a) {
@@ -55,10 +92,23 @@
             @if (step.outcome) {
               <p class="outcome">outcome: {{ step.outcome }}</p>
             }
+            @if (step.completionText) {
+              <p class="completion">{{ step.completionText }}</p>
+            }
             @if (step.effectsApplied && step.effectsApplied.length > 0) {
               <ul class="effects">
                 @for (e of step.effectsApplied; track $index) {
                   <li>{{ e.type }}: {{ e.params | json }}</li>
+                }
+              </ul>
+            }
+            @if (step.seeds && step.seeds.length > 0) {
+              <ul class="seeds">
+                @for (s of step.seeds; track $index) {
+                  <li>
+                    seed {{ s.target }}: {{ s.target === 'shop' ? s.params['itemName'] : s.params['templateId'] }}
+                    @if (s.note) { — {{ s.note }} }
+                  </li>
                 }
               </ul>
             }

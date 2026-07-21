@@ -19,6 +19,7 @@
     <div class="actions">
       <button type="button" (click)="addNode('story')">+ Story</button>
       <button type="button" (click)="addNode('check')">+ Check</button>
+      <button type="button" (click)="addNode('seed')">+ Seed</button>
       <button type="button" (click)="addNode('end')">+ End</button>
       <button type="button" (click)="showGeneration.set(!showGeneration())">
         {{ showGeneration() ? 'Hide' : '' }} Quick Generation
@@ -74,6 +75,16 @@
               }
             </div>
           </ng-template>
+
+          <ng-template edgeLabelHtml let-ctx>
+            <div
+              class="ogl-edge-label"
+              [class.selected]="graphService.selectedLinkId() === ctx.edge.id"
+              (click)="graphService.selectLink(ctx.edge.id)"
+            >
+              {{ linkSummary(ctx.label.data) }}
+            </div>
+          </ng-template>
         </vflow>
       } @else {
         <p>Loading...</p>
@@ -81,9 +92,12 @@
     </div>
 
     <aside class="side-panel">
-      @if (showGeneration()) {
-        <app-quick-generation [graphId]="graphId()" />
-      } @else {
+      <!-- [hidden] rather than @if/@else so toggling "Quick Generation" off
+           and back on doesn't tear down and recreate this component -- that
+           would reset all its local signals (mock items/perks/flaws/
+           attributes, the actions list, the seed, the last result). -->
+      <app-quick-generation [graphId]="graphId()" [hidden]="!showGeneration()" />
+      @if (!showGeneration()) {
         @if (graphService.selectedNode(); as node) {
           <app-node-panel [node]="node" />
         } @else {

@@ -3,16 +3,41 @@
 // opera-forge/server/src/services/graph.service.js for the fs-touching
 // orchestration that calls into this module.
 
-const NODE_TYPES = ['start', 'story', 'check', 'end']
-const CONDITION_TYPES = ['chance', 'has_item', 'has_perk', 'has_flaw', 'previous_outcome', 'attribute_threshold']
+const NODE_TYPES = ['start', 'story', 'check', 'seed', 'end']
+const CONDITION_TYPES = ['chance', 'has_item', 'has_perk', 'has_flaw', 'previous_outcome', 'attribute_threshold', 'action_performed']
 const EFFECT_TYPES = ['give_item', 'apply_perk', 'apply_flaw', 'adjust_stat']
 const ROLL_TYPES = ['chance', 'attribute_threshold']
 const OUTCOMES = ['success', 'failure', 'neutral']
+// What a 'seed' node can pre-declare for a not-yet-built opera engine to
+// read later (see the 'seed' node.type block in validateNode/runGeneration
+// below): a shop item (by name, same convention as has_item/give_item) or a
+// mission (by templateId, same convention action_performed already uses for
+// send_recruit_to_quest/purchase_quest_item match targets). Purely
+// descriptive data today -- it has no effect on mockState or the real game.
+const SEED_TARGETS = ['shop', 'mission']
 const ATTRIBUTES = [
   'agility', 'fortitude', 'might', 'learning', 'logic',
   'perception', 'will', 'deception', 'persuasion', 'presence',
 ]
 const OPERATORS = ['>', '>=', '<', '<=', '==']
+
+// Mirrors STEP_TYPES in server/src/domain/opera.js -- the vocabulary of
+// gameplay actions the existing (linear checklist) Opera engine can detect.
+// "action_performed" conditions reuse this exact vocabulary and match-object
+// shape so a graph can express the same "wait for the player to do X" gates
+// that every step in server/data/operas/tutorial.json relies on.
+const ACTION_TYPES = [
+  'hire_recruit',
+  'assign_crew_to_ship',
+  'complete_quest',
+  'purchase_item',
+  'purchase_quest_item',
+  'equip_item',
+  'equip_item_to_recruit',
+  'assign_item_to_ship',
+  'send_recruit_to_quest',
+  'execute_command',
+]
 
 function isNonEmptyString(value) {
   return typeof value === 'string' && value.trim().length > 0
@@ -47,8 +72,36 @@ function validateConditionParams(type, params, where) {
       if (!OPERATORS.includes(p.operator)) throw new Error(`${where}: condition "attribute_threshold" requires operator to be one of ${OPERATORS.join(', ')}`)
       if (!isFiniteNumber(p.value)) throw new Error(`${where}: condition "attribute_threshold" requires a numeric value`)
       return
+    case 'action_performed':
+      validateActionMatch(p, where)
+      return
     default:
       throw new Error(`${where}: unknown condition type "${type}"`)
+  }
+}
+
+// Same match-shape rules as validateStep() in server/src/domain/opera.js:
+// execute_command requires match.command; every other action type requires
+// either {scope:"any"} or a specific target key (itemName, recruitId,
+// shipId, templateId).
+function validateActionMatch(p, where) {
+  if (!ACTION_TYPES.includes(p.actionType)) {
+    throw new Error(`${where}: condition "action_performed" requires actionType to be one of ${ACTION_TYPES.join(', ')}`)
+  }
+  if (!p.match || typeof p.match !== 'object') {
+    throw new Error(`${where}: condition "action_performed" requires a match object`)
+  }
+  if (p.actionType === 'execute_command') {
+    if (!isNonEmptyString(p.match.command)) {
+      throw new Error(`${where}: action_performed execute_command match requires a "command" string`)
+    }
+    return
+  }
+  if (p.match.scope !== 'any' && !('itemName' in p.match)) {
+    const hasSpecificKey = ['recruitId', 'shipId', 'templateId'].some(key => key in p.match)
+    if (!hasSpecificKey) {
+      throw new Error(`${where}: action_performed match must be {"scope":"any"} or a specific target`)
+    }
   }
 }
 
@@ -73,12 +126,33 @@ function validateEffectParams(type, params, where) {
   }
 }
 
+function validateSeedParams(target, params, where) {
+  const p = params ?? {}
+  switch (target) {
+    case 'shop':
+      if (!isNonEmptyString(p.itemName)) throw new Error(`${where}: seed target "shop" requires an itemName string`)
+      return
+    case 'mission':
+      if (!isNonEmptyString(p.templateId)) throw new Error(`${where}: seed target "mission" requires a templateId string`)
+      return
+    default:
+      throw new Error(`${where}: unknown seed target "${target}"`)
+  }
+}
+
 function validateNode(node, graphId) {
   if (!node || typeof node !== 'object') throw new Error(`Graph "${graphId}": node must be an object`)
   if (!isNonEmptyString(node.id)) throw new Error(`Graph "${graphId}": node missing a string id`)
   if (!NODE_TYPES.includes(node.type)) throw new Error(`Graph "${graphId}", node "${node.id}": unknown type "${node.type}"`)
 
   const where = `Graph "${graphId}", node "${node.id}"`
+
+  if (node.type === 'start') {
+    // Optional opera-level "on_start_message" equivalent -- shown once, on entry.
+    if (node.text !== undefined && !isNonEmptyString(node.text)) {
+      throw new Error(`${where}: start node text must be a non-empty string when present`)
+    }
+  }
 
   if (node.type === 'story') {
     if (!isNonEmptyString(node.text)) throw new Error(`${where}: story node requires text`)
@@ -89,17 +163,43 @@ function validateNode(node, graphId) {
         validateEffectParams(effect.type, effect.params, `${where}, effect[${i}]`)
       })
     }
+    validateCompletionText(node, where)
   }
 
   if (node.type === 'check') {
     if (!node.roll || typeof node.roll !== 'object') throw new Error(`${where}: check node requires a roll`)
     if (!ROLL_TYPES.includes(node.roll.type)) throw new Error(`${where}: check node roll type must be one of ${ROLL_TYPES.join(', ')}`)
     validateConditionParams(node.roll.type, node.roll.params, `${where}, roll`)
+    validateCompletionText(node, where)
+  }
+
+  if (node.type === 'seed') {
+    if (node.seeds !== undefined) {
+      if (!Array.isArray(node.seeds)) throw new Error(`${where}: seeds must be an array`)
+      node.seeds.forEach((entry, i) => {
+        if (!entry || typeof entry !== 'object') throw new Error(`${where}: seed[${i}] must be an object`)
+        if (!SEED_TARGETS.includes(entry.target)) throw new Error(`${where}: seed[${i}] target must be one of ${SEED_TARGETS.join(', ')}`)
+        validateSeedParams(entry.target, entry.params, `${where}, seed[${i}]`)
+        if (entry.note !== undefined && !isNonEmptyString(entry.note)) {
+          throw new Error(`${where}: seed[${i}] note must be a non-empty string when present`)
+        }
+      })
+    }
+    validateCompletionText(node, where)
   }
 
   if (node.type === 'end') {
     if (!OUTCOMES.includes(node.outcome)) throw new Error(`${where}: end node requires outcome to be one of ${OUTCOMES.join(', ')}`)
     if (!isNonEmptyString(node.text)) throw new Error(`${where}: end node requires text`)
+  }
+}
+
+// Optional "on_complete_message" equivalent -- shown once a node's outgoing
+// link is actually taken (see runGeneration), regardless of which condition
+// satisfied it.
+function validateCompletionText(node, where) {
+  if (node.completionText !== undefined && !isNonEmptyString(node.completionText)) {
+    throw new Error(`${where}: completionText must be a non-empty string when present`)
   }
 }
 
@@ -219,7 +319,36 @@ function compare(actual, operator, expected) {
   }
 }
 
-function evaluateCondition(condition, { mockState, lastOutcome, rng }) {
+// Same matching rules as matchStep() in server/src/domain/opera.js.
+function matchesAction(params, entry) {
+  if (!entry || params.actionType !== entry.actionType) return false
+  const match = params.match ?? {}
+  const payload = entry.payload ?? {}
+
+  if (params.actionType === 'execute_command') {
+    if (match.command !== payload.command) return false
+    if (Array.isArray(match.args)) {
+      const args = payload.args ?? []
+      if (match.args.length !== args.length) return false
+      return match.args.every((value, i) => value === args[i])
+    }
+    return true
+  }
+
+  if (match.scope === 'any') return true
+  return Object.entries(match).every(([key, value]) => {
+    if (key === 'scope') return true
+    return payload[key] === value
+  })
+}
+
+// action_performed is a pure peek against the NEXT scripted action in
+// initialState.actionsPerformed (a sequential cursor, not a search over the
+// whole list) -- this must stay side-effect free here so that evaluating it
+// for a candidate link that ultimately isn't chosen (e.g. a later condition
+// on the same link fails) never advances the cursor. The cursor is only
+// committed, once, for the link runGeneration actually takes -- see below.
+function evaluateCondition(condition, { mockState, lastOutcome, rng, actionCursor }) {
   const p = condition.params ?? {}
   switch (condition.type) {
     case 'chance':
@@ -234,6 +363,8 @@ function evaluateCondition(condition, { mockState, lastOutcome, rng }) {
       return lastOutcome === p.equals
     case 'attribute_threshold':
       return compare(mockState.attributes[p.attribute] ?? 0, p.operator, p.value)
+    case 'action_performed':
+      return matchesAction(p, mockState.actionsPerformed[actionCursor.value])
     default:
       return false
   }
@@ -289,9 +420,14 @@ function runGeneration(def, { initialState, seed } = {}) {
     perks: [...(initialState?.perks ?? [])],
     flaws: [...(initialState?.flaws ?? [])],
     attributes: { ...(initialState?.attributes ?? {}) },
+    actionsPerformed: [...(initialState?.actionsPerformed ?? [])],
   }
   const rng = makeRng(seed)
-  const ctx = { mockState, lastOutcome: null, rng }
+  // A ref object (not a plain number) so evaluateCondition can peek the
+  // current position without runGeneration having to rebuild ctx every time
+  // the cursor advances.
+  const actionCursor = { value: 0 }
+  const ctx = { mockState, lastOutcome: null, rng, actionCursor }
 
   const path = []
   let current = def.nodes.find(n => n.type === 'start')
@@ -302,19 +438,28 @@ function runGeneration(def, { initialState, seed } = {}) {
       return { path, reason: 'max_steps_exceeded', finalState: mockState }
     }
 
+    let entry
     if (current.type === 'story') {
       const effectsApplied = current.effects ?? []
       effectsApplied.forEach(effect => applyEffect(effect, mockState))
-      path.push({ nodeId: current.id, type: current.type, text: current.text, effectsApplied })
+      entry = { nodeId: current.id, type: current.type, text: current.text, effectsApplied }
     } else if (current.type === 'check') {
       ctx.lastOutcome = resolveRoll(current.roll, ctx)
-      path.push({ nodeId: current.id, type: current.type, outcome: ctx.lastOutcome })
+      entry = { nodeId: current.id, type: current.type, outcome: ctx.lastOutcome }
+    } else if (current.type === 'seed') {
+      // Descriptive only -- no mockState/finalState effect. The not-yet-built
+      // opera engine is meant to read node.seeds directly off the graph
+      // definition once it exists; this just surfaces it as a walk step so
+      // Quick Generation can preview which step would declare which seeds.
+      entry = { nodeId: current.id, type: current.type, seeds: current.seeds ?? [] }
     } else if (current.type === 'end') {
-      path.push({ nodeId: current.id, type: current.type, text: current.text, outcome: current.outcome })
+      entry = { nodeId: current.id, type: current.type, text: current.text, outcome: current.outcome }
+      path.push(entry)
       return { path, reason: 'end', endedAt: current.id, finalState: mockState }
     } else {
-      path.push({ nodeId: current.id, type: current.type })
+      entry = { nodeId: current.id, type: current.type, text: current.text }
     }
+    path.push(entry)
 
     const candidates = linksByFrom.get(current.id) ?? []
     const chosen = candidates.find(link =>
@@ -324,6 +469,14 @@ function runGeneration(def, { initialState, seed } = {}) {
     if (!chosen) {
       return { path, reason: 'dead_end', endedAt: current.id, finalState: mockState }
     }
+
+    // Commit the cursor advance only for the link actually taken, once per
+    // action_performed condition on it -- see evaluateCondition's comment.
+    for (const condition of chosen.conditions ?? []) {
+      if (condition.type === 'action_performed') actionCursor.value += 1
+    }
+    if (current.completionText) entry.completionText = current.completionText
+
     current = nodesById.get(chosen.to)
   }
 
@@ -338,8 +491,11 @@ module.exports = {
   OUTCOMES,
   ATTRIBUTES,
   OPERATORS,
+  ACTION_TYPES,
+  SEED_TARGETS,
   validateGraphDefinition,
   analyzeGraph,
   runGeneration,
   makeRng,
+  matchesAction,
 }

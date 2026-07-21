@@ -2,11 +2,20 @@ import { Component, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GraphApiService } from '../core/graph-api.service';
-import { ATTRIBUTES, Attribute, GenerationResult, MockState } from '../models/graph';
+import {
+  ACTION_MATCH_FIELDS, ACTION_TYPES, ATTRIBUTES, ActionType, Attribute, GenerationResult, MockState, ScriptedAction,
+  defaultActionMatch,
+} from '../models/graph';
 
 function parseList(text: string): string[] {
   return text.split(',').map(s => s.trim()).filter(Boolean);
 }
+
+// Same match-shape convention as action_performed conditions on links (see
+// LinkPanelComponent) -- 'any' means {scope: "any"}, execute_command uses
+// {command, args?}, everything else is a single specific-target key.
+type MatchKind = 'any' | 'itemName' | 'recruitId' | 'shipId' | 'templateId';
+const MATCH_KEYS: Exclude<MatchKind, 'any'>[] = ['itemName', 'recruitId', 'shipId', 'templateId'];
 
 @Component({
   selector: 'app-quick-generation',
@@ -21,11 +30,14 @@ export class QuickGenerationComponent {
   private api = inject(GraphApiService);
 
   readonly attributes = ATTRIBUTES;
+  readonly actionTypes = ACTION_TYPES;
+  readonly matchKeys = MATCH_KEYS;
 
   readonly itemsText = signal('');
   readonly perksText = signal('');
   readonly flawsText = signal('');
   readonly attributeValues = signal<Partial<Record<Attribute, number>>>({});
+  readonly actionsPerformed = signal<ScriptedAction[]>([]);
   readonly seed = signal(String(Math.floor(Math.random() * 1e9)));
 
   readonly loading = signal(false);
@@ -40,6 +52,73 @@ export class QuickGenerationComponent {
     this.seed.set(String(Math.floor(Math.random() * 1e9)));
   }
 
+  addAction(): void {
+    this.actionsPerformed.update(actions => [...actions, { actionType: 'execute_command', payload: { command: '' } }]);
+  }
+
+  setActionType(index: number, actionType: ActionType): void {
+    this.setAction(index, { actionType, payload: defaultActionMatch(actionType) });
+  }
+
+  actionMatchField(actionType: unknown): string | undefined {
+    return ACTION_MATCH_FIELDS[actionType as ActionType];
+  }
+
+  removeAction(index: number): void {
+    this.actionsPerformed.update(actions => actions.filter((_, i) => i !== index));
+  }
+
+  private setAction(index: number, action: ScriptedAction): void {
+    this.actionsPerformed.update(actions => {
+      const next = [...actions];
+      next[index] = action;
+      return next;
+    });
+  }
+
+  private setPayload(index: number, payload: Record<string, unknown>): void {
+    const action = this.actionsPerformed()[index];
+    this.setAction(index, { ...action, payload });
+  }
+
+  matchKind(index: number): MatchKind {
+    const payload = this.actionsPerformed()[index].payload ?? {};
+    for (const key of MATCH_KEYS) {
+      if (key in payload) return key;
+    }
+    return 'any';
+  }
+
+  setMatchKind(index: number, kind: MatchKind): void {
+    this.setPayload(index, kind === 'any' ? { scope: 'any' } : { [kind]: '' });
+  }
+
+  matchValue(index: number, key: string): string {
+    const payload = this.actionsPerformed()[index].payload;
+    return (payload?.[key] as string) ?? '';
+  }
+
+  setMatchValue(index: number, key: string, value: string): void {
+    this.setPayload(index, { [key]: value });
+  }
+
+  setCommand(index: number, command: string): void {
+    const payload = this.actionsPerformed()[index].payload ?? {};
+    this.setPayload(index, { ...payload, command });
+  }
+
+  argsText(index: number): string {
+    const args = this.actionsPerformed()[index].payload?.['args'];
+    return Array.isArray(args) ? args.join(', ') : '';
+  }
+
+  setArgsText(index: number, text: string): void {
+    const payload = this.actionsPerformed()[index].payload ?? {};
+    const args = text.trim() ? text.split(',').map(s => s.trim()) : undefined;
+    const { args: _drop, ...rest } = payload;
+    this.setPayload(index, args ? { ...rest, args } : rest);
+  }
+
   async generate(): Promise<void> {
     this.loading.set(true);
     this.error.set(null);
@@ -48,6 +127,7 @@ export class QuickGenerationComponent {
       perks: parseList(this.perksText()),
       flaws: parseList(this.flawsText()),
       attributes: this.attributeValues(),
+      actionsPerformed: this.actionsPerformed(),
     };
     try {
       this.result.set(await this.api.generate(this.graphId(), initialState, this.seed()));

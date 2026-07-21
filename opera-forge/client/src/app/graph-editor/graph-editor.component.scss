@@ -122,7 +122,29 @@
   &.type-check {
     border-color: #e6b43c;
   }
+  &.type-seed {
+    border-color: #8e5be0;
+  }
   &.type-end {
     border-color: #e05252;
+  }
+}
+
+.ogl-edge-label {
+  width: max-content;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  background: #232427;
+  border: 1px solid var(--border-color, #444);
+  font-size: 0.75em;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--accent, #5b8def);
+  }
+
+  &.selected {
+    border-color: var(--accent, #5b8def);
+    box-shadow: 0 0 0 2px rgba(91, 141, 239, 0.35);
   }
 }

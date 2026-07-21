@@ -45,6 +45,22 @@
     }
   }
 
+  .condition {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border-color, #333);
+
+    &:last-of-type {
+      border-bottom: none;
+    }
+  }
+
+  .action-match {
+    padding-left: 0.5rem;
+  }
+
   .hint {
     font-size: 0.8em;
     opacity: 0.65;

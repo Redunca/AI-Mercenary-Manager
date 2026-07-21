@@ -2,8 +2,8 @@ import { Component, OnDestroy, OnInit, computed, inject, input, output, signal }
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
-  Connection, ConnectionControllerDirective, ConnectionSettings, Edge, HandleComponent, HtmlTemplateNode,
-  NodeChange, EdgeChange, NodeHtmlTemplateDirective, VflowComponent,
+  Connection, ConnectionControllerDirective, ConnectionSettings, Edge, EdgeLabelHtmlTemplateDirective, HandleComponent,
+  HtmlTemplateNode, NodeChange, EdgeChange, NodeHtmlTemplateDirective, VflowComponent,
 } from 'ngx-vflow';
 import { GraphService } from '../core/graph.service';
 import { GraphLink, GraphNode } from '../models/graph';
@@ -17,8 +17,8 @@ type VNode = HtmlTemplateNode<GraphNode>;
   selector: 'app-graph-editor',
   standalone: true,
   imports: [
-    CommonModule, FormsModule, VflowComponent, HandleComponent, NodeHtmlTemplateDirective, ConnectionControllerDirective,
-    NodePanelComponent, LinkPanelComponent, QuickGenerationComponent,
+    CommonModule, FormsModule, VflowComponent, HandleComponent, NodeHtmlTemplateDirective, EdgeLabelHtmlTemplateDirective,
+    ConnectionControllerDirective, NodePanelComponent, LinkPanelComponent, QuickGenerationComponent,
   ],
   templateUrl: './graph-editor.component.html',
   styleUrl: './graph-editor.component.scss',
@@ -87,7 +87,7 @@ export class GraphEditorComponent implements OnInit, OnDestroy {
           type: 'default' as const,
           data: link,
           edgeLabels: {
-            center: { type: 'default' as const, text: this.linkSummary(link) },
+            center: { type: 'html-template' as const, data: link },
           },
         },
       };
@@ -111,7 +111,7 @@ export class GraphEditorComponent implements OnInit, OnDestroy {
   }
 
   nodePreview(node: GraphNode): string {
-    if (node.type === 'start') return 'Entry point';
+    if (node.type === 'start') return node.text ? `Entry point — ${node.text}` : 'Entry point';
     if (node.type === 'story') return node.text ?? '';
     if (node.type === 'check') {
       const roll = node.roll;
@@ -121,10 +121,15 @@ export class GraphEditorComponent implements OnInit, OnDestroy {
       }
       return 'Roll: unconfigured';
     }
+    if (node.type === 'seed') {
+      const seeds = node.seeds ?? [];
+      if (seeds.length === 0) return 'Seeds: (none configured)';
+      return `Seeds: ${seeds.map(s => s.target === 'shop' ? `shop item "${s.params['itemName'] || '?'}"` : `mission "${s.params['templateId'] || '?'}"`).join(', ')}`;
+    }
     return `Outcome: ${node.outcome ?? 'unset'} — ${node.text ?? ''}`;
   }
 
-  addNode(type: 'story' | 'check' | 'end'): void {
+  addNode(type: 'story' | 'check' | 'seed' | 'end'): void {
     const point = { x: 80 + Math.random() * 400, y: 80 + Math.random() * 300 };
     this.graphService.addNode(type, point);
   }

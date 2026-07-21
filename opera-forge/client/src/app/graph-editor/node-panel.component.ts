@@ -2,7 +2,10 @@ import { Component, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GraphService } from '../core/graph.service';
-import { ATTRIBUTES, EFFECT_TYPES, Effect, EffectType, GraphNode, OPERATORS, OUTCOMES, Outcome, RollType, defaultParamsFor } from '../models/graph';
+import {
+  ATTRIBUTES, EFFECT_TYPES, Effect, EffectType, GraphNode, OPERATORS, OUTCOMES, Outcome, RollType, Seed, SEED_TARGETS,
+  SeedTarget, defaultParamsFor,
+} from '../models/graph';
 
 @Component({
   selector: 'app-node-panel',
@@ -20,9 +23,14 @@ export class NodePanelComponent {
   readonly attributes = ATTRIBUTES;
   readonly operators = OPERATORS;
   readonly outcomes = OUTCOMES;
+  readonly seedTargets = SEED_TARGETS;
 
   setText(text: string): void {
     this.graphService.updateNode(this.node().id, { text });
+  }
+
+  setCompletionText(completionText: string): void {
+    this.graphService.updateNode(this.node().id, { completionText });
   }
 
   setOutcome(outcome: Outcome): void {
@@ -63,6 +71,39 @@ export class NodePanelComponent {
     const node = this.node();
     const effects = (node.effects ?? []).filter((_, i) => i !== index);
     this.graphService.updateNode(node.id, { effects });
+  }
+
+  addSeed(): void {
+    const node = this.node();
+    const entry: Seed = { target: 'shop', params: defaultParamsFor('seed', 'shop') };
+    this.graphService.updateNode(node.id, { seeds: [...(node.seeds ?? []), entry] });
+  }
+
+  setSeedTarget(index: number, target: SeedTarget): void {
+    const node = this.node();
+    const seeds = [...(node.seeds ?? [])];
+    seeds[index] = { target, params: defaultParamsFor('seed', target) };
+    this.graphService.updateNode(node.id, { seeds });
+  }
+
+  setSeedParam(index: number, key: string, value: unknown): void {
+    const node = this.node();
+    const seeds = [...(node.seeds ?? [])];
+    seeds[index] = { ...seeds[index], params: { ...seeds[index].params, [key]: value } };
+    this.graphService.updateNode(node.id, { seeds });
+  }
+
+  setSeedNote(index: number, note: string): void {
+    const node = this.node();
+    const seeds = [...(node.seeds ?? [])];
+    seeds[index] = { ...seeds[index], note: note || undefined };
+    this.graphService.updateNode(node.id, { seeds });
+  }
+
+  removeSeed(index: number): void {
+    const node = this.node();
+    const seeds = (node.seeds ?? []).filter((_, i) => i !== index);
+    this.graphService.updateNode(node.id, { seeds });
   }
 
   deleteNode(): void {
