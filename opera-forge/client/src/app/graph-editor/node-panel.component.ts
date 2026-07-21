@@ -3,14 +3,19 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GraphService } from '../core/graph.service';
 import {
-  ATTRIBUTES, EFFECT_TYPES, Effect, EffectType, GraphNode, OPERATORS, OUTCOMES, Outcome, RollType, Seed, SEED_TARGETS,
-  SeedTarget, defaultParamsFor,
+  ATTRIBUTES, EFFECT_TYPES, Effect, EffectType, GraphNode, MISSION_DIFFICULTIES, MissionDetails, MissionDifficulty,
+  OPERATORS, OUTCOMES, Outcome, RollType, Seed, SEED_TARGETS, SeedTarget, defaultParamsFor,
 } from '../models/graph';
+import { TagTextFieldComponent } from './tag-text-field.component';
+
+function parseTagList(text: string): string[] {
+  return text.split(',').map(s => s.trim()).filter(Boolean);
+}
 
 @Component({
   selector: 'app-node-panel',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TagTextFieldComponent],
   templateUrl: './node-panel.component.html',
   styleUrl: './node-panel.component.scss',
 })
@@ -24,6 +29,7 @@ export class NodePanelComponent {
   readonly operators = OPERATORS;
   readonly outcomes = OUTCOMES;
   readonly seedTargets = SEED_TARGETS;
+  readonly missionDifficulties = MISSION_DIFFICULTIES;
 
   setText(text: string): void {
     this.graphService.updateNode(this.node().id, { text });
@@ -35,6 +41,24 @@ export class NodePanelComponent {
 
   setOutcome(outcome: Outcome): void {
     this.graphService.updateNode(this.node().id, { outcome });
+  }
+
+  setMission(patch: Partial<MissionDetails>): void {
+    const node = this.node();
+    this.graphService.updateNode(node.id, { mission: { ...node.mission, title: node.mission?.title ?? '', ...patch } });
+  }
+
+  setMissionDifficulty(value: string): void {
+    this.setMission({ difficulty: (value || undefined) as MissionDifficulty | undefined });
+  }
+
+  missionTagsText(): string {
+    return (this.node().mission?.tags ?? []).join(', ');
+  }
+
+  setMissionTagsText(text: string): void {
+    const tags = parseTagList(text);
+    this.setMission({ tags: tags.length > 0 ? tags : undefined });
   }
 
   setRollType(type: RollType): void {

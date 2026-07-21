@@ -220,6 +220,77 @@ describe('validateGraphDefinition', () => {
     expect(() => validateGraphDefinition(def)).toThrow(/completionText/)
   })
 
+  const missionLinks = [
+    { id: 'l1', from: 'start', to: 'mission-1', priority: 0, conditions: [] },
+    { id: 'l2', from: 'mission-1', to: 'end-1', priority: 0, conditions: [] },
+  ]
+
+  test('accepts a well-formed mission node', () => {
+    const def = makeDef({
+      nodes: [
+        { id: 'start', type: 'start' },
+        {
+          id: 'mission-1', type: 'mission',
+          mission: { title: 'Find the Quasar Key', description: 'Track down {targetName}.', difficulty: 'HARD', tags: ['recovery'] },
+          completionText: 'Location found.',
+        },
+        { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
+      ],
+      links: missionLinks,
+    })
+    expect(() => validateGraphDefinition(def)).not.toThrow()
+  })
+
+  test('rejects a mission node missing a title', () => {
+    const def = makeDef({
+      nodes: [
+        { id: 'start', type: 'start' },
+        { id: 'mission-1', type: 'mission', mission: { description: 'no title here' } },
+        { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
+      ],
+      links: missionLinks,
+    })
+    expect(() => validateGraphDefinition(def)).toThrow(/non-empty title/)
+  })
+
+  test('rejects a mission node with an unknown difficulty', () => {
+    const def = makeDef({
+      nodes: [
+        { id: 'start', type: 'start' },
+        { id: 'mission-1', type: 'mission', mission: { title: 'Find it', difficulty: 'IMPOSSIBLE' } },
+        { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
+      ],
+      links: missionLinks,
+    })
+    expect(() => validateGraphDefinition(def)).toThrow(/mission difficulty/)
+  })
+
+  test('rejects a mission node with a non-array tags field', () => {
+    const def = makeDef({
+      nodes: [
+        { id: 'start', type: 'start' },
+        { id: 'mission-1', type: 'mission', mission: { title: 'Find it', tags: 'recovery' } },
+        { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
+      ],
+      links: missionLinks,
+    })
+    expect(() => validateGraphDefinition(def)).toThrow(/mission tags/)
+  })
+
+  test('accepts a crew_threshold condition with a valid operator and numeric value', () => {
+    const def = makeDef({
+      links: [{ id: 'l1', from: 'start', to: 'story-1', priority: 0, conditions: [{ type: 'crew_threshold', params: { operator: '>=', value: 6 } }] }],
+    })
+    expect(() => validateGraphDefinition(def)).not.toThrow()
+  })
+
+  test('rejects a crew_threshold condition with a non-numeric value', () => {
+    const def = makeDef({
+      links: [{ id: 'l1', from: 'start', to: 'story-1', priority: 0, conditions: [{ type: 'crew_threshold', params: { operator: '>=', value: 'six' } }] }],
+    })
+    expect(() => validateGraphDefinition(def)).toThrow(/crew_threshold/)
+  })
+
   test('accepts an action_performed condition with a scope:any match', () => {
     const def = makeDef({
       links: [{ id: 'l1', from: 'start', to: 'story-1', conditions: [{ type: 'action_performed', params: { actionType: 'hire_recruit', match: { scope: 'any' } } }] }],
@@ -313,6 +384,32 @@ describe('analyzeGraph', () => {
 
   test('returns no warnings for a fully connected, reachable graph', () => {
     expect(analyzeGraph(makeDef())).toEqual([])
+  })
+
+  test('flags a node text referencing a tag outside the shared catalog', () => {
+    const def = makeDef({
+      nodes: [
+        { id: 'start', type: 'start' },
+        { id: 'story-1', type: 'story', text: 'Welcome to {planetName}, courtesy of {notARealTag}.', effects: [] },
+        { id: 'end-1', type: 'end', outcome: 'neutral', text: 'The end.' },
+      ],
+    })
+    const warnings = analyzeGraph(def)
+    expect(warnings.some(w => w.includes('story-1') && w.includes('{notARealTag}'))).toBe(true)
+    expect(warnings.some(w => w.includes('{planetName}'))).toBe(false)
+  })
+
+  test('flags a mission title/description referencing a tag outside the shared catalog', () => {
+    const def = makeDef({
+      nodes: [
+        { id: 'start', type: 'start' },
+        { id: 'mission-1', type: 'mission', mission: { title: 'Find {notARealTag}', description: 'Near {planetName}.' } },
+        { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
+      ],
+    })
+    const warnings = analyzeGraph(def)
+    expect(warnings.some(w => w.includes('mission-1') && w.includes('missionTitle') && w.includes('{notARealTag}'))).toBe(true)
+    expect(warnings.some(w => w.includes('{planetName}'))).toBe(false)
   })
 })
 
@@ -491,6 +588,146 @@ describe('runGeneration', () => {
     const r1 = runGeneration(def, { seed: 'fixed-seed' })
     const r2 = runGeneration(def, { seed: 'fixed-seed' })
     expect(r1.endedAt).toBe(r2.endedAt)
+  })
+
+  test('renders {tagName} placeholders in text and completionText from initialState.tags', () => {
+    const def = makeDef({
+      nodes: [
+        { id: 'start', type: 'start' },
+        {
+          id: 'story-1', type: 'story', effects: [],
+          text: 'The crew lands on {planetName}.',
+          completionText: 'Client {clientName} is pleased.',
+        },
+        { id: 'end-1', type: 'end', outcome: 'neutral', text: 'Farewell, {planetName}.' },
+      ],
+    })
+    const result = runGeneration(def, {
+      seed: 'test',
+      initialState: { tags: { planetName: 'Kestrel\'s Rest', clientName: 'Kael Voss' } },
+    })
+    expect(result.path[1]).toMatchObject({
+      text: 'The crew lands on Kestrel\'s Rest.',
+      completionText: 'Client Kael Voss is pleased.',
+    })
+    expect(result.path[2]).toMatchObject({ text: 'Farewell, Kestrel\'s Rest.' })
+  })
+
+  test('leaves unresolved {tagName} placeholders in place and reports them as missingTags', () => {
+    const def = makeDef({
+      nodes: [
+        { id: 'start', type: 'start' },
+        { id: 'story-1', type: 'story', text: 'The crew lands on {planetName}.', effects: [] },
+        { id: 'end-1', type: 'end', outcome: 'neutral', text: 'The end.' },
+      ],
+    })
+    const result = runGeneration(def, { seed: 'test' })
+    expect(result.path[1]).toMatchObject({
+      text: 'The crew lands on {planetName}.',
+      missingTags: ['planetName'],
+    })
+  })
+
+  test('resolves mission node outcomes from the scripted initialState.missionOutcomes queue, in order', () => {
+    const def = {
+      id: 'g',
+      title: 'g',
+      nodes: [
+        { id: 'start', type: 'start' },
+        { id: 'mission-1', type: 'mission', mission: { title: 'Find the Quasar Key' } },
+        { id: 'success-end', type: 'end', outcome: 'success', text: 'Found it.' },
+        { id: 'failure-end', type: 'end', outcome: 'failure', text: 'Lost the trail.' },
+      ],
+      links: [
+        { id: 'l1', from: 'start', to: 'mission-1', priority: 0, conditions: [] },
+        { id: 'l2', from: 'mission-1', to: 'success-end', priority: 0, conditions: [{ type: 'previous_outcome', params: { equals: 'success' } }] },
+        { id: 'l3', from: 'mission-1', to: 'failure-end', priority: 1, conditions: [] },
+      ],
+    }
+    const failing = runGeneration(def, { seed: 'test', initialState: { missionOutcomes: ['failure'] } })
+    expect(failing.endedAt).toBe('failure-end')
+    expect(failing.path[1]).toMatchObject({ nodeId: 'mission-1', outcome: 'failure' })
+
+    const succeeding = runGeneration(def, { seed: 'test', initialState: { missionOutcomes: ['success'] } })
+    expect(succeeding.endedAt).toBe('success-end')
+  })
+
+  test('defaults a mission node outcome to success when missionOutcomes runs out', () => {
+    const def = {
+      id: 'g',
+      title: 'g',
+      nodes: [
+        { id: 'start', type: 'start' },
+        { id: 'mission-1', type: 'mission', mission: { title: 'Find the Quasar Key' } },
+        { id: 'success-end', type: 'end', outcome: 'success', text: 'Found it.' },
+      ],
+      links: [
+        { id: 'l1', from: 'start', to: 'mission-1', priority: 0, conditions: [] },
+        { id: 'l2', from: 'mission-1', to: 'success-end', priority: 0, conditions: [] },
+      ],
+    }
+    const result = runGeneration(def, { seed: 'test' })
+    expect(result.path[1]).toMatchObject({ nodeId: 'mission-1', outcome: 'success' })
+  })
+
+  test('renders {tagName} placeholders in mission title/description', () => {
+    const def = {
+      id: 'g',
+      title: 'g',
+      nodes: [
+        { id: 'start', type: 'start' },
+        { id: 'mission-1', type: 'mission', mission: { title: 'Find {targetName}', description: 'Last seen on {planetName}.' } },
+        { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
+      ],
+      links: [
+        { id: 'l1', from: 'start', to: 'mission-1', priority: 0, conditions: [] },
+        { id: 'l2', from: 'mission-1', to: 'end-1', priority: 0, conditions: [] },
+      ],
+    }
+    const result = runGeneration(def, {
+      seed: 'test',
+      initialState: { tags: { targetName: 'Ambassador Tolven', planetName: 'Kestrel\'s Rest' } },
+    })
+    expect(result.path[1]).toMatchObject({
+      mission: { title: 'Find Ambassador Tolven', description: 'Last seen on Kestrel\'s Rest.' },
+    })
+  })
+
+  test('leaves an unresolved tag in a mission title in place and reports it as missingTags', () => {
+    const def = {
+      id: 'g',
+      title: 'g',
+      nodes: [
+        { id: 'start', type: 'start' },
+        { id: 'mission-1', type: 'mission', mission: { title: 'Find {targetName}' } },
+        { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
+      ],
+      links: [
+        { id: 'l1', from: 'start', to: 'mission-1', priority: 0, conditions: [] },
+        { id: 'l2', from: 'mission-1', to: 'end-1', priority: 0, conditions: [] },
+      ],
+    }
+    const result = runGeneration(def, { seed: 'test' })
+    expect(result.path[1]).toMatchObject({ mission: { title: 'Find {targetName}' }, missingTags: ['targetName'] })
+  })
+
+  test('crew_threshold condition compares against initialState.shipCrewCount', () => {
+    const def = {
+      id: 'g',
+      title: 'g',
+      nodes: [
+        { id: 'start', type: 'start' },
+        { id: 'big-crew-end', type: 'end', outcome: 'success', text: 'Strength in numbers.' },
+        { id: 'small-crew-end', type: 'end', outcome: 'failure', text: 'Not enough hands.' },
+      ],
+      links: [
+        { id: 'l1', from: 'start', to: 'big-crew-end', priority: 0, conditions: [{ type: 'crew_threshold', params: { operator: '>=', value: 6 } }] },
+        { id: 'l2', from: 'start', to: 'small-crew-end', priority: 1, conditions: [] },
+      ],
+    }
+    expect(runGeneration(def, { seed: 'test', initialState: { shipCrewCount: 6 } }).endedAt).toBe('big-crew-end')
+    expect(runGeneration(def, { seed: 'test', initialState: { shipCrewCount: 2 } }).endedAt).toBe('small-crew-end')
+    expect(runGeneration(def, { seed: 'test' }).endedAt).toBe('small-crew-end')
   })
 
   test('advances through an action_performed link when the scripted action matches', () => {

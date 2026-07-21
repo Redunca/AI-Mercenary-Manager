@@ -3,9 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GraphApiService } from '../core/graph-api.service';
 import {
-  ACTION_MATCH_FIELDS, ACTION_TYPES, ATTRIBUTES, ActionType, Attribute, GenerationResult, MockState, ScriptedAction,
-  defaultActionMatch,
+  ACTION_MATCH_FIELDS, ACTION_TYPES, ATTRIBUTES, OUTCOMES, ActionType, Attribute, GenerationResult, MockState, Outcome,
+  ScriptedAction, defaultActionMatch,
 } from '../models/graph';
+import { TAG_CATALOG, exampleTagValues } from '../models/tags';
 
 function parseList(text: string): string[] {
   return text.split(',').map(s => s.trim()).filter(Boolean);
@@ -32,6 +33,8 @@ export class QuickGenerationComponent {
   readonly attributes = ATTRIBUTES;
   readonly actionTypes = ACTION_TYPES;
   readonly matchKeys = MATCH_KEYS;
+  readonly tagCatalog = TAG_CATALOG;
+  readonly outcomes = OUTCOMES;
 
   readonly itemsText = signal('');
   readonly perksText = signal('');
@@ -39,6 +42,9 @@ export class QuickGenerationComponent {
   readonly attributeValues = signal<Partial<Record<Attribute, number>>>({});
   readonly actionsPerformed = signal<ScriptedAction[]>([]);
   readonly seed = signal(String(Math.floor(Math.random() * 1e9)));
+  readonly tagValues = signal<Record<string, string>>({});
+  readonly shipCrewCount = signal(0);
+  readonly missionOutcomes = signal<Outcome[]>([]);
 
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
@@ -48,8 +54,44 @@ export class QuickGenerationComponent {
     this.attributeValues.update(v => ({ ...v, [attr]: value }));
   }
 
+  asNumber(value: unknown): number {
+    return typeof value === 'number' ? value : Number(value ?? 0);
+  }
+
+  tagValue(name: string): string {
+    return this.tagValues()[name] ?? '';
+  }
+
+  setTagValue(name: string, value: string): void {
+    this.tagValues.update(v => ({ ...v, [name]: value }));
+  }
+
+  fillExampleTags(): void {
+    this.tagValues.set(exampleTagValues());
+  }
+
+  clearTags(): void {
+    this.tagValues.set({});
+  }
+
   randomizeSeed(): void {
     this.seed.set(String(Math.floor(Math.random() * 1e9)));
+  }
+
+  addMissionOutcome(): void {
+    this.missionOutcomes.update(outcomes => [...outcomes, 'success']);
+  }
+
+  setMissionOutcome(index: number, outcome: Outcome): void {
+    this.missionOutcomes.update(outcomes => {
+      const next = [...outcomes];
+      next[index] = outcome;
+      return next;
+    });
+  }
+
+  removeMissionOutcome(index: number): void {
+    this.missionOutcomes.update(outcomes => outcomes.filter((_, i) => i !== index));
   }
 
   addAction(): void {
@@ -128,6 +170,9 @@ export class QuickGenerationComponent {
       flaws: parseList(this.flawsText()),
       attributes: this.attributeValues(),
       actionsPerformed: this.actionsPerformed(),
+      tags: this.tagValues(),
+      shipCrewCount: this.shipCrewCount(),
+      missionOutcomes: this.missionOutcomes(),
     };
     try {
       this.result.set(await this.api.generate(this.graphId(), initialState, this.seed()));

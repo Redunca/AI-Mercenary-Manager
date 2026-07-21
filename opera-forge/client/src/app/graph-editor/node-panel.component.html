@@ -5,21 +5,17 @@
   @switch (node().type) {
     @case ('start') {
       <p class="hint">The entry point of the graph. Every walk begins here.</p>
-      <label>
-        Welcome message (optional)
-        <textarea rows="3" [ngModel]="node().text" (ngModelChange)="setText($event)"></textarea>
-      </label>
+      <app-tag-text-field label="Welcome message (optional)" [rows]="3" [value]="node().text" (valueChange)="setText($event)" />
     }
 
     @case ('story') {
-      <label>
-        Text
-        <textarea rows="4" [ngModel]="node().text" (ngModelChange)="setText($event)"></textarea>
-      </label>
-      <label>
-        Completion message (optional, shown when this node's outgoing link is taken)
-        <textarea rows="3" [ngModel]="node().completionText" (ngModelChange)="setCompletionText($event)"></textarea>
-      </label>
+      <app-tag-text-field label="Text" [rows]="4" [value]="node().text" (valueChange)="setText($event)" />
+      <app-tag-text-field
+        label="Completion message (optional, shown when this node's outgoing link is taken)"
+        [rows]="3"
+        [value]="node().completionText"
+        (valueChange)="setCompletionText($event)"
+      />
 
       <h3>Effects</h3>
       @for (effect of node().effects ?? []; track $index) {
@@ -94,10 +90,12 @@
         </label>
       }
       <p class="hint">Resolves to success/failure. Route outgoing links with a "previous_outcome" condition.</p>
-      <label>
-        Completion message (optional, shown when this node's outgoing link is taken)
-        <textarea rows="3" [ngModel]="node().completionText" (ngModelChange)="setCompletionText($event)"></textarea>
-      </label>
+      <app-tag-text-field
+        label="Completion message (optional, shown when this node's outgoing link is taken)"
+        [rows]="3"
+        [value]="node().completionText"
+        (valueChange)="setCompletionText($event)"
+      />
     }
 
     @case ('seed') {
@@ -137,10 +135,44 @@
       }
       <button type="button" (click)="addSeed()">+ Seed</button>
 
+      <app-tag-text-field
+        label="Completion message (optional, shown when this node's outgoing link is taken)"
+        [rows]="3"
+        [value]="node().completionText"
+        (valueChange)="setCompletionText($event)"
+      />
+    }
+
+    @case ('mission') {
+      <p class="hint">
+        Injects this personalized mission into the player's mission list and blocks the walk until it resolves,
+        branching on outcome exactly like a check node's roll. Route outgoing links with a "previous_outcome" condition.
+      </p>
+
+      <app-tag-text-field label="Title" [rows]="1" [value]="node().mission?.title" (valueChange)="setMission({ title: $event })" />
+      <app-tag-text-field label="Description (optional)" [rows]="3" [value]="node().mission?.description" (valueChange)="setMission({ description: $event || undefined })" />
+
       <label>
-        Completion message (optional, shown when this node's outgoing link is taken)
-        <textarea rows="3" [ngModel]="node().completionText" (ngModelChange)="setCompletionText($event)"></textarea>
+        Difficulty (optional)
+        <select [ngModel]="node().mission?.difficulty ?? ''" (ngModelChange)="setMissionDifficulty($event)">
+          <option value="">(none)</option>
+          @for (d of missionDifficulties; track d) {
+            <option [value]="d">{{ d }}</option>
+          }
+        </select>
       </label>
+
+      <label>
+        Tags (comma separated, optional)
+        <input type="text" [ngModel]="missionTagsText()" (ngModelChange)="setMissionTagsText($event)" />
+      </label>
+
+      <app-tag-text-field
+        label="Completion message (optional, shown when this node's outgoing link is taken)"
+        [rows]="3"
+        [value]="node().completionText"
+        (valueChange)="setCompletionText($event)"
+      />
     }
 
     @case ('end') {
@@ -152,10 +184,7 @@
           }
         </select>
       </label>
-      <label>
-        Text
-        <textarea rows="4" [ngModel]="node().text" (ngModelChange)="setText($event)"></textarea>
-      </label>
+      <app-tag-text-field label="Text" [rows]="4" [value]="node().text" (valueChange)="setText($event)" />
     }
   }
 

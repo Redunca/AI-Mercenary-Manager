@@ -14,6 +14,27 @@
     Flaws (comma separated)
     <input type="text" [ngModel]="flawsText()" (ngModelChange)="flawsText.set($event)" />
   </label>
+  <label>
+    Ship crew count
+    <input type="number" min="0" [ngModel]="shipCrewCount()" (ngModelChange)="shipCrewCount.set(asNumber($event))" />
+  </label>
+
+  <h3>Mission outcomes, in order</h3>
+  <p class="hint">
+    A mission node doesn't roll dice -- its real outcome comes from actually playing the mission. Script what each
+    mission node the walk reaches should resolve to, in order; a mission reached past the end of this list defaults to "success".
+  </p>
+  @for (outcome of missionOutcomes(); track $index) {
+    <div class="row">
+      <select [ngModel]="outcome" (ngModelChange)="setMissionOutcome($index, $event)">
+        @for (o of outcomes; track o) {
+          <option [value]="o">{{ o }}</option>
+        }
+      </select>
+      <button type="button" class="danger" (click)="removeMissionOutcome($index)">&times;</button>
+    </div>
+  }
+  <button type="button" (click)="addMissionOutcome()">+ Mission outcome</button>
 
   <h3>Actions performed, in order</h3>
   <p class="hint">Consumed in order by "action_performed" conditions -- the Nth such condition reached must match the Nth entry here.</p>
@@ -52,6 +73,27 @@
   }
   <button type="button" (click)="addAction()">+ Action</button>
 
+  <h3>Tags</h3>
+  <p class="hint">
+    Mock {{ '{' }}tagName{{ '}' }} values -- the same tag collection a generated planet/mission carries in the
+    main game. Node text/completionText referencing a tag left blank here is shown unresolved in the preview below.
+  </p>
+  <div class="row">
+    <button type="button" (click)="fillExampleTags()">Fill example values</button>
+    <button type="button" (click)="clearTags()">Clear</button>
+  </div>
+  @for (group of tagCatalog; track group.category) {
+    <h4 class="tag-group">{{ group.category }}</h4>
+    <div class="tag-grid">
+      @for (tag of group.tags; track tag.name) {
+        <label class="tag-field" [title]="tag.description">
+          {{ tag.name }}
+          <input type="text" [placeholder]="tag.example" [ngModel]="tagValue(tag.name)" (ngModelChange)="setTagValue(tag.name, $event)" />
+        </label>
+      }
+    </div>
+  }
+
   <h3>Attributes</h3>
   <div class="attr-grid">
     @for (a of attributes; track a) {
@@ -89,6 +131,17 @@
             @if (step.text) {
               <p>{{ step.text }}</p>
             }
+            @if (step.mission; as mission) {
+              <p class="mission-title">
+                {{ mission.title }}@if (mission.difficulty) { <span class="mission-difficulty">({{ mission.difficulty }})</span> }
+              </p>
+              @if (mission.description) {
+                <p class="mission-description">{{ mission.description }}</p>
+              }
+              @if (mission.tags && mission.tags.length > 0) {
+                <p class="muted">tags: {{ mission.tags.join(', ') }}</p>
+              }
+            }
             @if (step.outcome) {
               <p class="outcome">outcome: {{ step.outcome }}</p>
             }
@@ -111,6 +164,9 @@
                   </li>
                 }
               </ul>
+            }
+            @if (step.missingTags && step.missingTags.length > 0) {
+              <p class="tag-warning">Unresolved tags: {{ step.missingTags.join(', ') }}</p>
             }
           </li>
         }

@@ -38,6 +38,24 @@
     margin: 0;
   }
 
+  .tag-group {
+    margin: 0.4rem 0 0;
+    font-size: 0.75em;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    opacity: 0.6;
+  }
+
+  .tag-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem;
+
+    .tag-field {
+      font-size: 0.75em;
+    }
+  }
+
   .attr-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -134,6 +152,23 @@
         font-style: italic;
         opacity: 0.8;
       }
+
+      .mission-title {
+        font-weight: 600;
+      }
+
+      .mission-difficulty {
+        font-weight: 400;
+        opacity: 0.65;
+      }
+
+      .mission-description {
+        opacity: 0.85;
+      }
+
+      .tag-warning {
+        color: #e6b43c;
+      }
     }
 
     .step-check {
@@ -141,6 +176,9 @@
     }
     .step-seed {
       border-left-color: #8e5be0;
+    }
+    .step-mission {
+      border-left-color: #4ba3e0;
     }
     .step-end {
       border-left-color: #e05252;

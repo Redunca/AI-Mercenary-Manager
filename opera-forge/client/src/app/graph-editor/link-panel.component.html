@@ -50,6 +50,14 @@
             </select>
             <input type="number" [ngModel]="condition.params['value']" (ngModelChange)="setConditionParam($index, 'value', asNumber($event))" />
           }
+          @case ('crew_threshold') {
+            <select [ngModel]="condition.params['operator']" (ngModelChange)="setConditionParam($index, 'operator', $event)">
+              @for (o of operators; track o) {
+                <option [value]="o">{{ o }}</option>
+              }
+            </select>
+            <input type="number" placeholder="Crew count" [ngModel]="condition.params['value']" (ngModelChange)="setConditionParam($index, 'value', asNumber($event))" />
+          }
           @case ('action_performed') {
             <select [ngModel]="condition.params['actionType']" (ngModelChange)="setActionType($index, $event)">
               @for (a of actionTypes; track a) {

@@ -2,7 +2,7 @@
 // hand-written copy rather than a shared package -- these are two
 // independent apps (client/server) per the plan.
 
-export const NODE_TYPES = ['start', 'story', 'check', 'seed', 'end'] as const;
+export const NODE_TYPES = ['start', 'story', 'check', 'seed', 'mission', 'end'] as const;
 export type NodeType = (typeof NODE_TYPES)[number];
 
 // What a 'seed' node can pre-declare for a not-yet-built opera engine to
@@ -13,7 +13,10 @@ export type NodeType = (typeof NODE_TYPES)[number];
 export const SEED_TARGETS = ['shop', 'mission'] as const;
 export type SeedTarget = (typeof SEED_TARGETS)[number];
 
-export const CONDITION_TYPES = ['chance', 'has_item', 'has_perk', 'has_flaw', 'previous_outcome', 'attribute_threshold', 'action_performed'] as const;
+export const CONDITION_TYPES = [
+  'chance', 'has_item', 'has_perk', 'has_flaw', 'previous_outcome', 'attribute_threshold', 'crew_threshold',
+  'action_performed',
+] as const;
 export type ConditionType = (typeof CONDITION_TYPES)[number];
 
 // Mirrors STEP_TYPES in server/src/domain/opera.js -- the vocabulary of
@@ -72,6 +75,12 @@ export type Attribute = (typeof ATTRIBUTES)[number];
 export const OPERATORS = ['>', '>=', '<', '<=', '=='] as const;
 export type Operator = (typeof OPERATORS)[number];
 
+// Mirrors the difficulty tags server/data/mission-names.json's flavor
+// templates gate on (see models/tags.ts's TAG_CATALOG "difficulty" entry) --
+// a mission node's own difficulty is one of these.
+export const MISSION_DIFFICULTIES = ['ROUTINE', 'STANDARD', 'HARD', 'PERILOUS', 'EPIC'] as const;
+export type MissionDifficulty = (typeof MISSION_DIFFICULTIES)[number];
+
 export interface Position {
   x: number;
   y: number;
@@ -96,6 +105,18 @@ export interface Seed {
   note?: string;
 }
 
+// A 'mission' node's personalized mission -- freeform (this is a bespoke,
+// one-off mission the opera itself authors, e.g. "Find the Quasar Key", not
+// a reference into server/data/mission-types.json's generic ESCORT/HEIST/
+// etc. pool). title/description may reference the same {tagName}
+// placeholders as text/completionText (see models/tags.ts).
+export interface MissionDetails {
+  title: string;
+  description?: string;
+  difficulty?: MissionDifficulty;
+  tags?: string[];
+}
+
 export interface GraphNode {
   id: string;
   type: NodeType;
@@ -105,15 +126,19 @@ export interface GraphNode {
   text?: string;
   // story
   effects?: Effect[];
-  // story/check/seed: opera-level "on_complete_message" equivalent, shown
-  // once this node's outgoing link is actually taken (regardless of which
-  // condition satisfied it).
+  // story/check/seed/mission: opera-level "on_complete_message" equivalent,
+  // shown once this node's outgoing link is actually taken (regardless of
+  // which condition satisfied it).
   completionText?: string;
   // check
   roll?: Roll;
   // seed: shop items / missions this opera wants seeded, read later by the
   // (not yet built) opera engine. No effect on the current game.
   seeds?: Seed[];
+  // mission: injects this personalized mission into the player's mission
+  // list and blocks the walk until it resolves, branching on outcome
+  // exactly like a check node's roll (see runGeneration).
+  mission?: MissionDetails;
   // end
   outcome?: Outcome;
 }
@@ -160,6 +185,20 @@ export interface MockState {
   // consumed sequentially by action_performed conditions during the walk
   // (see runGeneration's actionCursor).
   actionsPerformed: ScriptedAction[];
+  // Mock {tagName} -> value context, same vocabulary as models/tags.ts's
+  // TAG_CATALOG, used to render text/completionText during the walk (see
+  // runGeneration's use of renderPreview in the server domain module).
+  tags: Record<string, string>;
+  // Crew count of the mock player's ship, compared against by crew_threshold
+  // conditions.
+  shipCrewCount: number;
+  // Ordered script of outcomes for each mission node the walk is expected to
+  // reach -- a mission node doesn't roll dice like a check does (its real
+  // outcome comes from actually playing the mission in-game, which this
+  // preview can't simulate), so the author scripts it instead, same
+  // sequential-peek pattern as actionsPerformed/actionCursor. A mission node
+  // reached past the end of this list defaults to 'success'.
+  missionOutcomes: Outcome[];
 }
 
 export interface GenerationStep {
@@ -170,6 +209,13 @@ export interface GenerationStep {
   outcome?: Outcome;
   completionText?: string;
   seeds?: Seed[];
+  // mission: the personalized mission (title/description rendered through
+  // the tag context) this step resolved.
+  mission?: MissionDetails;
+  // {tagName} placeholders referenced by this step's text/completionText
+  // that weren't resolved by the Quick Generation tag editor -- present
+  // only when non-empty.
+  missingTags?: string[];
 }
 
 export interface GenerationResult {
@@ -180,7 +226,11 @@ export interface GenerationResult {
 }
 
 export function emptyMockState(): MockState {
-  return { items: [], perks: [], flaws: [], attributes: {}, actionsPerformed: [] };
+  return { items: [], perks: [], flaws: [], attributes: {}, actionsPerformed: [], tags: {}, shipCrewCount: 0, missionOutcomes: [] };
+}
+
+export function defaultMissionDetails(): MissionDetails {
+  return { title: 'New mission' };
 }
 
 export function defaultParamsFor(kind: 'condition', type: ConditionType): Record<string, unknown>
@@ -203,6 +253,8 @@ export function defaultParamsFor(_kind: 'condition' | 'effect' | 'seed', type: s
       return { equals: 'success' };
     case 'attribute_threshold':
       return { attribute: 'agility', operator: '>=', value: 0 };
+    case 'crew_threshold':
+      return { operator: '>=', value: 1 };
     case 'adjust_stat':
       return { attribute: 'agility', amount: 1 };
     case 'action_performed':

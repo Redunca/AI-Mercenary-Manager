@@ -1,0 +1,25 @@
+<label class="tag-text-field">
+  {{ label }}
+  <textarea #ta [rows]="rows" [ngModel]="value" (ngModelChange)="onInput($event)"></textarea>
+</label>
+
+<div class="tag-toolbar">
+  <select #picker (change)="insertTag(picker.value); picker.value = ''">
+    <option value="" disabled selected>Insert tag…</option>
+    @for (group of tagCatalog; track group.category) {
+      <optgroup [label]="group.category">
+        @for (tag of group.tags; track tag.name) {
+          <option [value]="tag.name" [title]="tag.description">{{ tag.name }}</option>
+        }
+      </optgroup>
+    }
+  </select>
+
+  @if (usedTags.length > 0) {
+    <ul class="tag-chips">
+      @for (tag of usedTags; track tag) {
+        <li [class.unknown]="!isKnownTag(tag)" [title]="isKnownTag(tag) ? '' : 'Not in the shared tag catalog'">{{ '{' }}{{ tag }}{{ '}' }}</li>
+      }
+    </ul>
+  }
+</div>

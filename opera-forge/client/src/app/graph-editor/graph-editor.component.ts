@@ -126,10 +126,15 @@ export class GraphEditorComponent implements OnInit, OnDestroy {
       if (seeds.length === 0) return 'Seeds: (none configured)';
       return `Seeds: ${seeds.map(s => s.target === 'shop' ? `shop item "${s.params['itemName'] || '?'}"` : `mission "${s.params['templateId'] || '?'}"`).join(', ')}`;
     }
+    if (node.type === 'mission') {
+      const mission = node.mission;
+      if (!mission?.title) return 'Mission: (untitled)';
+      return `Mission${mission.difficulty ? ` (${mission.difficulty})` : ''}: ${mission.title}`;
+    }
     return `Outcome: ${node.outcome ?? 'unset'} — ${node.text ?? ''}`;
   }
 
-  addNode(type: 'story' | 'check' | 'seed' | 'end'): void {
+  addNode(type: 'story' | 'check' | 'seed' | 'mission' | 'end'): void {
     const point = { x: 80 + Math.random() * 400, y: 80 + Math.random() * 300 };
     this.graphService.addNode(type, point);
   }

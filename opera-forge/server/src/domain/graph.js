@@ -3,8 +3,14 @@
 // opera-forge/server/src/services/graph.service.js for the fs-touching
 // orchestration that calls into this module.
 
-const NODE_TYPES = ['start', 'story', 'check', 'seed', 'end']
-const CONDITION_TYPES = ['chance', 'has_item', 'has_perk', 'has_flaw', 'previous_outcome', 'attribute_threshold', 'action_performed']
+const { TAG_CATALOG, extractPlaceholders, renderPreview } = require('./tags')
+
+const NODE_TYPES = ['start', 'story', 'check', 'seed', 'mission', 'end']
+const KNOWN_TAG_NAMES = new Set(TAG_CATALOG.flatMap(group => group.tags.map(t => t.name)))
+const CONDITION_TYPES = [
+  'chance', 'has_item', 'has_perk', 'has_flaw', 'previous_outcome', 'attribute_threshold', 'crew_threshold',
+  'action_performed',
+]
 const EFFECT_TYPES = ['give_item', 'apply_perk', 'apply_flaw', 'adjust_stat']
 const ROLL_TYPES = ['chance', 'attribute_threshold']
 const OUTCOMES = ['success', 'failure', 'neutral']
@@ -20,6 +26,10 @@ const ATTRIBUTES = [
   'perception', 'will', 'deception', 'persuasion', 'presence',
 ]
 const OPERATORS = ['>', '>=', '<', '<=', '==']
+// Mirrors the difficulty tags server/data/mission-names.json's flavor
+// templates gate on (see opera-forge's own tags.js TAG_CATALOG, "difficulty"
+// entry) -- a mission node's own difficulty is one of these.
+const MISSION_DIFFICULTIES = ['ROUTINE', 'STANDARD', 'HARD', 'PERILOUS', 'EPIC']
 
 // Mirrors STEP_TYPES in server/src/domain/opera.js -- the vocabulary of
 // gameplay actions the existing (linear checklist) Opera engine can detect.
@@ -71,6 +81,10 @@ function validateConditionParams(type, params, where) {
       if (!ATTRIBUTES.includes(p.attribute)) throw new Error(`${where}: condition "attribute_threshold" requires a known attribute`)
       if (!OPERATORS.includes(p.operator)) throw new Error(`${where}: condition "attribute_threshold" requires operator to be one of ${OPERATORS.join(', ')}`)
       if (!isFiniteNumber(p.value)) throw new Error(`${where}: condition "attribute_threshold" requires a numeric value`)
+      return
+    case 'crew_threshold':
+      if (!OPERATORS.includes(p.operator)) throw new Error(`${where}: condition "crew_threshold" requires operator to be one of ${OPERATORS.join(', ')}`)
+      if (!isFiniteNumber(p.value)) throw new Error(`${where}: condition "crew_threshold" requires a numeric value`)
       return
     case 'action_performed':
       validateActionMatch(p, where)
@@ -188,9 +202,36 @@ function validateNode(node, graphId) {
     validateCompletionText(node, where)
   }
 
+  if (node.type === 'mission') {
+    validateMissionParams(node.mission, where)
+    validateCompletionText(node, where)
+  }
+
   if (node.type === 'end') {
     if (!OUTCOMES.includes(node.outcome)) throw new Error(`${where}: end node requires outcome to be one of ${OUTCOMES.join(', ')}`)
     if (!isNonEmptyString(node.text)) throw new Error(`${where}: end node requires text`)
+  }
+}
+
+// A 'mission' node injects a personalized mission into the player's mission
+// list and blocks the walk until it resolves, branching on outcome exactly
+// like a 'check' node's roll (see runGeneration) -- title/description are
+// freeform (this is a bespoke, one-off mission the opera itself authors, not
+// a reference into server/data/mission-types.json) and may reference the
+// same {tagName} placeholders as text/completionText.
+function validateMissionParams(mission, where) {
+  if (!mission || typeof mission !== 'object') throw new Error(`${where}: mission node requires a mission object`)
+  if (!isNonEmptyString(mission.title)) throw new Error(`${where}: mission requires a non-empty title`)
+  if (mission.description !== undefined && !isNonEmptyString(mission.description)) {
+    throw new Error(`${where}: mission description must be a non-empty string when present`)
+  }
+  if (mission.difficulty !== undefined && !MISSION_DIFFICULTIES.includes(mission.difficulty)) {
+    throw new Error(`${where}: mission difficulty must be one of ${MISSION_DIFFICULTIES.join(', ')}`)
+  }
+  if (mission.tags !== undefined) {
+    if (!Array.isArray(mission.tags) || !mission.tags.every(isNonEmptyString)) {
+      throw new Error(`${where}: mission tags must be an array of non-empty strings`)
+    }
   }
 }
 
@@ -284,6 +325,21 @@ function analyzeGraph(def) {
     if (!reachable.has(node.id)) warnings.push(`Node "${node.id}" (${node.type}) is unreachable from the start node.`)
   }
 
+  for (const node of def.nodes) {
+    const textFields = { text: node.text, completionText: node.completionText }
+    if (node.type === 'mission' && node.mission) {
+      textFields.missionTitle = node.mission.title
+      textFields.missionDescription = node.mission.description
+    }
+    for (const [field, value] of Object.entries(textFields)) {
+      for (const tag of extractPlaceholders(value)) {
+        if (!KNOWN_TAG_NAMES.has(tag)) {
+          warnings.push(`Node "${node.id}" (${node.type}) ${field} references unknown tag "{${tag}}" -- not in the shared tag catalog.`)
+        }
+      }
+    }
+  }
+
   return warnings
 }
 
@@ -363,6 +419,8 @@ function evaluateCondition(condition, { mockState, lastOutcome, rng, actionCurso
       return lastOutcome === p.equals
     case 'attribute_threshold':
       return compare(mockState.attributes[p.attribute] ?? 0, p.operator, p.value)
+    case 'crew_threshold':
+      return compare(mockState.shipCrewCount ?? 0, p.operator, p.value)
     case 'action_performed':
       return matchesAction(p, mockState.actionsPerformed[actionCursor.value])
     default:
@@ -421,13 +479,24 @@ function runGeneration(def, { initialState, seed } = {}) {
     flaws: [...(initialState?.flaws ?? [])],
     attributes: { ...(initialState?.attributes ?? {}) },
     actionsPerformed: [...(initialState?.actionsPerformed ?? [])],
+    shipCrewCount: initialState?.shipCrewCount ?? 0,
   }
+  const tags = { ...(initialState?.tags ?? {}) }
   const rng = makeRng(seed)
   // A ref object (not a plain number) so evaluateCondition can peek the
   // current position without runGeneration having to rebuild ctx every time
   // the cursor advances.
   const actionCursor = { value: 0 }
   const ctx = { mockState, lastOutcome: null, rng, actionCursor }
+
+  // Mission nodes don't roll dice -- their outcome comes from actually
+  // playing the mission in the real game, which this preview can't simulate.
+  // Instead the author scripts the outcome of each mission node the walk is
+  // expected to reach, in order (mirrors actionCursor's sequential-peek
+  // pattern for action_performed). Missing an entry defaults to 'success' so
+  // an author who hasn't scripted outcomes yet still gets a walkable preview.
+  const missionOutcomes = [...(initialState?.missionOutcomes ?? [])]
+  let missionCursor = 0
 
   const path = []
   let current = def.nodes.find(n => n.type === 'start')
@@ -439,10 +508,13 @@ function runGeneration(def, { initialState, seed } = {}) {
     }
 
     let entry
+    let missingTags = []
     if (current.type === 'story') {
       const effectsApplied = current.effects ?? []
       effectsApplied.forEach(effect => applyEffect(effect, mockState))
-      entry = { nodeId: current.id, type: current.type, text: current.text, effectsApplied }
+      const rendered = renderPreview(current.text, tags)
+      missingTags = rendered.missing
+      entry = { nodeId: current.id, type: current.type, text: rendered.text, effectsApplied }
     } else if (current.type === 'check') {
       ctx.lastOutcome = resolveRoll(current.roll, ctx)
       entry = { nodeId: current.id, type: current.type, outcome: ctx.lastOutcome }
@@ -452,12 +524,29 @@ function runGeneration(def, { initialState, seed } = {}) {
       // definition once it exists; this just surfaces it as a walk step so
       // Quick Generation can preview which step would declare which seeds.
       entry = { nodeId: current.id, type: current.type, seeds: current.seeds ?? [] }
+    } else if (current.type === 'mission') {
+      const outcome = missionOutcomes[missionCursor] ?? 'success'
+      missionCursor += 1
+      ctx.lastOutcome = outcome
+      const titleRendered = renderPreview(current.mission?.title, tags)
+      const descRendered = renderPreview(current.mission?.description, tags)
+      missingTags = [...new Set([...titleRendered.missing, ...descRendered.missing])]
+      entry = {
+        nodeId: current.id,
+        type: current.type,
+        mission: { ...current.mission, title: titleRendered.text, description: descRendered.text },
+        outcome,
+      }
     } else if (current.type === 'end') {
-      entry = { nodeId: current.id, type: current.type, text: current.text, outcome: current.outcome }
+      const rendered = renderPreview(current.text, tags)
+      entry = { nodeId: current.id, type: current.type, text: rendered.text, outcome: current.outcome }
+      if (rendered.missing.length > 0) entry.missingTags = rendered.missing
       path.push(entry)
       return { path, reason: 'end', endedAt: current.id, finalState: mockState }
     } else {
-      entry = { nodeId: current.id, type: current.type, text: current.text }
+      const rendered = renderPreview(current.text, tags)
+      missingTags = rendered.missing
+      entry = { nodeId: current.id, type: current.type, text: rendered.text }
     }
     path.push(entry)
 
@@ -475,7 +564,12 @@ function runGeneration(def, { initialState, seed } = {}) {
     for (const condition of chosen.conditions ?? []) {
       if (condition.type === 'action_performed') actionCursor.value += 1
     }
-    if (current.completionText) entry.completionText = current.completionText
+    if (current.completionText) {
+      const rendered = renderPreview(current.completionText, tags)
+      entry.completionText = rendered.text
+      missingTags = [...new Set([...missingTags, ...rendered.missing])]
+    }
+    if (missingTags.length > 0) entry.missingTags = missingTags
 
     current = nodesById.get(chosen.to)
   }
@@ -493,6 +587,7 @@ module.exports = {
   OPERATORS,
   ACTION_TYPES,
   SEED_TARGETS,
+  MISSION_DIFFICULTIES,
   validateGraphDefinition,
   analyzeGraph,
   runGeneration,

@@ -1,0 +1,52 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.tag-text-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.85em;
+
+  textarea {
+    padding: 0.35rem;
+    font-family: inherit;
+    resize: vertical;
+  }
+}
+
+.tag-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+
+  select {
+    font-size: 0.75em;
+    padding: 0.2rem;
+  }
+}
+
+.tag-chips {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin: 0;
+  padding: 0;
+
+  li {
+    font-size: 0.7em;
+    padding: 0.1rem 0.35rem;
+    border-radius: 3px;
+    background: var(--chip-bg, #2a2a2a);
+    opacity: 0.8;
+
+    &.unknown {
+      color: #e6b43c;
+      border: 1px solid #e6b43c;
+    }
+  }
+}
