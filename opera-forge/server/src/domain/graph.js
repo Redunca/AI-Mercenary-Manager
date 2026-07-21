@@ -7,12 +7,14 @@ const { TAG_CATALOG, extractPlaceholders, renderPreview } = require('./tags')
 
 const NODE_TYPES = ['start', 'story', 'check', 'seed', 'mission', 'end']
 const KNOWN_TAG_NAMES = new Set(TAG_CATALOG.flatMap(group => group.tags.map(t => t.name)))
-const CONDITION_TYPES = [
-  'chance', 'has_item', 'has_perk', 'has_flaw', 'previous_outcome', 'attribute_threshold', 'crew_threshold',
-  'action_performed',
-]
+// No has_perk/has_flaw/attribute_threshold here -- a true Opera (as opposed
+// to the linear, listen-only tutorial) rarely needs a specific recruit with
+// specific stats; it generates content (missions, shop items, choices) more
+// than it gates on one recruit's build. crew_threshold stays: ship crew
+// count is an aggregate ship stat, not a specific recruit's stat.
+const CONDITION_TYPES = ['chance', 'has_item', 'previous_outcome', 'crew_threshold', 'action_performed']
 const EFFECT_TYPES = ['give_item', 'apply_perk', 'apply_flaw', 'adjust_stat']
-const ROLL_TYPES = ['chance', 'attribute_threshold']
+const ROLL_TYPES = ['chance']
 const OUTCOMES = ['success', 'failure', 'neutral']
 // What a 'seed' node can pre-declare for a not-yet-built opera engine to
 // read later (see the 'seed' node.type block in validateNode/runGeneration
@@ -68,19 +70,8 @@ function validateConditionParams(type, params, where) {
     case 'has_item':
       if (!isNonEmptyString(p.itemName)) throw new Error(`${where}: condition "has_item" requires an itemName string`)
       return
-    case 'has_perk':
-      if (!isNonEmptyString(p.perkName)) throw new Error(`${where}: condition "has_perk" requires a perkName string`)
-      return
-    case 'has_flaw':
-      if (!isNonEmptyString(p.flawName)) throw new Error(`${where}: condition "has_flaw" requires a flawName string`)
-      return
     case 'previous_outcome':
       if (!OUTCOMES.includes(p.equals)) throw new Error(`${where}: condition "previous_outcome" requires equals to be one of ${OUTCOMES.join(', ')}`)
-      return
-    case 'attribute_threshold':
-      if (!ATTRIBUTES.includes(p.attribute)) throw new Error(`${where}: condition "attribute_threshold" requires a known attribute`)
-      if (!OPERATORS.includes(p.operator)) throw new Error(`${where}: condition "attribute_threshold" requires operator to be one of ${OPERATORS.join(', ')}`)
-      if (!isFiniteNumber(p.value)) throw new Error(`${where}: condition "attribute_threshold" requires a numeric value`)
       return
     case 'crew_threshold':
       if (!OPERATORS.includes(p.operator)) throw new Error(`${where}: condition "crew_threshold" requires operator to be one of ${OPERATORS.join(', ')}`)
@@ -411,14 +402,8 @@ function evaluateCondition(condition, { mockState, lastOutcome, rng, actionCurso
       return rng() * 100 < p.percentage
     case 'has_item':
       return mockState.items.includes(p.itemName)
-    case 'has_perk':
-      return mockState.perks.includes(p.perkName)
-    case 'has_flaw':
-      return mockState.flaws.includes(p.flawName)
     case 'previous_outcome':
       return lastOutcome === p.equals
-    case 'attribute_threshold':
-      return compare(mockState.attributes[p.attribute] ?? 0, p.operator, p.value)
     case 'crew_threshold':
       return compare(mockState.shipCrewCount ?? 0, p.operator, p.value)
     case 'action_performed':
@@ -449,9 +434,6 @@ function applyEffect(effect, mockState) {
 function resolveRoll(roll, ctx) {
   if (roll.type === 'chance') {
     return evaluateCondition({ type: 'chance', params: roll.params }, ctx) ? 'success' : 'failure'
-  }
-  if (roll.type === 'attribute_threshold') {
-    return evaluateCondition({ type: 'attribute_threshold', params: roll.params }, ctx) ? 'success' : 'failure'
   }
   return 'failure'
 }

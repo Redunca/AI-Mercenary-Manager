@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { GraphService } from '../core/graph.service';
 import {
   ATTRIBUTES, EFFECT_TYPES, Effect, EffectType, GraphNode, MISSION_DIFFICULTIES, MissionDetails, MissionDifficulty,
-  OPERATORS, OUTCOMES, Outcome, RollType, Seed, SEED_TARGETS, SeedTarget, defaultParamsFor,
+  OUTCOMES, Outcome, Seed, SEED_TARGETS, SeedTarget, defaultParamsFor,
 } from '../models/graph';
 import { TagTextFieldComponent } from './tag-text-field.component';
 
@@ -26,7 +26,6 @@ export class NodePanelComponent {
 
   readonly effectTypes = EFFECT_TYPES;
   readonly attributes = ATTRIBUTES;
-  readonly operators = OPERATORS;
   readonly outcomes = OUTCOMES;
   readonly seedTargets = SEED_TARGETS;
   readonly missionDifficulties = MISSION_DIFFICULTIES;
@@ -59,10 +58,6 @@ export class NodePanelComponent {
   setMissionTagsText(text: string): void {
     const tags = parseTagList(text);
     this.setMission({ tags: tags.length > 0 ? tags : undefined });
-  }
-
-  setRollType(type: RollType): void {
-    this.graphService.updateNode(this.node().id, { roll: { type, params: defaultParamsFor('condition', type) } });
   }
 
   setRollParam(key: string, value: unknown): void {

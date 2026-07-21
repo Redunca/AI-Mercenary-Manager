@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GraphService } from '../core/graph.service';
 import {
-  ACTION_MATCH_FIELDS, ACTION_TYPES, ATTRIBUTES, CONDITION_TYPES, Condition, ConditionType, GraphLink, OPERATORS,
+  ACTION_MATCH_FIELDS, ACTION_TYPES, CONDITION_TYPES, Condition, ConditionType, GraphLink, OPERATORS,
   OUTCOMES, ActionType, defaultActionMatch, defaultParamsFor,
 } from '../models/graph';
 
@@ -23,7 +23,6 @@ export class LinkPanelComponent {
   private graphService = inject(GraphService);
 
   readonly conditionTypes = CONDITION_TYPES;
-  readonly attributes = ATTRIBUTES;
   readonly operators = OPERATORS;
   readonly outcomes = OUTCOMES;
   readonly actionTypes = ACTION_TYPES;

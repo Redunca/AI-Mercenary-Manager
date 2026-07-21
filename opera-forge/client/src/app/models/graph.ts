@@ -13,10 +13,12 @@ export type NodeType = (typeof NODE_TYPES)[number];
 export const SEED_TARGETS = ['shop', 'mission'] as const;
 export type SeedTarget = (typeof SEED_TARGETS)[number];
 
-export const CONDITION_TYPES = [
-  'chance', 'has_item', 'has_perk', 'has_flaw', 'previous_outcome', 'attribute_threshold', 'crew_threshold',
-  'action_performed',
-] as const;
+// No has_perk/has_flaw/attribute_threshold here -- a true Opera (as opposed
+// to the linear, listen-only tutorial) rarely needs a specific recruit with
+// specific stats; it generates content (missions, shop items, choices) more
+// than it gates on one recruit's build. crew_threshold stays: ship crew
+// count is an aggregate ship stat, not a specific recruit's stat.
+export const CONDITION_TYPES = ['chance', 'has_item', 'previous_outcome', 'crew_threshold', 'action_performed'] as const;
 export type ConditionType = (typeof CONDITION_TYPES)[number];
 
 // Mirrors STEP_TYPES in server/src/domain/opera.js -- the vocabulary of
@@ -60,7 +62,7 @@ export const ACTION_MATCH_FIELDS: Partial<Record<ActionType, ActionMatchKey>> = 
 export const EFFECT_TYPES = ['give_item', 'apply_perk', 'apply_flaw', 'adjust_stat'] as const;
 export type EffectType = (typeof EFFECT_TYPES)[number];
 
-export const ROLL_TYPES = ['chance', 'attribute_threshold'] as const;
+export const ROLL_TYPES = ['chance'] as const;
 export type RollType = (typeof ROLL_TYPES)[number];
 
 export const OUTCOMES = ['success', 'failure', 'neutral'] as const;
@@ -243,16 +245,12 @@ export function defaultParamsFor(_kind: 'condition' | 'effect' | 'seed', type: s
     case 'has_item':
     case 'give_item':
       return { itemName: '' };
-    case 'has_perk':
     case 'apply_perk':
       return { perkName: '' };
-    case 'has_flaw':
     case 'apply_flaw':
       return { flawName: '' };
     case 'previous_outcome':
       return { equals: 'success' };
-    case 'attribute_threshold':
-      return { attribute: 'agility', operator: '>=', value: 0 };
     case 'crew_threshold':
       return { operator: '>=', value: 1 };
     case 'adjust_stat':

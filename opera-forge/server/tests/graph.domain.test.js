@@ -175,11 +175,11 @@ describe('validateGraphDefinition', () => {
     expect(() => validateGraphDefinition(def)).toThrow(/has_item.*itemName/)
   })
 
-  test('rejects an attribute_threshold condition with a bad operator', () => {
+  test('rejects a chance condition with a percentage out of range', () => {
     const def = makeDef({
-      links: [{ id: 'l1', from: 'start', to: 'story-1', conditions: [{ type: 'attribute_threshold', params: { attribute: 'agility', operator: '!=', value: 3 } }] }],
+      links: [{ id: 'l1', from: 'start', to: 'story-1', conditions: [{ type: 'chance', params: { percentage: 150 } }] }],
     })
-    expect(() => validateGraphDefinition(def)).toThrow(/operator to be one of/)
+    expect(() => validateGraphDefinition(def)).toThrow(/percentage between 0 and 100/)
   })
 
   test('rejects a story node effect of unknown type', () => {

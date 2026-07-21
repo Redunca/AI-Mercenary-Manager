@@ -54,41 +54,9 @@
 
     @case ('check') {
       <label>
-        Roll type
-        <select [ngModel]="node().roll?.type" (ngModelChange)="setRollType($event)">
-          <option value="chance">chance</option>
-          <option value="attribute_threshold">attribute_threshold</option>
-        </select>
+        Percentage (chance of success)
+        <input type="number" min="0" max="100" [ngModel]="node().roll?.params?.['percentage']" (ngModelChange)="setRollParam('percentage', asNumber($event))" />
       </label>
-
-      @if (node().roll?.type === 'chance') {
-        <label>
-          Percentage
-          <input type="number" min="0" max="100" [ngModel]="node().roll?.params?.['percentage']" (ngModelChange)="setRollParam('percentage', asNumber($event))" />
-        </label>
-      }
-      @if (node().roll?.type === 'attribute_threshold') {
-        <label>
-          Attribute
-          <select [ngModel]="node().roll?.params?.['attribute']" (ngModelChange)="setRollParam('attribute', $event)">
-            @for (a of attributes; track a) {
-              <option [value]="a">{{ a }}</option>
-            }
-          </select>
-        </label>
-        <label>
-          Operator
-          <select [ngModel]="node().roll?.params?.['operator']" (ngModelChange)="setRollParam('operator', $event)">
-            @for (o of operators; track o) {
-              <option [value]="o">{{ o }}</option>
-            }
-          </select>
-        </label>
-        <label>
-          Value
-          <input type="number" [ngModel]="node().roll?.params?.['value']" (ngModelChange)="setRollParam('value', asNumber($event))" />
-        </label>
-      }
       <p class="hint">Resolves to success/failure. Route outgoing links with a "previous_outcome" condition.</p>
       <app-tag-text-field
         label="Completion message (optional, shown when this node's outgoing link is taken)"
