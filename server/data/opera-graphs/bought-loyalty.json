@@ -1,0 +1,650 @@
+{
+  "id": "bought-loyalty",
+  "title": "Bought Loyalty",
+  "description": "A faction/corporation controlling a planet extends a hand. The crew decides how much it's worth, and whether to hold up their end.",
+  "nodes": [
+    {
+      "id": "start",
+      "type": "start",
+      "text": "Contact from {faction}, controlling {planetName}, has been logged. Leadership indicates interest in a working relationship, contingent on a demonstration of good faith.",
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "act1-tribute",
+      "type": "seed",
+      "seeds": [
+        {
+          "target": "shop",
+          "params": {
+            "itemName": "Tribute Cache"
+          },
+          "note": "A one-off tribute item for the faction contact."
+        }
+      ],
+      "completionText": "Tribute Cache handed over.",
+      "position": {
+        "x": 300,
+        "y": -150
+      }
+    },
+    {
+      "id": "act1-contact",
+      "type": "mission",
+      "mission": {
+        "title": "Locate {faction}'s Contact",
+        "description": "A verified contact within {faction}, {distance}, has gone silent. Re-establish the line before goodwill erodes.",
+        "difficulty": "ROUTINE",
+        "tags": [
+          "recon"
+        ]
+      },
+      "completionText": "Contact re-established.",
+      "position": {
+        "x": 300,
+        "y": 0
+      }
+    },
+    {
+      "id": "act1-capture",
+      "type": "mission",
+      "mission": {
+        "title": "Detain a {faction} Defector",
+        "description": "{faction} has flagged a low-level troublemaker for retrieval as a gesture of cooperation. Target last confirmed near {planetName}.",
+        "difficulty": "STANDARD",
+        "tags": [
+          "extraction"
+        ]
+      },
+      "completionText": "Target detained and handed over.",
+      "position": {
+        "x": 300,
+        "y": 150
+      }
+    },
+    {
+      "id": "bridge-1",
+      "type": "story",
+      "text": "{faction} acknowledges the gesture. A formal introduction is arranged on {planetName}.",
+      "position": {
+        "x": 600,
+        "y": 0
+      }
+    },
+    {
+      "id": "act2-negotiate",
+      "type": "mission",
+      "mission": {
+        "title": "Negotiate Terms with {faction}",
+        "description": "Meet {clientName}, {faction}'s liaison, on {planetName} to formalize terms.",
+        "difficulty": "STANDARD",
+        "tags": [
+          "diplomacy"
+        ]
+      },
+      "completionText": "Terms discussed.",
+      "position": {
+        "x": 900,
+        "y": -150
+      }
+    },
+    {
+      "id": "act2-rescue",
+      "type": "mission",
+      "mission": {
+        "title": "Recover {targetName}",
+        "description": "A member of {faction} has gone missing near {planetName}. Retrieval is expected in exchange for standing.",
+        "difficulty": "HARD",
+        "tags": [
+          "extraction"
+        ]
+      },
+      "completionText": "{targetName} recovered.",
+      "position": {
+        "x": 900,
+        "y": 0
+      }
+    },
+    {
+      "id": "act2-job",
+      "type": "mission",
+      "mission": {
+        "title": "Run a Job for {faction}",
+        "description": "{faction} has work that needs doing under their name, not the crew's. The shape of it is theirs to decide."
+      },
+      "completionText": "Job completed under {faction}'s banner.",
+      "position": {
+        "x": 900,
+        "y": 150
+      }
+    },
+    {
+      "id": "bridge-2",
+      "type": "story",
+      "text": "{faction} takes note. Word of the crew's reliability spreads through their ranks on {planetName}.",
+      "position": {
+        "x": 1200,
+        "y": 0
+      }
+    },
+    {
+      "id": "act3-retaliation",
+      "type": "mission",
+      "mission": {
+        "title": "Weather {faction}'s Rivals",
+        "description": "{enemyGroupName} has taken exception to {faction}'s new friends. An attempt on the crew is expected {distance}.",
+        "difficulty": "HARD",
+        "tags": [
+          "combat"
+        ]
+      },
+      "completionText": "The attempt is repelled.",
+      "position": {
+        "x": 1500,
+        "y": -150
+      }
+    },
+    {
+      "id": "act3-debt",
+      "type": "seed",
+      "seeds": [
+        {
+          "target": "shop",
+          "params": {
+            "itemName": "Old Debt Note"
+          },
+          "note": "A debt {faction} owes a third party, buyable out from under them."
+        }
+      ],
+      "completionText": "Debt bought out.",
+      "position": {
+        "x": 1500,
+        "y": 0
+      }
+    },
+    {
+      "id": "act3-gift",
+      "type": "story",
+      "text": "{faction} leadership hints that a real sacrifice would seal their trust -- one of the crew's own, released to serve under their banner.",
+      "effects": [],
+      "position": {
+        "x": 1500,
+        "y": 150
+      }
+    },
+    {
+      "id": "bridge-3",
+      "type": "story",
+      "text": "{faction}'s leadership convenes to decide what the crew has earned.",
+      "position": {
+        "x": 1800,
+        "y": 0
+      }
+    },
+    {
+      "id": "finale-choice",
+      "type": "choice",
+      "text": "How should the crew's arrangement with {faction} be settled?",
+      "choiceOptions": [
+        {
+          "id": "alliance",
+          "label": "Formalize the alliance"
+        },
+        {
+          "id": "seize",
+          "label": "Take {faction}'s assets while trust is highest"
+        },
+        {
+          "id": "walkaway",
+          "label": "Take the standing already earned and walk away"
+        }
+      ],
+      "position": {
+        "x": 2100,
+        "y": 0
+      }
+    },
+    {
+      "id": "finale-alliance-seed",
+      "type": "seed",
+      "seeds": [
+        {
+          "target": "candidate",
+          "params": {
+            "seedId": "bought-loyalty-defector"
+          },
+          "note": "A disillusioned faction operative who defects once the alliance is formalized."
+        }
+      ],
+      "completionText": "The defector reaches out, ready to join.",
+      "position": {
+        "x": 2400,
+        "y": -150
+      }
+    },
+    {
+      "id": "finale-alliance-payoff",
+      "type": "story",
+      "text": "{faction} formalizes the alliance.",
+      "effects": [
+        {
+          "type": "apply_perk",
+          "params": {
+            "perkName": "Diplomatic Standing"
+          }
+        }
+      ],
+      "position": {
+        "x": 2700,
+        "y": -150
+      }
+    },
+    {
+      "id": "finale-alliance-end",
+      "type": "end",
+      "outcome": "success",
+      "text": "The defector signs on, and {planetName} opens its doors a little wider to the crew.",
+      "position": {
+        "x": 3000,
+        "y": -150
+      }
+    },
+    {
+      "id": "finale-seize-mission",
+      "type": "mission",
+      "mission": {
+        "title": "Seize {faction}'s Assets",
+        "description": "Trust runs highest right now. A window exists to strip {faction} of its holdings on {planetName} before they see it coming.",
+        "difficulty": "PERILOUS",
+        "tags": [
+          "heist"
+        ]
+      },
+      "completionText": "The assets are seized.",
+      "position": {
+        "x": 2400,
+        "y": 0
+      }
+    },
+    {
+      "id": "finale-seize-payoff",
+      "type": "story",
+      "text": "The crew's cut comes through.",
+      "effects": [
+        {
+          "type": "give_item",
+          "params": {
+            "itemName": "Seized Assets Ledger"
+          }
+        },
+        {
+          "type": "apply_flaw",
+          "params": {
+            "flawName": "Marked Rival"
+          }
+        }
+      ],
+      "position": {
+        "x": 2700,
+        "y": 0
+      }
+    },
+    {
+      "id": "finale-seize-success-end",
+      "type": "end",
+      "outcome": "success",
+      "text": "{faction}'s holdings on {planetName} change hands. The crew walks away richer, and thoroughly burned as an ally.",
+      "position": {
+        "x": 3000,
+        "y": 0
+      }
+    },
+    {
+      "id": "finale-seize-failure-payoff",
+      "type": "story",
+      "text": "{faction} sees the betrayal coming.",
+      "effects": [
+        {
+          "type": "apply_flaw",
+          "params": {
+            "flawName": "Marked Enemy"
+          }
+        }
+      ],
+      "position": {
+        "x": 2700,
+        "y": 150
+      }
+    },
+    {
+      "id": "finale-seize-failure-end",
+      "type": "end",
+      "outcome": "failure",
+      "text": "The seizure is repelled. {faction}'s leadership on {planetName} now considers the crew a threat.",
+      "position": {
+        "x": 3000,
+        "y": 150
+      }
+    },
+    {
+      "id": "finale-walkaway-end",
+      "type": "end",
+      "outcome": "neutral",
+      "text": "The crew banks the standing already earned and steps back before it can curdle into obligation.",
+      "position": {
+        "x": 2400,
+        "y": 150
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "start--act1-tribute",
+      "from": "start",
+      "to": "act1-tribute",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 33
+          }
+        }
+      ]
+    },
+    {
+      "id": "start--act1-contact",
+      "from": "start",
+      "to": "act1-contact",
+      "priority": 1,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 50
+          }
+        }
+      ]
+    },
+    {
+      "id": "start--act1-capture",
+      "from": "start",
+      "to": "act1-capture",
+      "priority": 2,
+      "conditions": []
+    },
+    {
+      "id": "act1-tribute--bridge-1--3",
+      "from": "act1-tribute",
+      "to": "bridge-1",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "purchase_quest_item",
+            "match": {
+              "itemName": "Tribute Cache"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "act1-contact--bridge-1--4",
+      "from": "act1-contact",
+      "to": "bridge-1",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "act1-capture--bridge-1--5",
+      "from": "act1-capture",
+      "to": "bridge-1",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "bridge-1--act2-negotiate",
+      "from": "bridge-1",
+      "to": "act2-negotiate",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 33
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-1--act2-rescue",
+      "from": "bridge-1",
+      "to": "act2-rescue",
+      "priority": 1,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 50
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-1--act2-job",
+      "from": "bridge-1",
+      "to": "act2-job",
+      "priority": 2,
+      "conditions": []
+    },
+    {
+      "id": "act2-negotiate--bridge-2--9",
+      "from": "act2-negotiate",
+      "to": "bridge-2",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "act2-rescue--bridge-2--10",
+      "from": "act2-rescue",
+      "to": "bridge-2",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "act2-job--bridge-2--11",
+      "from": "act2-job",
+      "to": "bridge-2",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "bridge-2--act3-retaliation",
+      "from": "bridge-2",
+      "to": "act3-retaliation",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 33
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-2--act3-debt",
+      "from": "bridge-2",
+      "to": "act3-debt",
+      "priority": 1,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 50
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-2--act3-gift",
+      "from": "bridge-2",
+      "to": "act3-gift",
+      "priority": 2,
+      "conditions": []
+    },
+    {
+      "id": "act3-retaliation--bridge-3--15",
+      "from": "act3-retaliation",
+      "to": "bridge-3",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "act3-debt--bridge-3--16",
+      "from": "act3-debt",
+      "to": "bridge-3",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "purchase_quest_item",
+            "match": {
+              "itemName": "Old Debt Note"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "act3-gift--bridge-3--17",
+      "from": "act3-gift",
+      "to": "bridge-3",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "fire_recruit",
+            "match": {
+              "scope": "any"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-3--finale-choice--18",
+      "from": "bridge-3",
+      "to": "finale-choice",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-choice--finale-alliance-seed--19",
+      "from": "finale-choice",
+      "to": "finale-alliance-seed",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "alliance"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-choice--finale-seize-mission--20",
+      "from": "finale-choice",
+      "to": "finale-seize-mission",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "seize"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-choice--finale-walkaway-end--21",
+      "from": "finale-choice",
+      "to": "finale-walkaway-end",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "walkaway"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-alliance-seed--finale-alliance-payoff--22",
+      "from": "finale-alliance-seed",
+      "to": "finale-alliance-payoff",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "hire_recruit",
+            "match": {
+              "seedId": "bought-loyalty-defector"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-alliance-payoff--finale-alliance-end--23",
+      "from": "finale-alliance-payoff",
+      "to": "finale-alliance-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-seize-mission--finale-seize-payoff--24",
+      "from": "finale-seize-mission",
+      "to": "finale-seize-payoff",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "previous_outcome",
+          "params": {
+            "equals": "success"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-seize-mission--finale-seize-failure-payoff--25",
+      "from": "finale-seize-mission",
+      "to": "finale-seize-failure-payoff",
+      "priority": 1,
+      "conditions": []
+    },
+    {
+      "id": "finale-seize-payoff--finale-seize-success-end--26",
+      "from": "finale-seize-payoff",
+      "to": "finale-seize-success-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-seize-failure-payoff--finale-seize-failure-end--27",
+      "from": "finale-seize-failure-payoff",
+      "to": "finale-seize-failure-end",
+      "priority": 0,
+      "conditions": []
+    }
+  ]
+}

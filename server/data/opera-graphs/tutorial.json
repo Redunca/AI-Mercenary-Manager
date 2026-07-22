@@ -1,0 +1,60 @@
+{
+  "id": "tutorial",
+  "title": "Basic Operations",
+  "description": "A guided walkthrough of the terminal and the core loop: crew, missions, gear, and the shop.",
+  "nodes": [
+    { "id": "start", "type": "start", "text": "Welcome aboard, Commander. This log will walk you through the basics.", "position": { "x": 0, "y": 0 } },
+    { "id": "learn-split-v", "type": "story", "text": "This terminal is made of panels. Try splitting this one vertically: type split-v.", "completionText": "Panel split vertically.", "position": { "x": 300, "y": 0 } },
+    { "id": "learn-split-h", "type": "story", "text": "Now try splitting a panel horizontally: type split-h.", "completionText": "Panel split horizontally.", "position": { "x": 600, "y": 0 } },
+    { "id": "learn-help", "type": "story", "text": "If you ever forget a command, type help.", "completionText": "Help panel opened. It's always there if you need it.", "position": { "x": 900, "y": 0 } },
+    { "id": "hire-a-recruit", "type": "story", "text": "Time to build your crew. Open a candidate and type hire, or use recruit hire <id>.", "completionText": "New recruit hired.", "position": { "x": 1200, "y": 0 } },
+    { "id": "assign-recruit-to-ship", "type": "story", "text": "A recruit isn't much use standing around the hangar. Assign them to a ship: ship assign <shipId> <recruitId>.", "completionText": "Recruit assigned to ship.", "position": { "x": 1500, "y": 0 } },
+    { "id": "complete-a-mission", "type": "story", "text": "Send that crewed ship on a mission: mission start <templateId> <shipId>.", "completionText": "First mission complete.", "position": { "x": 1800, "y": 0 } },
+    { "id": "buy-seeded-equipment", "type": "story", "text": "The shop always stocks a Recruit Training Vest. Buy one: shop buy <itemId>.", "completionText": "Recruit Training Vest purchased.", "position": { "x": 2100, "y": 0 } },
+    { "id": "equip-vest-to-recruit", "type": "story", "text": "Gear doesn't help anyone in the stash. Equip it from a recruit's detail panel: equip <equipmentId>.", "completionText": "Vest equipped.", "position": { "x": 2400, "y": 0 } },
+    { "id": "buy-seeded-item", "type": "story", "text": "The shop also always stocks an Encrypted Data Chip. Buy one: shop buy <itemId>.", "completionText": "Encrypted Data Chip purchased.", "position": { "x": 2700, "y": 0 } },
+    { "id": "load-item-onto-ship", "type": "story", "text": "Items in the stash do nothing. Load it onto a ship: ship load <shipId> <consumableId>.", "completionText": "Item loaded onto ship.", "position": { "x": 3000, "y": 0 } },
+    { "id": "complete-another-mission", "type": "story", "text": "Send your crew out again: mission start <templateId> <shipId>.", "completionText": "Second mission complete.", "position": { "x": 3300, "y": 0 } },
+    { "id": "open-self", "type": "story", "text": "One more thing: type self to see your own upgrades.", "completionText": "Self panel opened.", "position": { "x": 3600, "y": 0 } },
+    { "id": "end-success", "type": "end", "outcome": "success", "text": "Basic training complete. You're on your own from here, Commander.", "position": { "x": 3900, "y": 0 } }
+  ],
+  "links": [
+    { "id": "start--learn-split-v", "from": "start", "to": "learn-split-v", "priority": 0, "conditions": [] },
+    { "id": "learn-split-v--learn-split-h", "from": "learn-split-v", "to": "learn-split-h", "priority": 0, "conditions": [
+      { "type": "action_performed", "params": { "actionType": "execute_command", "match": { "command": "split-v" } } }
+    ] },
+    { "id": "learn-split-h--learn-help", "from": "learn-split-h", "to": "learn-help", "priority": 0, "conditions": [
+      { "type": "action_performed", "params": { "actionType": "execute_command", "match": { "command": "split-h" } } }
+    ] },
+    { "id": "learn-help--hire-a-recruit", "from": "learn-help", "to": "hire-a-recruit", "priority": 0, "conditions": [
+      { "type": "action_performed", "params": { "actionType": "execute_command", "match": { "command": "help" } } }
+    ] },
+    { "id": "hire-a-recruit--assign-recruit-to-ship", "from": "hire-a-recruit", "to": "assign-recruit-to-ship", "priority": 0, "conditions": [
+      { "type": "action_performed", "params": { "actionType": "hire_recruit", "match": { "scope": "any" } } }
+    ] },
+    { "id": "assign-recruit-to-ship--complete-a-mission", "from": "assign-recruit-to-ship", "to": "complete-a-mission", "priority": 0, "conditions": [
+      { "type": "action_performed", "params": { "actionType": "assign_crew_to_ship", "match": { "scope": "any" } } }
+    ] },
+    { "id": "complete-a-mission--buy-seeded-equipment", "from": "complete-a-mission", "to": "buy-seeded-equipment", "priority": 0, "conditions": [
+      { "type": "action_performed", "params": { "actionType": "complete_quest", "match": { "scope": "any" } } }
+    ] },
+    { "id": "buy-seeded-equipment--equip-vest-to-recruit", "from": "buy-seeded-equipment", "to": "equip-vest-to-recruit", "priority": 0, "conditions": [
+      { "type": "action_performed", "params": { "actionType": "purchase_quest_item", "match": { "itemName": "Recruit Training Vest" } } }
+    ] },
+    { "id": "equip-vest-to-recruit--buy-seeded-item", "from": "equip-vest-to-recruit", "to": "buy-seeded-item", "priority": 0, "conditions": [
+      { "type": "action_performed", "params": { "actionType": "equip_item", "match": { "scope": "any" } } }
+    ] },
+    { "id": "buy-seeded-item--load-item-onto-ship", "from": "buy-seeded-item", "to": "load-item-onto-ship", "priority": 0, "conditions": [
+      { "type": "action_performed", "params": { "actionType": "purchase_quest_item", "match": { "itemName": "Encrypted Data Chip" } } }
+    ] },
+    { "id": "load-item-onto-ship--complete-another-mission", "from": "load-item-onto-ship", "to": "complete-another-mission", "priority": 0, "conditions": [
+      { "type": "action_performed", "params": { "actionType": "assign_item_to_ship", "match": { "scope": "any" } } }
+    ] },
+    { "id": "complete-another-mission--open-self", "from": "complete-another-mission", "to": "open-self", "priority": 0, "conditions": [
+      { "type": "action_performed", "params": { "actionType": "complete_quest", "match": { "scope": "any" } } }
+    ] },
+    { "id": "open-self--end-success", "from": "open-self", "to": "end-success", "priority": 0, "conditions": [
+      { "type": "action_performed", "params": { "actionType": "execute_command", "match": { "command": "self" } } }
+    ] }
+  ]
+}

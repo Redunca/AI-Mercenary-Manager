@@ -28,9 +28,10 @@ export class OperaDetailComponent {
 
   registerCommands() {
     return {
-      'start': () => {
-        void this.operaService.startOpera(this.id).then(err => {
-          if (err) console.error(`[opera start] ${err}`);
+      'choose': (optionId: string) => {
+        if (!optionId) { console.warn('Usage: choose <optionId>'); return; }
+        void this.operaService.chooseOpera(this.id, optionId).then(err => {
+          if (err) console.error(`[opera choose] ${err}`);
         });
       },
     };

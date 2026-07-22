@@ -61,6 +61,11 @@ export class RecruitDetailComponent implements OnInit {
           if (result?.error) { this.equipError = result.error; return; }
           this.refreshEquipment();
         });
+      },
+      'fire': () => {
+        void this.game.fireRecruit(this.id).then(err => {
+          if (err) console.error(`[recruit fire] ${err}`);
+        });
       }
     };
   }

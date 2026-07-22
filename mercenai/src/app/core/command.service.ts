@@ -154,6 +154,14 @@ export class CommandService {
       return;
     }
 
+    if (opt === "fire" && args[1]) {
+      void this.game.fireRecruit(args[1]).then(err => {
+        if (err) { console.error(`[recruit fire] ${err}`); return; }
+        this.layout.setPanelModule(panelId, PanelModule.RecruitList);
+      });
+      return;
+    }
+
     console.warn("Unknown option:", opt);
   }
   private handleFocus(arg: string) {
@@ -382,17 +390,8 @@ export class CommandService {
         }
         break;
 
-      case 'start':
-        if (args[0]) {
-          void this.operaService.startOpera(args[0]).then(err => {
-            if (err) { console.error(`[opera start] ${err}`); return; }
-            this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.OperaDetail, { id: args[0] });
-          });
-        }
-        break;
-
       default:
-        console.warn('Usage: opera list | opera detail <id> | opera start <id>');
+        console.warn('Usage: opera list | opera detail <id>');
     }
   }
 

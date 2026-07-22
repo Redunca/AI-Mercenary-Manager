@@ -1,6 +1,7 @@
 const express = require('express')
 const { pool } = require('../db/pool')
 const SelfService = require('../services/self.service')
+const OperaService = require('../services/opera.service')
 
 const router = express.Router()
 const PLAYER_ID = 1
@@ -27,6 +28,9 @@ router.post('/upgrades/:id/buy', async (req, res, next) => {
       res.status(400).json(result)
       return
     }
+    // Cheap no-op for every upgrade except Concurrent Operas -- immediately
+    // fills a newly-bought slot instead of waiting for the next bootstrap.
+    await OperaService.maintainOperaSlots(client, PLAYER_ID)
     await client.query('COMMIT')
     res.json(result)
   } catch (err) {

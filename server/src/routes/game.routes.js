@@ -57,6 +57,19 @@ router.post('/candidates/:id/hire', async (req, res, next) => {
   }
 })
 
+router.post('/recruits/:id/fire', async (req, res, next) => {
+  try {
+    const result = await game.fireRecruit(req.params.id)
+    if (result.error) {
+      res.status(400).json(result)
+      return
+    }
+    res.json(result)
+  } catch (err) {
+    next(err)
+  }
+})
+
 // Full mission history (every template ever started, regardless of the
 // batch it belonged to) — kept as its own endpoint rather than folded into
 // /state or /sync since it's fetched on demand by `mission list --completed`

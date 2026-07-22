@@ -4,11 +4,19 @@
 <ng-container *ngIf="opera; else notFound">
   <div class="indent-one">"title"  : "{{ opera.title }}",</div>
   <div class="indent-one">"status" : "{{ opera.status }}",</div>
-  <div class="indent-one">"steps"  : [</div>
-  <div *ngFor="let step of opera.steps" class="indent-two">
-    [{{ step.completed ? 'x' : ' ' }}] {{ step.description }}
+  <div class="indent-one">"tasks"  : [</div>
+  <div *ngFor="let task of opera.tasks" class="indent-two">
+    [{{ task.status === 'done' ? 'x' : ' ' }}] {{ task.text }}
   </div>
+  <div *ngIf="opera.tasks.length === 0" class="indent-two muted">— nothing revealed yet —</div>
   <div class="indent-one">],</div>
+
+  <ng-container *ngIf="opera.pendingChoice as choice">
+    <div class="indent-one">"choice" : {{ '{' }}</div>
+    <div class="indent-two">"{{ choice.text }}"</div>
+    <div *ngFor="let option of choice.options" class="indent-two">- ({{ option.id }}) {{ option.label }}</div>
+    <div class="indent-one">{{ '}' }},</div>
+  </ng-container>
 
   <div class="indent-one">"log" : [</div>
   <div *ngFor="let entry of logs" class="indent-two log-entry">
@@ -19,8 +27,8 @@
 </ng-container>
 
 <ng-template #notFound>
-  <div class="indent-one muted">Opera "{{ id }}" not found or not yet started.</div>
+  <div class="indent-one muted">Opera "{{ id }}" not found.</div>
 </ng-template>
 
 <div>{{ '}' }}</div>
-<div class="hint" *ngIf="opera && opera.status === 'new'">[ start ] to begin this opera</div>
+<div class="hint" *ngIf="opera && opera.pendingChoice">[ choose &lt;optionId&gt; ] to decide</div>

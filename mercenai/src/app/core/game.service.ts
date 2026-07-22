@@ -49,6 +49,15 @@ export class GameService {
     }
   }
 
+  async fireRecruit(id: string): Promise<string | null> {
+    const result = await this.api.fireRecruit(id);
+    if (result.error) return result.error;
+    if (result.state) {
+      this.injector.get(GameSyncService).applyState(result.state);
+    }
+    return null;
+  }
+
   setRecruitStatus(_id: string, _status: RecruitStatus): void {
     // Status is owned by the server; refreshed via sync.
   }

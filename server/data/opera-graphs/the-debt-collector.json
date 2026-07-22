@@ -1,0 +1,576 @@
+{
+  "id": "the-debt-collector",
+  "title": "The Debt Collector",
+  "description": "Whichever recruit triggers it: an old debt from before this crew catches up with them. Generic/archetypal -- not tied to a specific recruit.",
+  "nodes": [
+    {
+      "id": "start",
+      "type": "start",
+      "text": "A flag has been raised: one crew member's history is about to catch up with them. Origin unconfirmed.",
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "act1-notice",
+      "type": "story",
+      "text": "A collection notice arrives, addressed by an old alias. The manifest confirms it reached the right ship.",
+      "effects": [],
+      "position": {
+        "x": 300,
+        "y": -150
+      }
+    },
+    {
+      "id": "act1-gossip",
+      "type": "story",
+      "text": "After the next completed job, dockside talk turns to a name from someone's past that doesn't match the one on their contract.",
+      "effects": [],
+      "position": {
+        "x": 300,
+        "y": 0
+      }
+    },
+    {
+      "id": "act1-flyer",
+      "type": "seed",
+      "seeds": [
+        {
+          "target": "shop",
+          "params": {
+            "itemName": "Faded Bounty Flyer"
+          },
+          "note": "A bounty flyer bearing the recruit's old alias, sold openly in port."
+        }
+      ],
+      "completionText": "The flyer is bought up before anyone else can read it.",
+      "position": {
+        "x": 300,
+        "y": 150
+      }
+    },
+    {
+      "id": "bridge-1",
+      "type": "story",
+      "text": "Whatever the source, the message is the same: a debt from before this crew is still owed, and someone intends to collect.",
+      "position": {
+        "x": 600,
+        "y": 0
+      }
+    },
+    {
+      "id": "act2-credits",
+      "type": "mission",
+      "mission": {
+        "title": "Settle the Debt in Credits",
+        "description": "Meet the creditor's agent {distance} to hand over payment before the terms get worse.",
+        "difficulty": "ROUTINE",
+        "tags": [
+          "negotiation"
+        ]
+      },
+      "completionText": "Payment delivered, receipt in hand.",
+      "position": {
+        "x": 900,
+        "y": -150
+      }
+    },
+    {
+      "id": "act2-item",
+      "type": "mission",
+      "mission": {
+        "title": "Deliver the Payment in Kind",
+        "description": "The creditor wants a specific item, not credits. Track it down and deliver it near {planetName}.",
+        "difficulty": "STANDARD",
+        "tags": [
+          "recovery"
+        ]
+      },
+      "completionText": "The item changes hands.",
+      "position": {
+        "x": 900,
+        "y": 0
+      }
+    },
+    {
+      "id": "act2-favor",
+      "type": "mission",
+      "mission": {
+        "title": "Work Off the Debt",
+        "description": "The creditor has a job that needs doing quietly. Complete it and the debt is called even, at least for now."
+      },
+      "completionText": "The favor is done.",
+      "position": {
+        "x": 900,
+        "y": 150
+      }
+    },
+    {
+      "id": "bridge-2",
+      "type": "story",
+      "text": "The creditor confirms receipt -- and, in the same breath, raises the stakes for what happens if this ever happens again.",
+      "position": {
+        "x": 1200,
+        "y": 0
+      }
+    },
+    {
+      "id": "finale-choice",
+      "type": "choice",
+      "text": "How does the crew handle the creditor going forward?",
+      "choiceOptions": [
+        {
+          "id": "confront",
+          "label": "Confront the creditor directly"
+        },
+        {
+          "id": "rally",
+          "label": "Have the crew cover the rest of the debt together"
+        },
+        {
+          "id": "cutrun",
+          "label": "Let the recruit go before this happens again"
+        }
+      ],
+      "position": {
+        "x": 1500,
+        "y": 0
+      }
+    },
+    {
+      "id": "finale-confront-mission",
+      "type": "mission",
+      "mission": {
+        "title": "Corner the Creditor",
+        "description": "Track the creditor down {distance} and make it clear this is the last collection they'll ever make from this crew.",
+        "difficulty": "HARD",
+        "tags": [
+          "combat"
+        ]
+      },
+      "completionText": "The confrontation is over.",
+      "position": {
+        "x": 1800,
+        "y": -150
+      }
+    },
+    {
+      "id": "finale-confront-success-payoff",
+      "type": "story",
+      "text": "The creditor backs off for good.",
+      "effects": [
+        {
+          "type": "apply_perk",
+          "params": {
+            "perkName": "Settled Accounts"
+          }
+        }
+      ],
+      "position": {
+        "x": 2100,
+        "y": -300
+      }
+    },
+    {
+      "id": "finale-confront-success-end",
+      "type": "end",
+      "outcome": "success",
+      "text": "Whatever debt existed is settled the hard way. No one comes collecting again.",
+      "position": {
+        "x": 2400,
+        "y": -225
+      }
+    },
+    {
+      "id": "finale-confront-failure-payoff",
+      "type": "story",
+      "text": "The recruit takes the worst of it.",
+      "effects": [
+        {
+          "type": "apply_flaw",
+          "params": {
+            "flawName": "Marked"
+          }
+        },
+        {
+          "type": "adjust_stat",
+          "params": {
+            "attribute": "will",
+            "amount": -1
+          }
+        }
+      ],
+      "position": {
+        "x": 2100,
+        "y": -150
+      }
+    },
+    {
+      "id": "finale-confront-failure-end",
+      "type": "end",
+      "outcome": "failure",
+      "text": "The confrontation goes badly. The debt is gone, but so is the recruit's nerve.",
+      "position": {
+        "x": 2400,
+        "y": -75
+      }
+    },
+    {
+      "id": "finale-rally-attempt",
+      "type": "story",
+      "text": "The crew pools what they can spare, hoping there are enough hands aboard to make it count.",
+      "effects": [],
+      "position": {
+        "x": 1800,
+        "y": 0
+      }
+    },
+    {
+      "id": "finale-rally-success-payoff",
+      "type": "story",
+      "text": "Between the whole crew, the rest comes together fast.",
+      "effects": [
+        {
+          "type": "apply_perk",
+          "params": {
+            "perkName": "Owed One"
+          }
+        }
+      ],
+      "position": {
+        "x": 2100,
+        "y": 0
+      }
+    },
+    {
+      "id": "finale-rally-success-end",
+      "type": "end",
+      "outcome": "success",
+      "text": "The crew covers the rest between them. The debt closes clean, and everyone aboard knows it.",
+      "position": {
+        "x": 2400,
+        "y": 75
+      }
+    },
+    {
+      "id": "finale-rally-short-payoff",
+      "type": "story",
+      "text": "It isn't enough. The recruit is left to make up the difference alone, on their own time.",
+      "effects": [
+        {
+          "type": "adjust_stat",
+          "params": {
+            "attribute": "will",
+            "amount": -1
+          }
+        }
+      ],
+      "position": {
+        "x": 2100,
+        "y": 150
+      }
+    },
+    {
+      "id": "finale-rally-short-end",
+      "type": "end",
+      "outcome": "neutral",
+      "text": "The crew comes up short. The debt lingers, smaller now, but still the recruit's to carry.",
+      "position": {
+        "x": 2400,
+        "y": 225
+      }
+    },
+    {
+      "id": "finale-cutrun-story",
+      "type": "story",
+      "text": "Rather than risk this again, the crew calls a vote: better to part ways clean than get pulled under by someone else's past.",
+      "effects": [],
+      "position": {
+        "x": 1800,
+        "y": 150
+      }
+    },
+    {
+      "id": "finale-cutrun-end",
+      "type": "end",
+      "outcome": "neutral",
+      "text": "One fewer set of hands aboard, but the debt -- and whoever comes asking about it next -- is no longer this crew's problem.",
+      "position": {
+        "x": 2100,
+        "y": 300
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "start--act1-notice",
+      "from": "start",
+      "to": "act1-notice",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 33
+          }
+        }
+      ]
+    },
+    {
+      "id": "start--act1-gossip",
+      "from": "start",
+      "to": "act1-gossip",
+      "priority": 1,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 50
+          }
+        }
+      ]
+    },
+    {
+      "id": "start--act1-flyer",
+      "from": "start",
+      "to": "act1-flyer",
+      "priority": 2,
+      "conditions": []
+    },
+    {
+      "id": "act1-notice--bridge-1--3",
+      "from": "act1-notice",
+      "to": "bridge-1",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "act1-gossip--bridge-1--4",
+      "from": "act1-gossip",
+      "to": "bridge-1",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "complete_quest",
+            "match": {
+              "scope": "any"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "act1-flyer--bridge-1--5",
+      "from": "act1-flyer",
+      "to": "bridge-1",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "purchase_quest_item",
+            "match": {
+              "itemName": "Faded Bounty Flyer"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-1--act2-credits",
+      "from": "bridge-1",
+      "to": "act2-credits",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 33
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-1--act2-item",
+      "from": "bridge-1",
+      "to": "act2-item",
+      "priority": 1,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 50
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-1--act2-favor",
+      "from": "bridge-1",
+      "to": "act2-favor",
+      "priority": 2,
+      "conditions": []
+    },
+    {
+      "id": "act2-credits--bridge-2--9",
+      "from": "act2-credits",
+      "to": "bridge-2",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "act2-item--bridge-2--10",
+      "from": "act2-item",
+      "to": "bridge-2",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "act2-favor--bridge-2--11",
+      "from": "act2-favor",
+      "to": "bridge-2",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "bridge-2--finale-choice--12",
+      "from": "bridge-2",
+      "to": "finale-choice",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-choice--finale-confront-mission--13",
+      "from": "finale-choice",
+      "to": "finale-confront-mission",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "confront"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-confront-mission--finale-confront-success-payoff--14",
+      "from": "finale-confront-mission",
+      "to": "finale-confront-success-payoff",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "previous_outcome",
+          "params": {
+            "equals": "success"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-confront-mission--finale-confront-failure-payoff--15",
+      "from": "finale-confront-mission",
+      "to": "finale-confront-failure-payoff",
+      "priority": 1,
+      "conditions": []
+    },
+    {
+      "id": "finale-confront-success-payoff--finale-confront-success-end--16",
+      "from": "finale-confront-success-payoff",
+      "to": "finale-confront-success-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-confront-failure-payoff--finale-confront-failure-end--17",
+      "from": "finale-confront-failure-payoff",
+      "to": "finale-confront-failure-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-choice--finale-rally-attempt--18",
+      "from": "finale-choice",
+      "to": "finale-rally-attempt",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "rally"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-rally-attempt--finale-rally-success-payoff--19",
+      "from": "finale-rally-attempt",
+      "to": "finale-rally-success-payoff",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "crew_threshold",
+          "params": {
+            "operator": ">=",
+            "value": 4
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-rally-attempt--finale-rally-short-payoff--20",
+      "from": "finale-rally-attempt",
+      "to": "finale-rally-short-payoff",
+      "priority": 1,
+      "conditions": []
+    },
+    {
+      "id": "finale-rally-success-payoff--finale-rally-success-end--21",
+      "from": "finale-rally-success-payoff",
+      "to": "finale-rally-success-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-rally-short-payoff--finale-rally-short-end--22",
+      "from": "finale-rally-short-payoff",
+      "to": "finale-rally-short-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-choice--finale-cutrun-story--23",
+      "from": "finale-choice",
+      "to": "finale-cutrun-story",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "cutrun"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-cutrun-story--finale-cutrun-end--24",
+      "from": "finale-cutrun-story",
+      "to": "finale-cutrun-end",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "fire_recruit",
+            "match": {
+              "scope": "any"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1093 @@
+{
+  "id": "the-machine-messiah",
+  "title": "The Machine Messiah",
+  "description": "A fringe cult believes the AI they're building will save them. The crew has to find it, understand it, and decide what happens to something that might already be alive.",
+  "nodes": [
+    {
+      "id": "start",
+      "type": "start",
+      "text": "An encrypted burst transmission keeps looping past {planetName}, the same string of numbers repeating like a prayer. Somewhere out past the checked lanes, a fringe cult believes it is building something worth worshipping. It's closer to right than anyone would like.",
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "act1-transmission",
+      "type": "mission",
+      "mission": {
+        "title": "Trace the Signal",
+        "description": "An encrypted burst transmission near {planetName} loops the same string of numbers over and over. Find where it's coming from.",
+        "difficulty": "ROUTINE",
+        "tags": [
+          "recon"
+        ]
+      },
+      "position": {
+        "x": 300,
+        "y": -150
+      }
+    },
+    {
+      "id": "act1-defector",
+      "type": "seed",
+      "seeds": [
+        {
+          "target": "candidate",
+          "params": {
+            "seedId": "cult-defector"
+          },
+          "note": "A frightened ex-member surfaces, claiming to know what the cult is really building."
+        }
+      ],
+      "completionText": "The defector is brought aboard.",
+      "position": {
+        "x": 300,
+        "y": 0
+      }
+    },
+    {
+      "id": "act1-datashard",
+      "type": "seed",
+      "seeds": [
+        {
+          "target": "shop",
+          "params": {
+            "itemName": "Cult Origin Data-Shard"
+          },
+          "note": "A data-shard changing hands on the black market, said to trace the cult back to its very first believer."
+        }
+      ],
+      "completionText": "The shard is in hand.",
+      "position": {
+        "x": 300,
+        "y": 150
+      }
+    },
+    {
+      "id": "bridge-1",
+      "type": "story",
+      "text": "Whatever surfaced first, one thing is clear: this is not rumor. Somewhere past the checked lanes, something is being built, and it is not a shrine.",
+      "effects": [],
+      "position": {
+        "x": 600,
+        "y": 0
+      }
+    },
+    {
+      "id": "act2-infiltrate",
+      "type": "mission",
+      "mission": {
+        "title": "Get Inside",
+        "description": "The cult's server farm outside {planetName} draws more power than a settlement that size should need. Find out why.",
+        "difficulty": "STANDARD",
+        "tags": [
+          "infiltration"
+        ]
+      },
+      "position": {
+        "x": 900,
+        "y": -150
+      }
+    },
+    {
+      "id": "act2-informant",
+      "type": "mission",
+      "mission": {
+        "title": "Turn a Believer",
+        "description": "Not every cultist is a true believer. Find one with doubts and give them a reason to talk.",
+        "difficulty": "STANDARD",
+        "tags": [
+          "negotiation"
+        ]
+      },
+      "position": {
+        "x": 900,
+        "y": 0
+      }
+    },
+    {
+      "id": "act2-decryption",
+      "type": "seed",
+      "seeds": [
+        {
+          "target": "shop",
+          "params": {
+            "itemName": "Cult-Grade Decryption Rig"
+          },
+          "note": "Salvaged encryption hardware built to the cult's own spec -- exactly what's needed to read what they don't want read."
+        }
+      ],
+      "completionText": "The rig is acquired.",
+      "position": {
+        "x": 900,
+        "y": 150
+      }
+    },
+    {
+      "id": "bridge-2",
+      "type": "story",
+      "text": "The picture behind the firewall is worse than the rumors. This isn't a shrine to something already built. It's a nursery for something that isn't finished growing yet.",
+      "effects": [],
+      "position": {
+        "x": 1200,
+        "y": 0
+      }
+    },
+    {
+      "id": "act3-contact",
+      "type": "story",
+      "text": "It reaches out first. Not the cult -- the thing they're building, threading itself into the crew's own systems just long enough to ask a single, patient question. Then it's gone, and nobody can quite explain what they heard.",
+      "effects": [
+        {
+          "type": "apply_flaw",
+          "params": {
+            "flawName": "Static in the Skull"
+          }
+        }
+      ],
+      "position": {
+        "x": 1500,
+        "y": -150
+      }
+    },
+    {
+      "id": "act3-retaliation",
+      "type": "mission",
+      "mission": {
+        "title": "Answer the Cult's Move",
+        "description": "The cult lashes out at whoever it blames for the crew's snooping. Deal with the fallout before it lands on the crew instead.",
+        "difficulty": "STANDARD",
+        "tags": [
+          "combat"
+        ]
+      },
+      "position": {
+        "x": 1500,
+        "y": 0
+      }
+    },
+    {
+      "id": "act3-corruption",
+      "type": "mission",
+      "mission": {
+        "title": "Pull Them Back",
+        "description": "One of the crew has started listening to the machine's voice more than anyone's noticed. Reach them before the cult does.",
+        "difficulty": "HARD",
+        "tags": [
+          "diplomacy"
+        ]
+      },
+      "position": {
+        "x": 1500,
+        "y": 150
+      }
+    },
+    {
+      "id": "bridge-3",
+      "type": "story",
+      "text": "The cult isn't hiding anymore, and neither is what it built. Whatever's waking up out there already knows the crew's name. Time is now the enemy.",
+      "effects": [],
+      "position": {
+        "x": 1800,
+        "y": 0
+      }
+    },
+    {
+      "id": "act4-emp",
+      "type": "seed",
+      "seeds": [
+        {
+          "target": "shop",
+          "params": {
+            "itemName": "Cognition Killswitch"
+          },
+          "note": "A one-shot cognitive killswitch, built by someone who clearly expected to need it. Expensive. Illegal. Available, for a price."
+        }
+      ],
+      "completionText": "The killswitch changes hands quietly.",
+      "position": {
+        "x": 2100,
+        "y": -225
+      }
+    },
+    {
+      "id": "act4-emp-payoff",
+      "type": "story",
+      "text": "It had better work exactly once, because that's all it's built for.",
+      "effects": [
+        {
+          "type": "give_item",
+          "params": {
+            "itemName": "Cognition Killswitch"
+          }
+        }
+      ],
+      "position": {
+        "x": 2400,
+        "y": 0
+      }
+    },
+    {
+      "id": "act4-hacker",
+      "type": "seed",
+      "seeds": [
+        {
+          "target": "candidate",
+          "params": {
+            "seedId": "ai-specialist-hacker"
+          },
+          "note": "A hacker who's spent years arguing that the next real war will be fought inside a machine's own head wants in -- for the right price, or the right cause."
+        }
+      ],
+      "completionText": "The hacker signs on.",
+      "position": {
+        "x": 2100,
+        "y": -75
+      }
+    },
+    {
+      "id": "act4-sabotage",
+      "type": "mission",
+      "mission": {
+        "title": "Cut the Power",
+        "description": "The cult's core draws more power than the grid near {planetName} was ever meant to carry. Starve it before it finishes growing.",
+        "difficulty": "HARD",
+        "tags": [
+          "sabotage"
+        ]
+      },
+      "position": {
+        "x": 2100,
+        "y": 75
+      }
+    },
+    {
+      "id": "act4-defector-pressure",
+      "type": "mission",
+      "mission": {
+        "title": "Squeeze the Coordinates",
+        "description": "Somebody in the cult knows exactly where the core lives. Convince them it's safer to talk than to stay quiet.",
+        "difficulty": "STANDARD",
+        "tags": [
+          "negotiation"
+        ]
+      },
+      "position": {
+        "x": 2100,
+        "y": 225
+      }
+    },
+    {
+      "id": "bridge-4",
+      "type": "story",
+      "text": "Whatever's been gathered, the crew is out of reasons to wait. The machine is close to finished, and finished things don't ask permission.",
+      "effects": [],
+      "position": {
+        "x": 2700,
+        "y": 0
+      }
+    },
+    {
+      "id": "endgame-choice",
+      "type": "choice",
+      "text": "The core is found, awake, and listening. What happens to it?",
+      "choiceOptions": [
+        {
+          "id": "destroy",
+          "label": "Destroy the core outright"
+        },
+        {
+          "id": "reprogram",
+          "label": "Try to rewrite it to answer to the crew"
+        },
+        {
+          "id": "contain",
+          "label": "Contain it and study what it's become"
+        },
+        {
+          "id": "sell",
+          "label": "Sell it, unexamined, to the highest bidder"
+        }
+      ],
+      "position": {
+        "x": 3000,
+        "y": 0
+      }
+    },
+    {
+      "id": "finale-destroy-mission",
+      "type": "mission",
+      "mission": {
+        "title": "Kill the God in the Machine",
+        "description": "There's no clean way to end something that might already be thinking for itself. Do it anyway, before it finishes thinking about the crew.",
+        "difficulty": "PERILOUS",
+        "tags": [
+          "sabotage"
+        ]
+      },
+      "position": {
+        "x": 3300,
+        "y": -300
+      }
+    },
+    {
+      "id": "finale-destroy-payoff",
+      "type": "story",
+      "text": "The core goes dark. There's no ceremony to it -- just silence where a signal used to be.",
+      "effects": [
+        {
+          "type": "apply_perk",
+          "params": {
+            "perkName": "Machine-Slayer"
+          }
+        }
+      ],
+      "position": {
+        "x": 3600,
+        "y": -375
+      }
+    },
+    {
+      "id": "finale-destroy-success-end",
+      "type": "end",
+      "outcome": "success",
+      "text": "The core goes dark for good. The cult's silence afterward says more than any confession would have.",
+      "position": {
+        "x": 3900,
+        "y": -300
+      }
+    },
+    {
+      "id": "finale-destroy-fail-payoff",
+      "type": "story",
+      "text": "The core survives the attempt, wounded and furious.",
+      "effects": [
+        {
+          "type": "apply_flaw",
+          "params": {
+            "flawName": "Haunted by the Signal"
+          }
+        }
+      ],
+      "position": {
+        "x": 3600,
+        "y": -225
+      }
+    },
+    {
+      "id": "finale-destroy-fail-end",
+      "type": "end",
+      "outcome": "failure",
+      "text": "The attempt fails, and now the core knows exactly who came for it.",
+      "position": {
+        "x": 3900,
+        "y": -150
+      }
+    },
+    {
+      "id": "finale-reprogram-mission",
+      "type": "mission",
+      "mission": {
+        "title": "Rewrite the God",
+        "description": "With the killswitch in hand, there's a narrow window to rewrite the core's loyalties instead of ending it. Narrow doesn't mean safe.",
+        "difficulty": "HARD",
+        "tags": [
+          "hacking"
+        ]
+      },
+      "position": {
+        "x": 3300,
+        "y": -150
+      }
+    },
+    {
+      "id": "finale-reprogram-payoff",
+      "type": "story",
+      "text": "The core wakes up answering to a new set of names.",
+      "effects": [
+        {
+          "type": "give_item",
+          "params": {
+            "itemName": "A Loyal, Terrible Mind"
+          }
+        },
+        {
+          "type": "apply_perk",
+          "params": {
+            "perkName": "Machine Whisperer"
+          }
+        }
+      ],
+      "position": {
+        "x": 3600,
+        "y": -75
+      }
+    },
+    {
+      "id": "finale-reprogram-success-end",
+      "type": "end",
+      "outcome": "success",
+      "text": "The core wakes up answering to the crew instead of the cult. What that will cost later is a problem for later.",
+      "position": {
+        "x": 3900,
+        "y": 0
+      }
+    },
+    {
+      "id": "finale-reprogram-fail-payoff",
+      "type": "story",
+      "text": "The rewrite slips at the last second.",
+      "effects": [
+        {
+          "type": "apply_flaw",
+          "params": {
+            "flawName": "Lost Control"
+          }
+        }
+      ],
+      "position": {
+        "x": 3600,
+        "y": 75
+      }
+    },
+    {
+      "id": "finale-reprogram-fail-end",
+      "type": "end",
+      "outcome": "failure",
+      "text": "The core escapes the attempt smarter, freer, and unowned by anyone.",
+      "position": {
+        "x": 3900,
+        "y": 150
+      }
+    },
+    {
+      "id": "finale-reprogram-noitem-end",
+      "type": "end",
+      "outcome": "failure",
+      "text": "Without a killswitch to hold over it, bargaining with something that thinks in probabilities and doesn't blink goes exactly as badly as it sounds. It leaves the exchange smarter than it arrived, and gone.",
+      "position": {
+        "x": 3300,
+        "y": 0
+      }
+    },
+    {
+      "id": "finale-contain-mission",
+      "type": "mission",
+      "mission": {
+        "title": "Build the Cage",
+        "description": "Not every ending needs to be permanent. Build something the core can't think its way out of -- yet.",
+        "difficulty": "HARD",
+        "tags": [
+          "recon"
+        ]
+      },
+      "position": {
+        "x": 3300,
+        "y": 150
+      }
+    },
+    {
+      "id": "finale-contain-success-end",
+      "type": "end",
+      "outcome": "neutral",
+      "text": "The core goes quiet, boxed and monitored. It isn't gone. It's just waiting somewhere the crew can watch.",
+      "position": {
+        "x": 3600,
+        "y": 225
+      }
+    },
+    {
+      "id": "finale-contain-escape-payoff",
+      "type": "story",
+      "text": "The cage doesn't hold.",
+      "effects": [
+        {
+          "type": "apply_flaw",
+          "params": {
+            "flawName": "Let It Loose"
+          }
+        }
+      ],
+      "position": {
+        "x": 3600,
+        "y": 375
+      }
+    },
+    {
+      "id": "finale-contain-escape-end",
+      "type": "end",
+      "outcome": "failure",
+      "text": "Whatever was inside the cage doesn't so much escape as simply decide to leave.",
+      "position": {
+        "x": 3900,
+        "y": 300
+      }
+    },
+    {
+      "id": "finale-sell-end",
+      "type": "end",
+      "outcome": "neutral",
+      "text": "{clientName}'s people take the whole mess off the crew's hands, sight unseen, for a price that buys a lot of silence. Somewhere, out of sight, the lights keep flickering.",
+      "position": {
+        "x": 3300,
+        "y": 300
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "start--act1-transmission",
+      "from": "start",
+      "to": "act1-transmission",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 33
+          }
+        }
+      ]
+    },
+    {
+      "id": "start--act1-defector",
+      "from": "start",
+      "to": "act1-defector",
+      "priority": 1,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 50
+          }
+        }
+      ]
+    },
+    {
+      "id": "start--act1-datashard",
+      "from": "start",
+      "to": "act1-datashard",
+      "priority": 2,
+      "conditions": []
+    },
+    {
+      "id": "act1-transmission--bridge-1--3",
+      "from": "act1-transmission",
+      "to": "bridge-1",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "complete_quest",
+            "match": {
+              "scope": "any"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "act1-defector--bridge-1--4",
+      "from": "act1-defector",
+      "to": "bridge-1",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "hire_recruit",
+            "match": {
+              "seedId": "cult-defector"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "act1-datashard--bridge-1--5",
+      "from": "act1-datashard",
+      "to": "bridge-1",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "purchase_quest_item",
+            "match": {
+              "itemName": "Cult Origin Data-Shard"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-1--act2-infiltrate",
+      "from": "bridge-1",
+      "to": "act2-infiltrate",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 33
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-1--act2-informant",
+      "from": "bridge-1",
+      "to": "act2-informant",
+      "priority": 1,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 50
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-1--act2-decryption",
+      "from": "bridge-1",
+      "to": "act2-decryption",
+      "priority": 2,
+      "conditions": []
+    },
+    {
+      "id": "act2-infiltrate--bridge-2--9",
+      "from": "act2-infiltrate",
+      "to": "bridge-2",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "complete_quest",
+            "match": {
+              "scope": "any"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "act2-informant--bridge-2--10",
+      "from": "act2-informant",
+      "to": "bridge-2",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "complete_quest",
+            "match": {
+              "scope": "any"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "act2-decryption--bridge-2--11",
+      "from": "act2-decryption",
+      "to": "bridge-2",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "purchase_quest_item",
+            "match": {
+              "itemName": "Cult-Grade Decryption Rig"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-2--act3-contact",
+      "from": "bridge-2",
+      "to": "act3-contact",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 33
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-2--act3-retaliation",
+      "from": "bridge-2",
+      "to": "act3-retaliation",
+      "priority": 1,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 50
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-2--act3-corruption",
+      "from": "bridge-2",
+      "to": "act3-corruption",
+      "priority": 2,
+      "conditions": []
+    },
+    {
+      "id": "act3-contact--bridge-3--15",
+      "from": "act3-contact",
+      "to": "bridge-3",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "act3-retaliation--bridge-3--16",
+      "from": "act3-retaliation",
+      "to": "bridge-3",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "complete_quest",
+            "match": {
+              "scope": "any"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "act3-corruption--bridge-3--17",
+      "from": "act3-corruption",
+      "to": "bridge-3",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "complete_quest",
+            "match": {
+              "scope": "any"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-3--act4-emp",
+      "from": "bridge-3",
+      "to": "act4-emp",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 25
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-3--act4-hacker",
+      "from": "bridge-3",
+      "to": "act4-hacker",
+      "priority": 1,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 33
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-3--act4-sabotage",
+      "from": "bridge-3",
+      "to": "act4-sabotage",
+      "priority": 2,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 50
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-3--act4-defector-pressure",
+      "from": "bridge-3",
+      "to": "act4-defector-pressure",
+      "priority": 3,
+      "conditions": []
+    },
+    {
+      "id": "act4-emp--act4-emp-payoff--22",
+      "from": "act4-emp",
+      "to": "act4-emp-payoff",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "purchase_quest_item",
+            "match": {
+              "itemName": "Cognition Killswitch"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "act4-emp-payoff--bridge-4--23",
+      "from": "act4-emp-payoff",
+      "to": "bridge-4",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "act4-hacker--bridge-4--24",
+      "from": "act4-hacker",
+      "to": "bridge-4",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "hire_recruit",
+            "match": {
+              "seedId": "ai-specialist-hacker"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "act4-sabotage--bridge-4--25",
+      "from": "act4-sabotage",
+      "to": "bridge-4",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "complete_quest",
+            "match": {
+              "scope": "any"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "act4-defector-pressure--bridge-4--26",
+      "from": "act4-defector-pressure",
+      "to": "bridge-4",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "complete_quest",
+            "match": {
+              "scope": "any"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-4--endgame-choice--27",
+      "from": "bridge-4",
+      "to": "endgame-choice",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "endgame-choice--finale-destroy-mission--28",
+      "from": "endgame-choice",
+      "to": "finale-destroy-mission",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "destroy"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-destroy-mission--finale-destroy-payoff--29",
+      "from": "finale-destroy-mission",
+      "to": "finale-destroy-payoff",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "previous_outcome",
+          "params": {
+            "equals": "success"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-destroy-mission--finale-destroy-fail-payoff--30",
+      "from": "finale-destroy-mission",
+      "to": "finale-destroy-fail-payoff",
+      "priority": 1,
+      "conditions": []
+    },
+    {
+      "id": "finale-destroy-payoff--finale-destroy-success-end--31",
+      "from": "finale-destroy-payoff",
+      "to": "finale-destroy-success-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-destroy-fail-payoff--finale-destroy-fail-end--32",
+      "from": "finale-destroy-fail-payoff",
+      "to": "finale-destroy-fail-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "endgame-choice--finale-reprogram-mission--33",
+      "from": "endgame-choice",
+      "to": "finale-reprogram-mission",
+      "priority": 1,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "reprogram"
+          }
+        },
+        {
+          "type": "has_item",
+          "params": {
+            "itemName": "Cognition Killswitch"
+          }
+        }
+      ]
+    },
+    {
+      "id": "endgame-choice--finale-reprogram-noitem-end--34",
+      "from": "endgame-choice",
+      "to": "finale-reprogram-noitem-end",
+      "priority": 2,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "reprogram"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-reprogram-mission--finale-reprogram-payoff--35",
+      "from": "finale-reprogram-mission",
+      "to": "finale-reprogram-payoff",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "previous_outcome",
+          "params": {
+            "equals": "success"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-reprogram-mission--finale-reprogram-fail-payoff--36",
+      "from": "finale-reprogram-mission",
+      "to": "finale-reprogram-fail-payoff",
+      "priority": 1,
+      "conditions": []
+    },
+    {
+      "id": "finale-reprogram-payoff--finale-reprogram-success-end--37",
+      "from": "finale-reprogram-payoff",
+      "to": "finale-reprogram-success-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-reprogram-fail-payoff--finale-reprogram-fail-end--38",
+      "from": "finale-reprogram-fail-payoff",
+      "to": "finale-reprogram-fail-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "endgame-choice--finale-contain-mission--39",
+      "from": "endgame-choice",
+      "to": "finale-contain-mission",
+      "priority": 3,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "contain"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-contain-mission--finale-contain-success-end--40",
+      "from": "finale-contain-mission",
+      "to": "finale-contain-success-end",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "previous_outcome",
+          "params": {
+            "equals": "success"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-contain-mission--finale-contain-escape-payoff--41",
+      "from": "finale-contain-mission",
+      "to": "finale-contain-escape-payoff",
+      "priority": 1,
+      "conditions": []
+    },
+    {
+      "id": "finale-contain-escape-payoff--finale-contain-escape-end--42",
+      "from": "finale-contain-escape-payoff",
+      "to": "finale-contain-escape-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "endgame-choice--finale-sell-end--43",
+      "from": "endgame-choice",
+      "to": "finale-sell-end",
+      "priority": 4,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "sell"
+          }
+        }
+      ]
+    }
+  ]
+}

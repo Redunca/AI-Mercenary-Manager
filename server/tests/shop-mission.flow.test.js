@@ -188,8 +188,8 @@ function createFakeClient() {
       const r = state.recruits.find(r => r.player_id === params[0] && sameId(r.id, params[1]))
       return { rows: r ? [{ name: r.name }] : [] }
     }
-    if (s === 'SELECT COUNT(*)::int AS count FROM recruits WHERE player_id = $1') {
-      return { rows: [{ count: state.recruits.filter(r => r.player_id === params[0]).length }] }
+    if (s === 'SELECT COUNT(*)::int AS count FROM recruits WHERE player_id = $1 AND deleted_at IS NULL') {
+      return { rows: [{ count: state.recruits.filter(r => r.player_id === params[0] && !r.deleted_at).length }] }
     }
     if (s.includes('INSERT INTO recruits')) {
       const [id, player_id, name, job_title, hp, max_hp, original_max_hp, attributes, perks, flaws, personality] = params
@@ -199,7 +199,7 @@ function createFakeClient() {
       })
       return { rows: [] }
     }
-    if (s === 'SELECT * FROM recruits WHERE player_id = $1 ORDER BY id') {
+    if (s === 'SELECT * FROM recruits WHERE player_id = $1 AND deleted_at IS NULL ORDER BY id') {
       return { rows: state.recruits.filter(r => r.player_id === params[0]).sort((a, b) => a.id - b.id) }
     }
 
@@ -221,8 +221,8 @@ function createFakeClient() {
     if (s === 'SELECT * FROM mission_templates ORDER BY id') {
       return { rows: [...state.missionTemplates].sort((a, b) => a.id - b.id) }
     }
-    if (s === 'SELECT id FROM mission_templates') {
-      return { rows: state.missionTemplates.map(t => ({ id: t.id })) }
+    if (s === 'SELECT id FROM mission_templates WHERE opera_instance_id IS NULL') {
+      return { rows: state.missionTemplates.filter(t => !t.opera_instance_id).map(t => ({ id: t.id })) }
     }
     if (s === 'DELETE FROM mission_templates WHERE id = ANY($1::int[])') {
       const ids = new Set(params[0])

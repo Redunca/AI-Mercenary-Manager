@@ -1,0 +1,834 @@
+{
+  "id": "cutting-the-leash",
+  "title": "Cutting the Leash",
+  "description": "A recruit tangled up with an illegal conglomerate wants out -- to sign on with the Guild instead. The conglomerate doesn't let people just walk away from what they're owed.",
+  "nodes": [
+    {
+      "id": "start",
+      "type": "start",
+      "text": "Word reaches the crew through channels that don't officially exist: someone inside {enemyGroupName} wants out, and wants in with the Guild instead. {enemyGroupName} does not consider that someone else's decision to make.",
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "act1-backchannel",
+      "type": "seed",
+      "seeds": [
+        {
+          "target": "candidate",
+          "params": {
+            "seedId": "conglomerate-defector"
+          },
+          "note": "A voice on an unlisted channel says they're done running product for {enemyGroupName}, and wants to know if the Guild takes people with debts attached."
+        }
+      ],
+      "completionText": "The defector is brought aboard.",
+      "position": {
+        "x": 300,
+        "y": -150
+      }
+    },
+    {
+      "id": "act1-smuggle",
+      "type": "mission",
+      "mission": {
+        "title": "Meet in the Dark",
+        "description": "Get someone to a meeting point without {enemyGroupName} noticing the pattern.",
+        "difficulty": "ROUTINE",
+        "tags": [
+          "infiltration"
+        ]
+      },
+      "position": {
+        "x": 300,
+        "y": 0
+      }
+    },
+    {
+      "id": "act1-ledger",
+      "type": "seed",
+      "seeds": [
+        {
+          "target": "shop",
+          "params": {
+            "itemName": "Coded Debt Ledger"
+          },
+          "note": "A ledger detailing exactly what {enemyGroupName} thinks it owns, quietly for sale to whoever's asking the right questions."
+        }
+      ],
+      "completionText": "The ledger is in hand.",
+      "position": {
+        "x": 300,
+        "y": 150
+      }
+    },
+    {
+      "id": "act1-ledger-payoff",
+      "type": "story",
+      "text": "The ledger checks out. Every debt, every leverage point, all itemized in {enemyGroupName}'s own hand.",
+      "effects": [
+        {
+          "type": "give_item",
+          "params": {
+            "itemName": "Coded Debt Ledger"
+          }
+        }
+      ],
+      "position": {
+        "x": 600,
+        "y": 0
+      }
+    },
+    {
+      "id": "bridge-1",
+      "type": "story",
+      "text": "Whichever way the recruit surfaces, the shape of the problem is the same: {enemyGroupName} doesn't lose assets. It collects them.",
+      "effects": [],
+      "position": {
+        "x": 900,
+        "y": 0
+      }
+    },
+    {
+      "id": "act2-debt",
+      "type": "mission",
+      "mission": {
+        "title": "Settle the Books",
+        "description": "{enemyGroupName} claims the recruit owes them. Negotiate the number down to something that isn't a life sentence.",
+        "difficulty": "STANDARD",
+        "tags": [
+          "negotiation"
+        ]
+      },
+      "position": {
+        "x": 1200,
+        "y": -225
+      }
+    },
+    {
+      "id": "act2-blackmail",
+      "type": "mission",
+      "mission": {
+        "title": "Empty the Vault",
+        "description": "{enemyGroupName} is holding something over the recruit's head. Get it before they use it.",
+        "difficulty": "STANDARD",
+        "tags": [
+          "heist"
+        ]
+      },
+      "position": {
+        "x": 1200,
+        "y": -75
+      }
+    },
+    {
+      "id": "act2-enforcers",
+      "type": "mission",
+      "mission": {
+        "title": "Send Them Home Empty-Handed",
+        "description": "{enemyGroupName} sends a collection crew to bring the recruit back the hard way. Make sure they leave without them.",
+        "difficulty": "HARD",
+        "tags": [
+          "combat"
+        ]
+      },
+      "position": {
+        "x": 1200,
+        "y": 75
+      }
+    },
+    {
+      "id": "act2-papers",
+      "type": "seed",
+      "seeds": [
+        {
+          "target": "shop",
+          "params": {
+            "itemName": "Forged Identity Papers"
+          },
+          "note": "A forger who owes someone a favor can bury the recruit's old name, for a price."
+        }
+      ],
+      "completionText": "The papers are ready.",
+      "position": {
+        "x": 1200,
+        "y": 225
+      }
+    },
+    {
+      "id": "bridge-2",
+      "type": "story",
+      "text": "On paper, in ledgers, in whatever passes for memory at {enemyGroupName}, the recruit is starting to look less and less like property.",
+      "effects": [],
+      "position": {
+        "x": 1500,
+        "y": 0
+      }
+    },
+    {
+      "id": "endgame-choice",
+      "type": "choice",
+      "text": "There's no version of this where {enemyGroupName} just says goodbye. How does the recruit actually get free?",
+      "choiceOptions": [
+        {
+          "id": "buyout",
+          "label": "Buy out the contract outright"
+        },
+        {
+          "id": "expose",
+          "label": "Burn {enemyGroupName}'s operation down in public"
+        },
+        {
+          "id": "vanish",
+          "label": "Fake the recruit's death and vanish them"
+        },
+        {
+          "id": "sellout",
+          "label": "Sell the recruit back for Guild favor"
+        }
+      ],
+      "position": {
+        "x": 1800,
+        "y": 0
+      }
+    },
+    {
+      "id": "finale-buyout-mission",
+      "type": "mission",
+      "mission": {
+        "title": "Buy the Contract",
+        "description": "Money talks louder than loyalty, most places. Make {enemyGroupName} an offer that's easier to take than to refuse.",
+        "difficulty": "STANDARD",
+        "tags": [
+          "negotiation"
+        ]
+      },
+      "position": {
+        "x": 2100,
+        "y": -300
+      }
+    },
+    {
+      "id": "finale-buyout-payoff",
+      "type": "story",
+      "text": "The paperwork changes hands without ceremony.",
+      "effects": [
+        {
+          "type": "apply_perk",
+          "params": {
+            "perkName": "Bought Free"
+          }
+        }
+      ],
+      "position": {
+        "x": 2400,
+        "y": -375
+      }
+    },
+    {
+      "id": "finale-buyout-success-end",
+      "type": "end",
+      "outcome": "success",
+      "text": "The paperwork changes hands, and just like that, the recruit belongs to nobody. {enemyGroupName} took the money and didn't blink -- which is its own kind of unsettling.",
+      "position": {
+        "x": 2700,
+        "y": -375
+      }
+    },
+    {
+      "id": "finale-buyout-fail-payoff",
+      "type": "story",
+      "text": "{enemyGroupName} takes the money and keeps the leash anyway, quietly, for later.",
+      "effects": [
+        {
+          "type": "apply_flaw",
+          "params": {
+            "flawName": "Marked Debtor"
+          }
+        }
+      ],
+      "position": {
+        "x": 2400,
+        "y": -225
+      }
+    },
+    {
+      "id": "finale-buyout-fail-end",
+      "type": "end",
+      "outcome": "failure",
+      "text": "The offer is accepted, the debt is not forgotten. {enemyGroupName} doesn't forget anything.",
+      "position": {
+        "x": 2700,
+        "y": -225
+      }
+    },
+    {
+      "id": "finale-expose-mission",
+      "type": "mission",
+      "mission": {
+        "title": "Burn It Down",
+        "description": "With proof in hand, take {enemyGroupName}'s operation apart in public, where it can't be quietly fixed.",
+        "difficulty": "HARD",
+        "tags": [
+          "sabotage"
+        ]
+      },
+      "position": {
+        "x": 2100,
+        "y": -150
+      }
+    },
+    {
+      "id": "finale-expose-payoff",
+      "type": "story",
+      "text": "The ledger goes public, page by page.",
+      "effects": [
+        {
+          "type": "give_item",
+          "params": {
+            "itemName": "A Conglomerate's Enemies"
+          }
+        },
+        {
+          "type": "apply_perk",
+          "params": {
+            "perkName": "Made an Example"
+          }
+        }
+      ],
+      "position": {
+        "x": 2400,
+        "y": -75
+      }
+    },
+    {
+      "id": "finale-expose-success-end",
+      "type": "end",
+      "outcome": "success",
+      "text": "{enemyGroupName}'s operation comes apart in the open, ledger and all. The recruit walks away clean, and {enemyGroupName} has bigger fires to put out than one missing asset.",
+      "position": {
+        "x": 2700,
+        "y": -75
+      }
+    },
+    {
+      "id": "finale-expose-fail-payoff",
+      "type": "story",
+      "text": "The evidence doesn't hold up once it's in the open.",
+      "effects": [
+        {
+          "type": "apply_flaw",
+          "params": {
+            "flawName": "Exposed Too Early"
+          }
+        }
+      ],
+      "position": {
+        "x": 2400,
+        "y": 75
+      }
+    },
+    {
+      "id": "finale-expose-fail-end",
+      "type": "end",
+      "outcome": "failure",
+      "text": "The story doesn't stick. Now {enemyGroupName} knows exactly who's been digging.",
+      "position": {
+        "x": 2700,
+        "y": 75
+      }
+    },
+    {
+      "id": "finale-expose-noledger-end",
+      "type": "end",
+      "outcome": "failure",
+      "text": "Without proof, going public plays as a wild accusation from a merc crew with an axe to grind. {enemyGroupName} laughs it off, and remembers who said it.",
+      "position": {
+        "x": 2100,
+        "y": 0
+      }
+    },
+    {
+      "id": "finale-vanish-mission",
+      "type": "mission",
+      "mission": {
+        "title": "Make Them a Ghost",
+        "description": "Faking a death convincingly enough that {enemyGroupName} actually believes it takes more than a body double.",
+        "difficulty": "HARD",
+        "tags": [
+          "extraction"
+        ]
+      },
+      "position": {
+        "x": 2100,
+        "y": 150
+      }
+    },
+    {
+      "id": "finale-vanish-payoff",
+      "type": "story",
+      "text": "The paperwork, the body, the story -- all of it holds together, at least on the surface.",
+      "effects": [
+        {
+          "type": "apply_perk",
+          "params": {
+            "perkName": "Ghost"
+          }
+        }
+      ],
+      "position": {
+        "x": 2400,
+        "y": 225
+      }
+    },
+    {
+      "id": "finale-vanish-success-end",
+      "type": "end",
+      "outcome": "success",
+      "text": "As far as {enemyGroupName}'s records are concerned, the recruit died owing them money -- a satisfying way for the story to end for everyone except {enemyGroupName}.",
+      "position": {
+        "x": 2700,
+        "y": 225
+      }
+    },
+    {
+      "id": "finale-vanish-fail-payoff",
+      "type": "story",
+      "text": "The ruse doesn't hold.",
+      "effects": [
+        {
+          "type": "apply_flaw",
+          "params": {
+            "flawName": "Unconvincing Corpse"
+          }
+        }
+      ],
+      "position": {
+        "x": 2400,
+        "y": 375
+      }
+    },
+    {
+      "id": "finale-vanish-fail-end",
+      "type": "end",
+      "outcome": "failure",
+      "text": "{enemyGroupName} works out fairly quickly that the recruit is worth more walking around, and starts looking.",
+      "position": {
+        "x": 2700,
+        "y": 375
+      }
+    },
+    {
+      "id": "finale-sellout-end",
+      "type": "end",
+      "outcome": "failure",
+      "text": "The recruit gets walked right back to {enemyGroupName}'s door, and the Guild gets paid for the trouble of not caring. Whatever trust might have grown out of this doesn't.",
+      "position": {
+        "x": 2100,
+        "y": 300
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "start--act1-backchannel",
+      "from": "start",
+      "to": "act1-backchannel",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 33
+          }
+        }
+      ]
+    },
+    {
+      "id": "start--act1-smuggle",
+      "from": "start",
+      "to": "act1-smuggle",
+      "priority": 1,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 50
+          }
+        }
+      ]
+    },
+    {
+      "id": "start--act1-ledger",
+      "from": "start",
+      "to": "act1-ledger",
+      "priority": 2,
+      "conditions": []
+    },
+    {
+      "id": "act1-backchannel--bridge-1--3",
+      "from": "act1-backchannel",
+      "to": "bridge-1",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "hire_recruit",
+            "match": {
+              "seedId": "conglomerate-defector"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "act1-smuggle--bridge-1--4",
+      "from": "act1-smuggle",
+      "to": "bridge-1",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "complete_quest",
+            "match": {
+              "scope": "any"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "act1-ledger--act1-ledger-payoff--5",
+      "from": "act1-ledger",
+      "to": "act1-ledger-payoff",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "purchase_quest_item",
+            "match": {
+              "itemName": "Coded Debt Ledger"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "act1-ledger-payoff--bridge-1--6",
+      "from": "act1-ledger-payoff",
+      "to": "bridge-1",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "bridge-1--act2-debt",
+      "from": "bridge-1",
+      "to": "act2-debt",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 25
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-1--act2-blackmail",
+      "from": "bridge-1",
+      "to": "act2-blackmail",
+      "priority": 1,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 33
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-1--act2-enforcers",
+      "from": "bridge-1",
+      "to": "act2-enforcers",
+      "priority": 2,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 50
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-1--act2-papers",
+      "from": "bridge-1",
+      "to": "act2-papers",
+      "priority": 3,
+      "conditions": []
+    },
+    {
+      "id": "act2-debt--bridge-2--11",
+      "from": "act2-debt",
+      "to": "bridge-2",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "complete_quest",
+            "match": {
+              "scope": "any"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "act2-blackmail--bridge-2--12",
+      "from": "act2-blackmail",
+      "to": "bridge-2",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "complete_quest",
+            "match": {
+              "scope": "any"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "act2-enforcers--bridge-2--13",
+      "from": "act2-enforcers",
+      "to": "bridge-2",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "complete_quest",
+            "match": {
+              "scope": "any"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "act2-papers--bridge-2--14",
+      "from": "act2-papers",
+      "to": "bridge-2",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "purchase_quest_item",
+            "match": {
+              "itemName": "Forged Identity Papers"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-2--endgame-choice--15",
+      "from": "bridge-2",
+      "to": "endgame-choice",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "endgame-choice--finale-buyout-mission--16",
+      "from": "endgame-choice",
+      "to": "finale-buyout-mission",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "buyout"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-buyout-mission--finale-buyout-payoff--17",
+      "from": "finale-buyout-mission",
+      "to": "finale-buyout-payoff",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "previous_outcome",
+          "params": {
+            "equals": "success"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-buyout-mission--finale-buyout-fail-payoff--18",
+      "from": "finale-buyout-mission",
+      "to": "finale-buyout-fail-payoff",
+      "priority": 1,
+      "conditions": []
+    },
+    {
+      "id": "finale-buyout-payoff--finale-buyout-success-end--19",
+      "from": "finale-buyout-payoff",
+      "to": "finale-buyout-success-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-buyout-fail-payoff--finale-buyout-fail-end--20",
+      "from": "finale-buyout-fail-payoff",
+      "to": "finale-buyout-fail-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "endgame-choice--finale-expose-mission--21",
+      "from": "endgame-choice",
+      "to": "finale-expose-mission",
+      "priority": 1,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "expose"
+          }
+        },
+        {
+          "type": "has_item",
+          "params": {
+            "itemName": "Coded Debt Ledger"
+          }
+        }
+      ]
+    },
+    {
+      "id": "endgame-choice--finale-expose-noledger-end--22",
+      "from": "endgame-choice",
+      "to": "finale-expose-noledger-end",
+      "priority": 2,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "expose"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-expose-mission--finale-expose-payoff--23",
+      "from": "finale-expose-mission",
+      "to": "finale-expose-payoff",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "previous_outcome",
+          "params": {
+            "equals": "success"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-expose-mission--finale-expose-fail-payoff--24",
+      "from": "finale-expose-mission",
+      "to": "finale-expose-fail-payoff",
+      "priority": 1,
+      "conditions": []
+    },
+    {
+      "id": "finale-expose-payoff--finale-expose-success-end--25",
+      "from": "finale-expose-payoff",
+      "to": "finale-expose-success-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-expose-fail-payoff--finale-expose-fail-end--26",
+      "from": "finale-expose-fail-payoff",
+      "to": "finale-expose-fail-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "endgame-choice--finale-vanish-mission--27",
+      "from": "endgame-choice",
+      "to": "finale-vanish-mission",
+      "priority": 3,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "vanish"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-vanish-mission--finale-vanish-payoff--28",
+      "from": "finale-vanish-mission",
+      "to": "finale-vanish-payoff",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "previous_outcome",
+          "params": {
+            "equals": "success"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-vanish-mission--finale-vanish-fail-payoff--29",
+      "from": "finale-vanish-mission",
+      "to": "finale-vanish-fail-payoff",
+      "priority": 1,
+      "conditions": []
+    },
+    {
+      "id": "finale-vanish-payoff--finale-vanish-success-end--30",
+      "from": "finale-vanish-payoff",
+      "to": "finale-vanish-success-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-vanish-fail-payoff--finale-vanish-fail-end--31",
+      "from": "finale-vanish-fail-payoff",
+      "to": "finale-vanish-fail-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "endgame-choice--finale-sellout-end--32",
+      "from": "endgame-choice",
+      "to": "finale-sellout-end",
+      "priority": 4,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "sellout"
+          }
+        }
+      ]
+    }
+  ]
+}

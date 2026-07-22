@@ -20,8 +20,8 @@ export class OperaListComponent {
     return this.operaService.operas;
   }
 
-  completedStepCount(opera: OperaSummary): number {
-    return opera.steps.filter(s => s.completed).length;
+  doneTaskCount(opera: OperaSummary): number {
+    return opera.tasks.filter(t => t.status === 'done').length;
   }
 
   registerCommands() {
@@ -32,15 +32,6 @@ export class OperaListComponent {
           return;
         }
         this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.OperaDetail, { id });
-      },
-      'start': (id: string) => {
-        if (!id) {
-          console.warn('Usage: start <id>');
-          return;
-        }
-        void this.operaService.startOpera(id).then(err => {
-          if (err) console.error(`[opera start] ${err}`);
-        });
       },
     };
   }

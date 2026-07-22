@@ -15,6 +15,7 @@ const ConsumableService = require('./consumable.service')
 const EquipmentService = require('./equipment.service')
 const OperaService = require('./opera.service')
 const ShopService = require('./shop.service')
+const RecruitService = require('./recruit.service')
 
 
 const { loadData } = require('../dataLoader')
@@ -84,7 +85,14 @@ async function generateMissionBatch(client, player, now) {
       [player.id],
     )).rows.map(row => row.template_id),
   )
-  const existingTemplateIds = (await client.query('SELECT id FROM mission_templates')).rows.map(row => row.id)
+  // Opera-injected missions (opera_instance_id set -- see OperaService's
+  // insertOperaMission) are never swept here regardless of started status:
+  // a 'mission' node's task must survive batch refreshes until the paused
+  // opera walk actually resolves it, the same way a regular unstarted
+  // template survives only until the next refresh.
+  const existingTemplateIds = (await client.query(
+    'SELECT id FROM mission_templates WHERE opera_instance_id IS NULL',
+  )).rows.map(row => row.id)
   const unstartedTemplateIds = existingTemplateIds.filter(id => !startedTemplateIds.has(id))
   if (unstartedTemplateIds.length > 0) {
     await client.query('DELETE FROM mission_templates WHERE id = ANY($1::int[])', [unstartedTemplateIds])
@@ -201,7 +209,7 @@ async function bootstrapPlayer(client) {
   }
 
   const recruitCount = await client.query(
-    'SELECT COUNT(*)::int AS count FROM recruits WHERE player_id = $1',
+    'SELECT COUNT(*)::int AS count FROM recruits WHERE player_id = $1 AND deleted_at IS NULL',
     [player.id],
   )
   if (recruitCount.rows[0].count === 0) {
@@ -221,7 +229,7 @@ async function bootstrapPlayer(client) {
 
 async function getRecruit(client, playerId, recruitId) {
   const result = await client.query(
-    'SELECT * FROM recruits WHERE player_id = $1 AND id = $2',
+    'SELECT * FROM recruits WHERE player_id = $1 AND id = $2 AND deleted_at IS NULL',
     [playerId, recruitId],
   )
   return result.rows[0] ? rowToRecruit(result.rows[0]) : null
@@ -565,9 +573,12 @@ async function completeMission(client, playerId, instance, template, failed, shi
   })
   await insertLogEntries(client, playerId, [...completedLogs.mission, ...completedLogs.global])
 
-  if (!failed) {
-    await OperaService.recordOperaAction(client, playerId, 'complete_quest', { templateId: template.id })
-  }
+  // Fires on both success and failure -- a 'mission' opera node branches on
+  // previous_outcome exactly like a 'check' node's roll, so it needs to
+  // hear about a failed mission too, not just a successful one.
+  await OperaService.recordOperaAction(client, playerId, 'complete_quest', {
+    templateId: template.id, outcome: failed ? 'failure' : 'success',
+  })
 }
 
 async function advanceMission(client, playerId, instance, template, now) {
@@ -779,7 +790,7 @@ async function regenerateRecruits(client, playerId, now = new Date()) {
 async function hireCandidate(client, playerId, candidateId) {
   const player = (await client.query('SELECT * FROM players WHERE id = $1', [playerId])).rows[0]
   const recruitCount = (await client.query(
-    'SELECT COUNT(*)::int AS count FROM recruits WHERE player_id = $1',
+    'SELECT COUNT(*)::int AS count FROM recruits WHERE player_id = $1 AND deleted_at IS NULL',
     [playerId],
   )).rows[0].count
 
@@ -814,7 +825,10 @@ async function hireCandidate(client, playerId, candidateId) {
     [playerId],
   )
 
-  await OperaService.recordOperaAction(client, playerId, 'hire_recruit', { recruitId })
+  // seedId lets a 'candidate' opera seed's later hire_recruit gate resolve
+  // (see operaGraph's seed-key resolution) -- undefined for an ordinary,
+  // non-seeded candidate, which never matches a {seedId} condition.
+  await OperaService.recordOperaAction(client, playerId, 'hire_recruit', { recruitId, seedId: candidate.seed_key ?? undefined })
 
   return getRecruit(client, playerId, recruitId)
 }
@@ -851,7 +865,7 @@ async function startMission(client, playerId, templateId, shipId, speedConsumabl
   // Validate all crew members are available
   const crewResults = await Promise.all(
     ship.crew.map(id => client.query(
-      'SELECT * FROM recruits WHERE player_id = $1 AND id = $2',
+      'SELECT * FROM recruits WHERE player_id = $1 AND id = $2 AND deleted_at IS NULL',
       [playerId, id]
     ))
   )
@@ -1047,7 +1061,7 @@ async function buildGameState(client, playerId) {
   const player = playerResult.rows[0]
 
   const recruitsResult = await client.query(
-    'SELECT * FROM recruits WHERE player_id = $1 ORDER BY id',
+    'SELECT * FROM recruits WHERE player_id = $1 AND deleted_at IS NULL ORDER BY id',
     [playerId],
   )
   const candidatesResult = await client.query(
@@ -1088,6 +1102,7 @@ async function buildGameState(client, playerId) {
       events: t.events,
       assignedShipId,
       status,
+      isOperaMission: t.opera_instance_id != null,
     }
   })
 
@@ -1121,9 +1136,15 @@ async function buildGameState(client, playerId) {
     }
   }
 
-  const visibleMissions = missions
-    .filter(m => m.status !== 'failed' && m.status !== 'success')
-    .slice(0, player.max_available_missions)
+  // Opera-injected missions are always visible regardless of the board cap
+  // -- the same "never stuck waiting on rotation luck" guarantee
+  // shop.service.js's is_quest_item items already get -- a 'mission' node
+  // blocks its opera's walk, so it must never be capacity-sliced away.
+  const nonFinal = missions.filter(m => m.status !== 'failed' && m.status !== 'success')
+  const visibleMissions = [
+    ...nonFinal.filter(m => m.isOperaMission),
+    ...nonFinal.filter(m => !m.isOperaMission).slice(0, player.max_available_missions),
+  ]
 
   // Opera state enriches the synced snapshot but must never be a hard
   // dependency for it: buildGameState() backs virtually every screen in the
@@ -1302,5 +1323,11 @@ module.exports = {
     const recruit = await renameRecruit(client, DEFAULT_PLAYER_ID, recruitId, newName)
     if (!recruit) return { error: 'Recruit not found' }
     return { recruit, state: await buildGameState(client, DEFAULT_PLAYER_ID) }
+  }),
+  fireRecruit: (recruitId) => withTransaction(async (client) => {
+    const recruit = await RecruitService.fireRecruit(client, DEFAULT_PLAYER_ID, Number(recruitId))
+    if (!recruit) return { error: 'Recruit not found' }
+    await OperaService.recordOperaAction(client, DEFAULT_PLAYER_ID, 'fire_recruit', { recruitId: Number(recruitId) })
+    return { state: await buildGameState(client, DEFAULT_PLAYER_ID) }
   }),
 }

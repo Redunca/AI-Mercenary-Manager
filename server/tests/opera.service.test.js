@@ -1,37 +1,88 @@
-// Exercises opera.service.js against a small in-memory fake Postgres client
-// keyed by normalized SQL text, mirroring the style used by self.service.test.js
-// and the *.flow.test.js suites. Opera definitions are supplied via a mocked
-// operaLoader rather than the real server/data/operas/*.json content, so
-// these tests don't drift if the real tutorial content changes.
+// Exercises opera.service.js's reactive entry points (recordOperaAction,
+// resolveChoice, maintainOperaSlots) against a small in-memory fake
+// Postgres client keyed by normalized SQL text, mirroring the style used by
+// self.service.test.js and the old opera.service.test.js. Templates are
+// supplied via a mocked operaLoader rather than real files, and kept to
+// story/choice/end nodes only (no mission/seed/effect nodes) so the fake
+// client's surface stays proportionate to what these flows actually touch --
+// the full walk engine (mission injection, seed resolution, tag rendering,
+// effects) is exercised end-to-end against a real Postgres instance
+// separately, not re-modeled here query-by-query.
 
 jest.mock('../src/operaLoader')
-const { getOperaDefinition, getAllOperaDefinitions } = require('../src/operaLoader')
+const { getOperaDefinition, getGenerationPoolDefinitions } = require('../src/operaLoader')
 const OperaService = require('../src/services/opera.service')
 
 const PLAYER_ID = 1
 
-function makeDefinition(overrides = {}) {
+// A linear graph that never reaches its end node within a single test step,
+// so tests can assert on a specific mid-walk gate without also exercising
+// finish()/maintainOperaSlots.
+function gatedGraph(overrides = {}) {
   return {
-    id: 'tutorial',
-    title: 'Basic Operations',
-    description: 'A guided walkthrough.',
-    auto_start: true,
-    step_order: 'sequential',
-    on_start_message: 'Welcome aboard.',
-    on_complete_message: 'Training complete.',
-    steps: [
-      { id: 'step-a', type: 'hire_recruit', description: 'Hire a recruit.', on_start_message: 'Go hire someone.', on_complete_message: 'Recruit hired.', match: { scope: 'any' } },
-      { id: 'step-b', type: 'execute_command', description: 'Say help.', on_start_message: 'Type help.', on_complete_message: '', match: { command: 'help' } },
+    id: 'side-quest',
+    title: 'Side Quest',
+    nodes: [
+      { id: 'start', type: 'start' },
+      { id: 'ask', type: 'story', text: 'Do the thing.' },
+      { id: 'thanks', type: 'story', text: 'Thanks.' },
+      { id: 'end', type: 'end', outcome: 'success', text: 'Done.' },
+    ],
+    links: [
+      { id: 'start--ask', from: 'start', to: 'ask', conditions: [] },
+      {
+        id: 'ask--thanks', from: 'ask', to: 'thanks',
+        conditions: [{ type: 'action_performed', params: { actionType: 'execute_command', match: { command: 'help' } } }],
+      },
+      // Gated too (on a second, distinct action) so a single 'help' action
+      // advances exactly one step and the walk stops predictably at
+      // 'thanks' -- an unconditioned link here would auto-advance straight
+      // through to 'end' in the same pass, which is correct engine
+      // behavior but not what this fixture is meant to isolate.
+      {
+        id: 'thanks--end', from: 'thanks', to: 'end',
+        conditions: [{ type: 'action_performed', params: { actionType: 'execute_command', match: { command: 'bye' } } }],
+      },
     ],
     ...overrides,
   }
 }
 
-function createFakeClient() {
+function choiceGraph() {
+  return {
+    id: 'decision',
+    title: 'Decision',
+    nodes: [
+      { id: 'start', type: 'start' },
+      { id: 'pick', type: 'choice', text: 'Choose.', choiceOptions: [{ id: 'a', label: 'Option A' }, { id: 'b', label: 'Option B' }] },
+      { id: 'end-a', type: 'end', outcome: 'success', text: 'Took A.' },
+      { id: 'end-b', type: 'end', outcome: 'neutral', text: 'Took B.' },
+    ],
+    links: [
+      { id: 'start--pick', from: 'start', to: 'pick', conditions: [] },
+      { id: 'pick--a', from: 'pick', to: 'end-a', conditions: [{ type: 'choice_made', params: { optionId: 'a' } }] },
+      { id: 'pick--b', from: 'pick', to: 'end-b', conditions: [{ type: 'choice_made', params: { optionId: 'b' } }] },
+    ],
+  }
+}
+
+// A graph that reaches its end node immediately (start -> end), used for
+// maintainOperaSlots tests so a freshly created instance doesn't itself
+// re-trigger maintainOperaSlots recursively.
+function instantGraph(id) {
+  return {
+    id,
+    title: id,
+    nodes: [{ id: 'start', type: 'start' }, { id: 'end', type: 'end', outcome: 'success', text: 'Done.' }],
+    links: [{ id: 'start--end', from: 'start', to: 'end', conditions: [] }],
+  }
+}
+
+function createFakeClient({ instances = [], players = {} } = {}) {
   const state = {
-    instances: new Map(), // `${playerId}:${operaId}` -> { status, started_at, completed_at }
-    progress: new Set(),  // `${playerId}:${operaId}:${stepId}`
-    logs: [],              // { playerId, tag, message, missionId, operaId }
+    instances: instances.map(i => ({ ...i })),
+    players: { ...players },
+    nextInstanceId: Math.max(0, ...instances.map(i => i.id)) + 1,
   }
 
   const query = jest.fn(async (sql, params = []) => {
@@ -39,271 +90,181 @@ function createFakeClient() {
 
     if (s.startsWith("SELECT * FROM opera_instances WHERE player_id = $1 AND status = 'in_progress'")) {
       const [playerId] = params
-      const rows = [...state.instances.entries()]
-        .filter(([key, value]) => key.startsWith(`${playerId}:`) && value.status === 'in_progress')
-        .map(([key, value]) => ({ player_id: playerId, opera_id: key.split(':')[1], ...value }))
-      return { rows }
+      return { rows: state.instances.filter(i => i.player_id === playerId && i.status === 'in_progress') }
     }
-
-    if (s.startsWith('SELECT * FROM opera_instances WHERE player_id = $1')) {
+    if (s.startsWith('SELECT * FROM opera_instances WHERE player_id = $1 AND id = $2')) {
+      const [playerId, id] = params
+      return { rows: state.instances.filter(i => i.player_id === playerId && i.id === id) }
+    }
+    if (s.startsWith('UPDATE opera_instances SET state = $1 WHERE id = $2')) {
+      const [stateJson, id] = params
+      const row = state.instances.find(i => i.id === id)
+      if (row) row.state = JSON.parse(stateJson)
+      return { rows: [] }
+    }
+    if (s.startsWith('UPDATE opera_instances SET status = $1, state = $2, completed_at = NOW() WHERE id = $3')) {
+      const [status, stateJson, id] = params
+      const row = state.instances.find(i => i.id === id)
+      if (row) { row.status = status; row.state = JSON.parse(stateJson) }
+      return { rows: [] }
+    }
+    if (s.startsWith(`SELECT status FROM opera_instances WHERE player_id = $1 AND template_id = $2`)) {
+      const [playerId, templateId] = params
+      return { rows: state.instances.filter(i => i.player_id === playerId && i.template_id === templateId) }
+    }
+    if (s.startsWith('SELECT slot_index, template_id FROM opera_instances')) {
       const [playerId] = params
-      const rows = [...state.instances.entries()]
-        .filter(([key]) => key.startsWith(`${playerId}:`))
-        .map(([key, value]) => ({ player_id: playerId, opera_id: key.split(':')[1], ...value }))
-      return { rows }
+      return { rows: state.instances.filter(i => i.player_id === playerId && i.status === 'in_progress' && i.slot_index !== null) }
     }
-
-    if (s.startsWith('SELECT 1 FROM opera_instances WHERE player_id = $1 AND opera_id = $2')) {
-      const [playerId, operaId] = params
-      return { rows: state.instances.has(`${playerId}:${operaId}`) ? [{ '?column?': 1 }] : [] }
-    }
-
-    if (s.startsWith('SELECT step_id FROM opera_step_progress WHERE player_id = $1 AND opera_id = $2')) {
-      const [playerId, operaId] = params
-      const rows = [...state.progress]
-        .filter(key => key.startsWith(`${playerId}:${operaId}:`))
-        .map(key => ({ step_id: key.split(':')[2] }))
-      return { rows }
-    }
-
-    if (s.startsWith('SELECT opera_id, step_id FROM opera_step_progress WHERE player_id = $1')) {
-      const [playerId] = params
-      const rows = [...state.progress]
-        .filter(key => key.startsWith(`${playerId}:`))
-        .map(key => {
-          const [, operaId, stepId] = key.split(':')
-          return { opera_id: operaId, step_id: stepId }
-        })
-      return { rows }
-    }
-
     if (s.startsWith('INSERT INTO opera_instances')) {
-      const [playerId, operaId] = params
-      const key = `${playerId}:${operaId}`
-      if (!state.instances.has(key)) {
-        state.instances.set(key, { status: 'in_progress', started_at: new Date(), completed_at: null })
-      }
-      return { rows: [] }
+      const [playerId, templateId, slotIndex] = params
+      const row = { id: state.nextInstanceId++, player_id: playerId, template_id: templateId, slot_index: slotIndex, status: 'in_progress', state: {} }
+      state.instances.push(row)
+      return { rows: [row] }
     }
-
-    if (s.startsWith('INSERT INTO opera_step_progress')) {
-      const [playerId, operaId, stepId] = params
-      state.progress.add(`${playerId}:${operaId}:${stepId}`)
-      return { rows: [] }
-    }
-
-    if (s.startsWith("UPDATE opera_instances SET status = 'completed'")) {
-      const [playerId, operaId] = params
-      const key = `${playerId}:${operaId}`
-      const existing = state.instances.get(key)
-      state.instances.set(key, { ...existing, status: 'completed', completed_at: new Date() })
-      return { rows: [] }
-    }
-
-    if (s.startsWith('INSERT INTO log_entries')) {
-      const [playerId, tag, message, missionId, operaId] = params
-      state.logs.push({ playerId, tag, message, missionId, operaId })
-      return { rows: [] }
-    }
-
-    if (s.startsWith('SELECT tag, message, opera_id AS "operaId" FROM log_entries')) {
+    if (s.startsWith('SELECT opera_slot_capacity FROM players WHERE id = $1')) {
       const [playerId] = params
-      const rows = state.logs
-        .filter(l => l.playerId === playerId && l.operaId != null)
-        .map(l => ({ tag: l.tag, message: l.message, operaId: l.operaId }))
-      return { rows }
+      return { rows: [{ opera_slot_capacity: state.players[playerId]?.opera_slot_capacity ?? 0 }] }
     }
-
-    throw new Error(`Query not handled by the fake test client: ${s}`)
+    if (s.startsWith('SELECT id FROM recruits WHERE player_id = $1 AND deleted_at IS NULL ORDER BY random()')) {
+      return { rows: [] }
+    }
+    if (s.startsWith('INSERT INTO log_entries')) {
+      return { rows: [] }
+    }
+    // Anything else (consumables/equipment has_item lookups, ships
+    // crew_threshold lookups, etc.) isn't reached by these narrow test
+    // graphs -- default to an empty result rather than growing the fixture
+    // to cover the full walk engine's surface here.
+    return { rows: [] }
   })
 
-  return { client: { query }, state }
+  return { query, state }
 }
 
-beforeEach(() => {
-  jest.clearAllMocks()
-})
-
-describe('ensureOperasForPlayer', () => {
-  test('starts every auto_start opera exactly once, logging the opera and first-step start messages', async () => {
-    getAllOperaDefinitions.mockReturnValue([makeDefinition()])
-    const { client, state } = createFakeClient()
-
-    await OperaService.ensureOperasForPlayer(client, PLAYER_ID)
-
-    expect(state.instances.get(`${PLAYER_ID}:tutorial`).status).toBe('in_progress')
-    expect(state.logs.map(l => l.message)).toEqual(['Welcome aboard.', 'Go hire someone.'])
-  })
-
-  test('is idempotent: calling twice does not duplicate the instance or logs', async () => {
-    getAllOperaDefinitions.mockReturnValue([makeDefinition()])
-    const { client, state } = createFakeClient()
-
-    await OperaService.ensureOperasForPlayer(client, PLAYER_ID)
-    await OperaService.ensureOperasForPlayer(client, PLAYER_ID)
-
-    expect(state.instances.size).toBe(1)
-    expect(state.logs.length).toBe(2)
-  })
-
-  test('skips operas with auto_start false', async () => {
-    getAllOperaDefinitions.mockReturnValue([makeDefinition({ id: 'side-quest', auto_start: false })])
-    const { client, state } = createFakeClient()
-
-    await OperaService.ensureOperasForPlayer(client, PLAYER_ID)
-
-    expect(state.instances.size).toBe(0)
-  })
-
-  test('swallows a DB error instead of throwing', async () => {
-    getAllOperaDefinitions.mockReturnValue([makeDefinition()])
-    const client = { query: jest.fn().mockRejectedValue(new Error('boom')) }
-
-    await expect(OperaService.ensureOperasForPlayer(client, PLAYER_ID)).resolves.toBeUndefined()
-  })
-})
-
 describe('recordOperaAction', () => {
-  test('completes the current sequential step and announces the next one', async () => {
-    const definition = makeDefinition()
-    getAllOperaDefinitions.mockReturnValue([definition])
-    getOperaDefinition.mockReturnValue(definition)
-    const { client, state } = createFakeClient()
-    await OperaService.ensureOperasForPlayer(client, PLAYER_ID)
-    state.logs.length = 0 // isolate this action's log output
-
-    await OperaService.recordOperaAction(client, PLAYER_ID, 'hire_recruit', {})
-
-    expect(state.progress.has(`${PLAYER_ID}:tutorial:step-a`)).toBe(true)
-    expect(state.logs.map(l => l.message)).toEqual(['Recruit hired.', 'Type help.'])
-  })
-
-  test('ignores an action that does not match the currently listening step', async () => {
-    const definition = makeDefinition()
-    getAllOperaDefinitions.mockReturnValue([definition])
-    getOperaDefinition.mockReturnValue(definition)
-    const { client, state } = createFakeClient()
-    await OperaService.ensureOperasForPlayer(client, PLAYER_ID)
-
-    // step-a (hire_recruit) is current; execute_command shouldn't match yet.
-    await OperaService.recordOperaAction(client, PLAYER_ID, 'execute_command', { command: 'help' })
-
-    expect(state.progress.size).toBe(0)
-  })
-
-  test('completes the opera once every step is done, printing no line for an empty on_complete_message', async () => {
-    const definition = makeDefinition()
-    getAllOperaDefinitions.mockReturnValue([definition])
-    getOperaDefinition.mockReturnValue(definition)
-    const { client, state } = createFakeClient()
-    await OperaService.ensureOperasForPlayer(client, PLAYER_ID)
-    await OperaService.recordOperaAction(client, PLAYER_ID, 'hire_recruit', {})
-    state.logs.length = 0
-
-    await OperaService.recordOperaAction(client, PLAYER_ID, 'execute_command', { command: 'help' })
-
-    expect(state.instances.get(`${PLAYER_ID}:tutorial`).status).toBe('completed')
-    // step-b's on_complete_message is '' (silent); only the opera's closing line prints.
-    expect(state.logs.map(l => l.message)).toEqual(['Training complete.'])
-  })
-
-  test('never throws, even against a client that rejects every query', async () => {
-    getAllOperaDefinitions.mockReturnValue([makeDefinition()])
-    getOperaDefinition.mockReturnValue(makeDefinition())
-    const client = { query: jest.fn().mockRejectedValue(new Error('boom')) }
-
-    await expect(OperaService.recordOperaAction(client, PLAYER_ID, 'hire_recruit', {})).resolves.toBeUndefined()
-  })
-})
-
-describe('startOpera', () => {
-  test('rejects starting an auto_start opera manually', async () => {
-    getOperaDefinition.mockReturnValue(makeDefinition())
-    const { client } = createFakeClient()
-
-    const result = await OperaService.startOpera(client, PLAYER_ID, 'tutorial')
-
-    expect(result).toEqual({ error: 'This opera starts automatically' })
-  })
-
-  test('rejects an unknown opera id', async () => {
-    getOperaDefinition.mockReturnValue(null)
-    const { client } = createFakeClient()
-
-    const result = await OperaService.startOpera(client, PLAYER_ID, 'does-not-exist')
-
-    expect(result).toEqual({ error: 'Opera not found' })
-  })
-
-  test('starts an opt-in opera and rejects a second start', async () => {
-    const definition = makeDefinition({ id: 'side-quest', auto_start: false })
-    getOperaDefinition.mockReturnValue(definition)
-    const { client, state } = createFakeClient()
-
-    const first = await OperaService.startOpera(client, PLAYER_ID, 'side-quest')
-    expect(first).toEqual({ success: true })
-    expect(state.instances.get(`${PLAYER_ID}:side-quest`).status).toBe('in_progress')
-
-    const second = await OperaService.startOpera(client, PLAYER_ID, 'side-quest')
-    expect(second).toEqual({ error: 'Opera already started' })
-  })
-})
-
-describe('getOperaState', () => {
-  test('reports status "new" for a definition with no instance row yet, and step completion from progress', async () => {
-    const definition = makeDefinition({ auto_start: false })
-    getAllOperaDefinitions.mockReturnValue([definition])
-    getOperaDefinition.mockReturnValue(definition)
-    const { client } = createFakeClient()
-
-    const state = await OperaService.getOperaState(client, PLAYER_ID)
-
-    expect(state).toEqual([{
-      id: 'tutorial',
-      title: 'Basic Operations',
-      description: 'A guided walkthrough.',
-      autoStart: false,
-      stepOrder: 'sequential',
-      status: 'new',
-      steps: [
-        { id: 'step-a', description: 'Hire a recruit.', completed: false },
-        { id: 'step-b', description: 'Say help.', completed: false },
-      ],
-    }])
-  })
-
-  test('reflects in_progress status and per-step completion after actions', async () => {
-    const definition = makeDefinition()
-    getAllOperaDefinitions.mockReturnValue([definition])
-    getOperaDefinition.mockReturnValue(definition)
-    const { client } = createFakeClient()
-    await OperaService.ensureOperasForPlayer(client, PLAYER_ID)
-    await OperaService.recordOperaAction(client, PLAYER_ID, 'hire_recruit', {})
-
-    const state = await OperaService.getOperaState(client, PLAYER_ID)
-
-    expect(state[0].status).toBe('in_progress')
-    expect(state[0].steps).toEqual([
-      { id: 'step-a', description: 'Hire a recruit.', completed: true },
-      { id: 'step-b', description: 'Say help.', completed: false },
-    ])
-  })
-})
-
-describe('getOperaLogs', () => {
-  test('partitions log_entries by opera_id', async () => {
-    const definition = makeDefinition()
-    getAllOperaDefinitions.mockReturnValue([definition])
-    const { client } = createFakeClient()
-    await OperaService.ensureOperasForPlayer(client, PLAYER_ID)
-
-    const logs = await OperaService.getOperaLogs(client, PLAYER_ID)
-
-    expect(logs).toEqual({
-      tutorial: [
-        { tag: '[SYS]', message: 'Welcome aboard.' },
-        { tag: '[SYS]', message: 'Go hire someone.' },
-      ],
+  test('advances an instance past a matching action_performed gate', async () => {
+    getOperaDefinition.mockReturnValue(gatedGraph())
+    const client = createFakeClient({
+      instances: [{ id: 10, player_id: PLAYER_ID, template_id: 'side-quest', slot_index: 0, status: 'in_progress', state: { currentNodeId: 'ask', tags: {}, log: [], awaiting: 'link' } }],
     })
+
+    await OperaService.recordOperaAction(client, PLAYER_ID, 'execute_command', { command: 'help', args: [] })
+
+    const row = client.state.instances.find(i => i.id === 10)
+    expect(row.state.currentNodeId).toBe('thanks')
+    expect(row.state.awaiting).toBe('link')
+  })
+
+  test('leaves an instance untouched when the action does not match its pending gate', async () => {
+    getOperaDefinition.mockReturnValue(gatedGraph())
+    const client = createFakeClient({
+      instances: [{ id: 10, player_id: PLAYER_ID, template_id: 'side-quest', slot_index: 0, status: 'in_progress', state: { currentNodeId: 'ask', tags: {}, log: [], awaiting: 'link' } }],
+    })
+
+    await OperaService.recordOperaAction(client, PLAYER_ID, 'execute_command', { command: 'split-v', args: [] })
+
+    const row = client.state.instances.find(i => i.id === 10)
+    expect(row.state.currentNodeId).toBe('ask')
+  })
+
+  test('never throws, even when the instance references a removed template', async () => {
+    getOperaDefinition.mockReturnValue(null)
+    const client = createFakeClient({
+      instances: [{ id: 10, player_id: PLAYER_ID, template_id: 'gone', slot_index: 0, status: 'in_progress', state: {} }],
+    })
+
+    await expect(
+      OperaService.recordOperaAction(client, PLAYER_ID, 'execute_command', { command: 'help' }),
+    ).resolves.toBeUndefined()
+  })
+})
+
+describe('resolveChoice', () => {
+  test('rejects when the instance has no pending choice', async () => {
+    getOperaDefinition.mockReturnValue(choiceGraph())
+    const client = createFakeClient({
+      instances: [{ id: 20, player_id: PLAYER_ID, template_id: 'decision', slot_index: 0, status: 'in_progress', state: { currentNodeId: 'start', awaiting: null } }],
+    })
+
+    const result = await OperaService.resolveChoice(client, PLAYER_ID, 20, 'a')
+    expect(result).toEqual({ error: 'No pending choice' })
+  })
+
+  test('rejects an option id that is not on the pending choice', async () => {
+    getOperaDefinition.mockReturnValue(choiceGraph())
+    const client = createFakeClient({
+      instances: [{
+        id: 20, player_id: PLAYER_ID, template_id: 'decision', slot_index: 0, status: 'in_progress',
+        state: { currentNodeId: 'pick', awaiting: 'choice', pendingChoice: { nodeId: 'pick', text: 'Choose.', options: [{ id: 'a', label: 'Option A' }, { id: 'b', label: 'Option B' }] } },
+      }],
+    })
+
+    const result = await OperaService.resolveChoice(client, PLAYER_ID, 20, 'c')
+    expect(result).toEqual({ error: 'Invalid option' })
+  })
+
+  test('resolves a valid choice and advances the walk to the matching ending', async () => {
+    getOperaDefinition.mockReturnValue(choiceGraph())
+    const client = createFakeClient({
+      instances: [{
+        id: 20, player_id: PLAYER_ID, template_id: 'decision', slot_index: 0, status: 'in_progress',
+        state: { currentNodeId: 'pick', awaiting: 'choice', pendingChoice: { nodeId: 'pick', text: 'Choose.', options: [{ id: 'a', label: 'Option A' }, { id: 'b', label: 'Option B' }] } },
+      }],
+    })
+
+    const result = await OperaService.resolveChoice(client, PLAYER_ID, 20, 'b')
+    expect(result).toEqual({ success: true })
+    const row = client.state.instances.find(i => i.id === 20)
+    expect(row.status).toBe('completed') // outcome: 'neutral' on end-b -> completed, not failed
+    expect(row.state.currentNodeId).toBe('end-b')
+  })
+})
+
+describe('maintainOperaSlots', () => {
+  test('does nothing until the tutorial instance is completed', async () => {
+    getGenerationPoolDefinitions.mockReturnValue([instantGraph('template-a')])
+    const client = createFakeClient({
+      instances: [{ id: 1, player_id: PLAYER_ID, template_id: 'tutorial', slot_index: null, status: 'in_progress', state: {} }],
+      players: { [PLAYER_ID]: { opera_slot_capacity: 3 } },
+    })
+
+    await OperaService.maintainOperaSlots(client, PLAYER_ID)
+
+    expect(client.state.instances).toHaveLength(1)
+  })
+
+  test('fills every empty slot up to capacity once the tutorial is completed', async () => {
+    getOperaDefinition.mockImplementation(id => instantGraph(id))
+    getGenerationPoolDefinitions.mockReturnValue([instantGraph('template-a'), instantGraph('template-b'), instantGraph('template-c')])
+    const client = createFakeClient({
+      instances: [{ id: 1, player_id: PLAYER_ID, template_id: 'tutorial', slot_index: null, status: 'completed', state: {} }],
+      players: { [PLAYER_ID]: { opera_slot_capacity: 3 } },
+    })
+
+    await OperaService.maintainOperaSlots(client, PLAYER_ID)
+
+    const pooled = client.state.instances.filter(i => i.slot_index !== null)
+    expect(pooled).toHaveLength(3)
+    expect(new Set(pooled.map(i => i.slot_index))).toEqual(new Set([0, 1, 2]))
+  })
+
+  test('only fills the empty slots, leaving an already-active one alone', async () => {
+    getOperaDefinition.mockImplementation(id => instantGraph(id))
+    getGenerationPoolDefinitions.mockReturnValue([instantGraph('template-a'), instantGraph('template-b')])
+    const client = createFakeClient({
+      instances: [
+        { id: 1, player_id: PLAYER_ID, template_id: 'tutorial', slot_index: null, status: 'completed', state: {} },
+        { id: 2, player_id: PLAYER_ID, template_id: 'template-a', slot_index: 0, status: 'in_progress', state: { currentNodeId: 'start' } },
+      ],
+      players: { [PLAYER_ID]: { opera_slot_capacity: 2 } },
+    })
+
+    await OperaService.maintainOperaSlots(client, PLAYER_ID)
+
+    const pooled = client.state.instances.filter(i => i.slot_index !== null)
+    expect(pooled).toHaveLength(2)
+    expect(pooled.find(i => i.slot_index === 0).id).toBe(2) // untouched
+    expect(pooled.find(i => i.slot_index === 1)).toBeTruthy() // newly filled
   })
 })

@@ -1,0 +1,890 @@
+{
+  "id": "two-gangs-one-contract",
+  "title": "Two Gangs, One Contract",
+  "description": "A turf war breaks out over territory the crew has to keep passing through. Neutral is not on the table for long.",
+  "nodes": [
+    {
+      "id": "start",
+      "type": "start",
+      "text": "Two gangs are moving on the same territory near {planetName}. Neither has asked the crew to get involved. Both are about to.",
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "act1-runner",
+      "type": "story",
+      "text": "A runner from {enemyGroupName} corners a crew member in port, feeling out whether the crew can be bought.",
+      "effects": [],
+      "position": {
+        "x": 300,
+        "y": -150
+      }
+    },
+    {
+      "id": "act1-violence",
+      "type": "story",
+      "text": "The fallout from the crew's last job spills into gang crossfire before anyone's had time to process the last one.",
+      "effects": [],
+      "position": {
+        "x": 300,
+        "y": 0
+      }
+    },
+    {
+      "id": "act1-card",
+      "type": "seed",
+      "seeds": [
+        {
+          "target": "shop",
+          "params": {
+            "itemName": "Coded Data Chip"
+          },
+          "note": "A rival gang's calling card, left at a known drop point."
+        }
+      ],
+      "completionText": "The chip is retrieved.",
+      "position": {
+        "x": 300,
+        "y": 150
+      }
+    },
+    {
+      "id": "bridge-1",
+      "type": "story",
+      "text": "Whatever the opening move, the message is clear: pick a side, or get run over by whichever one wins without the crew.",
+      "position": {
+        "x": 600,
+        "y": 0
+      }
+    },
+    {
+      "id": "pick-side",
+      "type": "choice",
+      "text": "Which gang gets the crew's backing?",
+      "choiceOptions": [
+        {
+          "id": "gangA",
+          "label": "Back {enemyGroupName}"
+        },
+        {
+          "id": "gangB",
+          "label": "Back {securityGroupName}"
+        }
+      ],
+      "position": {
+        "x": 900,
+        "y": 0
+      }
+    },
+    {
+      "id": "side-gangA",
+      "type": "story",
+      "text": "Word goes out: the crew is running with {enemyGroupName} now. {securityGroupName} takes note.",
+      "effects": [],
+      "position": {
+        "x": 1200,
+        "y": -75
+      }
+    },
+    {
+      "id": "side-gangB",
+      "type": "story",
+      "text": "Word goes out: the crew is running with {securityGroupName} now. {enemyGroupName} takes note.",
+      "effects": [],
+      "position": {
+        "x": 1200,
+        "y": 75
+      }
+    },
+    {
+      "id": "bridge-2",
+      "type": "story",
+      "text": "Sides are drawn. Now the war needs winning.",
+      "position": {
+        "x": 1500,
+        "y": 0
+      }
+    },
+    {
+      "id": "act3-sabotage",
+      "type": "mission",
+      "mission": {
+        "title": "Undercut {enemyGroupName}",
+        "description": "Hit {enemyGroupName}'s hold on {planetName} before they can consolidate.",
+        "difficulty": "STANDARD",
+        "tags": [
+          "sabotage"
+        ]
+      },
+      "position": {
+        "x": 1800,
+        "y": -150
+      }
+    },
+    {
+      "id": "act3-escort",
+      "type": "mission",
+      "mission": {
+        "title": "Protect the Shipment",
+        "description": "Escort a shipment through contested territory near {planetName} without losing it to {enemyGroupName}.",
+        "difficulty": "STANDARD",
+        "tags": [
+          "escort"
+        ]
+      },
+      "position": {
+        "x": 1800,
+        "y": 0
+      }
+    },
+    {
+      "id": "act3-recon",
+      "type": "mission",
+      "mission": {
+        "title": "Read {enemyGroupName}'s Next Move",
+        "description": "Get eyes on {enemyGroupName}'s movements {distance} before they get eyes on the crew.",
+        "difficulty": "ROUTINE",
+        "tags": [
+          "recon"
+        ]
+      },
+      "position": {
+        "x": 1800,
+        "y": 150
+      }
+    },
+    {
+      "id": "bridge-3",
+      "type": "story",
+      "text": "The war keeps moving. So does everyone's tally of who owes who.",
+      "position": {
+        "x": 2100,
+        "y": 0
+      }
+    },
+    {
+      "id": "act4-evidence",
+      "type": "mission",
+      "mission": {
+        "title": "Follow the Money",
+        "description": "Something about this war doesn't add up. Trace it back {distance} before committing further.",
+        "difficulty": "HARD",
+        "tags": [
+          "recon"
+        ]
+      },
+      "position": {
+        "x": 2400,
+        "y": -150
+      }
+    },
+    {
+      "id": "act4-evidence-payoff",
+      "type": "story",
+      "text": "The trail leads somewhere neither gang wanted found.",
+      "effects": [
+        {
+          "type": "give_item",
+          "params": {
+            "itemName": "Evidence of Betrayal"
+          }
+        }
+      ],
+      "position": {
+        "x": 2700,
+        "y": 0
+      }
+    },
+    {
+      "id": "act4-fixer",
+      "type": "mission",
+      "mission": {
+        "title": "Meet the Rival's Fixer",
+        "description": "{clientName}, working the other side, wants to talk terms no one else is supposed to hear about.",
+        "difficulty": "STANDARD",
+        "tags": [
+          "negotiation"
+        ]
+      },
+      "position": {
+        "x": 2400,
+        "y": 0
+      }
+    },
+    {
+      "id": "act4-tie",
+      "type": "story",
+      "text": "One of the crew has history with someone on the other side of this -- history that makes the next call harder than it should be.",
+      "effects": [
+        {
+          "type": "adjust_stat",
+          "params": {
+            "attribute": "presence",
+            "amount": -1
+          }
+        }
+      ],
+      "position": {
+        "x": 2400,
+        "y": 150
+      }
+    },
+    {
+      "id": "bridge-4",
+      "type": "story",
+      "text": "However it played out, the war is heading somewhere. Someone has to decide where.",
+      "position": {
+        "x": 3000,
+        "y": 0
+      }
+    },
+    {
+      "id": "endgame-choice",
+      "type": "choice",
+      "text": "How does this end?",
+      "choiceOptions": [
+        {
+          "id": "truce",
+          "label": "Broker a truce between both sides"
+        },
+        {
+          "id": "wipeout",
+          "label": "Finish the losing side's operation for good"
+        },
+        {
+          "id": "blackmail",
+          "label": "Use what the crew knows to squeeze concessions from both sides"
+        },
+        {
+          "id": "walkaway",
+          "label": "Walk away and let them finish each other off"
+        }
+      ],
+      "position": {
+        "x": 3300,
+        "y": 0
+      }
+    },
+    {
+      "id": "finale-truce-mission",
+      "type": "mission",
+      "mission": {
+        "title": "Broker a Truce",
+        "description": "Get {enemyGroupName} and {securityGroupName} in the same room on {planetName} without anyone drawing first.",
+        "difficulty": "HARD",
+        "tags": [
+          "diplomacy"
+        ]
+      },
+      "position": {
+        "x": 3600,
+        "y": -300
+      }
+    },
+    {
+      "id": "finale-truce-payoff",
+      "type": "story",
+      "text": "Both sides stand down, at least for now.",
+      "effects": [
+        {
+          "type": "apply_perk",
+          "params": {
+            "perkName": "Peacemaker"
+          }
+        }
+      ],
+      "position": {
+        "x": 3900,
+        "y": -375
+      }
+    },
+    {
+      "id": "finale-truce-success-end",
+      "type": "end",
+      "outcome": "success",
+      "text": "{enemyGroupName} and {securityGroupName} both stand down. {planetName} gets to breathe.",
+      "position": {
+        "x": 4200,
+        "y": -150
+      }
+    },
+    {
+      "id": "finale-truce-fail-end",
+      "type": "end",
+      "outcome": "neutral",
+      "text": "The truce falls apart within the week. At least no one's shooting at the crew over it -- yet.",
+      "position": {
+        "x": 3900,
+        "y": -225
+      }
+    },
+    {
+      "id": "finale-wipeout-mission",
+      "type": "mission",
+      "mission": {
+        "title": "Finish the Job",
+        "description": "Whichever side is losing, make sure it stays that way.",
+        "difficulty": "PERILOUS",
+        "tags": [
+          "sabotage"
+        ]
+      },
+      "position": {
+        "x": 3600,
+        "y": -150
+      }
+    },
+    {
+      "id": "finale-wipeout-payoff",
+      "type": "story",
+      "text": "The losing side's operation doesn't survive the week.",
+      "effects": [
+        {
+          "type": "give_item",
+          "params": {
+            "itemName": "Salvaged Gang Assets"
+          }
+        },
+        {
+          "type": "apply_perk",
+          "params": {
+            "perkName": "Feared"
+          }
+        }
+      ],
+      "position": {
+        "x": 3900,
+        "y": -75
+      }
+    },
+    {
+      "id": "finale-wipeout-success-end",
+      "type": "end",
+      "outcome": "success",
+      "text": "One gang, not two. {planetName} answers to whoever the crew backed now -- and by extension, to the crew.",
+      "position": {
+        "x": 4200,
+        "y": 0
+      }
+    },
+    {
+      "id": "finale-wipeout-fail-payoff",
+      "type": "story",
+      "text": "The attempt is seen coming, and traced straight back to the crew.",
+      "effects": [
+        {
+          "type": "apply_flaw",
+          "params": {
+            "flawName": "Exposed"
+          }
+        }
+      ],
+      "position": {
+        "x": 3900,
+        "y": 75
+      }
+    },
+    {
+      "id": "finale-wipeout-fail-end",
+      "type": "end",
+      "outcome": "failure",
+      "text": "The job falls apart. Both gangs now know exactly who tried to end this, and how.",
+      "position": {
+        "x": 4200,
+        "y": 150
+      }
+    },
+    {
+      "id": "finale-blackmail-bonus-payoff",
+      "type": "story",
+      "text": "With proof of betrayal in hand, both sides fold fast.",
+      "effects": [
+        {
+          "type": "give_item",
+          "params": {
+            "itemName": "Leverage Over Both Sides"
+          }
+        },
+        {
+          "type": "apply_perk",
+          "params": {
+            "perkName": "Untouchable"
+          }
+        }
+      ],
+      "position": {
+        "x": 3600,
+        "y": 0
+      }
+    },
+    {
+      "id": "finale-blackmail-bonus-end",
+      "type": "end",
+      "outcome": "success",
+      "text": "Evidence in hand, the crew names its price to both {enemyGroupName} and {securityGroupName}. Neither can afford to refuse.",
+      "position": {
+        "x": 3900,
+        "y": 225
+      }
+    },
+    {
+      "id": "finale-blackmail-weak-payoff",
+      "type": "story",
+      "text": "Without proof, it plays as a bluff.",
+      "effects": [
+        {
+          "type": "apply_flaw",
+          "params": {
+            "flawName": "Overplayed a Weak Hand"
+          }
+        }
+      ],
+      "position": {
+        "x": 3600,
+        "y": 150
+      }
+    },
+    {
+      "id": "finale-blackmail-weak-end",
+      "type": "end",
+      "outcome": "neutral",
+      "text": "Without evidence to back the threat, both sides call the bluff. The crew gets a little less than nothing for the trouble.",
+      "position": {
+        "x": 3900,
+        "y": 375
+      }
+    },
+    {
+      "id": "finale-walkaway-end",
+      "type": "end",
+      "outcome": "neutral",
+      "text": "The crew steps back and lets {enemyGroupName} and {securityGroupName} finish what they started.",
+      "position": {
+        "x": 3600,
+        "y": 300
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "start--act1-runner",
+      "from": "start",
+      "to": "act1-runner",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 33
+          }
+        }
+      ]
+    },
+    {
+      "id": "start--act1-violence",
+      "from": "start",
+      "to": "act1-violence",
+      "priority": 1,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 50
+          }
+        }
+      ]
+    },
+    {
+      "id": "start--act1-card",
+      "from": "start",
+      "to": "act1-card",
+      "priority": 2,
+      "conditions": []
+    },
+    {
+      "id": "act1-runner--bridge-1--3",
+      "from": "act1-runner",
+      "to": "bridge-1",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "act1-violence--bridge-1--4",
+      "from": "act1-violence",
+      "to": "bridge-1",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "complete_quest",
+            "match": {
+              "scope": "any"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "act1-card--bridge-1--5",
+      "from": "act1-card",
+      "to": "bridge-1",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "purchase_quest_item",
+            "match": {
+              "itemName": "Coded Data Chip"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-1--pick-side--6",
+      "from": "bridge-1",
+      "to": "pick-side",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "pick-side--side-gangA--7",
+      "from": "pick-side",
+      "to": "side-gangA",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "gangA"
+          }
+        }
+      ]
+    },
+    {
+      "id": "pick-side--side-gangB--8",
+      "from": "pick-side",
+      "to": "side-gangB",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "gangB"
+          }
+        }
+      ]
+    },
+    {
+      "id": "side-gangA--bridge-2--9",
+      "from": "side-gangA",
+      "to": "bridge-2",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "side-gangB--bridge-2--10",
+      "from": "side-gangB",
+      "to": "bridge-2",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "bridge-2--act3-sabotage",
+      "from": "bridge-2",
+      "to": "act3-sabotage",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 33
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-2--act3-escort",
+      "from": "bridge-2",
+      "to": "act3-escort",
+      "priority": 1,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 50
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-2--act3-recon",
+      "from": "bridge-2",
+      "to": "act3-recon",
+      "priority": 2,
+      "conditions": []
+    },
+    {
+      "id": "act3-sabotage--bridge-3--14",
+      "from": "act3-sabotage",
+      "to": "bridge-3",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "act3-escort--bridge-3--15",
+      "from": "act3-escort",
+      "to": "bridge-3",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "act3-recon--bridge-3--16",
+      "from": "act3-recon",
+      "to": "bridge-3",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "bridge-3--act4-evidence",
+      "from": "bridge-3",
+      "to": "act4-evidence",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 33
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-3--act4-fixer",
+      "from": "bridge-3",
+      "to": "act4-fixer",
+      "priority": 1,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 50
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-3--act4-tie",
+      "from": "bridge-3",
+      "to": "act4-tie",
+      "priority": 2,
+      "conditions": []
+    },
+    {
+      "id": "act4-evidence--act4-evidence-payoff--20",
+      "from": "act4-evidence",
+      "to": "act4-evidence-payoff",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "previous_outcome",
+          "params": {
+            "equals": "success"
+          }
+        }
+      ]
+    },
+    {
+      "id": "act4-evidence--bridge-4--21",
+      "from": "act4-evidence",
+      "to": "bridge-4",
+      "priority": 1,
+      "conditions": []
+    },
+    {
+      "id": "act4-evidence-payoff--bridge-4--22",
+      "from": "act4-evidence-payoff",
+      "to": "bridge-4",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "act4-fixer--bridge-4--23",
+      "from": "act4-fixer",
+      "to": "bridge-4",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "act4-tie--bridge-4--24",
+      "from": "act4-tie",
+      "to": "bridge-4",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "bridge-4--endgame-choice--25",
+      "from": "bridge-4",
+      "to": "endgame-choice",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "endgame-choice--finale-truce-mission--26",
+      "from": "endgame-choice",
+      "to": "finale-truce-mission",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "truce"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-truce-mission--finale-truce-payoff--27",
+      "from": "finale-truce-mission",
+      "to": "finale-truce-payoff",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "previous_outcome",
+          "params": {
+            "equals": "success"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-truce-mission--finale-truce-fail-end--28",
+      "from": "finale-truce-mission",
+      "to": "finale-truce-fail-end",
+      "priority": 1,
+      "conditions": []
+    },
+    {
+      "id": "finale-truce-payoff--finale-truce-success-end--29",
+      "from": "finale-truce-payoff",
+      "to": "finale-truce-success-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "endgame-choice--finale-wipeout-mission--30",
+      "from": "endgame-choice",
+      "to": "finale-wipeout-mission",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "wipeout"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-wipeout-mission--finale-wipeout-payoff--31",
+      "from": "finale-wipeout-mission",
+      "to": "finale-wipeout-payoff",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "previous_outcome",
+          "params": {
+            "equals": "success"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-wipeout-mission--finale-wipeout-fail-payoff--32",
+      "from": "finale-wipeout-mission",
+      "to": "finale-wipeout-fail-payoff",
+      "priority": 1,
+      "conditions": []
+    },
+    {
+      "id": "finale-wipeout-payoff--finale-wipeout-success-end--33",
+      "from": "finale-wipeout-payoff",
+      "to": "finale-wipeout-success-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-wipeout-fail-payoff--finale-wipeout-fail-end--34",
+      "from": "finale-wipeout-fail-payoff",
+      "to": "finale-wipeout-fail-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "endgame-choice--finale-blackmail-bonus-payoff--35",
+      "from": "endgame-choice",
+      "to": "finale-blackmail-bonus-payoff",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "blackmail"
+          }
+        },
+        {
+          "type": "has_item",
+          "params": {
+            "itemName": "Evidence of Betrayal"
+          }
+        }
+      ]
+    },
+    {
+      "id": "endgame-choice--finale-blackmail-weak-payoff--36",
+      "from": "endgame-choice",
+      "to": "finale-blackmail-weak-payoff",
+      "priority": 1,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "blackmail"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-blackmail-bonus-payoff--finale-blackmail-bonus-end--37",
+      "from": "finale-blackmail-bonus-payoff",
+      "to": "finale-blackmail-bonus-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-blackmail-weak-payoff--finale-blackmail-weak-end--38",
+      "from": "finale-blackmail-weak-payoff",
+      "to": "finale-blackmail-weak-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "endgame-choice--finale-walkaway-end--39",
+      "from": "endgame-choice",
+      "to": "finale-walkaway-end",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "walkaway"
+          }
+        }
+      ]
+    }
+  ]
+}

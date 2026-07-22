@@ -5,6 +5,8 @@ import { catchError } from 'rxjs/operators';
 import { GameSnapshot } from '../models/game-state';
 import { Recruit } from '../models/recruit';
 import { Mission } from '../models/mission';
+import { OperaSummary } from '../models/opera';
+import { LogEntry } from '../models/log';
 
 interface StateResponse {
   state?: GameSnapshot;
@@ -44,6 +46,10 @@ export class GameApiService {
     return firstValueFrom(this.http.patch<StateResponse>(`${this.base}/recruits/${id}`, { name }).pipe(catchError(err => of(this.onError(err)))));
   }
 
+  fireRecruit(id: string): Promise<StateResponse> {
+    return firstValueFrom(this.http.post<StateResponse>(`${this.base}/recruits/${id}/fire`, {}).pipe(catchError(err => of(this.onError(err)))));
+  }
+
   startMission(templateId: number, shipId: number): Promise<StateResponse> {
     return firstValueFrom(this.http.post<StateResponse>(`${this.base}/missions/${templateId}/start`, { shipId }).pipe(catchError(err => of(this.onError(err)))));
   }
@@ -64,18 +70,24 @@ export class GameApiService {
     return firstValueFrom(this.http.get<{ missions: Mission[] }>(`${this.base}/missions/history`));
   }
 
-  startOpera(id: string): Promise<{ success?: boolean; error?: string }> {
+  chooseOpera(id: string, optionId: string): Promise<{ success?: boolean; error?: string }> {
     return firstValueFrom(
-      this.http.post<{ success?: boolean; error?: string }>(`/api/opera/${id}/start`, {})
+      this.http.post<{ success?: boolean; error?: string }>(`/api/opera/${id}/choose`, { optionId })
         .pipe(catchError(err => of(this.onError(err))))
     );
   }
 
-  // Fire-and-forget telemetry hook, not a player-facing action: swallow
-  // errors rather than surfacing them, since command responsiveness must
-  // never depend on Opera tracking (see command.service.ts's routeCommand()).
-  recordOperaCommand(command: string, args: string[]): void {
-    this.http.post('/api/opera/command', { command, args }).pipe(catchError(() => of(null))).subscribe();
+  // Fire-and-forget telemetry hook, not a player-facing action: the caller
+  // (command.service.ts's routeCommand()) never awaits this, so command
+  // responsiveness never depends on Opera tracking. It still returns the
+  // response (rather than subscribing and discarding it) so OperaService can
+  // apply the fresh opera state once it lands — see opera.service.ts's
+  // recordCommand() for why that matters for local, UI-only commands.
+  recordOperaCommand(command: string, args: string[]): Promise<{ operas: OperaSummary[]; operaLogs: Record<string, LogEntry[]> } | null> {
+    return firstValueFrom(
+      this.http.post<{ operas: OperaSummary[]; operaLogs: Record<string, LogEntry[]> }>('/api/opera/command', { command, args })
+        .pipe(catchError(() => of(null))),
+    );
   }
 
   devRefresh(): Promise<{ error?: string }> {

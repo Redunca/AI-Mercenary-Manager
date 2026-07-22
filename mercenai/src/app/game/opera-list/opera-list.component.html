@@ -3,19 +3,21 @@
 <table class="indent-one">
   <tr>
     <th>ID</th>
+    <th>Slot</th>
     <th>Title</th>
     <th>Status</th>
     <th>Progress</th>
   </tr>
   <tr *ngFor="let o of operas">
     <td>{{ o.id }}</td>
+    <td>{{ o.slotIndex === null ? '—' : o.slotIndex }}</td>
     <td>{{ o.title }}</td>
     <td>{{ o.status }}</td>
-    <td>{{ completedStepCount(o) }}/{{ o.steps.length }}</td>
+    <td>{{ doneTaskCount(o) }} task{{ doneTaskCount(o) === 1 ? '' : 's' }} done</td>
   </tr>
   <tr *ngIf="operas.length === 0">
-    <td colspan="4" class="indent-one muted">No operas yet</td>
+    <td colspan="5" class="indent-one muted">No operas yet</td>
   </tr>
 </table>
 <div>{{ '}' }}</div>
-<div class="hint">[ detail &lt;id&gt; ] for details, [ start &lt;id&gt; ] to begin an opt-in opera</div>
+<div class="hint">[ detail &lt;id&gt; ] for details</div>
