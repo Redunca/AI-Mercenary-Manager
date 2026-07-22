@@ -113,6 +113,10 @@ export class GraphService {
     this.updateNode(id, { position });
   }
 
+  resizeNode(id: string, size: { width: number; height: number }): void {
+    this.updateNode(id, { size });
+  }
+
   deleteNode(id: string): void {
     this.mutate(def => ({
       ...def,

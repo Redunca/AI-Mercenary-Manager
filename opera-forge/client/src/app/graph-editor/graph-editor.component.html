@@ -60,11 +60,20 @@
           (onEdgesChange)="onEdgesChange($event)"
           (connect)="onConnect($event)"
         >
+          <!-- ngx-vflow measures this box's rendered size once on mount and
+               adopts whatever it finds as the node's size, so min-width/
+               height (the box's floor before content can grow it) must
+               equal the node's saved size, or a saved resize gets silently
+               forgotten back down to the default. -->
           <ng-template nodeHtml let-ctx>
             <div
+              resizable
+              resizerColor="#5b8def"
               class="ogl-node"
               [class]="'type-' + ctx.node.data.type"
               [class.selected]="ctx.selected()"
+              [style.min-width.px]="ctx.node.data.size?.width ?? 220"
+              [style.min-height.px]="ctx.node.data.size?.height ?? 96"
               (click)="graphService.selectNode(ctx.node.data.id)"
             >
               @if (ctx.node.data.type !== 'start') {

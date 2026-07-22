@@ -92,7 +92,8 @@
   border: 2px solid var(--border-color, #444);
   background: #232427;
   padding: 0.4rem 0.6rem;
-  display: block;
+  display: flex;
+  flex-direction: column;
   cursor: grab;
   position: relative;
 
@@ -106,14 +107,14 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
     opacity: 0.7;
+    flex-shrink: 0;
   }
 
   .node-body {
     font-size: 0.85em;
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
   }
 
   &.type-start {

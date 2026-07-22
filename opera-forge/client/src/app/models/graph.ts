@@ -98,6 +98,11 @@ export interface Position {
   y: number;
 }
 
+export interface Size {
+  width: number;
+  height: number;
+}
+
 export interface Effect {
   type: EffectType;
   params: Record<string, unknown>;
@@ -157,6 +162,9 @@ export interface GraphNode {
   id: string;
   type: NodeType;
   position?: Position;
+  // User-set size from dragging the node's resize handle in the graph
+  // editor; unset means the node uses the editor's default box size.
+  size?: Size;
   // start: opera-level "on_start_message" equivalent, shown once on entry.
   // story/end: the beat's narrative text. choice: the prompt shown before
   // its options.

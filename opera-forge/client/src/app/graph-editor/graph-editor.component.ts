@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   Connection, ConnectionControllerDirective, ConnectionSettings, Edge, EdgeLabelHtmlTemplateDirective, HandleComponent,
-  HtmlTemplateNode, NodeChange, EdgeChange, NodeHtmlTemplateDirective, VflowComponent,
+  HtmlTemplateNode, NodeChange, EdgeChange, NodeHtmlTemplateDirective, ResizableComponent, VflowComponent,
 } from 'ngx-vflow';
 import { GraphService } from '../core/graph.service';
 import { GraphLink, GraphNode } from '../models/graph';
@@ -13,12 +13,29 @@ import { QuickGenerationComponent } from './quick-generation.component';
 
 type VNode = HtmlTemplateNode<GraphNode>;
 
+// A node's live width/height, once ngx-vflow's own resize handles take over
+// (see the `resizable` div in the template), lives in ngx-vflow's internal
+// model, not ours -- our persisted `size` only needs to seed that model on
+// its first mount. Handing ngx-vflow a brand-new vnode object (see
+// vflowNodes below) whenever `size` changes forces it to remount the node,
+// which re-triggers that same first-mount seeding and can bounce the live
+// size back to a stale value. Comparing nodes with `size` excluded lets a
+// resize-only update reuse the existing vnode/mount and skip that churn.
+function sameNodeIgnoringSize(a: GraphNode, b: GraphNode): boolean {
+  const keys = new Set([...Object.keys(a), ...Object.keys(b)]) as Set<keyof GraphNode>;
+  keys.delete('size');
+  for (const key of keys) {
+    if (a[key] !== b[key]) return false;
+  }
+  return true;
+}
+
 @Component({
   selector: 'app-graph-editor',
   standalone: true,
   imports: [
     CommonModule, FormsModule, VflowComponent, HandleComponent, NodeHtmlTemplateDirective, EdgeLabelHtmlTemplateDirective,
-    ConnectionControllerDirective, NodePanelComponent, LinkPanelComponent, QuickGenerationComponent,
+    ConnectionControllerDirective, ResizableComponent, NodePanelComponent, LinkPanelComponent, QuickGenerationComponent,
   ],
   templateUrl: './graph-editor.component.html',
   styleUrl: './graph-editor.component.scss',
@@ -46,6 +63,7 @@ export class GraphEditorComponent implements OnInit, OnDestroy {
   private nodeWrapperCache = new Map<string, { domainNode: GraphNode; vnode: VNode }>();
   private linkWrapperCache = new Map<string, { domainLink: GraphLink; edge: Edge<GraphLink> }>();
   private positionDebounceTimers = new Map<string, ReturnType<typeof setTimeout>>();
+  private sizeDebounceTimers = new Map<string, ReturnType<typeof setTimeout>>();
 
   readonly vflowNodes = computed<VNode[]>(() => {
     const def = this.graphService.graph();
@@ -53,14 +71,15 @@ export class GraphEditorComponent implements OnInit, OnDestroy {
     const nextCache = new Map<string, { domainNode: GraphNode; vnode: VNode }>();
     const nodes = def.nodes.map(node => {
       const cached = this.nodeWrapperCache.get(node.id);
-      const entry = cached && cached.domainNode === node ? cached : {
+      const reusable = cached && (cached.domainNode === node || sameNodeIgnoringSize(cached.domainNode, node));
+      const entry = reusable ? { domainNode: node, vnode: cached!.vnode } : {
         domainNode: node,
         vnode: {
           id: node.id,
           type: 'html-template',
           point: node.position ?? { x: 0, y: 0 },
-          width: 220,
-          height: 96,
+          width: node.size?.width ?? 220,
+          height: node.size?.height ?? 96,
           draggable: true,
           data: node,
         } as VNode,
@@ -160,7 +179,31 @@ export class GraphEditorComponent implements OnInit, OnDestroy {
         // wrapper cache mid-gesture and (per the comment above) tear down
         // the very node being dragged, killing the drag. Debounce so we
         // only persist once the pointer settles.
-        this.debouncedMoveNode(change.id, change.point);
+        // ngx-vflow also reports a 'position' change with the node's
+        // *current, unmoved* point around unrelated updates (e.g. a
+        // resize) -- committing that no-op would hand vflowNodes a new
+        // `position` object reference for a value that didn't actually
+        // change, defeating sameNodeIgnoringSize's reuse check below and
+        // forcing the same disruptive remount it exists to avoid.
+        const current = this.graphService.graph()?.nodes.find(n => n.id === change.id);
+        const currentPoint = current?.position ?? { x: 0, y: 0 };
+        if (currentPoint.x !== change.point.x || currentPoint.y !== change.point.y) {
+          this.debouncedMoveNode(change.id, change.point);
+        }
+      } else if (change.type === 'size') {
+        // ngx-vflow reports a node's rendered box size on every layout
+        // pass, not just on an actual drag-resize (e.g. once on initial
+        // mount) -- only treat it as a user edit (dirty + persisted) when
+        // it actually differs from what's already on the domain node, so
+        // merely opening/viewing a graph doesn't mark it dirty.
+        const current = this.graphService.graph()?.nodes.find(n => n.id === change.id);
+        const currentSize = current?.size ?? { width: 220, height: 96 };
+        if (currentSize.width !== change.size.width || currentSize.height !== change.size.height) {
+          // Same rationale as the position debounce above: ngx-vflow's own
+          // resize drag drives the node's live size, and rebuilding the
+          // wrapper cache mid-drag would tear down the node being resized.
+          this.debouncedResizeNode(change.id, change.size);
+        }
       } else if (change.type === 'select') {
         if (change.selected) this.graphService.selectNode(change.id);
         else if (this.graphService.selectedNodeId() === change.id) this.graphService.selectNode(null);
@@ -177,9 +220,20 @@ export class GraphEditorComponent implements OnInit, OnDestroy {
     }, 250));
   }
 
+  private debouncedResizeNode(id: string, size: { width: number; height: number }): void {
+    const existing = this.sizeDebounceTimers.get(id);
+    if (existing) clearTimeout(existing);
+    this.sizeDebounceTimers.set(id, setTimeout(() => {
+      this.sizeDebounceTimers.delete(id);
+      this.graphService.resizeNode(id, size);
+    }, 250));
+  }
+
   ngOnDestroy(): void {
     for (const timer of this.positionDebounceTimers.values()) clearTimeout(timer);
     this.positionDebounceTimers.clear();
+    for (const timer of this.sizeDebounceTimers.values()) clearTimeout(timer);
+    this.sizeDebounceTimers.clear();
   }
 
   onEdgesChange(changes: EdgeChange[]): void {
