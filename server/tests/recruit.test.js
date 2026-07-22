@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path')
 const { rollInRange } = require('../src/services/dice.service')
-const { generateCandidate, computeMaxHp, computeGuard, bestCombatStat, rowToCandidate, rowToRecruit, ATTRIBUTE_KEYS } = require('../src/domain/recruit')
+const { generateCandidate, buildFullName, computeMaxHp, computeGuard, bestCombatStat, rowToCandidate, rowToRecruit, ATTRIBUTE_KEYS } = require('../src/domain/recruit')
 
 const DATA_DIR = path.join(__dirname, '../data')
 function loadJson(name) {
@@ -66,6 +66,25 @@ describe('Recruit Domain', () => {
     expect(new Set(r.flaws.map(f => f.name)).size).toBe(r.flaws.length);
   });
 });
+
+describe('buildFullName', () => {
+  // Always picks the first element of whichever array it's asked to roll
+  // against, so the resulting name is fully deterministic: first name
+  // "Kade", surname "Sorenson", codename "Reaper", letter "A".
+  const firstIndex = () => 0
+
+  test('jack-of-all-trades is "{first} {last}"', () => {
+    expect(buildFullName('jack-of-all-trades', firstIndex)).toBe('Kade Sorenson')
+  })
+
+  test('well-rounded is "{first} {letter}. {last}"', () => {
+    expect(buildFullName('well-rounded', firstIndex)).toBe('Kade A. Sorenson')
+  })
+
+  test('specialized is \'{first} "{codename}" {last}\'', () => {
+    expect(buildFullName('specialized', firstIndex)).toBe('Kade "Reaper" Sorenson')
+  })
+})
 
 describe('rowToCandidate', () => {
   test('maps a database row to the candidate shape', () => {
