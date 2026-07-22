@@ -19,7 +19,14 @@ export class MissionService {
 
   async startMission(missionId: number, shipId: number): Promise<string | null> {
     const result = await this.api.startMission(missionId, shipId);
-    if (result.error) return result.error;
+    if (result.error) {
+      // A failed start commonly means the client's mission list is stale
+      // (the board rotated since the last sync, discarding the id the
+      // player just tried) -- resync so they see the current, valid board
+      // immediately instead of being stuck retrying a ghost id.
+      await this.injector.get(GameSyncService).sync();
+      return result.error;
+    }
     if (result.state) this.injector.get(GameSyncService).applyState(result.state);
     return null;
   }

@@ -727,7 +727,7 @@ describe('GameService', () => {
     test('refuses an unknown mission', async () => {
       await bootstrapWithDockedShip()
       const result = await GameService.startMission(9999, 1)
-      expect(result.error).toBe('Mission not found')
+      expect(result.error).toBe('Mission not found -- the board may have refreshed')
     })
 
     test('refuses to relaunch a mission that is already in progress', async () => {
@@ -785,9 +785,9 @@ describe('GameService', () => {
 
       expect(result.error).toBeUndefined()
       expect(ConsumableService.consumeFromShipInventory).toHaveBeenCalledWith(expect.anything(), 1, 'SPEED_BOOST')
-      const eventCount = state.missionTemplates.find(t => t.id === 1).events.length
-      expect(state.missionInstances[0].travel_segment_ms).toBe(travelSegmentMs(eventCount, 200))
-      expect(state.missionInstances[0].events_segment_ms).toBe(eventsSegmentMs(eventCount))
+      const template = state.missionTemplates.find(t => t.id === 1)
+      expect(state.missionInstances[0].travel_segment_ms).toBe(travelSegmentMs(template.difficulty, 200))
+      expect(state.missionInstances[0].events_segment_ms).toBe(eventsSegmentMs(template.difficulty, template.events.length))
     })
 
     test('refuses when the speed-boost item is not in this ship\'s inventory', async () => {
@@ -810,8 +810,8 @@ describe('GameService', () => {
       await GameService.startMission(1, 1)
 
       expect(ConsumableService.getConsumable).not.toHaveBeenCalled()
-      const eventCount = state.missionTemplates.find(t => t.id === 1).events.length
-      expect(state.missionInstances[0].travel_segment_ms).toBe(travelSegmentMs(eventCount, 100))
+      const template = state.missionTemplates.find(t => t.id === 1)
+      expect(state.missionInstances[0].travel_segment_ms).toBe(travelSegmentMs(template.difficulty, 100))
     })
   })
 
@@ -831,6 +831,44 @@ describe('GameService', () => {
     const TWO_EVENT_TEMPLATE_ID = 101
     const HP_LOSS_TEMPLATE_ID = 102
     const FORCED_DEPARTURE_TEMPLATE_ID = 103
+    const PACED_TEMPLATE_ID = 104
+
+    test('events resolve one at a time as the EVENT phase elapses, not all at once', async () => {
+      const { travelSegmentMs, eventsSegmentMs } = require('../src/domain/mission')
+      const difficulty = 'STANDARD'
+      const eventCount = 3
+      const instance = await launchSeededMission({
+        id: PACED_TEMPLATE_ID,
+        difficulty,
+        events: [
+          buildEvent({ id: 'e1', type: 'RECON', attribute: 'perception', dc: 10, failureConsequence: 'HP_LOSS', rewardAmount: 100 }),
+          buildEvent({ id: 'e2', type: 'BREACH', attribute: 'engineering', dc: 10, failureConsequence: 'HP_LOSS', rewardAmount: 100 }),
+          buildEvent({ id: 'e3', type: 'SURVIVAL', attribute: 'survival', dc: 10, failureConsequence: 'HP_LOSS', rewardAmount: 100 }),
+        ],
+      })
+      rollAction.mockReturnValue({ d20: 20, bonus: 0, diceNotation: '—', total: 20 })
+
+      const travelMs = travelSegmentMs(difficulty, 100)
+      const eventsMs = eventsSegmentMs(difficulty, eventCount)
+      const perEventMs = eventsMs / eventCount
+
+      // Just long enough into the EVENT phase for exactly one event's own
+      // time slice to have elapsed -- the other two must NOT resolve yet.
+      instance.started_at = new Date(Date.now() - (travelMs + perEventMs))
+      await GameService.syncGame()
+      let updated = state.missionInstances[0]
+      expect(updated.current_event_index).toBe(1)
+      expect(updated.event_results).toHaveLength(1)
+      expect(updated.status).toBe('in_progress')
+
+      // Now well past the full EVENT window: the remaining two resolve.
+      updated.started_at = new Date(Date.now() - 60 * 60 * 1000)
+      await GameService.syncGame()
+      updated = state.missionInstances[0]
+      expect(updated.current_event_index).toBe(eventCount)
+      expect(updated.event_results).toHaveLength(eventCount)
+      expect(updated.status).toBe('success')
+    })
 
     test('a successful mission returns the crew and the ship to base once time has elapsed', async () => {
       const instance = await launchSeededMission({
@@ -841,7 +879,7 @@ describe('GameService', () => {
           buildEvent({ id: 'e2', type: 'BREACH', attribute: 'engineering', dc: 10, failureConsequence: 'HP_LOSS', rewardAmount: 150 }),
         ],
       })
-      instance.started_at = new Date(Date.now() - 10 * 60 * 1000) // well past the mission's duration
+      instance.started_at = new Date(Date.now() - 60 * 60 * 1000) // well past the mission's duration
       rollAction.mockReturnValue({ d20: 20, bonus: 0, diceNotation: '—', total: 20 })
 
       await GameService.syncGame()
@@ -870,7 +908,7 @@ describe('GameService', () => {
           buildEvent({ id: 'e3', type: 'SURVIVAL', attribute: 'survival', dc: 20, failureConsequence: 'HP_LOSS' }),
         ],
       })
-      instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
+      instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
       rollAction.mockReturnValue({ d20: 1, bonus: 0, diceNotation: '—', total: 1 })
       state.recruits.find(r => r.id === 1).hp = 3 // dies on the first HP_LOSS failure (rollDie -> 3)
       rollDie.mockReturnValue(3)
@@ -895,7 +933,7 @@ describe('GameService', () => {
           buildEvent({ id: 'e3', type: 'SURVIVAL', attribute: 'survival', dc: 30, failureConsequence: 'HP_LOSS' }),
         ],
       })
-      instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
+      instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
       rollAction
         .mockReturnValueOnce({ d20: 20, bonus: 0, diceNotation: '—', total: 20 }) // e1 success
         .mockReturnValueOnce({ d20: 20, bonus: 0, diceNotation: '—', total: 20 }) // e2 success
@@ -925,7 +963,7 @@ describe('GameService', () => {
           buildEvent({ id: 'e2', type: 'BREACH', attribute: 'engineering', dc: 5, failureConsequence: 'NO_REWARD', rewardAmount: 150 }),
         ],
       })
-      instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
+      instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
       rollAction
         .mockReturnValueOnce({ d20: 1, bonus: 0, diceNotation: '—', total: 1 })   // e1 fails -> NO_REWARD, rewardForfeited = true
         .mockReturnValueOnce({ d20: 20, bonus: 0, diceNotation: '—', total: 20 }) // e2 succeeds
@@ -950,7 +988,7 @@ describe('GameService', () => {
           buildEvent({ id: 'e3', type: 'SURVIVAL', attribute: 'survival', dc: 20, failureConsequence: 'HP_LOSS' }),
         ],
       })
-      instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
+      instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
       rollAction.mockReturnValue({ d20: 1, bonus: 0, diceNotation: '—', total: 1 }) // systematic failure
       rollDie.mockReturnValue(4)
 
@@ -976,7 +1014,7 @@ describe('GameService', () => {
           buildEvent({ id: 'e3', type: 'SURVIVAL', attribute: 'survival', dc: 20, failureConsequence: 'HP_LOSS' }),
         ],
       })
-      instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
+      instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
       rollAction.mockReturnValue({ d20: 1, bonus: 0, diceNotation: '—', total: 1 })
       state.recruits.find(r => r.id === 1).hp = 3 // dies on the first HP_LOSS failure (rollDie -> 3)
       rollDie.mockReturnValue(3)
@@ -1003,7 +1041,7 @@ describe('GameService', () => {
           buildEvent({ id: 'e2', type: 'RECON', attribute: 'perception', dc: 21, failureConsequence: 'FORCED_DEPARTURE' }),
         ],
       })
-      instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
+      instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
       rollAction
         .mockReturnValueOnce({ d20: 20, bonus: 0, diceNotation: '—', total: 20 }) // 1st RECON success (dc17)
         .mockReturnValueOnce({ d20: 1, bonus: 0, diceNotation: '—', total: 1 })   // 2nd RECON failure -> FORCED_DEPARTURE
@@ -1041,7 +1079,7 @@ describe('GameService', () => {
           buildEvent({ id: 'e2', type: 'RECON', attribute: 'perception', dc: 21, failureConsequence: 'FORCED_DEPARTURE' }),
         ],
       })
-      state.missionInstances[0].started_at = new Date(Date.now() - 10 * 60 * 1000)
+      state.missionInstances[0].started_at = new Date(Date.now() - 60 * 60 * 1000)
       rollAction
         .mockReturnValueOnce({ d20: 20, bonus: 0, diceNotation: '—', total: 20 }) // RECON success
         .mockReturnValueOnce({ d20: 1, bonus: 0, diceNotation: '—', total: 1 })   // RECON failure -> FORCED_DEPARTURE
@@ -1088,7 +1126,7 @@ describe('GameService', () => {
 
     test('the crew defeats the enemy: the event succeeds, the reward is earned, and one SYS log is written per round', async () => {
       const instance = await launchCombatMission()
-      instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
+      instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
       // A single overwhelming roll: the RECON check succeeds, and in both
       // COMBAT events the recruit (tied on agility with the enemy, so acting
       // first) one-shots the enemy before it ever gets a turn.
@@ -1111,7 +1149,7 @@ describe('GameService', () => {
 
     test('the crew loses a COMBAT event: the mission is forced to return and the recruit permanently loses 1 max HP', async () => {
       const instance = await launchCombatMission()
-      instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
+      instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
       rollAction.mockReturnValue({ d20: 17, bonus: 0, diceNotation: '—', total: 17 })
       // Enemy Agility primary (6, faster than the recruit's 4) so it always
       // strikes first, and its roll (17) beats the recruit's Guard (16) for a
@@ -1137,7 +1175,7 @@ describe('GameService', () => {
 
     test('a HEAL consumable intercepts a would-be knockout during combat, preventing that knockout\'s permanent injury', async () => {
       const instance = await launchCombatMission()
-      instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
+      instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
       const recruit = state.recruits.find(r => r.id === 1)
       recruit.hp = 5 // one big hit would otherwise knock them out
       // Enemy Agility primary (6) so it acts first and hits hard (total 999);
@@ -1160,7 +1198,7 @@ describe('GameService', () => {
 
     test('a knockout that drops max HP to half the original (or below) kills the recruit', async () => {
       const instance = await launchCombatMission()
-      instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
+      instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
       const recruit = state.recruits.find(r => r.id === 1)
       recruit.max_hp = 4
       recruit.hp = 3 // original_max_hp is still 26 from hiring, so half of it is 13
@@ -1202,7 +1240,7 @@ describe('GameService', () => {
           buildEvent({ id: 'e2', type: 'INFILTRATION', attribute: 'agility', dc: 10, failureConsequence: 'HP_LOSS' }),
         ],
       })
-      instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
+      instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
       rollAction.mockReturnValue({ d20: 20, bonus: 0, diceNotation: '—', total: 20 })
       ConsumableService.consumeFromShipInventory.mockImplementation((client, shipId, effect, matcher) => {
         if (effect === 'ATTRIBUTE_BOOST' && matcher && matcher({ attribute: 'learning' })) {
@@ -1228,7 +1266,7 @@ describe('GameService', () => {
           buildEvent({ id: 'e3', type: 'SURVIVAL', attribute: 'survival', dc: 20, failureConsequence: 'HP_LOSS' }),
         ],
       })
-      instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
+      instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
       rollAction
         .mockReturnValueOnce({ d20: 1, bonus: 0, diceNotation: '—', total: 1 })   // ENGINEERING(HP_LOSS) failure
         .mockReturnValue({ d20: 20, bonus: 0, diceNotation: '—', total: 20 })     // remaining events succeed
@@ -1256,7 +1294,7 @@ describe('GameService', () => {
           buildEvent({ id: 'e3', type: 'BREACH', attribute: 'learning', dc: 30, failureConsequence: 'SHIP_DAMAGE' }),
         ],
       })
-      instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
+      instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
       rollAction
         .mockReturnValueOnce({ d20: 30, bonus: 0, diceNotation: '—', total: 30 }) // RECON success
         .mockReturnValueOnce({ d20: 30, bonus: 0, diceNotation: '—', total: 30 }) // BREACH(FORCED_DEPARTURE) success
@@ -1286,7 +1324,7 @@ describe('GameService', () => {
           buildEvent({ id: 'e3', type: 'BREACH', attribute: 'learning', dc: 30, failureConsequence: 'SHIP_DAMAGE' }),
         ],
       })
-      instance.started_at = new Date(Date.now() - 10 * 60 * 1000)
+      instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
       rollAction
         .mockReturnValueOnce({ d20: 30, bonus: 0, diceNotation: '—', total: 30 }) // RECON success
         .mockReturnValueOnce({ d20: 30, bonus: 0, diceNotation: '—', total: 30 }) // BREACH(FORCED_DEPARTURE) success
@@ -1388,7 +1426,7 @@ describe('GameService', () => {
       ShipService.getShip.mockResolvedValue({ id: 1, player_id: 1, crew: [1], status: 'docked', deleted_at: null })
       await GameService.startMission(201, 1)
       rollAction.mockReturnValue({ d20: 20, bonus: 0, diceNotation: '—', total: 20 })
-      state.missionInstances[0].started_at = new Date(Date.now() - 10 * 60 * 1000) // well past the mission's duration
+      state.missionInstances[0].started_at = new Date(Date.now() - 60 * 60 * 1000) // well past the mission's duration
 
       await GameService.syncGame()
 

@@ -574,9 +574,9 @@ describe('Full flow: buy ship -> hire -> assign crew -> buy item -> assign inven
 
     // the speed item shortened the travel leg compared to the ship's base speed (120)
     const { travelSegmentMs } = require('../src/domain/mission')
-    const eventCount = state.missionTemplates.find(t => t.id === mission.id).events.length
-    expect(instance.travel_segment_ms).toBe(travelSegmentMs(eventCount, 120 * 1.5))
-    expect(instance.travel_segment_ms).toBeLessThan(travelSegmentMs(eventCount, 120))
+    const missionDifficulty = state.missionTemplates.find(t => t.id === mission.id).difficulty
+    expect(instance.travel_segment_ms).toBe(travelSegmentMs(missionDifficulty, 120 * 1.5))
+    expect(instance.travel_segment_ms).toBeLessThan(travelSegmentMs(missionDifficulty, 120))
 
     // the item was consumed: no longer in the ship's inventory
     expect(state.consumables.find(c => c.id === consumableId)).toBeUndefined()

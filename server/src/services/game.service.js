@@ -4,7 +4,7 @@ const { pool } = require('../db/pool')
 const { rollAction, rollDie, rollInRange } = require('./dice.service')
 const { generateCandidate, rowToCandidate, rowToRecruit, computeMaxHp } = require('../domain/recruit')
 const { buildEnemy, runAutoBattle } = require('../domain/combat')
-const { DURATION_PER_EVENT_MS, travelSegmentMs, eventsSegmentMs, phaseAndProgressFromElapsed } = require('../domain/mission')
+const { travelSegmentMs, eventsSegmentMs, dueEventCount, phaseAndProgressFromElapsed } = require('../domain/mission')
 const {
   insertLogEntries, buildPhaseLogs, buildEventResultLogs, buildBanterLog,
   buildCombatRoundLog, buildCombatEventLogs,
@@ -302,7 +302,7 @@ async function setRecruitStatus(client, playerId, recruitId, status) {
   )
 }
 
-async function resolveEvents(client, playerId, instance, template, crewMembers) {
+async function resolveEvents(client, playerId, instance, template, crewMembers, targetEventIndex) {
   const events = template.events
   const eventResults = [...instance.event_results]
   let failed = instance.failed
@@ -313,7 +313,11 @@ async function resolveEvents(client, playerId, instance, template, crewMembers) 
   const logs = []
   let crewDead = []
 
-  for (let i = currentEventIndex; i < events.length; i++) {
+  // Only resolves events due by targetEventIndex, not every remaining one --
+  // see advanceMission's dueEventCount() call for why. Every early-exit path
+  // below (failure/crew-wipe/forced-return) and the final fallthrough return
+  // already correctly represent "stopped partway, not a failure" either way.
+  for (let i = currentEventIndex; i < targetEventIndex; i++) {
     if (failed || crewMembers.filter(r => r.status !== 'dead').length === 0) break
 
     const event = events[i]
@@ -583,18 +587,19 @@ async function completeMission(client, playerId, instance, template, failed, shi
 
 async function advanceMission(client, playerId, instance, template, now) {
   const events = template.events
-  const durationMs = events.length * DURATION_PER_EVENT_MS
   // Older instances predate the travel/events segment columns; fall back to
-  // the original fixed thirds (equivalent to speed 100, no boost).
-  const travelMs = instance.travel_segment_ms ?? Math.round(durationMs / 3)
-  const eventsMs = instance.events_segment_ms ?? Math.round(durationMs / 3)
+  // the same difficulty-driven formula at the default speed (no boost).
+  const travelMs = instance.travel_segment_ms ?? travelSegmentMs(template.difficulty, 100)
+  const eventsMs = instance.events_segment_ms ?? eventsSegmentMs(template.difficulty, events.length)
   let progress
   let phase
+  let targetEventIndex
 
   if (instance.forced_return && instance.return_started_at) {
+    const totalMs = travelMs * 2 + eventsMs
     const returnElapsed = now - new Date(instance.return_started_at).getTime()
     const returnDurationMs = (instance.progress_at_return ?? 0) <= 33
-      ? ((instance.progress_at_return ?? 0) / 100) * durationMs
+      ? ((instance.progress_at_return ?? 0) / 100) * totalMs
       : travelMs
     const returnTicks = Math.max(1, returnDurationMs)
     const delta = Math.min(
@@ -603,9 +608,15 @@ async function advanceMission(client, playerId, instance, template, now) {
     )
     progress = Math.min(100, instance.progress_at_return + delta)
     phase = progress >= 100 ? 'COMPLETED' : 'RETURN'
+    targetEventIndex = events.length
   } else {
     const elapsed = now - new Date(instance.started_at).getTime()
     ;({ phase, progress } = phaseAndProgressFromElapsed(elapsed, travelMs, eventsMs))
+    // How many events are actually "due" at this elapsed time -- the pacing
+    // fix: resolveEvents() only ever processes up to this index per call,
+    // instead of draining every remaining event the instant the mission
+    // crosses into EVENT phase. See dueEventCount()'s own comment.
+    targetEventIndex = dueEventCount(elapsed, travelMs, eventsMs, events.length)
   }
 
   let {
@@ -616,9 +627,9 @@ async function advanceMission(client, playerId, instance, template, now) {
     phase: storedPhase,
   } = instance
 
-  const pastEventPhase = progress > 33 || phase === 'EVENT' || phase === 'RETURN' || phase === 'COMPLETED'
+  const pastEventPhase = targetEventIndex > currentEventIndex
 
-  if (pastEventPhase && currentEventIndex < events.length) {
+  if (pastEventPhase) {
     const ship = await ShipService.getShip(client, playerId, instance.ship_id)
     const crewMembers = await Promise.all(
       ship.crew.map(id => getRecruit(client, playerId, id))
@@ -640,7 +651,7 @@ async function advanceMission(client, playerId, instance, template, now) {
       await insertLogEntries(client, playerId, eventPhaseLogs.mission)
     }
 
-    const resolution = await resolveEvents(client, playerId, instance, template, crewMembers)
+    const resolution = await resolveEvents(client, playerId, instance, template, crewMembers, targetEventIndex)
     failed = resolution.failed
     rewardForfeited = resolution.rewardForfeited
     currentEventIndex = resolution.currentEventIndex
@@ -722,7 +733,7 @@ async function advanceMission(client, playerId, instance, template, now) {
     return
   }
 
-  if (storedPhase !== phase || instance.progress !== progress) {
+  if (storedPhase !== phase || instance.progress !== progress || instance.current_event_index !== currentEventIndex) {
     await client.query(
       `UPDATE mission_instances SET phase = $1, progress = $2, failed = $3, reward_forfeited = $4,
         current_event_index = $5, event_results = $6 WHERE id = $7`,
@@ -838,7 +849,10 @@ async function startMission(client, playerId, templateId, shipId, speedConsumabl
     'SELECT * FROM mission_templates WHERE id = $1',
     [templateId],
   )
-  if (templateResult.rows.length === 0) return { error: 'Mission not found' }
+  // Most commonly hit when the mission board has rotated since the client
+  // last synced (unstarted templates are discarded on refresh, see
+  // generateMissionBatch) -- not usually a truly bogus id.
+  if (templateResult.rows.length === 0) return { error: 'Mission not found -- the board may have refreshed' }
 
   const existing = await client.query(
     'SELECT * FROM mission_instances WHERE player_id = $1 AND template_id = $2',
@@ -897,8 +911,8 @@ async function startMission(client, playerId, templateId, shipId, speedConsumabl
   const template = templateResult.rows[0]
   const eventCount = template.events.length
   const effectiveSpeed = (ship.stats?.speed ?? 100) * speedMultiplier
-  const travelMs = travelSegmentMs(eventCount, effectiveSpeed)
-  const eventsMs = eventsSegmentMs(eventCount)
+  const travelMs = travelSegmentMs(template.difficulty, effectiveSpeed)
+  const eventsMs = eventsSegmentMs(template.difficulty, eventCount)
   const inserted = await client.query(
     `INSERT INTO mission_instances
       (player_id, template_id, ship_id, status, phase, progress, started_at, travel_segment_ms, events_segment_ms)
