@@ -5,6 +5,7 @@
 <div>MISSIONS   {{ activeMissions.length }} / {{ totalMissions }} active</div>
 <div>TOKENS     {{ tokens }}</div>
 <div class="hint">— spend tokens with "self"</div>
+<div class="hint" *ngIf="tutorial && tutorial.status !== 'completed'">[ opera detail {{ tutorial.id }} ] to continue the tutorial</div>
 <div>&nbsp;</div>
 
 <ng-container *ngIf="activeMissions.length > 0">

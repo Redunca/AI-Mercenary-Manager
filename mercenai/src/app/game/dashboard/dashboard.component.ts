@@ -4,6 +4,7 @@ import { GameService } from '../../core/game.service';
 import { MissionService } from '../../core/mission.service';
 import { ShipService } from '../../core/ship.service';
 import { GameSyncService } from '../../core/game-sync.service';
+import { OperaService } from '../../core/opera.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -16,6 +17,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   game = inject(GameService);
   missionService = inject(MissionService);
   shipService = inject(ShipService);
+  operaService = inject(OperaService);
   private sync = inject(GameSyncService);
 
   ngOnInit(): void {
@@ -38,6 +40,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
   get totalMissions() { return this.game.player$.value.maxAvailableMissions; }
   get totalRecruits()  { return this.game.recruits.length; }
   get tokens() { return this.game.player$.value.tokens; }
+
+  // Surfaced here (rather than making the player already know to type
+  // "opera detail <id>") since the tutorial is the one opera every new
+  // player has running before they've discovered the opera commands at all.
+  get tutorial() {
+    return this.operaService.operas.find(o => o.templateId === 'tutorial');
+  }
 
   getMissionName(missionId: number): string {
     return this.missionService.missions.find(m => m.id === missionId)?.name ?? String(missionId);
