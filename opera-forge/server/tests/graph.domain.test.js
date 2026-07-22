@@ -150,6 +150,36 @@ describe('validateGraphDefinition', () => {
     expect(() => validateGraphDefinition(def)).toThrow(/seed target "mission" requires a templateId/)
   })
 
+  test('accepts a seed node with a valid candidate seed', () => {
+    const def = makeDef({
+      nodes: [
+        { id: 'start', type: 'start' },
+        {
+          id: 'seed-1',
+          type: 'seed',
+          seeds: [{ target: 'candidate', params: { seedId: 'poach-target' }, note: 'The disillusioned defector' }],
+        },
+        { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
+      ],
+      links: [
+        { id: 'l1', from: 'start', to: 'seed-1', priority: 0, conditions: [] },
+        { id: 'l2', from: 'seed-1', to: 'end-1', priority: 0, conditions: [] },
+      ],
+    })
+    expect(() => validateGraphDefinition(def)).not.toThrow()
+  })
+
+  test('rejects a candidate seed with no seedId', () => {
+    const def = makeDef({
+      nodes: [
+        { id: 'start', type: 'start' },
+        { id: 'seed-1', type: 'seed', seeds: [{ target: 'candidate', params: {} }] },
+        { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
+      ],
+    })
+    expect(() => validateGraphDefinition(def)).toThrow(/seed target "candidate" requires a seedId/)
+  })
+
   test('rejects a link referencing an unknown node', () => {
     const def = makeDef({ links: [{ id: 'l1', from: 'start', to: 'nowhere' }] })
     expect(() => validateGraphDefinition(def)).toThrow(/unknown "to" node/)
@@ -407,6 +437,20 @@ describe('validateGraphDefinition', () => {
       links: [{ id: 'l1', from: 'start', to: 'story-1', conditions: [{ type: 'action_performed', params: { actionType: 'hire_recruit', match: {} } }] }],
     })
     expect(() => validateGraphDefinition(def)).toThrow(/scope.*or a specific target/)
+  })
+
+  test('accepts an action_performed condition for fire_recruit with scope:any', () => {
+    const def = makeDef({
+      links: [{ id: 'l1', from: 'start', to: 'story-1', conditions: [{ type: 'action_performed', params: { actionType: 'fire_recruit', match: { scope: 'any' } } }] }],
+    })
+    expect(() => validateGraphDefinition(def)).not.toThrow()
+  })
+
+  test('accepts an action_performed condition targeting a seeded candidate via seedId', () => {
+    const def = makeDef({
+      links: [{ id: 'l1', from: 'start', to: 'story-1', conditions: [{ type: 'action_performed', params: { actionType: 'hire_recruit', match: { seedId: 'poach-target' } } }] }],
+    })
+    expect(() => validateGraphDefinition(def)).not.toThrow()
   })
 })
 

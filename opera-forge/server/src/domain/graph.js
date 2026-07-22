@@ -22,17 +22,23 @@ const ROLL_TYPES = ['chance']
 const OUTCOMES = ['success', 'failure', 'neutral']
 // What a 'seed' node can pre-declare for a not-yet-built opera engine to
 // read later (see the 'seed' node.type block in validateNode/runGeneration
-// below): a shop item (by name, same convention as has_item/give_item) or a
+// below): a shop item (by name, same convention as has_item/give_item), a
 // mission (by templateId, same convention action_performed already uses for
-// send_recruit_to_quest/purchase_quest_item match targets). Purely
-// descriptive data today -- it has no effect on mockState or the real game.
-// Fire-and-forget: the walk declares the seed and moves on immediately: it
-// never blocks and there's no outcome to branch on. Contrast with a 'mission'
-// node (see validateMissionParams below), which blocks the walk until the
-// seeded-in mission resolves and branches on its outcome like a check node's
-// roll -- seed says "make sure this exists somewhere"; a mission node says
-// "the player must resolve this specific mission right here."
-const SEED_TARGETS = ['shop', 'mission']
+// send_recruit_to_quest/purchase_quest_item match targets), or a candidate
+// (by an author-chosen seedId, since recruits have no stable template/name
+// to reference the way missions and shop items do -- the not-yet-built
+// engine is expected to generate a real candidate and tag it with this
+// seedId, so a later hire_recruit action_performed condition can target it
+// via match.seedId, the same way it'd target match.templateId for a seeded
+// mission). Purely descriptive data today -- it has no effect on mockState
+// or the real game. Fire-and-forget: the walk declares the seed and moves on
+// immediately: it never blocks and there's no outcome to branch on. Contrast
+// with a 'mission' node (see validateMissionParams below), which blocks the
+// walk until the seeded-in mission resolves and branches on its outcome like
+// a check node's roll -- seed says "make sure this exists somewhere"; a
+// mission node says "the player must resolve this specific mission right
+// here."
+const SEED_TARGETS = ['shop', 'mission', 'candidate']
 const ATTRIBUTES = [
   'agility', 'fortitude', 'might', 'learning', 'logic',
   'perception', 'will', 'deception', 'persuasion', 'presence',
@@ -44,12 +50,19 @@ const OPERATORS = ['>', '>=', '<', '<=', '==']
 const MISSION_DIFFICULTIES = ['ROUTINE', 'STANDARD', 'HARD', 'PERILOUS', 'EPIC']
 
 // Mirrors STEP_TYPES in server/src/domain/opera.js -- the vocabulary of
-// gameplay actions the existing (linear checklist) Opera engine can detect.
-// "action_performed" conditions reuse this exact vocabulary and match-object
-// shape so a graph can express the same "wait for the player to do X" gates
-// that every step in server/data/operas/tutorial.json relies on.
+// gameplay actions the existing (linear checklist) Opera engine can detect --
+// plus 'fire_recruit', which does NOT exist in STEP_TYPES yet: there is no
+// "dismiss a recruit" command in the live game at all today. It's included
+// here because a true Opera needs a way to remove a recruit from the roster
+// as a story beat (e.g. "hand one of your people over as a gift"), and OGL is
+// authoring-time spec for the not-yet-built opera engine, same as
+// SEED_TARGETS' 'mission'/'candidate' -- adding it here is how that gap gets
+// surfaced. Whoever builds the real engine needs to add both a "recruit fire
+// <id>" command and a matching STEP_TYPES/ACTION_TYPES entry to
+// server/src/domain/opera.js before a graph using it can actually run.
 const ACTION_TYPES = [
   'hire_recruit',
+  'fire_recruit',
   'assign_crew_to_ship',
   'complete_quest',
   'purchase_item',
@@ -116,7 +129,12 @@ function validateActionMatch(p, where) {
     return
   }
   if (p.match.scope !== 'any' && !('itemName' in p.match)) {
-    const hasSpecificKey = ['recruitId', 'shipId', 'templateId'].some(key => key in p.match)
+    // seedId targets a candidate/mission seeded by a 'seed' node's
+    // author-chosen id (see SEED_TARGETS' comment) -- it sits alongside
+    // recruitId/shipId/templateId as "some recognizable specific-target key",
+    // not a replacement for them (e.g. a hire_recruit gated on a specific
+    // *unseeded* recruit still uses recruitId).
+    const hasSpecificKey = ['recruitId', 'shipId', 'templateId', 'seedId'].some(key => key in p.match)
     if (!hasSpecificKey) {
       throw new Error(`${where}: action_performed match must be {"scope":"any"} or a specific target`)
     }
@@ -152,6 +170,9 @@ function validateSeedParams(target, params, where) {
       return
     case 'mission':
       if (!isNonEmptyString(p.templateId)) throw new Error(`${where}: seed target "mission" requires a templateId string`)
+      return
+    case 'candidate':
+      if (!isNonEmptyString(p.seedId)) throw new Error(`${where}: seed target "candidate" requires a seedId string`)
       return
     default:
       throw new Error(`${where}: unknown seed target "${target}"`)

@@ -15,8 +15,8 @@ function parseList(text: string): string[] {
 // Same match-shape convention as action_performed conditions on links (see
 // LinkPanelComponent) -- 'any' means {scope: "any"}, execute_command uses
 // {command, args?}, everything else is a single specific-target key.
-type MatchKind = 'any' | 'itemName' | 'recruitId' | 'shipId' | 'templateId';
-const MATCH_KEYS: Exclude<MatchKind, 'any'>[] = ['itemName', 'recruitId', 'shipId', 'templateId'];
+type MatchKind = 'any' | 'itemName' | 'recruitId' | 'shipId' | 'templateId' | 'seedId';
+const MATCH_KEYS: Exclude<MatchKind, 'any'>[] = ['itemName', 'recruitId', 'shipId', 'templateId', 'seedId'];
 
 @Component({
   selector: 'app-quick-generation',

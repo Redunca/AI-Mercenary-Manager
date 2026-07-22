@@ -7,8 +7,8 @@ import {
   OUTCOMES, ActionType, defaultActionMatch, defaultParamsFor,
 } from '../models/graph';
 
-type MatchKind = 'any' | 'itemName' | 'recruitId' | 'shipId' | 'templateId';
-const MATCH_KEYS: Exclude<MatchKind, 'any'>[] = ['itemName', 'recruitId', 'shipId', 'templateId'];
+type MatchKind = 'any' | 'itemName' | 'recruitId' | 'shipId' | 'templateId' | 'seedId';
+const MATCH_KEYS: Exclude<MatchKind, 'any'>[] = ['itemName', 'recruitId', 'shipId', 'templateId', 'seedId'];
 
 @Component({
   selector: 'app-link-panel',

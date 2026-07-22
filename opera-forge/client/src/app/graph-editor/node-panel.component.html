@@ -89,6 +89,9 @@
             @case ('mission') {
               <input type="text" placeholder="Mission template id" [ngModel]="entry.params['templateId']" (ngModelChange)="setSeedParam($index, 'templateId', $event)" />
             }
+            @case ('candidate') {
+              <input type="text" placeholder="Seed id, e.g. poach-target" [ngModel]="entry.params['seedId']" (ngModelChange)="setSeedParam($index, 'seedId', $event)" />
+            }
           }
 
           <button type="button" class="danger" (click)="removeSeed($index)">&times;</button>

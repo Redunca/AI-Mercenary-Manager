@@ -6,17 +6,21 @@ export const NODE_TYPES = ['start', 'story', 'check', 'seed', 'mission', 'choice
 export type NodeType = (typeof NODE_TYPES)[number];
 
 // What a 'seed' node can pre-declare for a not-yet-built opera engine to
-// read later: a shop item (by name, same convention as has_item/give_item)
-// or a mission (by templateId, same convention action_performed already
-// uses for send_recruit_to_quest/purchase_quest_item match targets). Purely
-// descriptive data today -- it has no effect on MockState or the real game.
-// Fire-and-forget: the walk declares the seed and moves on immediately, it
-// never blocks and there's no outcome to branch on. Contrast with a
-// 'mission' node (see MissionDetails below), which blocks the walk until the
-// seeded-in mission resolves and branches on its outcome like a check node's
-// roll -- seed says "make sure this exists somewhere"; a mission node says
-// "the player must resolve this specific mission right here."
-export const SEED_TARGETS = ['shop', 'mission'] as const;
+// read later: a shop item (by name, same convention as has_item/give_item),
+// a mission (by templateId, same convention action_performed already uses
+// for send_recruit_to_quest/purchase_quest_item match targets), or a
+// candidate (by an author-chosen seedId -- recruits have no stable
+// name/template to reference the way missions and shop items do, so a later
+// hire_recruit action_performed condition targets it via match.seedId
+// instead). Purely descriptive data today -- it has no effect on MockState
+// or the real game. Fire-and-forget: the walk declares the seed and moves on
+// immediately, it never blocks and there's no outcome to branch on. Contrast
+// with a 'mission' node (see MissionDetails below), which blocks the walk
+// until the seeded-in mission resolves and branches on its outcome like a
+// check node's roll -- seed says "make sure this exists somewhere"; a
+// mission node says "the player must resolve this specific mission right
+// here."
+export const SEED_TARGETS = ['shop', 'mission', 'candidate'] as const;
 export type SeedTarget = (typeof SEED_TARGETS)[number];
 
 // No has_perk/has_flaw/attribute_threshold here -- a true Opera (as opposed
@@ -32,12 +36,16 @@ export const CONDITION_TYPES = ['chance', 'has_item', 'previous_outcome', 'crew_
 export type ConditionType = (typeof CONDITION_TYPES)[number];
 
 // Mirrors STEP_TYPES in server/src/domain/opera.js -- the vocabulary of
-// gameplay actions the existing (linear checklist) Opera engine can detect.
-// action_performed conditions reuse this exact vocabulary and match-object
-// shape so a graph can express the same "wait for the player to do X" gates
-// every step in server/data/operas/tutorial.json relies on.
+// gameplay actions the existing (linear checklist) Opera engine can detect --
+// plus 'fire_recruit', which has no live-game equivalent yet (there is no
+// "dismiss a recruit" command at all today). It's here because a true Opera
+// needs a way to remove a recruit as a story beat; same authoring-time-spec
+// role as SEED_TARGETS' 'mission'/'candidate' entries. Whoever builds the
+// real opera engine needs to add a matching command + STEP_TYPES entry
+// server-side before a graph using it can actually run.
 export const ACTION_TYPES = [
   'hire_recruit',
+  'fire_recruit',
   'assign_crew_to_ship',
   'complete_quest',
   'purchase_item',
@@ -59,7 +67,7 @@ export type ActionType = (typeof ACTION_TYPES)[number];
 // apply to it. Action types not listed (hire_recruit -- no recruit id
 // exists before the hire happens; assign_crew_to_ship/complete_quest --
 // ambiguous which key applies) keep the free-form picker.
-export type ActionMatchKey = 'itemName' | 'recruitId' | 'shipId' | 'templateId';
+export type ActionMatchKey = 'itemName' | 'recruitId' | 'shipId' | 'templateId' | 'seedId';
 export const ACTION_MATCH_FIELDS: Partial<Record<ActionType, ActionMatchKey>> = {
   purchase_item: 'itemName',
   purchase_quest_item: 'itemName',
@@ -115,7 +123,7 @@ export interface Roll {
 
 export interface Seed {
   target: SeedTarget;
-  // shop: { itemName: string }; mission: { templateId: string }.
+  // shop: { itemName: string }; mission: { templateId: string }; candidate: { seedId: string }.
   params: Record<string, unknown>;
   // Author-only context, e.g. why this is being seeded. Not consumed by
   // any engine -- shown in the node panel and in Quick Generation only.
@@ -330,6 +338,8 @@ export function defaultParamsFor(_kind: 'condition' | 'effect' | 'seed', type: s
       return { itemName: '' };
     case 'mission':
       return { templateId: '' };
+    case 'candidate':
+      return { seedId: '' };
     default:
       return {};
   }
