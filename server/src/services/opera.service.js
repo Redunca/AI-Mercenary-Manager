@@ -336,6 +336,20 @@ async function advanceInstance(client, playerId, instance, def, action = null) {
         state.awaiting = 'link'
       } else if (current.type === 'seed') {
         await fireSeeds(client, playerId, instance, state, current.seeds)
+        // Every authored seed carries a `note` purely as flavor text (see
+        // insertOperaMission's own comment), but a 'seed' node can be a
+        // walk's stopping point exactly like 'story' can -- its only
+        // outgoing link is commonly gated on the action_performed the seed
+        // itself sets up (buy the item / recruit the candidate). Without a
+        // pushed task here, that stop is invisible: no log line, no "current
+        // task" for summarizeInstance to mark, and the player has no way to
+        // know the opera is waiting on them at all.
+        const notes = (current.seeds ?? []).map(seed => seed.note).filter(Boolean)
+        if (notes.length > 0) {
+          const rendered = notes.map(note => OperaGraph.render(note, state.tags).text).join(' ')
+          pushTask(state, { nodeId: current.id, type: 'seed', text: rendered })
+          await log(client, playerId, instance, rendered)
+        }
         state.awaiting = 'link'
       } else if (current.type === 'mission') {
         const templateId = await insertOperaMission(client, playerId, instance.id, current.mission, state.tags)

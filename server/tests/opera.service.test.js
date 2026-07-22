@@ -66,6 +66,31 @@ function choiceGraph() {
   }
 }
 
+// A graph whose only path out of start is a seed node gated on the very
+// action_performed the seed itself sets up (buy the seeded item) -- the
+// shape that left two live templates (two-gangs-one-contract,
+// the-machine-messiah) with zero visible tasks: a seed node doesn't push a
+// task on its own, so if it's also the walk's stopping point, the opera
+// looked completely empty with nothing telling the player what to do.
+function seedGraph(id) {
+  return {
+    id,
+    title: id,
+    nodes: [
+      { id: 'start', type: 'start' },
+      { id: 'get-item', type: 'seed', seeds: [{ target: 'shop', params: { itemName: 'Widget' }, note: 'A rare widget appears in the shop.' }] },
+      { id: 'end', type: 'end', outcome: 'success', text: 'Done.' },
+    ],
+    links: [
+      { id: 'start--get-item', from: 'start', to: 'get-item', conditions: [] },
+      {
+        id: 'get-item--end', from: 'get-item', to: 'end',
+        conditions: [{ type: 'action_performed', params: { actionType: 'purchase_quest_item', match: { itemName: 'Widget' } } }],
+      },
+    ],
+  }
+}
+
 // A graph that reaches its end node immediately (start -> end), used for
 // maintainOperaSlots tests so a freshly created instance doesn't itself
 // re-trigger maintainOperaSlots recursively.
@@ -266,5 +291,21 @@ describe('maintainOperaSlots', () => {
     expect(pooled).toHaveLength(2)
     expect(pooled.find(i => i.slot_index === 0).id).toBe(2) // untouched
     expect(pooled.find(i => i.slot_index === 1)).toBeTruthy() // newly filled
+  })
+
+  test('a fresh instance stopped at a gated seed node still has a visible current task', async () => {
+    getOperaDefinition.mockImplementation(id => seedGraph(id))
+    getGenerationPoolDefinitions.mockReturnValue([seedGraph('template-a')])
+    const client = createFakeClient({
+      instances: [{ id: 1, player_id: PLAYER_ID, template_id: 'tutorial', slot_index: null, status: 'completed', state: {} }],
+      players: { [PLAYER_ID]: { opera_slot_capacity: 1 } },
+    })
+
+    await OperaService.maintainOperaSlots(client, PLAYER_ID)
+
+    const pooled = client.state.instances.find(i => i.slot_index === 0)
+    expect(pooled.state.awaiting).toBe('link')
+    expect(pooled.state.log).toHaveLength(1)
+    expect(pooled.state.log[0]).toMatchObject({ type: 'seed', text: 'A rare widget appears in the shop.' })
   })
 })
