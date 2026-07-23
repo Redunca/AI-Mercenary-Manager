@@ -47,8 +47,8 @@ function createFakeClient() {
         id, display_name, wallet: 10000, tokens: 0,
         max_recruits: 5, max_available_missions: 5,
         next_candidate_id: 1, next_recruit_id: 1, next_ship_id: 1,
-        next_template_id: 1, mission_refresh_at: null, shop_refresh_at: null,
-        mission_refresh_interval_ms: 900000, shop_refresh_interval_ms: 900000,
+        next_template_id: 1, mission_refresh_at: null, shop_refresh_at: null, candidate_refresh_at: null,
+        mission_refresh_interval_ms: 900000, shop_refresh_interval_ms: 900000, candidate_refresh_interval_ms: 300000,
         shop_rotation_size: 5, inventory_capacity: 5,
       }
       state.players.push(player)
@@ -62,11 +62,17 @@ function createFakeClient() {
           wallet: p.wallet, tokens: p.tokens,
           mission_refresh_interval_ms: p.mission_refresh_interval_ms,
           shop_refresh_interval_ms: p.shop_refresh_interval_ms,
+          candidate_refresh_interval_ms: p.candidate_refresh_interval_ms,
         }] : [],
       }
     }
     if (s.includes('UPDATE players SET next_candidate_id = $1 WHERE id = $2')) {
       Object.assign(state.players.find(p => p.id === params[1]), { next_candidate_id: params[0] })
+      return { rows: [] }
+    }
+    if (s === 'UPDATE players SET candidate_refresh_at = $1 WHERE id = $2') {
+      const [candidate_refresh_at, id] = params
+      Object.assign(state.players.find(p => p.id === id), { candidate_refresh_at })
       return { rows: [] }
     }
     if (s.includes('UPDATE players SET next_ship_id = next_ship_id + 1')) {
@@ -158,10 +164,6 @@ function createFakeClient() {
     }
     if (s === 'DELETE FROM candidates WHERE player_id = $1') {
       state.candidates = state.candidates.filter(c => c.player_id !== params[0])
-      return { rows: [] }
-    }
-    if (s.includes("UPDATE players SET next_candidate_id = 1 WHERE id = $1")) {
-      Object.assign(state.players.find(p => p.id === params[0]), { next_candidate_id: 1 })
       return { rows: [] }
     }
     if (s === 'SELECT * FROM candidates WHERE player_id = $1 ORDER BY id') {
@@ -461,6 +463,11 @@ function createFakeClient() {
     }
     if (s.includes('SELECT tag, message, mission_id AS "missionId" FROM log_entries')) {
       return { rows: state.logEntries.filter(l => l.player_id === params[0]) }
+    }
+    if (s.includes('SELECT message FROM log_entries')) {
+      const [playerId, missionId, limit] = params
+      const matches = state.logEntries.filter(l => l.player_id === playerId && sameId(l.mission_id, missionId))
+      return { rows: matches.slice(-limit).reverse().map(l => ({ message: l.message })) }
     }
 
     throw new Error(`Query not handled by the fake test client: ${s}`)

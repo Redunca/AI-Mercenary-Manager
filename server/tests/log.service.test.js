@@ -1,6 +1,6 @@
 const {
   insertLogEntries, buildPhaseLogs, buildEventResultLogs, pickPlanetTagQuote, buildBanterLog,
-  buildCombatRoundLog, buildCombatEventLogs,
+  buildCombatRoundLog, buildCombatEventLogs, getRecentMissionMessages,
 } = require('../src/services/log.service')
 const planetTags = require('../data/planet-tags.json')
 const banterPairs = require('../data/banter/pairs.json')
@@ -27,6 +27,28 @@ describe('insertLogEntries', () => {
       expect.stringContaining('INSERT INTO log_entries'),
       [1, '[IA]', 'Another message', null, null],
     )
+  })
+})
+
+describe('getRecentMissionMessages', () => {
+  test('queries the most recent messages for this player/mission, most-recent first', async () => {
+    const client = { query: jest.fn().mockResolvedValue({ rows: [{ message: 'B' }, { message: 'A' }] }) }
+
+    const result = await getRecentMissionMessages(client, 1, 5)
+
+    expect(client.query).toHaveBeenCalledWith(
+      expect.stringContaining('SELECT message FROM log_entries'),
+      [1, 5, 10],
+    )
+    expect(result).toEqual(['B', 'A'])
+  })
+
+  test('defaults to an empty array when the mission has no prior log entries', async () => {
+    const client = { query: jest.fn().mockResolvedValue({ rows: [] }) }
+
+    const result = await getRecentMissionMessages(client, 1, 5)
+
+    expect(result).toEqual([])
   })
 })
 
@@ -59,6 +81,19 @@ describe('pickPlanetTagQuote', () => {
       const result = pickPlanetTagQuote({ tags: ['not-a-real-tag', 'isolated'], channel: 'ia' })
       expect(planetTags.isolated.ia).toContain(result)
     }
+  })
+
+  test('avoids a line that was just used, when an unused alternative exists', () => {
+    const [justUsed, ...rest] = planetTags.isolated.sys
+    for (let i = 0; i < 20; i++) {
+      const result = pickPlanetTagQuote({ tags: ['isolated'], channel: 'sys', avoid: [justUsed] })
+      expect(rest).toContain(result)
+    }
+  })
+
+  test('falls back to reusing a line when every candidate is in avoid', () => {
+    const result = pickPlanetTagQuote({ tags: ['isolated'], channel: 'sys', avoid: planetTags.isolated.sys })
+    expect(planetTags.isolated.sys).toContain(result)
   })
 })
 
@@ -114,6 +149,82 @@ describe('buildPhaseLogs', () => {
     expect(mission).toHaveLength(2)
     expect(mission[0].tag).toBe('[SYS]')
     expect(mission[0].message).toContain('[Corridor Patrol · ROUTINE]')
+  })
+
+  test('RETURN when failed uses the failure phrase pool even when the planet has matching tags (regression: planet flavor used to mask the failure headline)', () => {
+    const failedReturnSys = [
+      'Emergency extraction. Mission aborted.', 'Hasty retreat. Objective not achieved.',
+      'Mission scrubbed. Falling back to base.', 'Withdrawal underway, objective unmet.',
+    ]
+    const failedReturnIa = [
+      'Extraction protocol activated.', 'Operational failure. Root cause analysis in progress.',
+      'Casualty and damage report compiling.', 'Command notified of the setback.',
+    ]
+
+    for (let i = 0; i < 20; i++) {
+      const { mission } = buildPhaseLogs({
+        ...base,
+        phase: 'RETURN',
+        failed: true,
+        context: { ...base.context, planet: { id: 'p1', name: 'Kessarine', tags: ['isolated'] } },
+      })
+
+      const sysText = mission[0].message.replace('[Corridor Patrol · ROUTINE] ', '')
+      expect(failedReturnSys).toContain(sysText)
+      expect(failedReturnIa).toContain(mission[1].message)
+    }
+  })
+
+  test('COMPLETED when failed uses the failure phrase pool even when the planet has matching tags', () => {
+    const failedCompletedSys = [
+      'Mission failed. Unit returned to base.', 'Operation aborted.',
+      'Contract unfulfilled. Standing down.', 'Objective lost. Unit recalled.',
+    ]
+    const failedCompletedIa = [
+      'Negative outcome. No objective achieved.', 'Failure debrief scheduled.',
+      'Post-mortem scheduled for this operation.', 'Lessons logged for the next attempt.',
+    ]
+
+    const { mission } = buildPhaseLogs({
+      ...base,
+      phase: 'COMPLETED',
+      failed: true,
+      context: { ...base.context, planet: { id: 'p1', name: 'Kessarine', tags: ['isolated'] } },
+    })
+
+    const sysText = mission[0].message.replace('[Corridor Patrol · ROUTINE] ', '')
+    expect(failedCompletedSys).toContain(sysText)
+    expect(failedCompletedIa).toContain(mission[1].message)
+  })
+
+  test('COMPLETED mentions hospitalized crew when injuredCount is positive', () => {
+    const { global } = buildPhaseLogs({ ...base, phase: 'COMPLETED', injuredCount: 2 })
+
+    expect(global[0].message).toContain('2 crew hospitalized')
+  })
+
+  test('COMPLETED omits the hospitalized-crew suffix when injuredCount is zero', () => {
+    const { global } = buildPhaseLogs({ ...base, phase: 'COMPLETED' })
+
+    expect(global[0].message).not.toContain('hospitalized')
+  })
+
+  test('avoids repeating a recently used ambient/recruit line via the avoid list', () => {
+    for (let i = 0; i < 20; i++) {
+      const { mission } = buildPhaseLogs({
+        ...base,
+        phase: 'EN_ROUTE',
+        avoid: [
+          'Unit moving toward the operation zone.',
+          'No anomalies detected.',
+          '"We went the wrong way."',
+        ],
+      })
+
+      expect(mission[0].message).not.toContain('Unit moving toward the operation zone.')
+      expect(mission[1].message).not.toBe('No anomalies detected.')
+      expect(mission[2].message).not.toBe('"We went the wrong way."')
+    }
   })
 
   test('COMPLETED reports SUCCESS in the global log when not failed and reward kept', () => {
@@ -190,6 +301,8 @@ describe('buildPhaseLogs', () => {
     expect([
       'Unit moving toward the operation zone.',
       'Departure confirmed. No incidents on launch.',
+      'All systems nominal for departure.',
+      'Course locked in.',
     ]).toContain(sysText)
   })
 })

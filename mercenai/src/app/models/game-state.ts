@@ -12,6 +12,7 @@ export interface PlayerSnapshot {
   tokens: number;
   missionRefreshIntervalMs: number;
   shopRefreshIntervalMs: number;
+  candidateRefreshIntervalMs: number;
 }
 
 export interface GameSnapshot {

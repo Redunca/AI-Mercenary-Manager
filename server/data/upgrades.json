@@ -88,5 +88,15 @@
     "increment": 1,
     "maxValue": 10,
     "costs": [200, 300, 425, 575, 750, 950, 1175]
+  },
+  {
+    "id": 10,
+    "name": "Candidate Refresh Accelerator",
+    "description": "Shortens the interval between candidate pool refreshes.",
+    "appliesTo": "players.candidate_refresh_interval_ms",
+    "baseValueMs": 300000,
+    "decrementMs": 30000,
+    "floorMs": 60000,
+    "costs": [80, 100, 125, 155, 195, 245, 305, 380]
   }
 ]

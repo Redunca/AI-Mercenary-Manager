@@ -108,6 +108,7 @@ function createFakeClient({ instances = [], players = {} } = {}) {
     instances: instances.map(i => ({ ...i })),
     players: { ...players },
     nextInstanceId: Math.max(0, ...instances.map(i => i.id)) + 1,
+    logEntries: [],
   }
 
   const query = jest.fn(async (sql, params = []) => {
@@ -155,6 +156,8 @@ function createFakeClient({ instances = [], players = {} } = {}) {
       return { rows: [] }
     }
     if (s.startsWith('INSERT INTO log_entries')) {
+      const [playerId, tag, message, missionId, operaId] = params
+      state.logEntries.push({ playerId, tag, message, missionId, operaId })
       return { rows: [] }
     }
     // Anything else (consumables/equipment has_item lookups, ships
@@ -306,6 +309,84 @@ describe('maintainOperaSlots', () => {
     const pooled = client.state.instances.find(i => i.slot_index === 0)
     expect(pooled.state.awaiting).toBe('link')
     expect(pooled.state.log).toHaveLength(1)
-    expect(pooled.state.log[0]).toMatchObject({ type: 'seed', text: 'A rare widget appears in the shop.' })
+    expect(pooled.state.log[0]).toMatchObject({ type: 'seed', text: 'A rare widget appears in the shop.' }) // task keeps the lore note
+    const seedLog = client.state.logEntries.find(e => e.operaId === String(pooled.id))
+    expect(seedLog.message).toBe('New item available in the shop.') // [SYS] log stays dry, not the note
+  })
+})
+
+// The task list (state.log, surfaced as `tasks` by summarizeInstance) is meant
+// to read as lore -- exactly what the node authors wrote. The separate [SYS]
+// log stream (log_entries, surfaced by getOperaLogs) is meant to read like
+// the rest of the mission log: dry and mechanical, regardless of how flavorful
+// the node's authored text is. These tests pin that split down per node type.
+describe('dry [SYS] log text vs. lore-heavy tasks', () => {
+  test('a story node logs a dry line while its task keeps the authored lore text', async () => {
+    getOperaDefinition.mockReturnValue(gatedGraph())
+    const client = createFakeClient({
+      instances: [{ id: 10, player_id: PLAYER_ID, template_id: 'side-quest', slot_index: 0, status: 'in_progress', state: {} }],
+    })
+
+    // Nothing in gatedGraph's start->ask link is gated, so any action
+    // advances the walk exactly as far as the 'ask' story node and stops
+    // there (its own outgoing link IS gated, on a different action).
+    await OperaService.recordOperaAction(client, PLAYER_ID, 'noop_action', {})
+
+    const row = client.state.instances.find(i => i.id === 10)
+    expect(row.state.log[0]).toMatchObject({ type: 'story', text: 'Do the thing.' })
+    const storyLog = client.state.logEntries.find(e => e.operaId === '10')
+    expect(storyLog.message).toBe('Story continues.')
+  })
+
+  test('a choice node logs a dry line while its task keeps the authored lore text', async () => {
+    getOperaDefinition.mockReturnValue(choiceGraph())
+    const client = createFakeClient({
+      instances: [{ id: 20, player_id: PLAYER_ID, template_id: 'decision', slot_index: 0, status: 'in_progress', state: {} }],
+    })
+
+    await OperaService.recordOperaAction(client, PLAYER_ID, 'noop_action', {})
+
+    const row = client.state.instances.find(i => i.id === 20)
+    expect(row.state.log[0]).toMatchObject({ type: 'choice', text: 'Choose.' })
+    const choiceLog = client.state.logEntries.find(e => e.operaId === '20')
+    expect(choiceLog.message).toBe('Decision required.')
+  })
+
+  test.each([
+    ['a', 'success', 'Opera completed.'],
+    ['b', 'neutral', 'Opera concluded.'],
+  ])('an end node with outcome %s logs a dry, outcome-specific line while its task keeps the lore text', async (optionId, outcome, dryText) => {
+    getOperaDefinition.mockReturnValue(choiceGraph())
+    const client = createFakeClient({
+      instances: [{
+        id: 20, player_id: PLAYER_ID, template_id: 'decision', slot_index: 0, status: 'in_progress',
+        state: { currentNodeId: 'pick', awaiting: 'choice', pendingChoice: { nodeId: 'pick', text: 'Choose.', options: [{ id: 'a', label: 'Option A' }, { id: 'b', label: 'Option B' }] } },
+      }],
+    })
+
+    await OperaService.resolveChoice(client, PLAYER_ID, 20, optionId)
+
+    const row = client.state.instances.find(i => i.id === 20)
+    expect(row.state.currentNodeId).toBe(optionId === 'a' ? 'end-a' : 'end-b')
+    const endLog = client.state.logEntries.find(e => e.operaId === '20' && e.message.startsWith('Opera'))
+    expect(endLog.message).toBe(dryText)
+  })
+
+  test('an end node with outcome "failure" logs "Opera failed."', async () => {
+    getOperaDefinition.mockReturnValue({
+      id: 'doomed', title: 'Doomed',
+      nodes: [{ id: 'start', type: 'start' }, { id: 'end', type: 'end', outcome: 'failure', text: 'It all went wrong.' }],
+      links: [{ id: 'start--end', from: 'start', to: 'end', conditions: [] }],
+    })
+    const client = createFakeClient({
+      instances: [{ id: 30, player_id: PLAYER_ID, template_id: 'doomed', slot_index: 0, status: 'in_progress', state: {} }],
+    })
+
+    await OperaService.recordOperaAction(client, PLAYER_ID, 'noop_action', {})
+
+    const row = client.state.instances.find(i => i.id === 30)
+    expect(row.status).toBe('failed')
+    const endLog = client.state.logEntries.find(e => e.operaId === '30')
+    expect(endLog.message).toBe('Opera failed.')
   })
 })

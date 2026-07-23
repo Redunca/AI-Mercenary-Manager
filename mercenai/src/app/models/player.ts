@@ -12,4 +12,5 @@ export interface Player {
   dockingStations : DockingStation[]
   missionRefreshIntervalMs : number;
   shopRefreshIntervalMs : number;
+  candidateRefreshIntervalMs : number;
 }

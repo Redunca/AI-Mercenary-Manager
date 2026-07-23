@@ -266,6 +266,32 @@ function pushTask(state, entry) {
   state.log.push(entry)
 }
 
+// --- dry log text ------------------------------------------------------
+//
+// A node's authored text is lore -- it belongs on the task list
+// (pushTask's `text`, rendered verbatim in the tasks UI) so the opera reads
+// as a story. The [SYS] log stream is a different audience: it's meant to
+// read like the rest of the mission log, stating mechanically what just
+// happened / what's now expected, never repeating the lore. Every node type
+// below gets its own fixed dry phrasing instead of echoing `rendered.text`.
+
+const SEED_TARGET_DRY_TEXT = {
+  shop: 'New item available in the shop.',
+  candidate: 'New candidate available to hire.',
+  mission: 'New mission available.',
+}
+
+function drySeedLog(seeds) {
+  const targets = [...new Set((seeds ?? []).map(seed => seed.target))]
+  return targets.map(target => SEED_TARGET_DRY_TEXT[target] ?? 'New opportunity available.').join(' ')
+}
+
+function dryEndLog(outcome) {
+  if (outcome === 'failure') return 'Opera failed.'
+  if (outcome === 'success') return 'Opera completed.'
+  return 'Opera concluded.'
+}
+
 async function finish(client, playerId, instance, state, outcome) {
   const status = outcome === 'failure' ? 'failed' : 'completed'
   await client.query(
@@ -329,7 +355,7 @@ async function advanceInstance(client, playerId, instance, def, action = null) {
         for (const effect of current.effects ?? []) await applyEffect(client, playerId, state, effect)
         const rendered = OperaGraph.render(current.text, state.tags)
         pushTask(state, { nodeId: current.id, type: 'story', text: rendered.text })
-        await log(client, playerId, instance, rendered.text)
+        await log(client, playerId, instance, 'Story continues.')
         state.awaiting = 'link'
       } else if (current.type === 'check') {
         ctx.lastOutcome = Math.random() * 100 < (current.roll?.params?.percentage ?? 0) ? 'success' : 'failure'
@@ -348,7 +374,7 @@ async function advanceInstance(client, playerId, instance, def, action = null) {
         if (notes.length > 0) {
           const rendered = notes.map(note => OperaGraph.render(note, state.tags).text).join(' ')
           pushTask(state, { nodeId: current.id, type: 'seed', text: rendered })
-          await log(client, playerId, instance, rendered)
+          await log(client, playerId, instance, drySeedLog(current.seeds))
         }
         state.awaiting = 'link'
       } else if (current.type === 'mission') {
@@ -357,7 +383,7 @@ async function advanceInstance(client, playerId, instance, def, action = null) {
         state.awaiting = 'mission'
         const rendered = OperaGraph.render(current.mission.title, state.tags)
         pushTask(state, { nodeId: current.id, type: 'mission', text: rendered.text, templateId, status: 'current' })
-        await log(client, playerId, instance, `New task: ${rendered.text}`)
+        await log(client, playerId, instance, 'Complete Mission')
         await persist(client, instance, state)
         return
       } else if (current.type === 'choice') {
@@ -366,13 +392,13 @@ async function advanceInstance(client, playerId, instance, def, action = null) {
         state.pendingChoice = { nodeId: current.id, text: rendered.text, options }
         state.awaiting = 'choice'
         pushTask(state, { nodeId: current.id, type: 'choice', text: rendered.text, options, status: 'current' })
-        await log(client, playerId, instance, rendered.text)
+        await log(client, playerId, instance, 'Decision required.')
         await persist(client, instance, state)
         return
       } else if (current.type === 'end') {
         const rendered = OperaGraph.render(current.text, state.tags)
         pushTask(state, { nodeId: current.id, type: 'end', text: rendered.text, outcome: current.outcome })
-        await log(client, playerId, instance, rendered.text)
+        await log(client, playerId, instance, dryEndLog(current.outcome))
         await finish(client, playerId, instance, state, current.outcome)
         return
       }

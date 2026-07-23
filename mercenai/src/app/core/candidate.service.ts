@@ -16,13 +16,6 @@ export class CandidateService {
     this.candidates = state.candidates;
   }
 
-  async generateCandidates(count: number): Promise<void> {
-    const result = await this.api.refreshCandidates(count);
-    if (result.state) {
-      this.injector.get(GameSyncService).applyState(result.state);
-    }
-  }
-
   async hireCandidate(candidateId: string): Promise<Recruit | null> {
     const result = await this.api.hireCandidate(candidateId);
     if (result.error || !result.recruit) {

@@ -36,12 +36,12 @@ function pickEventRecruitQuote({ eventType, success, perks, flaws, personality }
 }
 
 /**
- * Picks a planet-tag-flavored [SYS]/[IA] line, mirroring pickEventRecruitQuote's
- * "collect matches, then pick one at random" pattern. Returns null (meaning: fall
- * back to the generic pool) when the planet is missing, has no tags, none of its
- * tags have flavor content, or planet-tags.json itself can't be read/parsed.
+ * Picks a planet-tag-flavored [SYS]/[IA] line from the union of every matching
+ * tag's phrases. Returns null (meaning: fall back to the generic pool) when the
+ * planet is missing, has no tags, none of its tags have flavor content, or
+ * planet-tags.json itself can't be read/parsed.
  */
-function pickPlanetTagQuote({ tags, channel }) {
+function pickPlanetTagQuote({ tags, channel, avoid = [] }) {
   if (!Array.isArray(tags) || tags.length === 0) return null
 
   let data
@@ -51,45 +51,81 @@ function pickPlanetTagQuote({ tags, channel }) {
     return null
   }
 
-  const matches = tags.filter(tag => Array.isArray(data[tag]?.[channel]) && data[tag][channel].length > 0)
-  if (matches.length === 0) return null
+  const phrases = tags.flatMap(tag => (
+    Array.isArray(data[tag]?.[channel]) ? data[tag][channel] : []
+  ))
+  if (phrases.length === 0) return null
 
-  const tag = matches[Math.floor(Math.random() * matches.length)]
-  const phrases = data[tag][channel]
-  return phrases[Math.floor(Math.random() * phrases.length)]
+  return pick(phrases, avoid)
 }
 
 const POOL = {
   EN_ROUTE: {
-    sys: ["Unit moving toward the operation zone.", "Departure confirmed. No incidents on launch."],
-    ia: ["No anomalies detected.", "Trajectory nominal. Monitoring active."],
-    recruit: ["We went the wrong way.", "I forgot my stuff.", "Is it far?"],
+    sys: [
+      "Unit moving toward the operation zone.", "Departure confirmed. No incidents on launch.",
+      "All systems nominal for departure.", "Course locked in.",
+    ],
+    ia: [
+      "No anomalies detected.", "Trajectory nominal. Monitoring active.",
+      "Fuel consumption within projected range.", "Communication link stable.",
+    ],
+    recruit: ["We went the wrong way.", "I forgot my stuff.", "Is it far?", "This ship smells weird.", "Are we there yet?"],
   },
   EVENT: {
-    sys: ["Contact established with target zone.", "Event in progress. Outcome undetermined."],
-    ia: ["Situation analysis in progress.", "Environmental variables unstable."],
-    recruit: ["What is that thing?!", "Nobody told me it would be like this."],
+    sys: [
+      "Contact established with target zone.", "Event in progress. Outcome undetermined.",
+      "First signs of the objective spotted.", "Proximity alert: something's here.",
+    ],
+    ia: [
+      "Situation analysis in progress.", "Environmental variables unstable.",
+      "Readings inconclusive so far.", "Recommend caution going forward.",
+    ],
+    recruit: ["What is that thing?!", "Nobody told me it would be like this.", "Okay, stay sharp.", "This wasn't in the briefing."],
   },
   RETURN: {
-    sys: ["Return phase initiated.", "Mission accomplished. Returning."],
-    ia: ["Unit en route home. Nominal outcome.", "Efficiency: acceptable."],
-    recruit: ["We're finally heading back.", "Almost died but whatever.", "I want a bonus."],
+    sys: [
+      "Return phase initiated.", "Mission accomplished. Returning.",
+      "Objective cleared. Heading home.", "Return trajectory locked in.",
+    ],
+    ia: [
+      "Unit en route home. Nominal outcome.", "Efficiency: acceptable.",
+      "Fuel reserves sufficient for the return leg.", "No pursuit detected.",
+    ],
+    recruit: ["We're finally heading back.", "Almost died but whatever.", "I want a bonus.", "Let's not do that again.", "Anyone else starving?"],
   },
   COMPLETED: {
-    sys: ["Mission complete. Unit returned to base.", "Objective achieved."],
-    ia: ["Operation concluded.", "Performance within acceptable parameters."],
-    recruit: ["When do we go again?", "I'm going to sleep.", "Anyone got food?"],
+    sys: [
+      "Mission complete. Unit returned to base.", "Objective achieved.",
+      "Unit docked. Standing down.", "Debrief pending.",
+    ],
+    ia: [
+      "Operation concluded.", "Performance within acceptable parameters.",
+      "Systems powering down to standby.", "Logs archived.",
+    ],
+    recruit: ["When do we go again?", "I'm going to sleep.", "Anyone got food?", "That's a story for the bar.", "Worth it."],
   },
 }
 
 const POOL_FAILED = {
   RETURN: {
-    sys: ["Emergency extraction. Mission aborted.", "Hasty retreat. Objective not achieved."],
-    ia: ["Extraction protocol activated.", "Operational failure. Root cause analysis in progress."],
+    sys: [
+      "Emergency extraction. Mission aborted.", "Hasty retreat. Objective not achieved.",
+      "Mission scrubbed. Falling back to base.", "Withdrawal underway, objective unmet.",
+    ],
+    ia: [
+      "Extraction protocol activated.", "Operational failure. Root cause analysis in progress.",
+      "Casualty and damage report compiling.", "Command notified of the setback.",
+    ],
   },
   COMPLETED: {
-    sys: ["Mission failed. Unit returned to base.", "Operation aborted."],
-    ia: ["Negative outcome. No objective achieved.", "Failure debrief scheduled."],
+    sys: [
+      "Mission failed. Unit returned to base.", "Operation aborted.",
+      "Contract unfulfilled. Standing down.", "Objective lost. Unit recalled.",
+    ],
+    ia: [
+      "Negative outcome. No objective achieved.", "Failure debrief scheduled.",
+      "Post-mortem scheduled for this operation.", "Lessons logged for the next attempt.",
+    ],
   },
 }
 
@@ -121,13 +157,40 @@ const EVENT_PHRASES = {
   combat_lost_recruit: ["We need to fall back, now!", "This fight's not winnable."],
 }
 
-function pick(arr) {
+/**
+ * Picks a random entry from arr, preferring one that isn't a substring of any
+ * string in `avoid` (e.g. recently logged messages for this mission) so the same
+ * flavor line doesn't repeat back-to-back. Falls back to the full array when
+ * every candidate has already been used recently.
+ */
+function pick(arr, avoid = []) {
+  if (avoid.length > 0) {
+    const fresh = arr.filter(item => !avoid.some(message => message.includes(item)))
+    if (fresh.length > 0) return fresh[Math.floor(Math.random() * fresh.length)]
+  }
   return arr[Math.floor(Math.random() * arr.length)]
 }
 
 function formatRoll(r) {
   const bonus = r.bonus > 0 ? ` + ${r.diceNotation}(${r.bonus})` : ''
   return `1d20(${r.d20})${bonus} = ${r.total} vs DC ${r.dc}`
+}
+
+/**
+ * Reads the most recent log messages for this mission, for use as buildPhaseLogs's
+ * `avoid` list -- lets ambient/quote pools dodge a line they just showed, without
+ * needing full-mission memory (mirrors getLastBanterPairNames's "just look at
+ * what's already persisted" approach). `limit` only needs to cover the handful of
+ * lines since the last phase transition, not the whole mission log.
+ */
+async function getRecentMissionMessages(client, playerId, missionId, limit = 10) {
+  const result = await client.query(
+    `SELECT message FROM log_entries
+     WHERE player_id = $1 AND mission_id = $2
+     ORDER BY id DESC LIMIT $3`,
+    [playerId, missionId, limit],
+  )
+  return result.rows.map(row => row.message)
 }
 
 async function insertLogEntries(client, playerId, entries) {
@@ -156,13 +219,21 @@ async function insertLogEntries(client, playerId, entries) {
  *   banter entry defines them (see pickTagFlavoredContent), falling back to its generic lines/reply otherwise.
  */
 
-function buildPhaseLogs({ context, phase, failed, rewardForfeited, recruitName }) {
+function buildPhaseLogs({ context, phase, failed, rewardForfeited, recruitName, injuredCount = 0, avoid = [] }) {
   const { missionId, missionName, missionDifficulty, planet } = context
   const failedPool = failed ? POOL_FAILED[phase] : null
   const pool = POOL[phase]
   const prefix = missionDifficulty ? `[${missionName} · ${missionDifficulty}] ` : `[${missionName}] `
-  const sysLine = pickPlanetTagQuote({ tags: planet?.tags, channel: 'sys' }) ?? pick(failedPool?.sys ?? pool.sys)
-  const iaLine = pickPlanetTagQuote({ tags: planet?.tags, channel: 'ia' }) ?? pick(failedPool?.ia ?? pool.ia)
+  // A failed phase transition has its own headline text (e.g. "Emergency
+  // extraction") that must win over generic planet-tag weather flavor, or the
+  // mission's outcome never actually gets said out loud -- planet-tag flavor
+  // only fills in when the mission didn't fail.
+  const sysLine = failedPool
+    ? pick(failedPool.sys, avoid)
+    : pickPlanetTagQuote({ tags: planet?.tags, channel: 'sys', avoid }) ?? pick(pool.sys, avoid)
+  const iaLine = failedPool
+    ? pick(failedPool.ia, avoid)
+    : pickPlanetTagQuote({ tags: planet?.tags, channel: 'ia', avoid }) ?? pick(pool.ia, avoid)
   const entries = [
     { tag: '[SYS]', message: `${prefix}${sysLine}`, missionId },
     { tag: '[IA]', message: iaLine, missionId },
@@ -171,7 +242,7 @@ function buildPhaseLogs({ context, phase, failed, rewardForfeited, recruitName }
   if (phase === 'EN_ROUTE' || phase === 'EVENT') {
     entries.push({
       tag: `[${recruitName.toUpperCase()}]`,
-      message: `"${pick(pool.recruit)}"`,
+      message: `"${pick(pool.recruit, avoid)}"`,
       missionId,
     })
   }
@@ -185,9 +256,12 @@ function buildPhaseLogs({ context, phase, failed, rewardForfeited, recruitName }
   }
   if (phase === 'COMPLETED') {
     const outcome = failed ? 'FAILURE' : rewardForfeited ? 'NO REWARD' : 'SUCCESS'
+    const injurySuffix = injuredCount > 0
+      ? ` — ${injuredCount} crew hospitalized`
+      : ''
     global.push({
       tag: '[SYS]',
-      message: `Mission "${missionName}" completed [${outcome}] — Recruit: ${recruitName}`,
+      message: `Mission "${missionName}" completed [${outcome}] — Recruit: ${recruitName}${injurySuffix}`,
     })
   }
 
@@ -504,4 +578,5 @@ module.exports = {
   buildBanterLog,
   buildCombatRoundLog,
   buildCombatEventLogs,
+  getRecentMissionMessages,
 }

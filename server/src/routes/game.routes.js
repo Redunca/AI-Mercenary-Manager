@@ -21,16 +21,6 @@ router.post('/sync', async (_req, res, next) => {
   }
 })
 
-router.post('/candidates/refresh', async (req, res, next) => {
-  try {
-    const count = Number(req.body?.count ?? 5)
-    const result = await game.refreshCandidates(count)
-    res.json(result)
-  } catch (err) {
-    next(err)
-  }
-})
-
 router.patch('/recruits/:id', async (req, res, next) => {
   try {
     const result = await game.renameRecruit(req.params.id, req.body.name)

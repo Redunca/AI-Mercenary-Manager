@@ -7,7 +7,7 @@ const { buildEnemy, runAutoBattle } = require('../domain/combat')
 const { travelSegmentMs, eventsSegmentMs, dueEventCount, phaseAndProgressFromElapsed } = require('../domain/mission')
 const {
   insertLogEntries, buildPhaseLogs, buildEventResultLogs, buildBanterLog,
-  buildCombatRoundLog, buildCombatEventLogs,
+  buildCombatRoundLog, buildCombatEventLogs, getRecentMissionMessages,
 } = require('./log.service')
 const { createStarterShip, validateCrewAssignment } = require('../domain/ship')
 const ShipService = require('./ship.service')
@@ -31,6 +31,16 @@ const { calculateTokenReward } = require('../utils/tokenReward')
 // started (in progress, succeeded, or failed) persists forever regardless
 // of batching.
 const MISSION_BATCH_SIZE = 5
+
+// The candidate pool is replaced wholesale (not topped up per-hire) on the
+// same kind of per-player wall-clock interval as missions, via
+// player.candidate_refresh_interval_ms (5 minutes by default — see
+// refreshWindow.js and V021). Unlike mission templates, candidate ids are
+// safe to reset back to 1 on every refresh: a hired candidate becomes a
+// recruit and is never referenced by candidate id again afterward, so there's
+// nothing that needs ids to persist across a refresh the way started mission
+// templates do.
+const CANDIDATE_BATCH_SIZE = 5
 
 const DEFAULT_PLAYER_ID = 1
 const DATA_DIR = path.join(__dirname, '../../data')
@@ -72,7 +82,7 @@ function buildLogContext({ template, crewMembers = [], actingRecruit = null }) {
 // exists for it) and replaces them with a freshly generated batch, using the
 // player's monotonically increasing next_template_id counter (templates
 // persist forever once started, so ids can't be reset/reused the way
-// refreshCandidates resets next_candidate_id).
+// generateCandidateBatch resets next_candidate_id).
 //
 // Batch size is max(MISSION_BATCH_SIZE, player.max_available_missions): the
 // "missionList" self-upgrade grows how many missions are visible at once
@@ -178,6 +188,28 @@ async function generateCandidatesForPlayer(client, player, count = 5) {
   )
 }
 
+// Discards every existing candidate and draws a fresh batch, mirroring
+// generateMissionBatch()'s shape (delete the stale pool, regenerate, stamp
+// the wall-clock refresh boundary) but with no "started" concept to
+// preserve — every candidate is either still in the pool or already hired
+// into a recruit, so the whole batch is always safe to replace outright.
+async function generateCandidateBatch(client, player, now) {
+  await client.query('DELETE FROM candidates WHERE player_id = $1', [player.id])
+  await generateCandidatesForPlayer(client, { ...player, next_candidate_id: 1 }, CANDIDATE_BATCH_SIZE)
+
+  const refreshedAt = new Date(currentIntervalBoundary(now, player.candidate_refresh_interval_ms))
+  await client.query('UPDATE players SET candidate_refresh_at = $1 WHERE id = $2', [refreshedAt, player.id])
+  player.candidate_refresh_at = refreshedAt
+}
+
+// Computed lazily, at state read/sync time: no background scheduler,
+// mirroring ensureMissionBatch().
+async function ensureCandidateBatch(client, player, now = new Date()) {
+  if (isRefreshDue(player.candidate_refresh_at, now, player.candidate_refresh_interval_ms)) {
+    await generateCandidateBatch(client, player, now)
+  }
+}
+
 async function bootstrapPlayer(client) {
   const player = await ensurePlayer(client)
   await ensureMissionBatch(client, player)
@@ -200,13 +232,7 @@ async function bootstrapPlayer(client) {
     )
   }
 
-  const candidateCount = await client.query(
-    'SELECT COUNT(*)::int AS count FROM candidates WHERE player_id = $1',
-    [player.id],
-  )
-  if (candidateCount.rows[0].count === 0) {
-    await generateCandidatesForPlayer(client, player, 5)
-  }
+  await ensureCandidateBatch(client, player)
 
   const recruitCount = await client.query(
     'SELECT COUNT(*)::int AS count FROM recruits WHERE player_id = $1 AND deleted_at IS NULL',
@@ -361,6 +387,17 @@ async function resolveEvents(client, playerId, instance, template, crewMembers, 
         }
       }
 
+      // A recruit who survives a downing has their max HP permanently reduced
+      // (see combat.js's "downed" branch) -- track that separately from deaths
+      // so completeMission() can call out lasting injuries in its summary.
+      const recruitsDowned = combatResult.crewResults
+        .filter(c => c.status !== 'dead')
+        .filter(c => {
+          const before = armedCrew.find(r => String(r.id) === String(c.id))
+          return before && c.maxHp < before.maxHp
+        })
+        .map(c => c.id)
+
       const result = {
         eventIndex: i,
         type: event.type,
@@ -369,6 +406,7 @@ async function resolveEvents(client, playerId, instance, template, crewMembers, 
         enemyDefeated: combatResult.enemyDefeated,
         success: combatResult.enemyDefeated,
         recruitsDied: combatResult.crewResults.filter(c => c.status === 'dead').map(c => c.id),
+        recruitsDowned,
       }
       if (combatResult.enemyDefeated) {
         result.rewardEarned = event.reward
@@ -568,12 +606,22 @@ async function completeMission(client, playerId, instance, template, failed, shi
     ? crewMembers.map(r => r?.name || `Recruit ${r?.id}`).join(', ')
     : 'No crew'
 
+  // Distinct recruits who took a lasting (max-HP-reducing) injury at some point
+  // this mission, across every combat event -- surfaced in the completion
+  // summary so a rough mission doesn't read as a clean success/failure with no
+  // human cost.
+  const injuredCount = new Set(
+    (instance.event_results ?? []).flatMap(r => r.recruitsDowned ?? [])
+  ).size
+
   const completedLogs = buildPhaseLogs({
     phase: 'COMPLETED',
     failed,
     rewardForfeited: instance.reward_forfeited,
     recruitName: crewNames,
+    injuredCount,
     context: buildLogContext({ template, crewMembers }),
+    avoid: await getRecentMissionMessages(client, playerId, template.id),
   })
   await insertLogEntries(client, playerId, [...completedLogs.mission, ...completedLogs.global])
 
@@ -647,6 +695,7 @@ async function advanceMission(client, playerId, instance, template, now) {
         rewardForfeited,
         recruitName: crewNames,
         context: logContext,
+        avoid: await getRecentMissionMessages(client, playerId, template.id),
       })
       await insertLogEntries(client, playerId, eventPhaseLogs.mission)
     }
@@ -676,6 +725,7 @@ async function advanceMission(client, playerId, instance, template, now) {
         rewardForfeited,
         recruitName: 'Crew',
         context: logContext,
+        avoid: await getRecentMissionMessages(client, playerId, template.id),
       })
       await insertLogEntries(client, playerId, returnLogs.mission)
 
@@ -714,6 +764,7 @@ async function advanceMission(client, playerId, instance, template, now) {
       rewardForfeited,
       recruitName: crewNames,
       context: logContext,
+      avoid: await getRecentMissionMessages(client, playerId, template.id),
     })
     await insertLogEntries(client, playerId, returnLogs.mission)
 
@@ -933,6 +984,7 @@ async function startMission(client, playerId, templateId, shipId, speedConsumabl
     rewardForfeited: false,
     recruitName: crewNames,
     context: logContext,
+    avoid: await getRecentMissionMessages(client, playerId, template.id),
   })
   await insertLogEntries(client, playerId, [...phaseLogs.mission, ...phaseLogs.global])
 
@@ -999,6 +1051,7 @@ async function forceReturnMission(client, playerId, templateId) {
     rewardForfeited: instance.reward_forfeited,
     recruitName: crewNames,
     context: logContext,
+    avoid: await getRecentMissionMessages(client, playerId, template.id),
   })
   await insertLogEntries(client, playerId, returnLogs.mission)
 
@@ -1015,13 +1068,6 @@ async function forceReturnMission(client, playerId, templateId) {
   return { ok: true }
 }
 
-async function refreshCandidates(client, playerId, count = 5) {
-  await client.query('DELETE FROM candidates WHERE player_id = $1', [playerId])
-  const player = (await client.query('SELECT * FROM players WHERE id = $1', [playerId])).rows[0]
-  await client.query('UPDATE players SET next_candidate_id = 1 WHERE id = $1', [playerId])
-  await generateCandidatesForPlayer(client, { ...player, next_candidate_id: 1 }, count)
-}
-
 // --- Dev/testing helpers ----------------------------------------------
 // Not gated behind an environment check: this is a single-player local
 // game with no auth system anywhere else in the app either.
@@ -1032,7 +1078,7 @@ async function refreshCandidates(client, playerId, count = 5) {
 async function devRefreshPools(client, now = new Date()) {
   const player = await ensurePlayer(client)
   await generateMissionBatch(client, player, now)
-  await refreshCandidates(client, player.id, 5)
+  await generateCandidateBatch(client, player, now)
   await ShopService.refreshShopRotation(client, player.id, now)
 }
 
@@ -1068,7 +1114,7 @@ async function renameRecruit(client, playerId, recruitId, newName) {
 async function buildGameState(client, playerId) {
   const playerResult = await client.query(
     `SELECT max_recruits, max_available_missions, wallet, tokens,
-            mission_refresh_interval_ms, shop_refresh_interval_ms
+            mission_refresh_interval_ms, shop_refresh_interval_ms, candidate_refresh_interval_ms
      FROM players WHERE id = $1`,
     [playerId],
   )
@@ -1182,6 +1228,7 @@ async function buildGameState(client, playerId) {
       tokens: player.tokens,
       missionRefreshIntervalMs: player.mission_refresh_interval_ms,
       shopRefreshIntervalMs: player.shop_refresh_interval_ms,
+      candidateRefreshIntervalMs: player.candidate_refresh_interval_ms,
     },
     recruits: recruitsResult.rows.map(rowToRecruit),
     candidates: candidatesResult.rows.map(rowToCandidate),
@@ -1306,11 +1353,6 @@ module.exports = {
     const result = await forceReturnMission(client, DEFAULT_PLAYER_ID, templateId)
     if (result.error) return result
     await syncMissions(client, DEFAULT_PLAYER_ID)
-    return { state: await buildGameState(client, DEFAULT_PLAYER_ID) }
-  }),
-  refreshCandidates: (count = 5) => withTransaction(async (client) => {
-    await bootstrapPlayer(client)
-    await refreshCandidates(client, DEFAULT_PLAYER_ID, count)
     return { state: await buildGameState(client, DEFAULT_PLAYER_ID) }
   }),
   devRefresh: () => withTransaction(async (client) => {

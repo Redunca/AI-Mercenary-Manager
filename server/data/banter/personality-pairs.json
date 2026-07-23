@@ -14,7 +14,31 @@
       "We don't need full analysis every time, {A}.",
       "I appreciate the detail, {A}, but let's keep it human.",
       "Sometimes clarity beats precision, {A}."
-    ]
+    ],
+    "tagLines": {
+      "cold": {
+        "lines": [
+          "{A} runs the exact odds of hypothermia out loud. {B} asks {A} to keep that to themselves.",
+          "{A} quotes the wind-chill reading to the decimal. {B} says nobody needed to know that.",
+          "{A} starts a thermal-loss calculation mid-walk. {B} suggests just walking faster."
+        ],
+        "reply": [
+          "Noted, {A}, but let's just keep moving.",
+          "I'd rather not think about the numbers right now, {A}.",
+          "Save it for the debrief, {A}."
+        ]
+      },
+      "ice": {
+        "lines": [
+          "{A} calculates the ice's exact failure point. {B} asks them to do it a little quieter.",
+          "{A} points out the glare is statistically worse from this angle. {B} isn't sure that helps."
+        ],
+        "reply": [
+          "Comforting, {A}. Truly.",
+          "Let's just watch our footing, {A}."
+        ]
+      }
+    }
   },
   "Analyst+Sentinel": {
     "speaker": "A",
@@ -99,7 +123,29 @@
       "We can't improvise everything, {A}.",
       "Follow the steps, {A}.",
       "Stay on the path, {A}."
-    ]
+    ],
+    "tagLines": {
+      "isolated": {
+        "lines": [
+          "{A} wants to scout off-route, just this once. {B} points out there's no backup out here.",
+          "{A} eyes an unmarked path. {B} reminds them extraction is hours away from anywhere."
+        ],
+        "reply": [
+          "That's exactly why we stick to protocol here, {A}.",
+          "No backup means no improvising, {A}."
+        ]
+      },
+      "frontier": {
+        "lines": [
+          "{A} figures the map is close enough out here. {B} disagrees, loudly.",
+          "{A} wants to trust their gut over the outdated chart. {B} would rather not test that."
+        ],
+        "reply": [
+          "Out here, the chart is all we've got, {A}.",
+          "Let's not improvise where the map already fails us, {A}."
+        ]
+      }
+    }
   },
   "Analyst+Analyst": {
     "speaker": "A",

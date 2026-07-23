@@ -63,8 +63,8 @@ function createFakeClient() {
         id, display_name, wallet: 10000, tokens: 0,
         max_recruits: 5, max_available_missions: 5,
         next_candidate_id: 1, next_recruit_id: 1, next_ship_id: 1,
-        next_template_id: 1, mission_refresh_at: null, shop_refresh_at: null,
-        mission_refresh_interval_ms: 900000, shop_refresh_interval_ms: 900000,
+        next_template_id: 1, mission_refresh_at: null, shop_refresh_at: null, candidate_refresh_at: null,
+        mission_refresh_interval_ms: 900000, shop_refresh_interval_ms: 900000, candidate_refresh_interval_ms: 300000,
         shop_rotation_size: 5, inventory_capacity: 5, hp_regen_interval_ms: 60000,
       }
       state.players.push(player)
@@ -81,16 +81,13 @@ function createFakeClient() {
           wallet: p.wallet, tokens: p.tokens,
           mission_refresh_interval_ms: p.mission_refresh_interval_ms,
           shop_refresh_interval_ms: p.shop_refresh_interval_ms,
+          candidate_refresh_interval_ms: p.candidate_refresh_interval_ms,
         }] : [],
       }
     }
     if (s.includes('UPDATE players SET next_candidate_id = $1 WHERE id = $2')) {
       const [nextId, id] = params
       Object.assign(state.players.find(p => p.id === id), { next_candidate_id: nextId })
-      return { rows: [] }
-    }
-    if (s.includes("UPDATE players SET next_candidate_id = 1 WHERE id = $1")) {
-      Object.assign(state.players.find(p => p.id === params[0]), { next_candidate_id: 1 })
       return { rows: [] }
     }
     if (s.includes('UPDATE players SET next_ship_id = next_ship_id + 1')) {
@@ -263,6 +260,11 @@ function createFakeClient() {
     if (s === 'UPDATE players SET next_template_id = $1, mission_refresh_at = $2 WHERE id = $3') {
       const [next_template_id, mission_refresh_at, id] = params
       Object.assign(state.players.find(p => p.id === id), { next_template_id, mission_refresh_at })
+      return { rows: [] }
+    }
+    if (s === 'UPDATE players SET candidate_refresh_at = $1 WHERE id = $2') {
+      const [candidate_refresh_at, id] = params
+      Object.assign(state.players.find(p => p.id === id), { candidate_refresh_at })
       return { rows: [] }
     }
 
@@ -660,7 +662,7 @@ describe('GameService', () => {
 
       expect(result.player).toEqual({
         maxNumberOfRecruits: 5, maxAvailableMissions: 5, credits: 10000, tokens: 0,
-        missionRefreshIntervalMs: 900000, shopRefreshIntervalMs: 900000,
+        missionRefreshIntervalMs: 900000, shopRefreshIntervalMs: 900000, candidateRefreshIntervalMs: 300000,
       })
       expect(result.recruits).toHaveLength(1)
       expect(result.candidates).toHaveLength(4)
@@ -1171,6 +1173,24 @@ describe('GameService', () => {
       expect(recruit.max_hp).toBe(25) // 26 -> 25, permanently, from the single knockout suffered
       expect(recruit.hp).toBe(25) // patched back up to the new max once the fight ends
       expect(recruit.status).not.toBe('dead')
+      expect(updated.event_results.at(-1).recruitsDowned).toEqual(['1']) // survived the knockout, but it's tracked for the completion summary
+    })
+
+    test('once the return trip has elapsed, a recruit downed (but not killed) in combat is counted as hospitalized in the completion summary', async () => {
+      await launchCombatMission()
+      state.missionInstances[0].started_at = new Date(Date.now() - 60 * 60 * 1000)
+      rollAction.mockReturnValue({ d20: 17, bonus: 0, diceNotation: '—', total: 17 })
+      rollInRange.mockReturnValue(25)
+      ConsumableService.countShipInventoryEffect.mockResolvedValue(0)
+
+      await GameService.syncGame() // COMBAT loss -> forced RETURN
+      await GameService.syncGame() // the return trip has already elapsed
+
+      const updated = state.missionInstances[0]
+      expect(updated.phase).toBe('COMPLETED')
+      expect(LogService.buildPhaseLogs).toHaveBeenLastCalledWith(
+        expect.objectContaining({ phase: 'COMPLETED', injuredCount: 1 }),
+      )
     })
 
     test('a HEAL consumable intercepts a would-be knockout during combat, preventing that knockout\'s permanent injury', async () => {
@@ -1493,16 +1513,45 @@ describe('GameService', () => {
     })
   })
 
-  describe('refreshCandidates', () => {
-    test('replaces all existing candidates with a new batch', async () => {
+  describe('candidate batch refresh (lazy, wall-clock aligned)', () => {
+    test('does not regenerate the pool or move candidate_refresh_at before the next 5-minute boundary', async () => {
+      jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] })
+      jest.setSystemTime(new Date('2026-01-01T10:00:00Z'))
       await GameService.initGame()
-      const previousIds = state.candidates.map(c => c.id)
+      const firstBatchIds = state.candidates.map(c => c.id).sort((a, b) => a - b)
+      const refreshAtAfterFirst = state.players[0].candidate_refresh_at
 
-      await GameService.refreshCandidates(3)
+      jest.setSystemTime(new Date('2026-01-01T10:04:59Z')) // still inside the same 5-minute window
+      await GameService.initGame()
+      await GameService.getGameState()
+      await GameService.syncGame()
 
+      expect(state.candidates.map(c => c.id).sort((a, b) => a - b)).toEqual(firstBatchIds)
+      expect(state.players[0].candidate_refresh_at).toEqual(refreshAtAfterFirst)
+    })
+
+    test('at the next wall-clock boundary, discards the whole candidate pool (a hired candidate is not backfilled early) and generates a fresh batch of 5', async () => {
+      jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] })
+      jest.setSystemTime(new Date('2026-01-01T10:00:00Z'))
+      await GameService.initGame() // seeds 5, hires 1 -> 4 remain
+      const firstBatchIds = state.candidates.map(c => c.id).sort((a, b) => a - b)
+      expect(firstBatchIds).toHaveLength(4)
+
+      // Hiring another doesn't top the pool back up before the next boundary.
+      const hiredId = firstBatchIds[0]
+      await GameService.hireCandidate(String(hiredId))
       expect(state.candidates).toHaveLength(3)
-      expect(state.candidates.map(c => c.id)).not.toEqual(previousIds)
-      expect(state.players[0].next_candidate_id).toBe(4)
+
+      jest.setSystemTime(new Date('2026-01-01T10:05:00Z')) // exactly the next 5-minute boundary
+      await GameService.initGame()
+
+      // The whole pool is replaced -- not just topped back up to 4 -- and ids
+      // reset back to 1 (unlike mission templates; see generateCandidateBatch's
+      // own comment on why that's safe for candidates specifically).
+      expect(state.candidates).toHaveLength(5)
+      expect(state.candidates.map(c => c.id).sort((a, b) => a - b)).toEqual([1, 2, 3, 4, 5])
+      expect(state.players[0].next_candidate_id).toBe(6)
+      expect(new Date(state.players[0].candidate_refresh_at).toISOString()).toBe('2026-01-01T10:05:00.000Z')
     })
   })
 

@@ -43,27 +43,6 @@ describe('Game Routes', () => {
     })
   })
 
-  describe('POST /api/game/candidates/refresh', () => {
-    test('refreshes the candidates with the provided count', async () => {
-      GameService.refreshCandidates.mockResolvedValue({ state: { candidates: [] } })
-
-      const res = await request(app)
-        .post('/api/game/candidates/refresh')
-        .send({ count: 3 })
-
-      expect(res.status).toBe(200)
-      expect(GameService.refreshCandidates).toHaveBeenCalledWith(3)
-    })
-
-    test('uses 5 by default when no count is provided', async () => {
-      GameService.refreshCandidates.mockResolvedValue({ state: {} })
-
-      await request(app).post('/api/game/candidates/refresh').send({})
-
-      expect(GameService.refreshCandidates).toHaveBeenCalledWith(5)
-    })
-  })
-
   describe('PATCH /api/game/recruits/:id', () => {
     test('renames the recruit', async () => {
       const recruit = { id: '1', name: 'New Name' }

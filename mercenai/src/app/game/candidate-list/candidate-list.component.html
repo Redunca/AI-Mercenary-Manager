@@ -1,9 +1,10 @@
 <div>TASK: [<span class="task-title">Available Candidates</span>] ******************************************</div>
 <div>ok ==> {{ '{' }}</div>
+<div class="indent-one">"nextRefresh" : "{{ nextRefreshLabel }}",</div>
 <div *ngFor="let c of candidates" class="indent-one candidate-entry">
   <div>[{{ c.id }}] <span class="candidate-name">{{ c.name }}</span> · {{ c.jobTitle }} <span class="archetype">({{ archetypeLabel(c) }})</span> — HP {{ c.hp }}/{{ c.maxHp }}</div>
   <div class="indent-two" *ngIf="c.perks.length > 0">Perks: <span class="perk">{{ perkNames(c) }}</span></div>
   <div class="indent-two" *ngIf="c.flaws.length > 0">Flaws: <span class="flaw">{{ flawNames(c) }}</span></div>
 </div>
 <div>{{ '}' }}</div>
-<div class="hint">[ refresh ] for new candidates</div>
+<div class="hint">[ detail &lt;id&gt; ] for more info</div>

@@ -21,6 +21,7 @@ export class GameService {
       maxNumberOfRecruits: 5,
       missionRefreshIntervalMs: 900000,
       shopRefreshIntervalMs: 900000,
+      candidateRefreshIntervalMs: 300000,
     });
 
 
@@ -35,6 +36,7 @@ export class GameService {
       maxAvailableMissions: state.player.maxAvailableMissions,
       missionRefreshIntervalMs: state.player.missionRefreshIntervalMs,
       shopRefreshIntervalMs: state.player.shopRefreshIntervalMs,
+      candidateRefreshIntervalMs: state.player.candidateRefreshIntervalMs,
     });
   }
 

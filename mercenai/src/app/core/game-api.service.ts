@@ -38,10 +38,6 @@ export class GameApiService {
     return firstValueFrom(this.http.post<StateResponse>(`${this.base}/candidates/${id}/hire`, {}).pipe(catchError(err => of(this.onError(err)))));
   }
 
-  refreshCandidates(count = 5): Promise<StateResponse> {
-    return firstValueFrom(this.http.post<StateResponse>(`${this.base}/candidates/refresh`, { count }).pipe(catchError(err => of(this.onError(err)))));
-  }
-
   renameRecruit(id: string, name: string): Promise<StateResponse> {
     return firstValueFrom(this.http.patch<StateResponse>(`${this.base}/recruits/${id}`, { name }).pipe(catchError(err => of(this.onError(err)))));
   }
