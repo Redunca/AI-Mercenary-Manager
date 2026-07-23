@@ -1,7 +1,7 @@
 :host {
   display: flex;
   flex: 1;
-  min-height: 0; /* indispensable pour éviter les overflow */
+  min-height: 0; /* required to prevent overflow */
   min-width: 0;
 }
 

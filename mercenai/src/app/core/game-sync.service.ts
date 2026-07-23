@@ -72,8 +72,7 @@ export class GameSyncService implements OnDestroy {
 
   private hasActiveMissions(): boolean {
     if (!this.lastState) return false;
-    return Object.values(this.lastState.missionStates)
-      .some(s => s.phase !== 'COMPLETED');
+    return Object.values(this.lastState.missionStates).some((s) => s.phase !== 'COMPLETED');
   }
 
   // Recruits not on a mission (or dead) passively regenerate HP over real
@@ -82,11 +81,14 @@ export class GameSyncService implements OnDestroy {
   // in until they trigger some other sync.
   private hasRegeneratingRecruits(): boolean {
     if (!this.lastState) return false;
-    return this.lastState.recruits.some(r => r.status !== 'in_mission' && r.status !== 'dead' && r.hp < r.maxHp);
+    return this.lastState.recruits.some(
+      (r) => r.status !== 'in_mission' && r.status !== 'dead' && r.hp < r.maxHp,
+    );
   }
 
   private pollIntervalMs(): number | null {
-    if (this.hasActiveMissions()) return this.watchCount > 0 ? MISSION_WATCH_INTERVAL_MS : POLL_INTERVAL_MS;
+    if (this.hasActiveMissions())
+      return this.watchCount > 0 ? MISSION_WATCH_INTERVAL_MS : POLL_INTERVAL_MS;
     if (this.hasRegeneratingRecruits()) return POLL_INTERVAL_MS;
     return null;
   }
@@ -97,7 +99,7 @@ export class GameSyncService implements OnDestroy {
     if (interval === null) return;
 
     this.pollTimer = setInterval(() => {
-      this.sync().catch(err => console.error('Game sync failed', err));
+      this.sync().catch((err) => console.error('Game sync failed', err));
     }, interval);
   }
 

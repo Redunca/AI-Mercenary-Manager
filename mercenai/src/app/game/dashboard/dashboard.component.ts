@@ -11,7 +11,7 @@ import { OperaService } from '../../core/opera.service';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.scss'
+  styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   game = inject(GameService);
@@ -29,27 +29,32 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   get activeMissions() {
-    return Object.values(this.missionService.missionStates)
-      .filter(s => s.phase !== 'COMPLETED');
+    return Object.values(this.missionService.missionStates).filter((s) => s.phase !== 'COMPLETED');
   }
 
   get availableRecruits() {
-    return this.game.recruits.filter(r => r.status === 'available');
+    return this.game.recruits.filter((r) => r.status === 'available');
   }
 
-  get totalMissions() { return this.game.player$.value.maxAvailableMissions; }
-  get totalRecruits()  { return this.game.recruits.length; }
-  get tokens() { return this.game.player$.value.tokens; }
+  get totalMissions() {
+    return this.game.player$.value.maxAvailableMissions;
+  }
+  get totalRecruits() {
+    return this.game.recruits.length;
+  }
+  get tokens() {
+    return this.game.player$.value.tokens;
+  }
 
   // Surfaced here (rather than making the player already know to type
   // "opera detail <id>") since the tutorial is the one opera every new
   // player has running before they've discovered the opera commands at all.
   get tutorial() {
-    return this.operaService.operas.find(o => o.templateId === 'tutorial');
+    return this.operaService.operas.find((o) => o.templateId === 'tutorial');
   }
 
   getMissionName(missionId: number): string {
-    return this.missionService.missions.find(m => m.id === missionId)?.name ?? String(missionId);
+    return this.missionService.missions.find((m) => m.id === missionId)?.name ?? String(missionId);
   }
 
   getShipName(shipId: number): string {
@@ -65,5 +70,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return str.length >= len ? str : str + ' '.repeat(len - str.length);
   }
 
-  registerCommands() { return {}; }
+  registerCommands() {
+    return {};
+  }
 }

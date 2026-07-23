@@ -10,7 +10,7 @@ function loadUpgrades() {
 }
 
 function findUpgrade(upgradeId) {
-  return loadUpgrades().find(def => def.id === Number(upgradeId))
+  return loadUpgrades().find((def) => def.id === Number(upgradeId))
 }
 
 function isTimeBased(def) {
@@ -22,10 +22,11 @@ function isDockingStationsUpgrade(def) {
 }
 
 async function loadDynamicMaxValues(client) {
-  const shopCatalogCount = (await client.query('SELECT COUNT(*)::int AS count FROM shop_items')).rows[0].count
-  const consumableCatalogCount = (await client.query(
-    "SELECT COUNT(*)::int AS count FROM shop_items WHERE type = 'consumable'",
-  )).rows[0].count
+  const shopCatalogCount = (await client.query('SELECT COUNT(*)::int AS count FROM shop_items'))
+    .rows[0].count
+  const consumableCatalogCount = (
+    await client.query("SELECT COUNT(*)::int AS count FROM shop_items WHERE type = 'consumable'")
+  ).rows[0].count
   return { shopCatalogCount, consumableCatalogCount }
 }
 
@@ -52,15 +53,16 @@ function isMaxed(def, tier, currentValue, maxValue) {
 
 async function getUpgradeCatalog(client, playerId) {
   const upgrades = loadUpgrades()
-  const player = (await client.query('SELECT tokens FROM players WHERE id = $1', [playerId])).rows[0]
+  const player = (await client.query('SELECT tokens FROM players WHERE id = $1', [playerId]))
+    .rows[0]
   const tiersResult = await client.query(
     'SELECT upgrade_id, tier FROM player_upgrades WHERE player_id = $1',
     [playerId],
   )
-  const tierById = Object.fromEntries(tiersResult.rows.map(row => [row.upgrade_id, row.tier]))
+  const tierById = Object.fromEntries(tiersResult.rows.map((row) => [row.upgrade_id, row.tier]))
   const dynamicMaxValues = await loadDynamicMaxValues(client)
 
-  const catalog = upgrades.map(def => {
+  const catalog = upgrades.map((def) => {
     const tier = tierById[def.id] ?? 0
     const currentValue = currentValueForTier(def, tier)
     const maxValue = maxValueFor(def, dynamicMaxValues)
@@ -88,28 +90,34 @@ async function getUpgradeCatalog(client, playerId) {
 // read directly by shop.service.js#buyShip.
 async function applyUpgradeEffect(client, playerId, def, newTier) {
   if (isDockingStationsUpgrade(def)) {
-    await client.query('INSERT INTO docking_stations (player_id, capacity) VALUES ($1, 1)', [playerId])
+    await client.query('INSERT INTO docking_stations (player_id, capacity) VALUES ($1, 1)', [
+      playerId,
+    ])
     return
   }
 
   const column = def.appliesTo.split('.')[1]
-  await client.query(
-    `UPDATE players SET ${column} = $1 WHERE id = $2`,
-    [currentValueForTier(def, newTier), playerId],
-  )
+  await client.query(`UPDATE players SET ${column} = $1 WHERE id = $2`, [
+    currentValueForTier(def, newTier),
+    playerId,
+  ])
 }
 
 async function buyUpgrade(client, playerId, upgradeId) {
   const def = findUpgrade(upgradeId)
   if (!def) return { error: 'Upgrade not found' }
 
-  const player = (await client.query('SELECT tokens FROM players WHERE id = $1 FOR UPDATE', [playerId])).rows[0]
+  const player = (
+    await client.query('SELECT tokens FROM players WHERE id = $1 FOR UPDATE', [playerId])
+  ).rows[0]
   if (!player) return { error: 'Player not found' }
 
-  const tierRow = (await client.query(
-    'SELECT tier FROM player_upgrades WHERE player_id = $1 AND upgrade_id = $2',
-    [playerId, def.id],
-  )).rows[0]
+  const tierRow = (
+    await client.query(
+      'SELECT tier FROM player_upgrades WHERE player_id = $1 AND upgrade_id = $2',
+      [playerId, def.id],
+    )
+  ).rows[0]
   const tier = tierRow?.tier ?? 0
 
   const dynamicMaxValues = await loadDynamicMaxValues(client)
@@ -131,7 +139,7 @@ async function buyUpgrade(client, playerId, upgradeId) {
   const catalog = await getUpgradeCatalog(client, playerId)
   return {
     success: true,
-    upgrade: catalog.upgrades.find(u => u.id === def.id),
+    upgrade: catalog.upgrades.find((u) => u.id === def.id),
     tokens: catalog.tokens,
   }
 }

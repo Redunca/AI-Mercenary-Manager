@@ -7,7 +7,9 @@ const ID_PATTERN = /^[a-z0-9][a-z0-9-]*$/
 
 function filePathFor(id) {
   if (typeof id !== 'string' || !ID_PATTERN.test(id)) {
-    throw Object.assign(new Error('Graph id must be lowercase alphanumeric with hyphens'), { statusCode: 400 })
+    throw Object.assign(new Error('Graph id must be lowercase alphanumeric with hyphens'), {
+      statusCode: 400,
+    })
   }
   return path.join(DATA_DIR, `${id}.json`)
 }
@@ -18,13 +20,20 @@ async function ensureDataDir() {
 
 async function listGraphs() {
   await ensureDataDir()
-  const files = (await fs.readdir(DATA_DIR)).filter(f => f.endsWith('.json'))
-  const summaries = await Promise.all(files.map(async file => {
-    const raw = await fs.readFile(path.join(DATA_DIR, file), 'utf8')
-    const def = JSON.parse(raw)
-    const stat = await fs.stat(path.join(DATA_DIR, file))
-    return { id: def.id, title: def.title, description: def.description ?? '', updatedAt: stat.mtime.toISOString() }
-  }))
+  const files = (await fs.readdir(DATA_DIR)).filter((f) => f.endsWith('.json'))
+  const summaries = await Promise.all(
+    files.map(async (file) => {
+      const raw = await fs.readFile(path.join(DATA_DIR, file), 'utf8')
+      const def = JSON.parse(raw)
+      const stat = await fs.stat(path.join(DATA_DIR, file))
+      return {
+        id: def.id,
+        title: def.title,
+        description: def.description ?? '',
+        updatedAt: stat.mtime.toISOString(),
+      }
+    }),
+  )
   return summaries.sort((a, b) => a.title.localeCompare(b.title))
 }
 
@@ -50,11 +59,15 @@ function makeBlankGraph(id, title, description) {
     description: description ?? '',
     nodes: [
       { id: 'start', type: 'start', position: { x: 80, y: 160 } },
-      { id: 'end', type: 'end', outcome: 'neutral', text: 'The end.', position: { x: 400, y: 160 } },
+      {
+        id: 'end',
+        type: 'end',
+        outcome: 'neutral',
+        text: 'The end.',
+        position: { x: 400, y: 160 },
+      },
     ],
-    links: [
-      { id: 'start-to-end', from: 'start', to: 'end', priority: 0, conditions: [] },
-    ],
+    links: [{ id: 'start-to-end', from: 'start', to: 'end', priority: 0, conditions: [] }],
   }
 }
 
@@ -70,7 +83,9 @@ async function createGraph({ id, title, description }) {
 
 async function saveGraph(id, def) {
   if (def.id !== id) {
-    throw Object.assign(new Error(`Body id "${def.id}" does not match URL id "${id}"`), { statusCode: 400 })
+    throw Object.assign(new Error(`Body id "${def.id}" does not match URL id "${id}"`), {
+      statusCode: 400,
+    })
   }
   validateGraphDefinition(def)
   await ensureDataDir()

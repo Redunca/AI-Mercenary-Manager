@@ -5,109 +5,59 @@
 
   <div class="panel-content">
     <ng-container [ngSwitch]="panel.module">
+      <app-recruit-list #moduleInstance *ngSwitchCase="'recruit-list'"> </app-recruit-list>
 
-      <app-recruit-list 
-        #moduleInstance 
-        *ngSwitchCase="'recruit-list'">
-      </app-recruit-list>
-      
-      <app-recruit-detail 
-        #moduleInstance 
-        *ngSwitchCase="'recruit-detail'"
-        [id]="panel.data?.id">
+      <app-recruit-detail #moduleInstance *ngSwitchCase="'recruit-detail'" [id]="panel.data?.id">
       </app-recruit-detail>
 
-      <app-mission-list 
-        #moduleInstance 
+      <app-mission-list
+        #moduleInstance
         *ngSwitchCase="'mission-list'"
-        [completed]="panel.data?.completed">
+        [completed]="panel.data?.completed"
+      >
       </app-mission-list>
 
-      <app-mission-detail 
-        #moduleInstance 
-        *ngSwitchCase="'mission-detail'"
-        [id]="panel.data?.id">
+      <app-mission-detail #moduleInstance *ngSwitchCase="'mission-detail'" [id]="panel.data?.id">
       </app-mission-detail>
 
-      <app-global-logs 
-        #moduleInstance 
-        *ngSwitchCase="'logs'">
-      </app-global-logs>
+      <app-global-logs #moduleInstance *ngSwitchCase="'logs'"> </app-global-logs>
 
-      <app-mission-logs 
-        #moduleInstance 
-        *ngSwitchCase="'mission-logs'"
-        [id]="panel.data?.id">
+      <app-mission-logs #moduleInstance *ngSwitchCase="'mission-logs'" [id]="panel.data?.id">
       </app-mission-logs>
 
-      <app-dashboard 
-        #moduleInstance 
-        *ngSwitchCase="'dashboard'">
-      </app-dashboard>
+      <app-dashboard #moduleInstance *ngSwitchCase="'dashboard'"> </app-dashboard>
 
-      <app-help 
-        #moduleInstance 
-        *ngSwitchCase="'help'">
-      </app-help>
+      <app-help #moduleInstance *ngSwitchCase="'help'"> </app-help>
 
-      <app-candidate-list 
-        #moduleInstance 
-        *ngSwitchCase="'candidate-list'">
-      </app-candidate-list>
+      <app-candidate-list #moduleInstance *ngSwitchCase="'candidate-list'"> </app-candidate-list>
 
-      <app-candidate-detail 
-        #moduleInstance 
+      <app-candidate-detail
+        #moduleInstance
         *ngSwitchCase="'candidate-detail'"
-        [id]="panel.data?.id">
+        [id]="panel.data?.id"
+      >
       </app-candidate-detail>
 
-      <app-ship-list 
-        #moduleInstance 
-        *ngSwitchCase="'ship-list'">
-      </app-ship-list>
+      <app-ship-list #moduleInstance *ngSwitchCase="'ship-list'"> </app-ship-list>
 
-      <app-ship-detail 
-        #moduleInstance 
-        *ngSwitchCase="'ship-detail'"
-        [id]="panel.data?.id">
+      <app-ship-detail #moduleInstance *ngSwitchCase="'ship-detail'" [id]="panel.data?.id">
       </app-ship-detail>
 
-      <app-shop-list
-        #moduleInstance 
-        *ngSwitchCase="'shop-list'">
-      </app-shop-list>
+      <app-shop-list #moduleInstance *ngSwitchCase="'shop-list'"> </app-shop-list>
 
-      <app-shop-detail
-        #moduleInstance
-        *ngSwitchCase="'shop-detail'"
-        [id]="panel.data?.id">
+      <app-shop-detail #moduleInstance *ngSwitchCase="'shop-detail'" [id]="panel.data?.id">
       </app-shop-detail>
 
-      <app-self
-        #moduleInstance
-        *ngSwitchCase="'self'">
-      </app-self>
+      <app-self #moduleInstance *ngSwitchCase="'self'"> </app-self>
 
-      <app-opera-list
-        #moduleInstance
-        *ngSwitchCase="'opera-list'">
-      </app-opera-list>
+      <app-opera-list #moduleInstance *ngSwitchCase="'opera-list'"> </app-opera-list>
 
-      <app-opera-detail
-        #moduleInstance
-        *ngSwitchCase="'opera-detail'"
-        [id]="panel.data?.id">
+      <app-opera-detail #moduleInstance *ngSwitchCase="'opera-detail'" [id]="panel.data?.id">
       </app-opera-detail>
 
-      <app-items
-        #moduleInstance
-        *ngSwitchCase="'items'">
-      </app-items>
+      <app-items #moduleInstance *ngSwitchCase="'items'"> </app-items>
 
-      <app-dashboard
-        #moduleInstance 
-        *ngSwitchDefault>
-      </app-dashboard>
+      <app-dashboard #moduleInstance *ngSwitchDefault> </app-dashboard>
     </ng-container>
   </div>
 
@@ -121,8 +71,8 @@
       (keydown.arrowdown)="onArrowDownKey($event)"
       (focus)="onFocus()"
       placeholder="Enter a command..."
-      class="command-input">
+      class="command-input"
+    >
     </textarea>
   </div>
 </div>
-

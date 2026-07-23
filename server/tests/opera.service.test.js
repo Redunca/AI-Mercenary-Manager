@@ -31,8 +31,15 @@ function gatedGraph(overrides = {}) {
     links: [
       { id: 'start--ask', from: 'start', to: 'ask', conditions: [] },
       {
-        id: 'ask--thanks', from: 'ask', to: 'thanks',
-        conditions: [{ type: 'action_performed', params: { actionType: 'execute_command', match: { command: 'help' } } }],
+        id: 'ask--thanks',
+        from: 'ask',
+        to: 'thanks',
+        conditions: [
+          {
+            type: 'action_performed',
+            params: { actionType: 'execute_command', match: { command: 'help' } },
+          },
+        ],
       },
       // Gated too (on a second, distinct action) so a single 'help' action
       // advances exactly one step and the walk stops predictably at
@@ -40,8 +47,15 @@ function gatedGraph(overrides = {}) {
       // through to 'end' in the same pass, which is correct engine
       // behavior but not what this fixture is meant to isolate.
       {
-        id: 'thanks--end', from: 'thanks', to: 'end',
-        conditions: [{ type: 'action_performed', params: { actionType: 'execute_command', match: { command: 'bye' } } }],
+        id: 'thanks--end',
+        from: 'thanks',
+        to: 'end',
+        conditions: [
+          {
+            type: 'action_performed',
+            params: { actionType: 'execute_command', match: { command: 'bye' } },
+          },
+        ],
       },
     ],
     ...overrides,
@@ -54,14 +68,32 @@ function choiceGraph() {
     title: 'Decision',
     nodes: [
       { id: 'start', type: 'start' },
-      { id: 'pick', type: 'choice', text: 'Choose.', choiceOptions: [{ id: 'a', label: 'Option A' }, { id: 'b', label: 'Option B' }] },
+      {
+        id: 'pick',
+        type: 'choice',
+        text: 'Choose.',
+        choiceOptions: [
+          { id: 'a', label: 'Option A' },
+          { id: 'b', label: 'Option B' },
+        ],
+      },
       { id: 'end-a', type: 'end', outcome: 'success', text: 'Took A.' },
       { id: 'end-b', type: 'end', outcome: 'neutral', text: 'Took B.' },
     ],
     links: [
       { id: 'start--pick', from: 'start', to: 'pick', conditions: [] },
-      { id: 'pick--a', from: 'pick', to: 'end-a', conditions: [{ type: 'choice_made', params: { optionId: 'a' } }] },
-      { id: 'pick--b', from: 'pick', to: 'end-b', conditions: [{ type: 'choice_made', params: { optionId: 'b' } }] },
+      {
+        id: 'pick--a',
+        from: 'pick',
+        to: 'end-a',
+        conditions: [{ type: 'choice_made', params: { optionId: 'a' } }],
+      },
+      {
+        id: 'pick--b',
+        from: 'pick',
+        to: 'end-b',
+        conditions: [{ type: 'choice_made', params: { optionId: 'b' } }],
+      },
     ],
   }
 }
@@ -78,14 +110,31 @@ function seedGraph(id) {
     title: id,
     nodes: [
       { id: 'start', type: 'start' },
-      { id: 'get-item', type: 'seed', seeds: [{ target: 'shop', params: { itemName: 'Widget' }, note: 'A rare widget appears in the shop.' }] },
+      {
+        id: 'get-item',
+        type: 'seed',
+        seeds: [
+          {
+            target: 'shop',
+            params: { itemName: 'Widget' },
+            note: 'A rare widget appears in the shop.',
+          },
+        ],
+      },
       { id: 'end', type: 'end', outcome: 'success', text: 'Done.' },
     ],
     links: [
       { id: 'start--get-item', from: 'start', to: 'get-item', conditions: [] },
       {
-        id: 'get-item--end', from: 'get-item', to: 'end',
-        conditions: [{ type: 'action_performed', params: { actionType: 'purchase_quest_item', match: { itemName: 'Widget' } } }],
+        id: 'get-item--end',
+        from: 'get-item',
+        to: 'end',
+        conditions: [
+          {
+            type: 'action_performed',
+            params: { actionType: 'purchase_quest_item', match: { itemName: 'Widget' } },
+          },
+        ],
       },
     ],
   }
@@ -98,53 +147,84 @@ function instantGraph(id) {
   return {
     id,
     title: id,
-    nodes: [{ id: 'start', type: 'start' }, { id: 'end', type: 'end', outcome: 'success', text: 'Done.' }],
+    nodes: [
+      { id: 'start', type: 'start' },
+      { id: 'end', type: 'end', outcome: 'success', text: 'Done.' },
+    ],
     links: [{ id: 'start--end', from: 'start', to: 'end', conditions: [] }],
   }
 }
 
 function createFakeClient({ instances = [], players = {} } = {}) {
   const state = {
-    instances: instances.map(i => ({ ...i })),
+    instances: instances.map((i) => ({ ...i })),
     players: { ...players },
-    nextInstanceId: Math.max(0, ...instances.map(i => i.id)) + 1,
+    nextInstanceId: Math.max(0, ...instances.map((i) => i.id)) + 1,
     logEntries: [],
   }
 
   const query = jest.fn(async (sql, params = []) => {
     const s = sql.replace(/\s+/g, ' ').trim()
 
-    if (s.startsWith("SELECT * FROM opera_instances WHERE player_id = $1 AND status = 'in_progress'")) {
+    if (
+      s.startsWith("SELECT * FROM opera_instances WHERE player_id = $1 AND status = 'in_progress'")
+    ) {
       const [playerId] = params
-      return { rows: state.instances.filter(i => i.player_id === playerId && i.status === 'in_progress') }
+      return {
+        rows: state.instances.filter((i) => i.player_id === playerId && i.status === 'in_progress'),
+      }
     }
     if (s.startsWith('SELECT * FROM opera_instances WHERE player_id = $1 AND id = $2')) {
       const [playerId, id] = params
-      return { rows: state.instances.filter(i => i.player_id === playerId && i.id === id) }
+      return { rows: state.instances.filter((i) => i.player_id === playerId && i.id === id) }
     }
     if (s.startsWith('UPDATE opera_instances SET state = $1 WHERE id = $2')) {
       const [stateJson, id] = params
-      const row = state.instances.find(i => i.id === id)
+      const row = state.instances.find((i) => i.id === id)
       if (row) row.state = JSON.parse(stateJson)
       return { rows: [] }
     }
-    if (s.startsWith('UPDATE opera_instances SET status = $1, state = $2, completed_at = NOW() WHERE id = $3')) {
+    if (
+      s.startsWith(
+        'UPDATE opera_instances SET status = $1, state = $2, completed_at = NOW() WHERE id = $3',
+      )
+    ) {
       const [status, stateJson, id] = params
-      const row = state.instances.find(i => i.id === id)
-      if (row) { row.status = status; row.state = JSON.parse(stateJson) }
+      const row = state.instances.find((i) => i.id === id)
+      if (row) {
+        row.status = status
+        row.state = JSON.parse(stateJson)
+      }
       return { rows: [] }
     }
-    if (s.startsWith(`SELECT status FROM opera_instances WHERE player_id = $1 AND template_id = $2`)) {
+    if (
+      s.startsWith(`SELECT status FROM opera_instances WHERE player_id = $1 AND template_id = $2`)
+    ) {
       const [playerId, templateId] = params
-      return { rows: state.instances.filter(i => i.player_id === playerId && i.template_id === templateId) }
+      return {
+        rows: state.instances.filter(
+          (i) => i.player_id === playerId && i.template_id === templateId,
+        ),
+      }
     }
     if (s.startsWith('SELECT slot_index, template_id FROM opera_instances')) {
       const [playerId] = params
-      return { rows: state.instances.filter(i => i.player_id === playerId && i.status === 'in_progress' && i.slot_index !== null) }
+      return {
+        rows: state.instances.filter(
+          (i) => i.player_id === playerId && i.status === 'in_progress' && i.slot_index !== null,
+        ),
+      }
     }
     if (s.startsWith('INSERT INTO opera_instances')) {
       const [playerId, templateId, slotIndex] = params
-      const row = { id: state.nextInstanceId++, player_id: playerId, template_id: templateId, slot_index: slotIndex, status: 'in_progress', state: {} }
+      const row = {
+        id: state.nextInstanceId++,
+        player_id: playerId,
+        template_id: templateId,
+        slot_index: slotIndex,
+        status: 'in_progress',
+        state: {},
+      }
       state.instances.push(row)
       return { rows: [row] }
     }
@@ -152,7 +232,11 @@ function createFakeClient({ instances = [], players = {} } = {}) {
       const [playerId] = params
       return { rows: [{ opera_slot_capacity: state.players[playerId]?.opera_slot_capacity ?? 0 }] }
     }
-    if (s.startsWith('SELECT id FROM recruits WHERE player_id = $1 AND deleted_at IS NULL ORDER BY random()')) {
+    if (
+      s.startsWith(
+        'SELECT id FROM recruits WHERE player_id = $1 AND deleted_at IS NULL ORDER BY random()',
+      )
+    ) {
       return { rows: [] }
     }
     if (s.startsWith('INSERT INTO log_entries')) {
@@ -174,12 +258,24 @@ describe('recordOperaAction', () => {
   test('advances an instance past a matching action_performed gate', async () => {
     getOperaDefinition.mockReturnValue(gatedGraph())
     const client = createFakeClient({
-      instances: [{ id: 10, player_id: PLAYER_ID, template_id: 'side-quest', slot_index: 0, status: 'in_progress', state: { currentNodeId: 'ask', tags: {}, log: [], awaiting: 'link' } }],
+      instances: [
+        {
+          id: 10,
+          player_id: PLAYER_ID,
+          template_id: 'side-quest',
+          slot_index: 0,
+          status: 'in_progress',
+          state: { currentNodeId: 'ask', tags: {}, log: [], awaiting: 'link' },
+        },
+      ],
     })
 
-    await OperaService.recordOperaAction(client, PLAYER_ID, 'execute_command', { command: 'help', args: [] })
+    await OperaService.recordOperaAction(client, PLAYER_ID, 'execute_command', {
+      command: 'help',
+      args: [],
+    })
 
-    const row = client.state.instances.find(i => i.id === 10)
+    const row = client.state.instances.find((i) => i.id === 10)
     expect(row.state.currentNodeId).toBe('thanks')
     expect(row.state.awaiting).toBe('link')
   })
@@ -187,19 +283,40 @@ describe('recordOperaAction', () => {
   test('leaves an instance untouched when the action does not match its pending gate', async () => {
     getOperaDefinition.mockReturnValue(gatedGraph())
     const client = createFakeClient({
-      instances: [{ id: 10, player_id: PLAYER_ID, template_id: 'side-quest', slot_index: 0, status: 'in_progress', state: { currentNodeId: 'ask', tags: {}, log: [], awaiting: 'link' } }],
+      instances: [
+        {
+          id: 10,
+          player_id: PLAYER_ID,
+          template_id: 'side-quest',
+          slot_index: 0,
+          status: 'in_progress',
+          state: { currentNodeId: 'ask', tags: {}, log: [], awaiting: 'link' },
+        },
+      ],
     })
 
-    await OperaService.recordOperaAction(client, PLAYER_ID, 'execute_command', { command: 'split-v', args: [] })
+    await OperaService.recordOperaAction(client, PLAYER_ID, 'execute_command', {
+      command: 'split-v',
+      args: [],
+    })
 
-    const row = client.state.instances.find(i => i.id === 10)
+    const row = client.state.instances.find((i) => i.id === 10)
     expect(row.state.currentNodeId).toBe('ask')
   })
 
   test('never throws, even when the instance references a removed template', async () => {
     getOperaDefinition.mockReturnValue(null)
     const client = createFakeClient({
-      instances: [{ id: 10, player_id: PLAYER_ID, template_id: 'gone', slot_index: 0, status: 'in_progress', state: {} }],
+      instances: [
+        {
+          id: 10,
+          player_id: PLAYER_ID,
+          template_id: 'gone',
+          slot_index: 0,
+          status: 'in_progress',
+          state: {},
+        },
+      ],
     })
 
     await expect(
@@ -212,7 +329,16 @@ describe('resolveChoice', () => {
   test('rejects when the instance has no pending choice', async () => {
     getOperaDefinition.mockReturnValue(choiceGraph())
     const client = createFakeClient({
-      instances: [{ id: 20, player_id: PLAYER_ID, template_id: 'decision', slot_index: 0, status: 'in_progress', state: { currentNodeId: 'start', awaiting: null } }],
+      instances: [
+        {
+          id: 20,
+          player_id: PLAYER_ID,
+          template_id: 'decision',
+          slot_index: 0,
+          status: 'in_progress',
+          state: { currentNodeId: 'start', awaiting: null },
+        },
+      ],
     })
 
     const result = await OperaService.resolveChoice(client, PLAYER_ID, 20, 'a')
@@ -222,10 +348,27 @@ describe('resolveChoice', () => {
   test('rejects an option id that is not on the pending choice', async () => {
     getOperaDefinition.mockReturnValue(choiceGraph())
     const client = createFakeClient({
-      instances: [{
-        id: 20, player_id: PLAYER_ID, template_id: 'decision', slot_index: 0, status: 'in_progress',
-        state: { currentNodeId: 'pick', awaiting: 'choice', pendingChoice: { nodeId: 'pick', text: 'Choose.', options: [{ id: 'a', label: 'Option A' }, { id: 'b', label: 'Option B' }] } },
-      }],
+      instances: [
+        {
+          id: 20,
+          player_id: PLAYER_ID,
+          template_id: 'decision',
+          slot_index: 0,
+          status: 'in_progress',
+          state: {
+            currentNodeId: 'pick',
+            awaiting: 'choice',
+            pendingChoice: {
+              nodeId: 'pick',
+              text: 'Choose.',
+              options: [
+                { id: 'a', label: 'Option A' },
+                { id: 'b', label: 'Option B' },
+              ],
+            },
+          },
+        },
+      ],
     })
 
     const result = await OperaService.resolveChoice(client, PLAYER_ID, 20, 'c')
@@ -235,15 +378,32 @@ describe('resolveChoice', () => {
   test('resolves a valid choice and advances the walk to the matching ending', async () => {
     getOperaDefinition.mockReturnValue(choiceGraph())
     const client = createFakeClient({
-      instances: [{
-        id: 20, player_id: PLAYER_ID, template_id: 'decision', slot_index: 0, status: 'in_progress',
-        state: { currentNodeId: 'pick', awaiting: 'choice', pendingChoice: { nodeId: 'pick', text: 'Choose.', options: [{ id: 'a', label: 'Option A' }, { id: 'b', label: 'Option B' }] } },
-      }],
+      instances: [
+        {
+          id: 20,
+          player_id: PLAYER_ID,
+          template_id: 'decision',
+          slot_index: 0,
+          status: 'in_progress',
+          state: {
+            currentNodeId: 'pick',
+            awaiting: 'choice',
+            pendingChoice: {
+              nodeId: 'pick',
+              text: 'Choose.',
+              options: [
+                { id: 'a', label: 'Option A' },
+                { id: 'b', label: 'Option B' },
+              ],
+            },
+          },
+        },
+      ],
     })
 
     const result = await OperaService.resolveChoice(client, PLAYER_ID, 20, 'b')
     expect(result).toEqual({ success: true })
-    const row = client.state.instances.find(i => i.id === 20)
+    const row = client.state.instances.find((i) => i.id === 20)
     expect(row.status).toBe('completed') // outcome: 'neutral' on end-b -> completed, not failed
     expect(row.state.currentNodeId).toBe('end-b')
   })
@@ -253,7 +413,16 @@ describe('maintainOperaSlots', () => {
   test('does nothing until the tutorial instance is completed', async () => {
     getGenerationPoolDefinitions.mockReturnValue([instantGraph('template-a')])
     const client = createFakeClient({
-      instances: [{ id: 1, player_id: PLAYER_ID, template_id: 'tutorial', slot_index: null, status: 'in_progress', state: {} }],
+      instances: [
+        {
+          id: 1,
+          player_id: PLAYER_ID,
+          template_id: 'tutorial',
+          slot_index: null,
+          status: 'in_progress',
+          state: {},
+        },
+      ],
       players: { [PLAYER_ID]: { opera_slot_capacity: 3 } },
     })
 
@@ -263,54 +432,96 @@ describe('maintainOperaSlots', () => {
   })
 
   test('fills every empty slot up to capacity once the tutorial is completed', async () => {
-    getOperaDefinition.mockImplementation(id => instantGraph(id))
-    getGenerationPoolDefinitions.mockReturnValue([instantGraph('template-a'), instantGraph('template-b'), instantGraph('template-c')])
+    getOperaDefinition.mockImplementation((id) => instantGraph(id))
+    getGenerationPoolDefinitions.mockReturnValue([
+      instantGraph('template-a'),
+      instantGraph('template-b'),
+      instantGraph('template-c'),
+    ])
     const client = createFakeClient({
-      instances: [{ id: 1, player_id: PLAYER_ID, template_id: 'tutorial', slot_index: null, status: 'completed', state: {} }],
+      instances: [
+        {
+          id: 1,
+          player_id: PLAYER_ID,
+          template_id: 'tutorial',
+          slot_index: null,
+          status: 'completed',
+          state: {},
+        },
+      ],
       players: { [PLAYER_ID]: { opera_slot_capacity: 3 } },
     })
 
     await OperaService.maintainOperaSlots(client, PLAYER_ID)
 
-    const pooled = client.state.instances.filter(i => i.slot_index !== null)
+    const pooled = client.state.instances.filter((i) => i.slot_index !== null)
     expect(pooled).toHaveLength(3)
-    expect(new Set(pooled.map(i => i.slot_index))).toEqual(new Set([0, 1, 2]))
+    expect(new Set(pooled.map((i) => i.slot_index))).toEqual(new Set([0, 1, 2]))
   })
 
   test('only fills the empty slots, leaving an already-active one alone', async () => {
-    getOperaDefinition.mockImplementation(id => instantGraph(id))
-    getGenerationPoolDefinitions.mockReturnValue([instantGraph('template-a'), instantGraph('template-b')])
+    getOperaDefinition.mockImplementation((id) => instantGraph(id))
+    getGenerationPoolDefinitions.mockReturnValue([
+      instantGraph('template-a'),
+      instantGraph('template-b'),
+    ])
     const client = createFakeClient({
       instances: [
-        { id: 1, player_id: PLAYER_ID, template_id: 'tutorial', slot_index: null, status: 'completed', state: {} },
-        { id: 2, player_id: PLAYER_ID, template_id: 'template-a', slot_index: 0, status: 'in_progress', state: { currentNodeId: 'start' } },
+        {
+          id: 1,
+          player_id: PLAYER_ID,
+          template_id: 'tutorial',
+          slot_index: null,
+          status: 'completed',
+          state: {},
+        },
+        {
+          id: 2,
+          player_id: PLAYER_ID,
+          template_id: 'template-a',
+          slot_index: 0,
+          status: 'in_progress',
+          state: { currentNodeId: 'start' },
+        },
       ],
       players: { [PLAYER_ID]: { opera_slot_capacity: 2 } },
     })
 
     await OperaService.maintainOperaSlots(client, PLAYER_ID)
 
-    const pooled = client.state.instances.filter(i => i.slot_index !== null)
+    const pooled = client.state.instances.filter((i) => i.slot_index !== null)
     expect(pooled).toHaveLength(2)
-    expect(pooled.find(i => i.slot_index === 0).id).toBe(2) // untouched
-    expect(pooled.find(i => i.slot_index === 1)).toBeTruthy() // newly filled
+    expect(pooled.find((i) => i.slot_index === 0).id).toBe(2) // untouched
+    expect(pooled.find((i) => i.slot_index === 1)).toBeTruthy() // newly filled
   })
 
   test('a fresh instance stopped at a gated seed node still has a visible current task', async () => {
-    getOperaDefinition.mockImplementation(id => seedGraph(id))
+    getOperaDefinition.mockImplementation((id) => seedGraph(id))
     getGenerationPoolDefinitions.mockReturnValue([seedGraph('template-a')])
     const client = createFakeClient({
-      instances: [{ id: 1, player_id: PLAYER_ID, template_id: 'tutorial', slot_index: null, status: 'completed', state: {} }],
+      instances: [
+        {
+          id: 1,
+          player_id: PLAYER_ID,
+          template_id: 'tutorial',
+          slot_index: null,
+          status: 'completed',
+          state: {},
+        },
+      ],
       players: { [PLAYER_ID]: { opera_slot_capacity: 1 } },
     })
 
     await OperaService.maintainOperaSlots(client, PLAYER_ID)
 
-    const pooled = client.state.instances.find(i => i.slot_index === 0)
+    const pooled = client.state.instances.find((i) => i.slot_index === 0)
     expect(pooled.state.awaiting).toBe('link')
     expect(pooled.state.log).toHaveLength(1)
-    expect(pooled.state.log[0]).toMatchObject({ type: 'seed', text: 'A rare widget appears in the shop.' }) // task keeps the lore note
-    const seedLog = client.state.logEntries.find(e => e.operaId === String(pooled.id))
+    expect(pooled.state.log[0]).toMatchObject({
+      type: 'seed',
+      text: 'A rare widget appears in the shop.',
+    }) // task keeps the lore note
+    const seedLog = client.state.logEntries.find((e) => e.operaId === String(pooled.id))
     expect(seedLog.message).toBe('New item available in the shop.') // [SYS] log stays dry, not the note
   })
 })
@@ -324,7 +535,16 @@ describe('dry [SYS] log text vs. lore-heavy tasks', () => {
   test('a story node logs a dry line while its task keeps the authored lore text', async () => {
     getOperaDefinition.mockReturnValue(gatedGraph())
     const client = createFakeClient({
-      instances: [{ id: 10, player_id: PLAYER_ID, template_id: 'side-quest', slot_index: 0, status: 'in_progress', state: {} }],
+      instances: [
+        {
+          id: 10,
+          player_id: PLAYER_ID,
+          template_id: 'side-quest',
+          slot_index: 0,
+          status: 'in_progress',
+          state: {},
+        },
+      ],
     })
 
     // Nothing in gatedGraph's start->ask link is gated, so any action
@@ -332,61 +552,105 @@ describe('dry [SYS] log text vs. lore-heavy tasks', () => {
     // there (its own outgoing link IS gated, on a different action).
     await OperaService.recordOperaAction(client, PLAYER_ID, 'noop_action', {})
 
-    const row = client.state.instances.find(i => i.id === 10)
+    const row = client.state.instances.find((i) => i.id === 10)
     expect(row.state.log[0]).toMatchObject({ type: 'story', text: 'Do the thing.' })
-    const storyLog = client.state.logEntries.find(e => e.operaId === '10')
+    const storyLog = client.state.logEntries.find((e) => e.operaId === '10')
     expect(storyLog.message).toBe('Story continues.')
   })
 
   test('a choice node logs a dry line while its task keeps the authored lore text', async () => {
     getOperaDefinition.mockReturnValue(choiceGraph())
     const client = createFakeClient({
-      instances: [{ id: 20, player_id: PLAYER_ID, template_id: 'decision', slot_index: 0, status: 'in_progress', state: {} }],
+      instances: [
+        {
+          id: 20,
+          player_id: PLAYER_ID,
+          template_id: 'decision',
+          slot_index: 0,
+          status: 'in_progress',
+          state: {},
+        },
+      ],
     })
 
     await OperaService.recordOperaAction(client, PLAYER_ID, 'noop_action', {})
 
-    const row = client.state.instances.find(i => i.id === 20)
+    const row = client.state.instances.find((i) => i.id === 20)
     expect(row.state.log[0]).toMatchObject({ type: 'choice', text: 'Choose.' })
-    const choiceLog = client.state.logEntries.find(e => e.operaId === '20')
+    const choiceLog = client.state.logEntries.find((e) => e.operaId === '20')
     expect(choiceLog.message).toBe('Decision required.')
   })
 
   test.each([
     ['a', 'success', 'Opera completed.'],
     ['b', 'neutral', 'Opera concluded.'],
-  ])('an end node with outcome %s logs a dry, outcome-specific line while its task keeps the lore text', async (optionId, outcome, dryText) => {
-    getOperaDefinition.mockReturnValue(choiceGraph())
-    const client = createFakeClient({
-      instances: [{
-        id: 20, player_id: PLAYER_ID, template_id: 'decision', slot_index: 0, status: 'in_progress',
-        state: { currentNodeId: 'pick', awaiting: 'choice', pendingChoice: { nodeId: 'pick', text: 'Choose.', options: [{ id: 'a', label: 'Option A' }, { id: 'b', label: 'Option B' }] } },
-      }],
-    })
+  ])(
+    'an end node with outcome %s logs a dry, outcome-specific line while its task keeps the lore text',
+    async (optionId, outcome, dryText) => {
+      getOperaDefinition.mockReturnValue(choiceGraph())
+      const client = createFakeClient({
+        instances: [
+          {
+            id: 20,
+            player_id: PLAYER_ID,
+            template_id: 'decision',
+            slot_index: 0,
+            status: 'in_progress',
+            state: {
+              currentNodeId: 'pick',
+              awaiting: 'choice',
+              pendingChoice: {
+                nodeId: 'pick',
+                text: 'Choose.',
+                options: [
+                  { id: 'a', label: 'Option A' },
+                  { id: 'b', label: 'Option B' },
+                ],
+              },
+            },
+          },
+        ],
+      })
 
-    await OperaService.resolveChoice(client, PLAYER_ID, 20, optionId)
+      await OperaService.resolveChoice(client, PLAYER_ID, 20, optionId)
 
-    const row = client.state.instances.find(i => i.id === 20)
-    expect(row.state.currentNodeId).toBe(optionId === 'a' ? 'end-a' : 'end-b')
-    const endLog = client.state.logEntries.find(e => e.operaId === '20' && e.message.startsWith('Opera'))
-    expect(endLog.message).toBe(dryText)
-  })
+      const row = client.state.instances.find((i) => i.id === 20)
+      expect(row.state.currentNodeId).toBe(optionId === 'a' ? 'end-a' : 'end-b')
+      const endLog = client.state.logEntries.find(
+        (e) => e.operaId === '20' && e.message.startsWith('Opera'),
+      )
+      expect(endLog.message).toBe(dryText)
+    },
+  )
 
   test('an end node with outcome "failure" logs "Opera failed."', async () => {
     getOperaDefinition.mockReturnValue({
-      id: 'doomed', title: 'Doomed',
-      nodes: [{ id: 'start', type: 'start' }, { id: 'end', type: 'end', outcome: 'failure', text: 'It all went wrong.' }],
+      id: 'doomed',
+      title: 'Doomed',
+      nodes: [
+        { id: 'start', type: 'start' },
+        { id: 'end', type: 'end', outcome: 'failure', text: 'It all went wrong.' },
+      ],
       links: [{ id: 'start--end', from: 'start', to: 'end', conditions: [] }],
     })
     const client = createFakeClient({
-      instances: [{ id: 30, player_id: PLAYER_ID, template_id: 'doomed', slot_index: 0, status: 'in_progress', state: {} }],
+      instances: [
+        {
+          id: 30,
+          player_id: PLAYER_ID,
+          template_id: 'doomed',
+          slot_index: 0,
+          status: 'in_progress',
+          state: {},
+        },
+      ],
     })
 
     await OperaService.recordOperaAction(client, PLAYER_ID, 'noop_action', {})
 
-    const row = client.state.instances.find(i => i.id === 30)
+    const row = client.state.instances.find((i) => i.id === 30)
     expect(row.status).toBe('failed')
-    const endLog = client.state.logEntries.find(e => e.operaId === '30')
+    const endLog = client.state.logEntries.find((e) => e.operaId === '30')
     expect(endLog.message).toBe('Opera failed.')
   })
 })

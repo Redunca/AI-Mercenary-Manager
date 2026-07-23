@@ -1,19 +1,31 @@
-<div>TASK: [<span class="task-title">Item Detail</span>] ******************************************</div>
+<div>
+  TASK: [<span class="task-title">Item Detail</span>] ******************************************
+</div>
 <div>ok ==> {{ '{' }}</div>
 <ng-container *ngIf="item; else notFound">
-  <div class="indent-one">"id"          : {{ item.id }},</div>
-  <div class="indent-one">"name"        : "{{ item.name }}",</div>
-  <div class="indent-one">"type"        : "{{ item.type === 'ship' ? 'SHIP' : item.type === 'armor' ? 'ARMOR' : 'CONSUMABLE' }}",</div>
-  <div class="indent-one">"rarity"      : <span [class]="'rarity-' + item.rarity">"{{ item.rarity }}"</span>,</div>
-  <div class="indent-one">"price"       : {{ item.price }},</div>
-  <div class="indent-one">"stock"       : <span [class.stock-sold]="isSoldOut(item)">{{ isSoldOut(item) ? '"SOLD"' : (item.remaining_stock + '/' + item.max_stock) }}</span>,</div>
+  <div class="indent-one">"id" : {{ item.id }},</div>
+  <div class="indent-one">"name" : "{{ item.name }}",</div>
+  <div class="indent-one">
+    "type" : "{{ item.type === 'ship' ? 'SHIP' : item.type === 'armor' ? 'ARMOR' : 'CONSUMABLE' }}",
+  </div>
+  <div class="indent-one">
+    "rarity" : <span [class]="'rarity-' + item.rarity">"{{ item.rarity }}"</span>,
+  </div>
+  <div class="indent-one">"price" : {{ item.price }},</div>
+  <div class="indent-one">
+    "stock" :
+    <span [class.stock-sold]="isSoldOut(item)">{{
+      isSoldOut(item) ? '"SOLD"' : item.remaining_stock + '/' + item.max_stock
+    }}</span
+    >,
+  </div>
   <div class="indent-one">"description" : "{{ item.description }}",</div>
 
   <ng-container *ngIf="item.type === 'ship'">
     <div class="indent-one">"stats" : {{ '{' }}</div>
-    <div class="indent-two">speed           {{ item.stats?.speed }}</div>
-    <div class="indent-two">capacity        {{ item.stats?.capacity }}</div>
-    <div class="indent-two">durability      {{ item.stats?.durability }}</div>
+    <div class="indent-two">speed {{ item.stats?.speed }}</div>
+    <div class="indent-two">capacity {{ item.stats?.capacity }}</div>
+    <div class="indent-two">durability {{ item.stats?.durability }}</div>
     <div class="indent-two">inventory_space {{ item.stats?.inventory_space }}</div>
     <div class="indent-one">{{ '}' }}</div>
   </ng-container>
@@ -22,10 +34,10 @@
 
   <ng-container *ngIf="item.type === 'armor'">
     <div class="indent-one">"stats" : {{ '{' }}</div>
-    <div class="indent-two">armorType         {{ item.stats?.armorType }}</div>
-    <div class="indent-two">guardBonus        +{{ item.stats?.guardBonus }}</div>
+    <div class="indent-two">armorType {{ item.stats?.armorType }}</div>
+    <div class="indent-two">guardBonus +{{ item.stats?.guardBonus }}</div>
     <div class="indent-two">requiredFortitude {{ item.stats?.requiredFortitude }}</div>
-    <div class="indent-two">speedPenalty      {{ item.stats?.speedPenalty }}</div>
+    <div class="indent-two">speedPenalty {{ item.stats?.speedPenalty }}</div>
     <div class="indent-one">{{ '}' }}</div>
   </ng-container>
 </ng-container>

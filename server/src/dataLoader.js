@@ -1,13 +1,13 @@
-'use strict';
+'use strict'
 
-const path = require('path');
+const path = require('path')
 
-const DATA_DIR = path.join(__dirname, '..', 'data');
+const DATA_DIR = path.join(__dirname, '..', 'data')
 
-let cache = null;
+let cache = null
 
 function loadData() {
-  if (cache) return cache;
+  if (cache) return cache
 
   cache = {
     entityNames: require(path.join(DATA_DIR, 'entity-names.json')),
@@ -17,9 +17,9 @@ function loadData() {
     missionNames: require(path.join(DATA_DIR, 'mission-names.json')),
     missionDescriptions: require(path.join(DATA_DIR, 'mission-descriptions.json')),
     difficultyTables: require(path.join(DATA_DIR, 'difficulty-tables.json')),
-  };
+  }
 
-  return cache;
+  return cache
 }
 
-module.exports = { loadData, DATA_DIR };
+module.exports = { loadData, DATA_DIR }

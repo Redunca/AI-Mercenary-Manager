@@ -11,7 +11,7 @@ import { Recruit } from '../../models/recruit';
   standalone: true,
   imports: [CommonModule, NgFor],
   templateUrl: './recruit-list.component.html',
-  styleUrl: './recruit-list.component.scss'
+  styleUrl: './recruit-list.component.scss',
 })
 export class RecruitListComponent {
   layout = inject(LayoutService);
@@ -30,10 +30,13 @@ export class RecruitListComponent {
 
   registerCommands() {
     return {
-      'detail': (id: string) => {
-        if (!id) { console.warn('Usage: detail <id>'); return; }
+      detail: (id: string) => {
+        if (!id) {
+          console.warn('Usage: detail <id>');
+          return;
+        }
         this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.RecruitDetail, { id });
-      }
+      },
     };
   }
 }

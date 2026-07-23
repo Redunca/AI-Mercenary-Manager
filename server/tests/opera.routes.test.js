@@ -4,8 +4,10 @@ const OperaService = require('../src/services/opera.service')
 
 jest.mock('../src/services/opera.service')
 jest.mock('../src/db/pool', () => {
+  const actual = jest.requireActual('../src/db/pool')
   const mockClient = { query: jest.fn(), release: jest.fn() }
-  return { pool: { connect: jest.fn().mockResolvedValue(mockClient) } }
+  actual.pool.connect = jest.fn().mockResolvedValue(mockClient)
+  return actual
 })
 
 const { pool } = require('../src/db/pool')
@@ -21,26 +23,35 @@ describe('Opera Routes', () => {
 
   describe('GET /api/opera', () => {
     test('returns the tutorial + every active slot', async () => {
-      OperaService.getOperaState.mockResolvedValue([{ id: '1', templateId: 'tutorial', status: 'in_progress', tasks: [] }])
+      OperaService.getOperaState.mockResolvedValue([
+        { id: '1', templateId: 'tutorial', status: 'in_progress', tasks: [] },
+      ])
 
       const res = await request(app).get('/api/opera')
 
       expect(res.status).toBe(200)
-      expect(res.body).toEqual([{ id: '1', templateId: 'tutorial', status: 'in_progress', tasks: [] }])
+      expect(res.body).toEqual([
+        { id: '1', templateId: 'tutorial', status: 'in_progress', tasks: [] },
+      ])
       expect(mockClient.release).toHaveBeenCalledTimes(1)
     })
   })
 
   describe('GET /api/opera/:id', () => {
     test('returns the opera with its logs attached', async () => {
-      OperaService.getOperaState.mockResolvedValue([{ id: '1', templateId: 'tutorial', status: 'in_progress', tasks: [] }])
+      OperaService.getOperaState.mockResolvedValue([
+        { id: '1', templateId: 'tutorial', status: 'in_progress', tasks: [] },
+      ])
       OperaService.getOperaLogs.mockResolvedValue({ 1: [{ tag: '[SYS]', message: 'Welcome' }] })
 
       const res = await request(app).get('/api/opera/1')
 
       expect(res.status).toBe(200)
       expect(res.body).toEqual({
-        id: '1', templateId: 'tutorial', status: 'in_progress', tasks: [],
+        id: '1',
+        templateId: 'tutorial',
+        status: 'in_progress',
+        tasks: [],
         logs: [{ tag: '[SYS]', message: 'Welcome' }],
       })
     })
@@ -84,10 +95,16 @@ describe('Opera Routes', () => {
     // unrelated sync -- see opera.routes.js's own comment on this route.
     test('records the command, always responds 200, and returns fresh opera state', async () => {
       OperaService.recordOperaAction.mockResolvedValue(undefined)
-      OperaService.getOperaState.mockResolvedValue([{ id: '1', templateId: 'tutorial', status: 'in_progress', tasks: [] }])
-      OperaService.getOperaLogs.mockResolvedValue({ 1: [{ tag: '[SYS]', message: 'Panel split vertically.' }] })
+      OperaService.getOperaState.mockResolvedValue([
+        { id: '1', templateId: 'tutorial', status: 'in_progress', tasks: [] },
+      ])
+      OperaService.getOperaLogs.mockResolvedValue({
+        1: [{ tag: '[SYS]', message: 'Panel split vertically.' }],
+      })
 
-      const res = await request(app).post('/api/opera/command').send({ command: 'split-v', args: [] })
+      const res = await request(app)
+        .post('/api/opera/command')
+        .send({ command: 'split-v', args: [] })
 
       expect(res.status).toBe(200)
       expect(res.body).toEqual({
@@ -96,7 +113,10 @@ describe('Opera Routes', () => {
         operaLogs: { 1: [{ tag: '[SYS]', message: 'Panel split vertically.' }] },
       })
       expect(OperaService.recordOperaAction).toHaveBeenCalledWith(
-        mockClient, 1, 'execute_command', { command: 'split-v', args: [] },
+        mockClient,
+        1,
+        'execute_command',
+        { command: 'split-v', args: [] },
       )
     })
 

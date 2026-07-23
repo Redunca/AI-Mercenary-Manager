@@ -10,7 +10,7 @@ import { Mission, MissionState } from '../../models/mission';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './mission-detail.component.html',
-  styleUrl: './mission-detail.component.scss'
+  styleUrl: './mission-detail.component.scss',
 })
 export class MissionDetailComponent implements OnInit, OnDestroy {
   @Input() id!: number;
@@ -28,7 +28,7 @@ export class MissionDetailComponent implements OnInit, OnDestroy {
   }
 
   get mission(): Mission | null {
-    return this.missionService.missions.find(m => m.id === this.id) ?? null;
+    return this.missionService.missions.find((m) => m.id === this.id) ?? null;
   }
 
   get state(): MissionState | undefined {
@@ -49,7 +49,9 @@ export class MissionDetailComponent implements OnInit, OnDestroy {
 
   registerCommands() {
     return {
-      'stop': () => { void this.missionService.forceReturn(this.id); }
+      stop: () => {
+        void this.missionService.forceReturn(this.id);
+      },
     };
   }
 }

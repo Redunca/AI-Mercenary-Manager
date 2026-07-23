@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 
 export interface SelfUpgrade {
   id: number;
@@ -27,6 +27,6 @@ export class SelfService {
   }
 
   buyUpgrade(id: number): Promise<any> {
-    return this.http.post(`/api/self/upgrades/${id}/buy`, {}).toPromise() as Promise<any>;
+    return firstValueFrom(this.http.post(`/api/self/upgrades/${id}/buy`, {}));
   }
 }

@@ -1,18 +1,42 @@
-.task-title { font-weight: bold; }
+.task-title {
+  font-weight: bold;
+}
 
-.indent-one { margin-left: 1rem; }
-.indent-two { margin-left: 2rem; }
+.indent-one {
+  margin-left: 1rem;
+}
+.indent-two {
+  margin-left: 2rem;
+}
 
-.rarity-common    { color: inherit; opacity: 0.7; }
-.rarity-uncommon  { color: #7ecf7e; }
-.rarity-rare      { color: #7ecf7e; }
-.rarity-epic      { color: #cf9ef7; }
-.rarity-legendary { color: #e8b34a; }
+.rarity-common {
+  color: inherit;
+  opacity: 0.7;
+}
+.rarity-uncommon {
+  color: #7ecf7e;
+}
+.rarity-rare {
+  color: #7ecf7e;
+}
+.rarity-epic {
+  color: #cf9ef7;
+}
+.rarity-legendary {
+  color: #e8b34a;
+}
 
-.muted { opacity: 0.5; }
+.muted {
+  opacity: 0.5;
+}
 
-.stock-sold { color: #cf7e7e; font-weight: bold; }
-.error { color: #cf7e7e; }
+.stock-sold {
+  color: #cf7e7e;
+  font-weight: bold;
+}
+.error {
+  color: #cf7e7e;
+}
 
 .hint {
   margin-top: 0.5rem;

@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 /**
  * Returns the timestamp (ms since epoch) of the most recent wall-clock
@@ -7,8 +7,8 @@
  * the last refresh happened".
  */
 function currentIntervalBoundary(now, intervalMs) {
-  const ms = now instanceof Date ? now.getTime() : now;
-  return Math.floor(ms / intervalMs) * intervalMs;
+  const ms = now instanceof Date ? now.getTime() : now
+  return Math.floor(ms / intervalMs) * intervalMs
 }
 
 /**
@@ -18,9 +18,10 @@ function currentIntervalBoundary(now, intervalMs) {
  * 15-minute — or whatever interval — window).
  */
 function isRefreshDue(lastRefreshAt, now, intervalMs) {
-  if (lastRefreshAt === null || lastRefreshAt === undefined) return true;
-  const lastMs = lastRefreshAt instanceof Date ? lastRefreshAt.getTime() : new Date(lastRefreshAt).getTime();
-  return currentIntervalBoundary(now, intervalMs) > currentIntervalBoundary(lastMs, intervalMs);
+  if (lastRefreshAt === null || lastRefreshAt === undefined) return true
+  const lastMs =
+    lastRefreshAt instanceof Date ? lastRefreshAt.getTime() : new Date(lastRefreshAt).getTime()
+  return currentIntervalBoundary(now, intervalMs) > currentIntervalBoundary(lastMs, intervalMs)
 }
 
-module.exports = { currentIntervalBoundary, isRefreshDue };
+module.exports = { currentIntervalBoundary, isRefreshDue }

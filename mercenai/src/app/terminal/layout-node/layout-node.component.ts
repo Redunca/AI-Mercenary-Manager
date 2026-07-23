@@ -6,22 +6,23 @@ import { TerminalPanelComponent } from '../terminal-panel/terminal-panel.compone
 @Component({
   selector: 'app-layout-node',
   standalone: true,
-  imports: [CommonModule, forwardRef(() => TerminalPanelComponent), forwardRef(() => LayoutNodeComponent)],
+  imports: [
+    CommonModule,
+    forwardRef(() => TerminalPanelComponent),
+    forwardRef(() => LayoutNodeComponent),
+  ],
   templateUrl: './layout-node.component.html',
-  styleUrl: './layout-node.component.scss'
+  styleUrl: './layout-node.component.scss',
 })
 export class LayoutNodeComponent {
   @Input() node!: LayoutNode;
   layout = inject(LayoutService);
 
-  getPanel(){
-    if(this.node){
+  getPanel() {
+    if (this.node) {
       return this.layout.panels[this.node.panelId];
+    } else {
+      return null;
     }
-    else
-      {
-        return null;
-      }
   }
-
 }

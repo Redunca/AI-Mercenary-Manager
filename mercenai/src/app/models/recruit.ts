@@ -1,9 +1,16 @@
 export type RecruitStatus = 'available' | 'in_mission' | 'dead';
 
 export type AttributeKey =
-  | 'agility' | 'fortitude' | 'might'
-  | 'learning' | 'logic' | 'perception' | 'will'
-  | 'deception' | 'persuasion' | 'presence';
+  | 'agility'
+  | 'fortitude'
+  | 'might'
+  | 'learning'
+  | 'logic'
+  | 'perception'
+  | 'will'
+  | 'deception'
+  | 'persuasion'
+  | 'presence';
 
 export interface RecruitAttributes {
   // Physical
@@ -35,4 +42,3 @@ export interface Recruit {
   perks?: { name: string; description: string }[];
   flaws?: { name: string; description: string }[];
 }
-

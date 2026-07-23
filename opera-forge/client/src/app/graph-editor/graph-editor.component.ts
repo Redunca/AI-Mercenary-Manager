@@ -1,9 +1,28 @@
-import { Component, OnDestroy, OnInit, computed, inject, input, output, signal } from '@angular/core';
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  computed,
+  inject,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
-  Connection, ConnectionControllerDirective, ConnectionSettings, Edge, EdgeLabelHtmlTemplateDirective, HandleComponent,
-  HtmlTemplateNode, NodeChange, EdgeChange, NodeHtmlTemplateDirective, ResizableComponent, VflowComponent,
+  Connection,
+  ConnectionControllerDirective,
+  ConnectionSettings,
+  Edge,
+  EdgeLabelHtmlTemplateDirective,
+  HandleComponent,
+  HtmlTemplateNode,
+  NodeChange,
+  EdgeChange,
+  NodeHtmlTemplateDirective,
+  ResizableComponent,
+  VflowComponent,
 } from 'ngx-vflow';
 import { GraphService } from '../core/graph.service';
 import { GraphLink, GraphNode } from '../models/graph';
@@ -34,8 +53,17 @@ function sameNodeIgnoringSize(a: GraphNode, b: GraphNode): boolean {
   selector: 'app-graph-editor',
   standalone: true,
   imports: [
-    CommonModule, FormsModule, VflowComponent, HandleComponent, NodeHtmlTemplateDirective, EdgeLabelHtmlTemplateDirective,
-    ConnectionControllerDirective, ResizableComponent, NodePanelComponent, LinkPanelComponent, QuickGenerationComponent,
+    CommonModule,
+    FormsModule,
+    VflowComponent,
+    HandleComponent,
+    NodeHtmlTemplateDirective,
+    EdgeLabelHtmlTemplateDirective,
+    ConnectionControllerDirective,
+    ResizableComponent,
+    NodePanelComponent,
+    LinkPanelComponent,
+    QuickGenerationComponent,
   ],
   templateUrl: './graph-editor.component.html',
   styleUrl: './graph-editor.component.scss',
@@ -69,21 +97,24 @@ export class GraphEditorComponent implements OnInit, OnDestroy {
     const def = this.graphService.graph();
     if (!def) return [];
     const nextCache = new Map<string, { domainNode: GraphNode; vnode: VNode }>();
-    const nodes = def.nodes.map(node => {
+    const nodes = def.nodes.map((node) => {
       const cached = this.nodeWrapperCache.get(node.id);
-      const reusable = cached && (cached.domainNode === node || sameNodeIgnoringSize(cached.domainNode, node));
-      const entry = reusable ? { domainNode: node, vnode: cached!.vnode } : {
-        domainNode: node,
-        vnode: {
-          id: node.id,
-          type: 'html-template',
-          point: node.position ?? { x: 0, y: 0 },
-          width: node.size?.width ?? 220,
-          height: node.size?.height ?? 96,
-          draggable: true,
-          data: node,
-        } as VNode,
-      };
+      const reusable =
+        cached && (cached.domainNode === node || sameNodeIgnoringSize(cached.domainNode, node));
+      const entry = reusable
+        ? { domainNode: node, vnode: cached!.vnode }
+        : {
+            domainNode: node,
+            vnode: {
+              id: node.id,
+              type: 'html-template',
+              point: node.position ?? { x: 0, y: 0 },
+              width: node.size?.width ?? 220,
+              height: node.size?.height ?? 96,
+              draggable: true,
+              data: node,
+            } as VNode,
+          };
       nextCache.set(node.id, entry);
       return entry.vnode;
     });
@@ -95,21 +126,24 @@ export class GraphEditorComponent implements OnInit, OnDestroy {
     const def = this.graphService.graph();
     if (!def) return [];
     const nextCache = new Map<string, { domainLink: GraphLink; edge: Edge<GraphLink> }>();
-    const edges = def.links.map(link => {
+    const edges = def.links.map((link) => {
       const cached = this.linkWrapperCache.get(link.id);
-      const entry = cached && cached.domainLink === link ? cached : {
-        domainLink: link,
-        edge: {
-          id: link.id,
-          source: link.from,
-          target: link.to,
-          type: 'default' as const,
-          data: link,
-          edgeLabels: {
-            center: { type: 'html-template' as const, data: link },
-          },
-        },
-      };
+      const entry =
+        cached && cached.domainLink === link
+          ? cached
+          : {
+              domainLink: link,
+              edge: {
+                id: link.id,
+                source: link.from,
+                target: link.to,
+                type: 'default' as const,
+                data: link,
+                edgeLabels: {
+                  center: { type: 'html-template' as const, data: link },
+                },
+              },
+            };
       nextCache.set(link.id, entry);
       return entry.edge;
     });
@@ -140,7 +174,7 @@ export class GraphEditorComponent implements OnInit, OnDestroy {
     if (node.type === 'seed') {
       const seeds = node.seeds ?? [];
       if (seeds.length === 0) return 'Seeds: (none configured)';
-      return `Seeds: ${seeds.map(s => s.target === 'shop' ? `shop item "${s.params['itemName'] || '?'}"` : `mission "${s.params['templateId'] || '?'}"`).join(', ')}`;
+      return `Seeds: ${seeds.map((s) => (s.target === 'shop' ? `shop item "${s.params['itemName'] || '?'}"` : `mission "${s.params['templateId'] || '?'}"`)).join(', ')}`;
     }
     if (node.type === 'mission') {
       const mission = node.mission;
@@ -149,7 +183,7 @@ export class GraphEditorComponent implements OnInit, OnDestroy {
     }
     if (node.type === 'choice') {
       const options = node.choiceOptions ?? [];
-      const labels = options.map(o => o.label || o.id).join(' / ');
+      const labels = options.map((o) => o.label || o.id).join(' / ');
       return `Choice: ${node.text ?? ''}${labels ? ` [${labels}]` : ''}`;
     }
     return `Outcome: ${node.outcome ?? 'unset'} — ${node.text ?? ''}`;
@@ -185,7 +219,7 @@ export class GraphEditorComponent implements OnInit, OnDestroy {
         // `position` object reference for a value that didn't actually
         // change, defeating sameNodeIgnoringSize's reuse check below and
         // forcing the same disruptive remount it exists to avoid.
-        const current = this.graphService.graph()?.nodes.find(n => n.id === change.id);
+        const current = this.graphService.graph()?.nodes.find((n) => n.id === change.id);
         const currentPoint = current?.position ?? { x: 0, y: 0 };
         if (currentPoint.x !== change.point.x || currentPoint.y !== change.point.y) {
           this.debouncedMoveNode(change.id, change.point);
@@ -196,7 +230,7 @@ export class GraphEditorComponent implements OnInit, OnDestroy {
         // mount) -- only treat it as a user edit (dirty + persisted) when
         // it actually differs from what's already on the domain node, so
         // merely opening/viewing a graph doesn't mark it dirty.
-        const current = this.graphService.graph()?.nodes.find(n => n.id === change.id);
+        const current = this.graphService.graph()?.nodes.find((n) => n.id === change.id);
         const currentSize = current?.size ?? { width: 220, height: 96 };
         if (currentSize.width !== change.size.width || currentSize.height !== change.size.height) {
           // Same rationale as the position debounce above: ngx-vflow's own
@@ -206,7 +240,8 @@ export class GraphEditorComponent implements OnInit, OnDestroy {
         }
       } else if (change.type === 'select') {
         if (change.selected) this.graphService.selectNode(change.id);
-        else if (this.graphService.selectedNodeId() === change.id) this.graphService.selectNode(null);
+        else if (this.graphService.selectedNodeId() === change.id)
+          this.graphService.selectNode(null);
       }
     }
   }
@@ -214,19 +249,25 @@ export class GraphEditorComponent implements OnInit, OnDestroy {
   private debouncedMoveNode(id: string, point: { x: number; y: number }): void {
     const existing = this.positionDebounceTimers.get(id);
     if (existing) clearTimeout(existing);
-    this.positionDebounceTimers.set(id, setTimeout(() => {
-      this.positionDebounceTimers.delete(id);
-      this.graphService.moveNode(id, point);
-    }, 250));
+    this.positionDebounceTimers.set(
+      id,
+      setTimeout(() => {
+        this.positionDebounceTimers.delete(id);
+        this.graphService.moveNode(id, point);
+      }, 250),
+    );
   }
 
   private debouncedResizeNode(id: string, size: { width: number; height: number }): void {
     const existing = this.sizeDebounceTimers.get(id);
     if (existing) clearTimeout(existing);
-    this.sizeDebounceTimers.set(id, setTimeout(() => {
-      this.sizeDebounceTimers.delete(id);
-      this.graphService.resizeNode(id, size);
-    }, 250));
+    this.sizeDebounceTimers.set(
+      id,
+      setTimeout(() => {
+        this.sizeDebounceTimers.delete(id);
+        this.graphService.resizeNode(id, size);
+      }, 250),
+    );
   }
 
   ngOnDestroy(): void {
@@ -240,7 +281,8 @@ export class GraphEditorComponent implements OnInit, OnDestroy {
     for (const change of changes) {
       if (change.type === 'select') {
         if (change.selected) this.graphService.selectLink(change.id);
-        else if (this.graphService.selectedLinkId() === change.id) this.graphService.selectLink(null);
+        else if (this.graphService.selectedLinkId() === change.id)
+          this.graphService.selectLink(null);
       }
     }
   }

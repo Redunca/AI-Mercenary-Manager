@@ -115,7 +115,10 @@
           @if (graphService.selectedLink(); as link) {
             <app-link-panel [link]="link" />
           } @else {
-            <p class="hint">Select a node or link to edit it. Drag from a node's right handle to another node's left handle to create a link.</p>
+            <p class="hint">
+              Select a node or link to edit it. Drag from a node's right handle to another node's
+              left handle to create a link.
+            </p>
           }
         }
       }

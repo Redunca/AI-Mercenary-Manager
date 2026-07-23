@@ -23,7 +23,7 @@ export class GameApiService {
     if (err instanceof HttpErrorResponse && err.error?.error) {
       return { error: err.error.error };
     }
-    return { error: 'Erreur serveur' };
+    return { error: 'Server error' };
   }
 
   getState(): Promise<GameSnapshot> {
@@ -35,31 +35,59 @@ export class GameApiService {
   }
 
   hireCandidate(id: string): Promise<StateResponse> {
-    return firstValueFrom(this.http.post<StateResponse>(`${this.base}/candidates/${id}/hire`, {}).pipe(catchError(err => of(this.onError(err)))));
+    return firstValueFrom(
+      this.http
+        .post<StateResponse>(`${this.base}/candidates/${id}/hire`, {})
+        .pipe(catchError((err) => of(this.onError(err)))),
+    );
   }
 
   renameRecruit(id: string, name: string): Promise<StateResponse> {
-    return firstValueFrom(this.http.patch<StateResponse>(`${this.base}/recruits/${id}`, { name }).pipe(catchError(err => of(this.onError(err)))));
+    return firstValueFrom(
+      this.http
+        .patch<StateResponse>(`${this.base}/recruits/${id}`, { name })
+        .pipe(catchError((err) => of(this.onError(err)))),
+    );
   }
 
   fireRecruit(id: string): Promise<StateResponse> {
-    return firstValueFrom(this.http.post<StateResponse>(`${this.base}/recruits/${id}/fire`, {}).pipe(catchError(err => of(this.onError(err)))));
+    return firstValueFrom(
+      this.http
+        .post<StateResponse>(`${this.base}/recruits/${id}/fire`, {})
+        .pipe(catchError((err) => of(this.onError(err)))),
+    );
   }
 
   startMission(templateId: number, shipId: number): Promise<StateResponse> {
-    return firstValueFrom(this.http.post<StateResponse>(`${this.base}/missions/${templateId}/start`, { shipId }).pipe(catchError(err => of(this.onError(err)))));
+    return firstValueFrom(
+      this.http
+        .post<StateResponse>(`${this.base}/missions/${templateId}/start`, { shipId })
+        .pipe(catchError((err) => of(this.onError(err)))),
+    );
   }
 
   stopMission(templateId: number): Promise<StateResponse> {
-    return firstValueFrom(this.http.post<StateResponse>(`${this.base}/missions/${templateId}/stop`, {}).pipe(catchError(err => of(this.onError(err)))));
+    return firstValueFrom(
+      this.http
+        .post<StateResponse>(`${this.base}/missions/${templateId}/stop`, {})
+        .pipe(catchError((err) => of(this.onError(err)))),
+    );
   }
 
   forceReturnMission(templateId: number): Promise<StateResponse> {
-    return firstValueFrom(this.http.post<StateResponse>(`${this.base}/missions/${templateId}/force-return`, {}).pipe(catchError(err => of(this.onError(err)))));
+    return firstValueFrom(
+      this.http
+        .post<StateResponse>(`${this.base}/missions/${templateId}/force-return`, {})
+        .pipe(catchError((err) => of(this.onError(err)))),
+    );
   }
 
   getMissionLogs(templateId: number): Promise<{ logs: { tag: string; message: string }[] }> {
-    return firstValueFrom(this.http.get<{ logs: { tag: string; message: string }[] }>(`${this.base}/missions/${templateId}/logs`));
+    return firstValueFrom(
+      this.http.get<{ logs: { tag: string; message: string }[] }>(
+        `${this.base}/missions/${templateId}/logs`,
+      ),
+    );
   }
 
   getMissionHistory(): Promise<{ missions: Mission[] }> {
@@ -68,8 +96,9 @@ export class GameApiService {
 
   chooseOpera(id: string, optionId: string): Promise<{ success?: boolean; error?: string }> {
     return firstValueFrom(
-      this.http.post<{ success?: boolean; error?: string }>(`/api/opera/${id}/choose`, { optionId })
-        .pipe(catchError(err => of(this.onError(err))))
+      this.http
+        .post<{ success?: boolean; error?: string }>(`/api/opera/${id}/choose`, { optionId })
+        .pipe(catchError((err) => of(this.onError(err)))),
     );
   }
 
@@ -79,26 +108,49 @@ export class GameApiService {
   // response (rather than subscribing and discarding it) so OperaService can
   // apply the fresh opera state once it lands — see opera.service.ts's
   // recordCommand() for why that matters for local, UI-only commands.
-  recordOperaCommand(command: string, args: string[]): Promise<{ operas: OperaSummary[]; operaLogs: Record<string, LogEntry[]> } | null> {
+  recordOperaCommand(
+    command: string,
+    args: string[],
+  ): Promise<{ operas: OperaSummary[]; operaLogs: Record<string, LogEntry[]> } | null> {
     return firstValueFrom(
-      this.http.post<{ operas: OperaSummary[]; operaLogs: Record<string, LogEntry[]> }>('/api/opera/command', { command, args })
+      this.http
+        .post<{ operas: OperaSummary[]; operaLogs: Record<string, LogEntry[]> }>(
+          '/api/opera/command',
+          { command, args },
+        )
         .pipe(catchError(() => of(null))),
     );
   }
 
   devRefresh(): Promise<{ error?: string }> {
-    return firstValueFrom(this.http.post<{ error?: string }>(`${this.base}/dev/refresh`, {}).pipe(catchError(err => of(this.onError(err)))));
+    return firstValueFrom(
+      this.http
+        .post<{ error?: string }>(`${this.base}/dev/refresh`, {})
+        .pipe(catchError((err) => of(this.onError(err)))),
+    );
   }
 
   devSetCredits(amount: number): Promise<{ error?: string }> {
-    return firstValueFrom(this.http.post<{ error?: string }>(`${this.base}/dev/credits`, { amount }).pipe(catchError(err => of(this.onError(err)))));
+    return firstValueFrom(
+      this.http
+        .post<{ error?: string }>(`${this.base}/dev/credits`, { amount })
+        .pipe(catchError((err) => of(this.onError(err)))),
+    );
   }
 
   devSetTokens(amount: number): Promise<{ error?: string }> {
-    return firstValueFrom(this.http.post<{ error?: string }>(`${this.base}/dev/tokens`, { amount }).pipe(catchError(err => of(this.onError(err)))));
+    return firstValueFrom(
+      this.http
+        .post<{ error?: string }>(`${this.base}/dev/tokens`, { amount })
+        .pipe(catchError((err) => of(this.onError(err)))),
+    );
   }
 
   devReboot(): Promise<{ error?: string }> {
-    return firstValueFrom(this.http.post<{ error?: string }>(`${this.base}/dev/reboot`, {}).pipe(catchError(err => of(this.onError(err)))));
+    return firstValueFrom(
+      this.http
+        .post<{ error?: string }>(`${this.base}/dev/reboot`, {})
+        .pipe(catchError((err) => of(this.onError(err)))),
+    );
   }
 }

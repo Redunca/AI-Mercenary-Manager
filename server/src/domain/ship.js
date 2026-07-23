@@ -1,7 +1,28 @@
 const SHIP_NAMES = [
-  'Vanguard', 'Phantom', 'Eclipse', 'Nexus', 'Sentinel', 'Specter', 'Apex', 'Cipher',
-  'Nebula', 'Titan', 'Vector', 'Prism', 'Corvus', 'Atlas', 'Zenith', 'Obsidian',
-  'Aurora', 'Valiant', 'Quantum', 'Meridian', 'Inferno', 'Horizon', 'Verdict', 'Rogue',
+  'Vanguard',
+  'Phantom',
+  'Eclipse',
+  'Nexus',
+  'Sentinel',
+  'Specter',
+  'Apex',
+  'Cipher',
+  'Nebula',
+  'Titan',
+  'Vector',
+  'Prism',
+  'Corvus',
+  'Atlas',
+  'Zenith',
+  'Obsidian',
+  'Aurora',
+  'Valiant',
+  'Quantum',
+  'Meridian',
+  'Inferno',
+  'Horizon',
+  'Verdict',
+  'Rogue',
 ]
 
 function generateShipName(rollInRange) {
@@ -34,7 +55,7 @@ function createStarterShip(shipId, rollInRange) {
 
 function validateCrewAssignment(ship, recruits, dockingStationCapacity) {
   const crewCount = ship.crew.length
-  
+
   if (crewCount > dockingStationCapacity) {
     return {
       valid: false,
@@ -49,11 +70,11 @@ function validateCrewAssignment(ship, recruits, dockingStationCapacity) {
     }
   }
 
-  const unavailableRecruits = recruits.filter(r => r.status !== 'available')
+  const unavailableRecruits = recruits.filter((r) => r.status !== 'available')
   if (unavailableRecruits.length > 0) {
     return {
       valid: false,
-      error: `Cannot assign recruits with status: ${unavailableRecruits.map(r => r.status).join(', ')}`,
+      error: `Cannot assign recruits with status: ${unavailableRecruits.map((r) => r.status).join(', ')}`,
     }
   }
 

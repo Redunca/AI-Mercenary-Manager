@@ -1,4 +1,10 @@
-const { validateGraphDefinition, analyzeGraph, runGeneration, makeRng, matchesAction } = require('../src/domain/graph')
+const {
+  validateGraphDefinition,
+  analyzeGraph,
+  runGeneration,
+  makeRng,
+  matchesAction,
+} = require('../src/domain/graph')
 
 function makeDef(overrides = {}) {
   return {
@@ -60,12 +66,23 @@ describe('validateGraphDefinition', () => {
   })
 
   test('rejects a story node with no text', () => {
-    const def = makeDef({ nodes: [{ id: 'start', type: 'start' }, { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' }, { id: 's', type: 'story' }] })
+    const def = makeDef({
+      nodes: [
+        { id: 'start', type: 'start' },
+        { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
+        { id: 's', type: 'story' },
+      ],
+    })
     expect(() => validateGraphDefinition(def)).toThrow(/story node requires text/)
   })
 
   test('rejects an end node with an invalid outcome', () => {
-    const def = makeDef({ nodes: [{ id: 'start', type: 'start' }, { id: 'end-1', type: 'end', outcome: 'maybe', text: 'end' }] })
+    const def = makeDef({
+      nodes: [
+        { id: 'start', type: 'start' },
+        { id: 'end-1', type: 'end', outcome: 'maybe', text: 'end' },
+      ],
+    })
     expect(() => validateGraphDefinition(def)).toThrow(/outcome to be one of/)
   })
 
@@ -104,7 +121,11 @@ describe('validateGraphDefinition', () => {
           type: 'seed',
           seeds: [
             { target: 'shop', params: { itemName: 'Recruit Training Vest' } },
-            { target: 'mission', params: { templateId: 'derelict-salvage' }, note: 'Guaranteed early mission' },
+            {
+              target: 'mission',
+              params: { templateId: 'derelict-salvage' },
+              note: 'Guaranteed early mission',
+            },
           ],
         },
         { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
@@ -147,7 +168,9 @@ describe('validateGraphDefinition', () => {
         { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
       ],
     })
-    expect(() => validateGraphDefinition(def)).toThrow(/seed target "mission" requires a templateId/)
+    expect(() => validateGraphDefinition(def)).toThrow(
+      /seed target "mission" requires a templateId/,
+    )
   })
 
   test('accepts a seed node with a valid candidate seed', () => {
@@ -157,7 +180,13 @@ describe('validateGraphDefinition', () => {
         {
           id: 'seed-1',
           type: 'seed',
-          seeds: [{ target: 'candidate', params: { seedId: 'poach-target' }, note: 'The disillusioned defector' }],
+          seeds: [
+            {
+              target: 'candidate',
+              params: { seedId: 'poach-target' },
+              note: 'The disillusioned defector',
+            },
+          ],
         },
         { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
       ],
@@ -196,18 +225,33 @@ describe('validateGraphDefinition', () => {
   })
 
   test('rejects an unknown condition type', () => {
-    const def = makeDef({ links: [{ id: 'l1', from: 'start', to: 'story-1', conditions: [{ type: 'not_a_condition' }] }] })
+    const def = makeDef({
+      links: [
+        { id: 'l1', from: 'start', to: 'story-1', conditions: [{ type: 'not_a_condition' }] },
+      ],
+    })
     expect(() => validateGraphDefinition(def)).toThrow(/unknown condition type/)
   })
 
   test('rejects a has_item condition with no itemName', () => {
-    const def = makeDef({ links: [{ id: 'l1', from: 'start', to: 'story-1', conditions: [{ type: 'has_item', params: {} }] }] })
+    const def = makeDef({
+      links: [
+        { id: 'l1', from: 'start', to: 'story-1', conditions: [{ type: 'has_item', params: {} }] },
+      ],
+    })
     expect(() => validateGraphDefinition(def)).toThrow(/has_item.*itemName/)
   })
 
   test('rejects a chance condition with a percentage out of range', () => {
     const def = makeDef({
-      links: [{ id: 'l1', from: 'start', to: 'story-1', conditions: [{ type: 'chance', params: { percentage: 150 } }] }],
+      links: [
+        {
+          id: 'l1',
+          from: 'start',
+          to: 'story-1',
+          conditions: [{ type: 'chance', params: { percentage: 150 } }],
+        },
+      ],
     })
     expect(() => validateGraphDefinition(def)).toThrow(/percentage between 0 and 100/)
   })
@@ -227,7 +271,13 @@ describe('validateGraphDefinition', () => {
     const def = makeDef({
       nodes: [
         { id: 'start', type: 'start', text: 'Welcome, Commander.' },
-        { id: 'story-1', type: 'story', text: 'You arrive.', effects: [], completionText: 'Nicely done.' },
+        {
+          id: 'story-1',
+          type: 'story',
+          text: 'You arrive.',
+          effects: [],
+          completionText: 'Nicely done.',
+        },
         { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
       ],
     })
@@ -235,7 +285,12 @@ describe('validateGraphDefinition', () => {
   })
 
   test('rejects an empty-string start node text', () => {
-    const def = makeDef({ nodes: [{ id: 'start', type: 'start', text: '' }, { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' }] })
+    const def = makeDef({
+      nodes: [
+        { id: 'start', type: 'start', text: '' },
+        { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
+      ],
+    })
     expect(() => validateGraphDefinition(def)).toThrow(/start node text/)
   })
 
@@ -260,8 +315,14 @@ describe('validateGraphDefinition', () => {
       nodes: [
         { id: 'start', type: 'start' },
         {
-          id: 'mission-1', type: 'mission',
-          mission: { title: 'Find the Quasar Key', description: 'Track down {targetName}.', difficulty: 'HARD', tags: ['recovery'] },
+          id: 'mission-1',
+          type: 'mission',
+          mission: {
+            title: 'Find the Quasar Key',
+            description: 'Track down {targetName}.',
+            difficulty: 'HARD',
+            tags: ['recovery'],
+          },
           completionText: 'Location found.',
         },
         { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
@@ -287,7 +348,11 @@ describe('validateGraphDefinition', () => {
     const def = makeDef({
       nodes: [
         { id: 'start', type: 'start' },
-        { id: 'mission-1', type: 'mission', mission: { title: 'Find it', difficulty: 'IMPOSSIBLE' } },
+        {
+          id: 'mission-1',
+          type: 'mission',
+          mission: { title: 'Find it', difficulty: 'IMPOSSIBLE' },
+        },
         { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
       ],
       links: missionLinks,
@@ -317,8 +382,13 @@ describe('validateGraphDefinition', () => {
       nodes: [
         { id: 'start', type: 'start' },
         {
-          id: 'choice-1', type: 'choice', text: 'How do you approach?',
-          choiceOptions: [{ id: 'stealth', label: 'Sneak in' }, { id: 'force', label: 'Force your way in' }],
+          id: 'choice-1',
+          type: 'choice',
+          text: 'How do you approach?',
+          choiceOptions: [
+            { id: 'stealth', label: 'Sneak in' },
+            { id: 'force', label: 'Force your way in' },
+          ],
         },
         { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
       ],
@@ -360,7 +430,9 @@ describe('validateGraphDefinition', () => {
       ],
       links: choiceLinks,
     })
-    expect(() => validateGraphDefinition(def)).toThrow(/choiceOptions\[0\] requires a non-empty label/)
+    expect(() => validateGraphDefinition(def)).toThrow(
+      /choiceOptions\[0\] requires a non-empty label/,
+    )
   })
 
   test('rejects duplicate choice option ids', () => {
@@ -368,8 +440,13 @@ describe('validateGraphDefinition', () => {
       nodes: [
         { id: 'start', type: 'start' },
         {
-          id: 'choice-1', type: 'choice', text: 'Decide.',
-          choiceOptions: [{ id: 'a', label: 'First' }, { id: 'a', label: 'Second' }],
+          id: 'choice-1',
+          type: 'choice',
+          text: 'Decide.',
+          choiceOptions: [
+            { id: 'a', label: 'First' },
+            { id: 'a', label: 'Second' },
+          ],
         },
         { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
       ],
@@ -379,76 +456,194 @@ describe('validateGraphDefinition', () => {
   })
 
   test('rejects a choice_made condition with no optionId', () => {
-    const def = makeDef({ links: [{ id: 'l1', from: 'start', to: 'story-1', conditions: [{ type: 'choice_made', params: {} }] }] })
+    const def = makeDef({
+      links: [
+        {
+          id: 'l1',
+          from: 'start',
+          to: 'story-1',
+          conditions: [{ type: 'choice_made', params: {} }],
+        },
+      ],
+    })
     expect(() => validateGraphDefinition(def)).toThrow(/choice_made.*optionId/)
   })
 
   test('accepts a crew_threshold condition with a valid operator and numeric value', () => {
     const def = makeDef({
-      links: [{ id: 'l1', from: 'start', to: 'story-1', priority: 0, conditions: [{ type: 'crew_threshold', params: { operator: '>=', value: 6 } }] }],
+      links: [
+        {
+          id: 'l1',
+          from: 'start',
+          to: 'story-1',
+          priority: 0,
+          conditions: [{ type: 'crew_threshold', params: { operator: '>=', value: 6 } }],
+        },
+      ],
     })
     expect(() => validateGraphDefinition(def)).not.toThrow()
   })
 
   test('rejects a crew_threshold condition with a non-numeric value', () => {
     const def = makeDef({
-      links: [{ id: 'l1', from: 'start', to: 'story-1', priority: 0, conditions: [{ type: 'crew_threshold', params: { operator: '>=', value: 'six' } }] }],
+      links: [
+        {
+          id: 'l1',
+          from: 'start',
+          to: 'story-1',
+          priority: 0,
+          conditions: [{ type: 'crew_threshold', params: { operator: '>=', value: 'six' } }],
+        },
+      ],
     })
     expect(() => validateGraphDefinition(def)).toThrow(/crew_threshold/)
   })
 
   test('accepts an action_performed condition with a scope:any match', () => {
     const def = makeDef({
-      links: [{ id: 'l1', from: 'start', to: 'story-1', conditions: [{ type: 'action_performed', params: { actionType: 'hire_recruit', match: { scope: 'any' } } }] }],
+      links: [
+        {
+          id: 'l1',
+          from: 'start',
+          to: 'story-1',
+          conditions: [
+            {
+              type: 'action_performed',
+              params: { actionType: 'hire_recruit', match: { scope: 'any' } },
+            },
+          ],
+        },
+      ],
     })
     expect(() => validateGraphDefinition(def)).not.toThrow()
   })
 
   test('accepts an action_performed condition with an itemName match', () => {
     const def = makeDef({
-      links: [{ id: 'l1', from: 'start', to: 'story-1', conditions: [{ type: 'action_performed', params: { actionType: 'purchase_quest_item', match: { itemName: 'Recruit Training Vest' } } }] }],
+      links: [
+        {
+          id: 'l1',
+          from: 'start',
+          to: 'story-1',
+          conditions: [
+            {
+              type: 'action_performed',
+              params: {
+                actionType: 'purchase_quest_item',
+                match: { itemName: 'Recruit Training Vest' },
+              },
+            },
+          ],
+        },
+      ],
     })
     expect(() => validateGraphDefinition(def)).not.toThrow()
   })
 
   test('accepts an action_performed condition for execute_command', () => {
     const def = makeDef({
-      links: [{ id: 'l1', from: 'start', to: 'story-1', conditions: [{ type: 'action_performed', params: { actionType: 'execute_command', match: { command: 'split-v' } } }] }],
+      links: [
+        {
+          id: 'l1',
+          from: 'start',
+          to: 'story-1',
+          conditions: [
+            {
+              type: 'action_performed',
+              params: { actionType: 'execute_command', match: { command: 'split-v' } },
+            },
+          ],
+        },
+      ],
     })
     expect(() => validateGraphDefinition(def)).not.toThrow()
   })
 
   test('rejects an action_performed condition with an unknown actionType', () => {
     const def = makeDef({
-      links: [{ id: 'l1', from: 'start', to: 'story-1', conditions: [{ type: 'action_performed', params: { actionType: 'not_a_real_action', match: { scope: 'any' } } }] }],
+      links: [
+        {
+          id: 'l1',
+          from: 'start',
+          to: 'story-1',
+          conditions: [
+            {
+              type: 'action_performed',
+              params: { actionType: 'not_a_real_action', match: { scope: 'any' } },
+            },
+          ],
+        },
+      ],
     })
     expect(() => validateGraphDefinition(def)).toThrow(/actionType to be one of/)
   })
 
   test('rejects an execute_command action_performed condition with no command', () => {
     const def = makeDef({
-      links: [{ id: 'l1', from: 'start', to: 'story-1', conditions: [{ type: 'action_performed', params: { actionType: 'execute_command', match: {} } }] }],
+      links: [
+        {
+          id: 'l1',
+          from: 'start',
+          to: 'story-1',
+          conditions: [
+            { type: 'action_performed', params: { actionType: 'execute_command', match: {} } },
+          ],
+        },
+      ],
     })
     expect(() => validateGraphDefinition(def)).toThrow(/requires a "command" string/)
   })
 
   test('rejects a non-command action_performed condition with neither scope:any nor a specific target', () => {
     const def = makeDef({
-      links: [{ id: 'l1', from: 'start', to: 'story-1', conditions: [{ type: 'action_performed', params: { actionType: 'hire_recruit', match: {} } }] }],
+      links: [
+        {
+          id: 'l1',
+          from: 'start',
+          to: 'story-1',
+          conditions: [
+            { type: 'action_performed', params: { actionType: 'hire_recruit', match: {} } },
+          ],
+        },
+      ],
     })
     expect(() => validateGraphDefinition(def)).toThrow(/scope.*or a specific target/)
   })
 
   test('accepts an action_performed condition for fire_recruit with scope:any', () => {
     const def = makeDef({
-      links: [{ id: 'l1', from: 'start', to: 'story-1', conditions: [{ type: 'action_performed', params: { actionType: 'fire_recruit', match: { scope: 'any' } } }] }],
+      links: [
+        {
+          id: 'l1',
+          from: 'start',
+          to: 'story-1',
+          conditions: [
+            {
+              type: 'action_performed',
+              params: { actionType: 'fire_recruit', match: { scope: 'any' } },
+            },
+          ],
+        },
+      ],
     })
     expect(() => validateGraphDefinition(def)).not.toThrow()
   })
 
   test('accepts an action_performed condition targeting a seeded candidate via seedId', () => {
     const def = makeDef({
-      links: [{ id: 'l1', from: 'start', to: 'story-1', conditions: [{ type: 'action_performed', params: { actionType: 'hire_recruit', match: { seedId: 'poach-target' } } }] }],
+      links: [
+        {
+          id: 'l1',
+          from: 'start',
+          to: 'story-1',
+          conditions: [
+            {
+              type: 'action_performed',
+              params: { actionType: 'hire_recruit', match: { seedId: 'poach-target' } },
+            },
+          ],
+        },
+      ],
     })
     expect(() => validateGraphDefinition(def)).not.toThrow()
   })
@@ -456,32 +651,72 @@ describe('validateGraphDefinition', () => {
 
 describe('matchesAction', () => {
   test('matches scope:any regardless of payload', () => {
-    expect(matchesAction({ actionType: 'hire_recruit', match: { scope: 'any' } }, { actionType: 'hire_recruit', payload: { recruitId: 'r1' } })).toBe(true)
+    expect(
+      matchesAction(
+        { actionType: 'hire_recruit', match: { scope: 'any' } },
+        { actionType: 'hire_recruit', payload: { recruitId: 'r1' } },
+      ),
+    ).toBe(true)
   })
 
   test('matches a specific itemName', () => {
     const params = { actionType: 'purchase_quest_item', match: { itemName: 'Encrypted Data Chip' } }
-    expect(matchesAction(params, { actionType: 'purchase_quest_item', payload: { itemName: 'Encrypted Data Chip' } })).toBe(true)
-    expect(matchesAction(params, { actionType: 'purchase_quest_item', payload: { itemName: 'Something Else' } })).toBe(false)
+    expect(
+      matchesAction(params, {
+        actionType: 'purchase_quest_item',
+        payload: { itemName: 'Encrypted Data Chip' },
+      }),
+    ).toBe(true)
+    expect(
+      matchesAction(params, {
+        actionType: 'purchase_quest_item',
+        payload: { itemName: 'Something Else' },
+      }),
+    ).toBe(false)
   })
 
   test('rejects a mismatched actionType even with scope:any', () => {
-    expect(matchesAction({ actionType: 'hire_recruit', match: { scope: 'any' } }, { actionType: 'complete_quest', payload: {} })).toBe(false)
+    expect(
+      matchesAction(
+        { actionType: 'hire_recruit', match: { scope: 'any' } },
+        { actionType: 'complete_quest', payload: {} },
+      ),
+    ).toBe(false)
   })
 
   test('matches execute_command by command name, ignoring args when args is not specified', () => {
     const params = { actionType: 'execute_command', match: { command: 'split-v' } }
-    expect(matchesAction(params, { actionType: 'execute_command', payload: { command: 'split-v', args: ['x'] } })).toBe(true)
+    expect(
+      matchesAction(params, {
+        actionType: 'execute_command',
+        payload: { command: 'split-v', args: ['x'] },
+      }),
+    ).toBe(true)
   })
 
   test('matches execute_command args when specified', () => {
-    const params = { actionType: 'execute_command', match: { command: 'mission', args: ['start', 'tpl-1'] } }
-    expect(matchesAction(params, { actionType: 'execute_command', payload: { command: 'mission', args: ['start', 'tpl-1'] } })).toBe(true)
-    expect(matchesAction(params, { actionType: 'execute_command', payload: { command: 'mission', args: ['start', 'tpl-2'] } })).toBe(false)
+    const params = {
+      actionType: 'execute_command',
+      match: { command: 'mission', args: ['start', 'tpl-1'] },
+    }
+    expect(
+      matchesAction(params, {
+        actionType: 'execute_command',
+        payload: { command: 'mission', args: ['start', 'tpl-1'] },
+      }),
+    ).toBe(true)
+    expect(
+      matchesAction(params, {
+        actionType: 'execute_command',
+        payload: { command: 'mission', args: ['start', 'tpl-2'] },
+      }),
+    ).toBe(false)
   })
 
   test('returns false for a missing entry', () => {
-    expect(matchesAction({ actionType: 'hire_recruit', match: { scope: 'any' } }, undefined)).toBe(false)
+    expect(matchesAction({ actionType: 'hire_recruit', match: { scope: 'any' } }, undefined)).toBe(
+      false,
+    )
   })
 })
 
@@ -491,7 +726,7 @@ describe('analyzeGraph', () => {
       links: [{ id: 'l1', from: 'start', to: 'story-1', priority: 0, conditions: [] }],
     })
     const warnings = analyzeGraph(def)
-    expect(warnings.some(w => w.includes('dead end'))).toBe(true)
+    expect(warnings.some((w) => w.includes('dead end'))).toBe(true)
   })
 
   test('flags an unreachable node', () => {
@@ -499,7 +734,7 @@ describe('analyzeGraph', () => {
       nodes: [...makeDef().nodes, { id: 'orphan', type: 'story', text: 'lost', effects: [] }],
     })
     const warnings = analyzeGraph(def)
-    expect(warnings.some(w => w.includes('orphan') && w.includes('unreachable'))).toBe(true)
+    expect(warnings.some((w) => w.includes('orphan') && w.includes('unreachable'))).toBe(true)
   })
 
   test('returns no warnings for a fully connected, reachable graph', () => {
@@ -510,26 +745,39 @@ describe('analyzeGraph', () => {
     const def = makeDef({
       nodes: [
         { id: 'start', type: 'start' },
-        { id: 'story-1', type: 'story', text: 'Welcome to {planetName}, courtesy of {notARealTag}.', effects: [] },
+        {
+          id: 'story-1',
+          type: 'story',
+          text: 'Welcome to {planetName}, courtesy of {notARealTag}.',
+          effects: [],
+        },
         { id: 'end-1', type: 'end', outcome: 'neutral', text: 'The end.' },
       ],
     })
     const warnings = analyzeGraph(def)
-    expect(warnings.some(w => w.includes('story-1') && w.includes('{notARealTag}'))).toBe(true)
-    expect(warnings.some(w => w.includes('{planetName}'))).toBe(false)
+    expect(warnings.some((w) => w.includes('story-1') && w.includes('{notARealTag}'))).toBe(true)
+    expect(warnings.some((w) => w.includes('{planetName}'))).toBe(false)
   })
 
   test('flags a mission title/description referencing a tag outside the shared catalog', () => {
     const def = makeDef({
       nodes: [
         { id: 'start', type: 'start' },
-        { id: 'mission-1', type: 'mission', mission: { title: 'Find {notARealTag}', description: 'Near {planetName}.' } },
+        {
+          id: 'mission-1',
+          type: 'mission',
+          mission: { title: 'Find {notARealTag}', description: 'Near {planetName}.' },
+        },
         { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
       ],
     })
     const warnings = analyzeGraph(def)
-    expect(warnings.some(w => w.includes('mission-1') && w.includes('missionTitle') && w.includes('{notARealTag}'))).toBe(true)
-    expect(warnings.some(w => w.includes('{planetName}'))).toBe(false)
+    expect(
+      warnings.some(
+        (w) => w.includes('mission-1') && w.includes('missionTitle') && w.includes('{notARealTag}'),
+      ),
+    ).toBe(true)
+    expect(warnings.some((w) => w.includes('{planetName}'))).toBe(false)
   })
 
   test('flags a choice option label referencing a tag outside the shared catalog', () => {
@@ -537,15 +785,27 @@ describe('analyzeGraph', () => {
       nodes: [
         { id: 'start', type: 'start' },
         {
-          id: 'choice-1', type: 'choice', text: 'Decide.',
-          choiceOptions: [{ id: 'a', label: 'Head to {planetName}' }, { id: 'b', label: 'Ask {notARealTag} for help' }],
+          id: 'choice-1',
+          type: 'choice',
+          text: 'Decide.',
+          choiceOptions: [
+            { id: 'a', label: 'Head to {planetName}' },
+            { id: 'b', label: 'Ask {notARealTag} for help' },
+          ],
         },
         { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
       ],
     })
     const warnings = analyzeGraph(def)
-    expect(warnings.some(w => w.includes('choice-1') && w.includes('choiceOption[1].label') && w.includes('{notARealTag}'))).toBe(true)
-    expect(warnings.some(w => w.includes('{planetName}'))).toBe(false)
+    expect(
+      warnings.some(
+        (w) =>
+          w.includes('choice-1') &&
+          w.includes('choiceOption[1].label') &&
+          w.includes('{notARealTag}'),
+      ),
+    ).toBe(true)
+    expect(warnings.some((w) => w.includes('{planetName}'))).toBe(false)
   })
 })
 
@@ -570,14 +830,19 @@ describe('runGeneration', () => {
     const result = runGeneration(makeDef(), { seed: 'test' })
     expect(result.reason).toBe('end')
     expect(result.endedAt).toBe('end-1')
-    expect(result.path.map(p => p.nodeId)).toEqual(['start', 'story-1', 'end-1'])
+    expect(result.path.map((p) => p.nodeId)).toEqual(['start', 'story-1', 'end-1'])
   })
 
   test('applies story-node effects to the working state', () => {
     const def = makeDef({
       nodes: [
         { id: 'start', type: 'start' },
-        { id: 'story-1', type: 'story', text: 'You find a chip.', effects: [{ type: 'give_item', params: { itemName: 'Chip' } }] },
+        {
+          id: 'story-1',
+          type: 'story',
+          text: 'You find a chip.',
+          effects: [{ type: 'give_item', params: { itemName: 'Chip' } }],
+        },
         { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
       ],
     })
@@ -591,13 +856,24 @@ describe('runGeneration', () => {
       title: 'g',
       nodes: [
         { id: 'start', type: 'start' },
-        { id: 'give', type: 'story', text: 'You find a key.', effects: [{ type: 'give_item', params: { itemName: 'Key' } }] },
+        {
+          id: 'give',
+          type: 'story',
+          text: 'You find a key.',
+          effects: [{ type: 'give_item', params: { itemName: 'Key' } }],
+        },
         { id: 'locked', type: 'end', outcome: 'failure', text: 'Still locked.' },
         { id: 'unlocked', type: 'end', outcome: 'success', text: 'Door opens.' },
       ],
       links: [
         { id: 'l1', from: 'start', to: 'give', priority: 0, conditions: [] },
-        { id: 'l2', from: 'give', to: 'unlocked', priority: 0, conditions: [{ type: 'has_item', params: { itemName: 'Key' } }] },
+        {
+          id: 'l2',
+          from: 'give',
+          to: 'unlocked',
+          priority: 0,
+          conditions: [{ type: 'has_item', params: { itemName: 'Key' } }],
+        },
         { id: 'l3', from: 'give', to: 'locked', priority: 1, conditions: [] },
       ],
     }
@@ -645,8 +921,20 @@ describe('runGeneration', () => {
       ],
       links: [
         { id: 'l1', from: 'start', to: 'check', priority: 0, conditions: [] },
-        { id: 'l2', from: 'check', to: 'won', priority: 0, conditions: [{ type: 'previous_outcome', params: { equals: 'success' } }] },
-        { id: 'l3', from: 'check', to: 'lost', priority: 1, conditions: [{ type: 'previous_outcome', params: { equals: 'failure' } }] },
+        {
+          id: 'l2',
+          from: 'check',
+          to: 'won',
+          priority: 0,
+          conditions: [{ type: 'previous_outcome', params: { equals: 'success' } }],
+        },
+        {
+          id: 'l3',
+          from: 'check',
+          to: 'lost',
+          priority: 1,
+          conditions: [{ type: 'previous_outcome', params: { equals: 'failure' } }],
+        },
       ],
     }
     const result = runGeneration(def, { seed: 'test' })
@@ -682,7 +970,13 @@ describe('runGeneration', () => {
       ],
       links: [
         { id: 'l1', from: 'start', to: 'gate', priority: 0, conditions: [] },
-        { id: 'l2', from: 'gate', to: 'end-1', priority: 0, conditions: [{ type: 'has_item', params: { itemName: 'Key' } }] },
+        {
+          id: 'l2',
+          from: 'gate',
+          to: 'end-1',
+          priority: 0,
+          conditions: [{ type: 'has_item', params: { itemName: 'Key' } }],
+        },
       ],
     }
     const result = runGeneration(def, { seed: 'test' })
@@ -717,7 +1011,13 @@ describe('runGeneration', () => {
         { id: 'b', type: 'end', outcome: 'failure', text: 'b' },
       ],
       links: [
-        { id: 'l1', from: 'start', to: 'a', priority: 0, conditions: [{ type: 'chance', params: { percentage: 50 } }] },
+        {
+          id: 'l1',
+          from: 'start',
+          to: 'a',
+          priority: 0,
+          conditions: [{ type: 'chance', params: { percentage: 50 } }],
+        },
         { id: 'l2', from: 'start', to: 'b', priority: 1, conditions: [] },
       ],
     }
@@ -731,7 +1031,9 @@ describe('runGeneration', () => {
       nodes: [
         { id: 'start', type: 'start' },
         {
-          id: 'story-1', type: 'story', effects: [],
+          id: 'story-1',
+          type: 'story',
+          effects: [],
           text: 'The crew lands on {planetName}.',
           completionText: 'Client {clientName} is pleased.',
         },
@@ -740,13 +1042,13 @@ describe('runGeneration', () => {
     })
     const result = runGeneration(def, {
       seed: 'test',
-      initialState: { tags: { planetName: 'Kestrel\'s Rest', clientName: 'Kael Voss' } },
+      initialState: { tags: { planetName: "Kestrel's Rest", clientName: 'Kael Voss' } },
     })
     expect(result.path[1]).toMatchObject({
-      text: 'The crew lands on Kestrel\'s Rest.',
+      text: "The crew lands on Kestrel's Rest.",
       completionText: 'Client Kael Voss is pleased.',
     })
-    expect(result.path[2]).toMatchObject({ text: 'Farewell, Kestrel\'s Rest.' })
+    expect(result.path[2]).toMatchObject({ text: "Farewell, Kestrel's Rest." })
   })
 
   test('leaves unresolved {tagName} placeholders in place and reports them as missingTags', () => {
@@ -776,15 +1078,27 @@ describe('runGeneration', () => {
       ],
       links: [
         { id: 'l1', from: 'start', to: 'mission-1', priority: 0, conditions: [] },
-        { id: 'l2', from: 'mission-1', to: 'success-end', priority: 0, conditions: [{ type: 'previous_outcome', params: { equals: 'success' } }] },
+        {
+          id: 'l2',
+          from: 'mission-1',
+          to: 'success-end',
+          priority: 0,
+          conditions: [{ type: 'previous_outcome', params: { equals: 'success' } }],
+        },
         { id: 'l3', from: 'mission-1', to: 'failure-end', priority: 1, conditions: [] },
       ],
     }
-    const failing = runGeneration(def, { seed: 'test', initialState: { missionOutcomes: ['failure'] } })
+    const failing = runGeneration(def, {
+      seed: 'test',
+      initialState: { missionOutcomes: ['failure'] },
+    })
     expect(failing.endedAt).toBe('failure-end')
     expect(failing.path[1]).toMatchObject({ nodeId: 'mission-1', outcome: 'failure' })
 
-    const succeeding = runGeneration(def, { seed: 'test', initialState: { missionOutcomes: ['success'] } })
+    const succeeding = runGeneration(def, {
+      seed: 'test',
+      initialState: { missionOutcomes: ['success'] },
+    })
     expect(succeeding.endedAt).toBe('success-end')
   })
 
@@ -812,7 +1126,11 @@ describe('runGeneration', () => {
       title: 'g',
       nodes: [
         { id: 'start', type: 'start' },
-        { id: 'mission-1', type: 'mission', mission: { title: 'Find {targetName}', description: 'Last seen on {planetName}.' } },
+        {
+          id: 'mission-1',
+          type: 'mission',
+          mission: { title: 'Find {targetName}', description: 'Last seen on {planetName}.' },
+        },
         { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
       ],
       links: [
@@ -822,10 +1140,10 @@ describe('runGeneration', () => {
     }
     const result = runGeneration(def, {
       seed: 'test',
-      initialState: { tags: { targetName: 'Ambassador Tolven', planetName: 'Kestrel\'s Rest' } },
+      initialState: { tags: { targetName: 'Ambassador Tolven', planetName: "Kestrel's Rest" } },
     })
     expect(result.path[1]).toMatchObject({
-      mission: { title: 'Find Ambassador Tolven', description: 'Last seen on Kestrel\'s Rest.' },
+      mission: { title: 'Find Ambassador Tolven', description: "Last seen on Kestrel's Rest." },
     })
   })
 
@@ -844,7 +1162,10 @@ describe('runGeneration', () => {
       ],
     }
     const result = runGeneration(def, { seed: 'test' })
-    expect(result.path[1]).toMatchObject({ mission: { title: 'Find {targetName}' }, missingTags: ['targetName'] })
+    expect(result.path[1]).toMatchObject({
+      mission: { title: 'Find {targetName}' },
+      missingTags: ['targetName'],
+    })
   })
 
   test('routes through a choice node using the scripted initialState.choicesMade queue, in order', () => {
@@ -854,24 +1175,47 @@ describe('runGeneration', () => {
       nodes: [
         { id: 'start', type: 'start' },
         {
-          id: 'choice-1', type: 'choice', text: 'How do you approach?',
-          choiceOptions: [{ id: 'stealth', label: 'Sneak in' }, { id: 'force', label: 'Force your way in' }],
+          id: 'choice-1',
+          type: 'choice',
+          text: 'How do you approach?',
+          choiceOptions: [
+            { id: 'stealth', label: 'Sneak in' },
+            { id: 'force', label: 'Force your way in' },
+          ],
         },
         { id: 'stealth-end', type: 'end', outcome: 'success', text: 'You slip past unseen.' },
         { id: 'force-end', type: 'end', outcome: 'neutral', text: 'The doors burst open.' },
       ],
       links: [
         { id: 'l1', from: 'start', to: 'choice-1', priority: 0, conditions: [] },
-        { id: 'l2', from: 'choice-1', to: 'stealth-end', priority: 0, conditions: [{ type: 'choice_made', params: { optionId: 'stealth' } }] },
-        { id: 'l3', from: 'choice-1', to: 'force-end', priority: 1, conditions: [{ type: 'choice_made', params: { optionId: 'force' } }] },
+        {
+          id: 'l2',
+          from: 'choice-1',
+          to: 'stealth-end',
+          priority: 0,
+          conditions: [{ type: 'choice_made', params: { optionId: 'stealth' } }],
+        },
+        {
+          id: 'l3',
+          from: 'choice-1',
+          to: 'force-end',
+          priority: 1,
+          conditions: [{ type: 'choice_made', params: { optionId: 'force' } }],
+        },
       ],
     }
-    const sneaking = runGeneration(def, { seed: 'test', initialState: { choicesMade: ['stealth'] } })
+    const sneaking = runGeneration(def, {
+      seed: 'test',
+      initialState: { choicesMade: ['stealth'] },
+    })
     expect(sneaking.endedAt).toBe('stealth-end')
     expect(sneaking.path[1]).toMatchObject({
       nodeId: 'choice-1',
       choiceMade: 'stealth',
-      choiceOptions: [{ id: 'stealth', label: 'Sneak in' }, { id: 'force', label: 'Force your way in' }],
+      choiceOptions: [
+        { id: 'stealth', label: 'Sneak in' },
+        { id: 'force', label: 'Force your way in' },
+      ],
     })
 
     const forcing = runGeneration(def, { seed: 'test', initialState: { choicesMade: ['force'] } })
@@ -884,7 +1228,15 @@ describe('runGeneration', () => {
       title: 'g',
       nodes: [
         { id: 'start', type: 'start' },
-        { id: 'choice-1', type: 'choice', text: 'Decide.', choiceOptions: [{ id: 'stealth', label: 'Sneak in' }, { id: 'force', label: 'Force in' }] },
+        {
+          id: 'choice-1',
+          type: 'choice',
+          text: 'Decide.',
+          choiceOptions: [
+            { id: 'stealth', label: 'Sneak in' },
+            { id: 'force', label: 'Force in' },
+          ],
+        },
         { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
       ],
       links: [
@@ -903,7 +1255,9 @@ describe('runGeneration', () => {
       nodes: [
         { id: 'start', type: 'start' },
         {
-          id: 'choice-1', type: 'choice', text: 'What do you do on {planetName}?',
+          id: 'choice-1',
+          type: 'choice',
+          text: 'What do you do on {planetName}?',
           choiceOptions: [{ id: 'a', label: 'Visit {clientName}' }],
         },
         { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
@@ -915,10 +1269,10 @@ describe('runGeneration', () => {
     }
     const result = runGeneration(def, {
       seed: 'test',
-      initialState: { tags: { planetName: 'Kestrel\'s Rest', clientName: 'Kael Voss' } },
+      initialState: { tags: { planetName: "Kestrel's Rest", clientName: 'Kael Voss' } },
     })
     expect(result.path[1]).toMatchObject({
-      text: 'What do you do on Kestrel\'s Rest?',
+      text: "What do you do on Kestrel's Rest?",
       choiceOptions: [{ id: 'a', label: 'Visit Kael Voss' }],
     })
   })
@@ -929,7 +1283,12 @@ describe('runGeneration', () => {
       title: 'g',
       nodes: [
         { id: 'start', type: 'start' },
-        { id: 'choice-1', type: 'choice', text: 'Decide.', choiceOptions: [{ id: 'a', label: 'Visit {clientName}' }] },
+        {
+          id: 'choice-1',
+          type: 'choice',
+          text: 'Decide.',
+          choiceOptions: [{ id: 'a', label: 'Visit {clientName}' }],
+        },
         { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
       ],
       links: [
@@ -938,7 +1297,10 @@ describe('runGeneration', () => {
       ],
     }
     const result = runGeneration(def, { seed: 'test' })
-    expect(result.path[1]).toMatchObject({ choiceOptions: [{ id: 'a', label: 'Visit {clientName}' }], missingTags: ['clientName'] })
+    expect(result.path[1]).toMatchObject({
+      choiceOptions: [{ id: 'a', label: 'Visit {clientName}' }],
+      missingTags: ['clientName'],
+    })
   })
 
   test('crew_threshold condition compares against initialState.shipCrewCount', () => {
@@ -951,12 +1313,22 @@ describe('runGeneration', () => {
         { id: 'small-crew-end', type: 'end', outcome: 'failure', text: 'Not enough hands.' },
       ],
       links: [
-        { id: 'l1', from: 'start', to: 'big-crew-end', priority: 0, conditions: [{ type: 'crew_threshold', params: { operator: '>=', value: 6 } }] },
+        {
+          id: 'l1',
+          from: 'start',
+          to: 'big-crew-end',
+          priority: 0,
+          conditions: [{ type: 'crew_threshold', params: { operator: '>=', value: 6 } }],
+        },
         { id: 'l2', from: 'start', to: 'small-crew-end', priority: 1, conditions: [] },
       ],
     }
-    expect(runGeneration(def, { seed: 'test', initialState: { shipCrewCount: 6 } }).endedAt).toBe('big-crew-end')
-    expect(runGeneration(def, { seed: 'test', initialState: { shipCrewCount: 2 } }).endedAt).toBe('small-crew-end')
+    expect(runGeneration(def, { seed: 'test', initialState: { shipCrewCount: 6 } }).endedAt).toBe(
+      'big-crew-end',
+    )
+    expect(runGeneration(def, { seed: 'test', initialState: { shipCrewCount: 2 } }).endedAt).toBe(
+      'small-crew-end',
+    )
     expect(runGeneration(def, { seed: 'test' }).endedAt).toBe('small-crew-end')
   })
 
@@ -966,17 +1338,36 @@ describe('runGeneration', () => {
       title: 'g',
       nodes: [
         { id: 'start', type: 'start', text: 'Welcome.' },
-        { id: 'step-1', type: 'story', text: 'Type split-v.', effects: [], completionText: 'Panel split.' },
+        {
+          id: 'step-1',
+          type: 'story',
+          text: 'Type split-v.',
+          effects: [],
+          completionText: 'Panel split.',
+        },
         { id: 'end-1', type: 'end', outcome: 'neutral', text: 'Done.' },
       ],
       links: [
         { id: 'l1', from: 'start', to: 'step-1', priority: 0, conditions: [] },
-        { id: 'l2', from: 'step-1', to: 'end-1', priority: 0, conditions: [{ type: 'action_performed', params: { actionType: 'execute_command', match: { command: 'split-v' } } }] },
+        {
+          id: 'l2',
+          from: 'step-1',
+          to: 'end-1',
+          priority: 0,
+          conditions: [
+            {
+              type: 'action_performed',
+              params: { actionType: 'execute_command', match: { command: 'split-v' } },
+            },
+          ],
+        },
       ],
     }
     const result = runGeneration(def, {
       seed: 'test',
-      initialState: { actionsPerformed: [{ actionType: 'execute_command', payload: { command: 'split-v' } }] },
+      initialState: {
+        actionsPerformed: [{ actionType: 'execute_command', payload: { command: 'split-v' } }],
+      },
     })
     expect(result.reason).toBe('end')
     expect(result.endedAt).toBe('end-1')
@@ -995,12 +1386,25 @@ describe('runGeneration', () => {
       ],
       links: [
         { id: 'l1', from: 'start', to: 'step-1', priority: 0, conditions: [] },
-        { id: 'l2', from: 'step-1', to: 'end-1', priority: 0, conditions: [{ type: 'action_performed', params: { actionType: 'execute_command', match: { command: 'split-v' } } }] },
+        {
+          id: 'l2',
+          from: 'step-1',
+          to: 'end-1',
+          priority: 0,
+          conditions: [
+            {
+              type: 'action_performed',
+              params: { actionType: 'execute_command', match: { command: 'split-v' } },
+            },
+          ],
+        },
       ],
     }
     const result = runGeneration(def, {
       seed: 'test',
-      initialState: { actionsPerformed: [{ actionType: 'execute_command', payload: { command: 'split-h' } }] },
+      initialState: {
+        actionsPerformed: [{ actionType: 'execute_command', payload: { command: 'split-h' } }],
+      },
     })
     expect(result.reason).toBe('dead_end')
     expect(result.endedAt).toBe('step-1')
@@ -1022,13 +1426,37 @@ describe('runGeneration', () => {
       ],
       links: [
         { id: 'l1', from: 'start', to: 'step-1', priority: 0, conditions: [] },
-        { id: 'l2', from: 'step-1', to: 'wrong', priority: 0, conditions: [{ type: 'action_performed', params: { actionType: 'execute_command', match: { command: 'split-h' } } }] },
-        { id: 'l3', from: 'step-1', to: 'right', priority: 1, conditions: [{ type: 'action_performed', params: { actionType: 'execute_command', match: { command: 'split-v' } } }] },
+        {
+          id: 'l2',
+          from: 'step-1',
+          to: 'wrong',
+          priority: 0,
+          conditions: [
+            {
+              type: 'action_performed',
+              params: { actionType: 'execute_command', match: { command: 'split-h' } },
+            },
+          ],
+        },
+        {
+          id: 'l3',
+          from: 'step-1',
+          to: 'right',
+          priority: 1,
+          conditions: [
+            {
+              type: 'action_performed',
+              params: { actionType: 'execute_command', match: { command: 'split-v' } },
+            },
+          ],
+        },
       ],
     }
     const result = runGeneration(def, {
       seed: 'test',
-      initialState: { actionsPerformed: [{ actionType: 'execute_command', payload: { command: 'split-v' } }] },
+      initialState: {
+        actionsPerformed: [{ actionType: 'execute_command', payload: { command: 'split-v' } }],
+      },
     })
     expect(result.endedAt).toBe('right')
   })
@@ -1039,16 +1467,75 @@ describe('runGeneration', () => {
       title: 'Mini Tutorial',
       nodes: [
         { id: 'start', type: 'start', text: 'Welcome aboard, Commander.' },
-        { id: 'learn-split-v', type: 'story', text: 'Try split-v.', effects: [], completionText: 'Panel split vertically.' },
-        { id: 'hire-a-recruit', type: 'story', text: 'Hire a recruit.', effects: [], completionText: 'New recruit hired.' },
-        { id: 'buy-vest', type: 'story', text: 'Buy the Recruit Training Vest.', effects: [], completionText: 'Vest purchased.' },
-        { id: 'end-1', type: 'end', outcome: 'neutral', text: "Basic training complete. You're on your own from here." },
+        {
+          id: 'learn-split-v',
+          type: 'story',
+          text: 'Try split-v.',
+          effects: [],
+          completionText: 'Panel split vertically.',
+        },
+        {
+          id: 'hire-a-recruit',
+          type: 'story',
+          text: 'Hire a recruit.',
+          effects: [],
+          completionText: 'New recruit hired.',
+        },
+        {
+          id: 'buy-vest',
+          type: 'story',
+          text: 'Buy the Recruit Training Vest.',
+          effects: [],
+          completionText: 'Vest purchased.',
+        },
+        {
+          id: 'end-1',
+          type: 'end',
+          outcome: 'neutral',
+          text: "Basic training complete. You're on your own from here.",
+        },
       ],
       links: [
         { id: 'l0', from: 'start', to: 'learn-split-v', priority: 0, conditions: [] },
-        { id: 'l1', from: 'learn-split-v', to: 'hire-a-recruit', priority: 0, conditions: [{ type: 'action_performed', params: { actionType: 'execute_command', match: { command: 'split-v' } } }] },
-        { id: 'l2', from: 'hire-a-recruit', to: 'buy-vest', priority: 0, conditions: [{ type: 'action_performed', params: { actionType: 'hire_recruit', match: { scope: 'any' } } }] },
-        { id: 'l3', from: 'buy-vest', to: 'end-1', priority: 0, conditions: [{ type: 'action_performed', params: { actionType: 'purchase_quest_item', match: { itemName: 'Recruit Training Vest' } } }] },
+        {
+          id: 'l1',
+          from: 'learn-split-v',
+          to: 'hire-a-recruit',
+          priority: 0,
+          conditions: [
+            {
+              type: 'action_performed',
+              params: { actionType: 'execute_command', match: { command: 'split-v' } },
+            },
+          ],
+        },
+        {
+          id: 'l2',
+          from: 'hire-a-recruit',
+          to: 'buy-vest',
+          priority: 0,
+          conditions: [
+            {
+              type: 'action_performed',
+              params: { actionType: 'hire_recruit', match: { scope: 'any' } },
+            },
+          ],
+        },
+        {
+          id: 'l3',
+          from: 'buy-vest',
+          to: 'end-1',
+          priority: 0,
+          conditions: [
+            {
+              type: 'action_performed',
+              params: {
+                actionType: 'purchase_quest_item',
+                match: { itemName: 'Recruit Training Vest' },
+              },
+            },
+          ],
+        },
       ],
     }
     const result = runGeneration(def, {
@@ -1063,6 +1550,12 @@ describe('runGeneration', () => {
     })
     expect(result.reason).toBe('end')
     expect(result.endedAt).toBe('end-1')
-    expect(result.path.map(p => p.nodeId)).toEqual(['start', 'learn-split-v', 'hire-a-recruit', 'buy-vest', 'end-1'])
+    expect(result.path.map((p) => p.nodeId)).toEqual([
+      'start',
+      'learn-split-v',
+      'hire-a-recruit',
+      'buy-vest',
+      'end-1',
+    ])
   })
 })

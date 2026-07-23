@@ -34,7 +34,7 @@ export class OperaService {
   // a mission is active or a recruit is regenerating, so without this a
   // completed step could sit unrevealed until an unrelated sync happened.
   recordCommand(command: string, args: string[]): void {
-    void this.api.recordOperaCommand(command, args).then(result => {
+    void this.api.recordOperaCommand(command, args).then((result) => {
       if (!result) return;
       this.operas = result.operas;
       this.operaLogs = result.operaLogs;
@@ -42,7 +42,7 @@ export class OperaService {
   }
 
   getState(id: string): OperaSummary | undefined {
-    return this.operas.find(o => o.id === id);
+    return this.operas.find((o) => o.id === id);
   }
 
   get logs(): Record<string, LogEntry[]> {

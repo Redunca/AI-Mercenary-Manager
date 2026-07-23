@@ -1,10 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
-html, body {
+html,
+body {
   height: 100%;
   margin: 0;
   overflow: hidden; /* la page ne doit jamais avoir de scrollbar, seuls les leaves scrollent */
 }
 
 .mainStyle {
-  margin:0px;
+  margin: 0px;
 }

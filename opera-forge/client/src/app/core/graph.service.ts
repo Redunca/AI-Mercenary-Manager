@@ -1,6 +1,13 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { GraphApiService } from './graph-api.service';
-import { GraphDefinition, GraphLink, GraphNode, NodeType, defaultChoiceOptions, defaultMissionDetails } from '../models/graph';
+import {
+  GraphDefinition,
+  GraphLink,
+  GraphNode,
+  NodeType,
+  defaultChoiceOptions,
+  defaultMissionDetails,
+} from '../models/graph';
 
 let nodeCounter = 0;
 let linkCounter = 0;
@@ -31,11 +38,11 @@ export class GraphService {
 
   readonly selectedNode = computed(() => {
     const id = this.selectedNodeId();
-    return id ? (this.graph()?.nodes.find(n => n.id === id) ?? null) : null;
+    return id ? (this.graph()?.nodes.find((n) => n.id === id) ?? null) : null;
   });
   readonly selectedLink = computed(() => {
     const id = this.selectedLinkId();
-    return id ? (this.graph()?.links.find(l => l.id === id) ?? null) : null;
+    return id ? (this.graph()?.links.find((l) => l.id === id) ?? null) : null;
   });
 
   async load(id: string): Promise<void> {
@@ -83,29 +90,34 @@ export class GraphService {
   }
 
   updateMeta(title: string, description: string): void {
-    this.mutate(def => ({ ...def, title, description }));
+    this.mutate((def) => ({ ...def, title, description }));
   }
 
   addNode(type: Exclude<NodeType, 'start'>, position: { x: number; y: number }): void {
     const id = nextNodeId(type);
     const base: GraphNode = { id, type, position };
     const node: GraphNode =
-      type === 'story' ? { ...base, text: 'New story beat.', effects: [] } :
-      type === 'check' ? { ...base, roll: { type: 'chance', params: { percentage: 50 } } } :
-      type === 'seed' ? { ...base, seeds: [] } :
-      type === 'mission' ? { ...base, mission: defaultMissionDetails() } :
-      type === 'choice' ? { ...base, text: 'What do you do?', choiceOptions: defaultChoiceOptions() } :
-      { ...base, outcome: 'neutral', text: 'The end.' };
+      type === 'story'
+        ? { ...base, text: 'New story beat.', effects: [] }
+        : type === 'check'
+          ? { ...base, roll: { type: 'chance', params: { percentage: 50 } } }
+          : type === 'seed'
+            ? { ...base, seeds: [] }
+            : type === 'mission'
+              ? { ...base, mission: defaultMissionDetails() }
+              : type === 'choice'
+                ? { ...base, text: 'What do you do?', choiceOptions: defaultChoiceOptions() }
+                : { ...base, outcome: 'neutral', text: 'The end.' };
 
-    this.mutate(def => ({ ...def, nodes: [...def.nodes, node] }));
+    this.mutate((def) => ({ ...def, nodes: [...def.nodes, node] }));
     this.selectedLinkId.set(null);
     this.selectedNodeId.set(id);
   }
 
   updateNode(id: string, patch: Partial<GraphNode>): void {
-    this.mutate(def => ({
+    this.mutate((def) => ({
       ...def,
-      nodes: def.nodes.map(n => (n.id === id ? { ...n, ...patch } : n)),
+      nodes: def.nodes.map((n) => (n.id === id ? { ...n, ...patch } : n)),
     }));
   }
 
@@ -118,30 +130,30 @@ export class GraphService {
   }
 
   deleteNode(id: string): void {
-    this.mutate(def => ({
+    this.mutate((def) => ({
       ...def,
-      nodes: def.nodes.filter(n => n.id !== id),
-      links: def.links.filter(l => l.from !== id && l.to !== id),
+      nodes: def.nodes.filter((n) => n.id !== id),
+      links: def.links.filter((l) => l.from !== id && l.to !== id),
     }));
     if (this.selectedNodeId() === id) this.selectedNodeId.set(null);
   }
 
   addLink(from: string, to: string): void {
     const link: GraphLink = { id: nextLinkId(), from, to, priority: 0, conditions: [] };
-    this.mutate(def => ({ ...def, links: [...def.links, link] }));
+    this.mutate((def) => ({ ...def, links: [...def.links, link] }));
     this.selectedNodeId.set(null);
     this.selectedLinkId.set(link.id);
   }
 
   updateLink(id: string, patch: Partial<GraphLink>): void {
-    this.mutate(def => ({
+    this.mutate((def) => ({
       ...def,
-      links: def.links.map(l => (l.id === id ? { ...l, ...patch } : l)),
+      links: def.links.map((l) => (l.id === id ? { ...l, ...patch } : l)),
     }));
   }
 
   deleteLink(id: string): void {
-    this.mutate(def => ({ ...def, links: def.links.filter(l => l.id !== id) }));
+    this.mutate((def) => ({ ...def, links: def.links.filter((l) => l.id !== id) }));
     if (this.selectedLinkId() === id) this.selectedLinkId.set(null);
   }
 

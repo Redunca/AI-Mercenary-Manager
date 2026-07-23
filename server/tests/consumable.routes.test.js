@@ -5,8 +5,10 @@ const ConsumableService = require('../src/services/consumable.service')
 jest.mock('../src/services/game.service')
 jest.mock('../src/services/consumable.service')
 jest.mock('../src/db/pool', () => {
+  const actual = jest.requireActual('../src/db/pool')
   const mockClient = { query: jest.fn(), release: jest.fn() }
-  return { pool: { connect: jest.fn().mockResolvedValue(mockClient) } }
+  actual.pool.connect = jest.fn().mockResolvedValue(mockClient)
+  return actual
 })
 
 describe('Consumable Routes', () => {
@@ -24,7 +26,11 @@ describe('Consumable Routes', () => {
 
       expect(res.status).toBe(200)
       expect(res.body).toHaveLength(2)
-      expect(ConsumableService.getPlayerConsumables).toHaveBeenCalledWith(expect.anything(), 1, false)
+      expect(ConsumableService.getPlayerConsumables).toHaveBeenCalledWith(
+        expect.anything(),
+        1,
+        false,
+      )
     })
 
     test('filters to unassigned-only when asked', async () => {
@@ -32,7 +38,11 @@ describe('Consumable Routes', () => {
 
       await request(app).get('/api/consumables?unassigned=true')
 
-      expect(ConsumableService.getPlayerConsumables).toHaveBeenCalledWith(expect.anything(), 1, true)
+      expect(ConsumableService.getPlayerConsumables).toHaveBeenCalledWith(
+        expect.anything(),
+        1,
+        true,
+      )
     })
   })
 })

@@ -5,11 +5,21 @@
   @switch (node().type) {
     @case ('start') {
       <p class="hint">The entry point of the graph. Every walk begins here.</p>
-      <app-tag-text-field label="Welcome message (optional)" [rows]="3" [value]="node().text" (valueChange)="setText($event)" />
+      <app-tag-text-field
+        label="Welcome message (optional)"
+        [rows]="3"
+        [value]="node().text"
+        (valueChange)="setText($event)"
+      />
     }
 
     @case ('story') {
-      <app-tag-text-field label="Text" [rows]="4" [value]="node().text" (valueChange)="setText($event)" />
+      <app-tag-text-field
+        label="Text"
+        [rows]="4"
+        [value]="node().text"
+        (valueChange)="setText($event)"
+      />
       <app-tag-text-field
         label="Completion message (optional, shown when this node's outgoing link is taken)"
         [rows]="3"
@@ -28,21 +38,43 @@
 
           @switch (effect.type) {
             @case ('give_item') {
-              <input type="text" placeholder="Item name" [ngModel]="effect.params['itemName']" (ngModelChange)="setEffectParam($index, 'itemName', $event)" />
+              <input
+                type="text"
+                placeholder="Item name"
+                [ngModel]="effect.params['itemName']"
+                (ngModelChange)="setEffectParam($index, 'itemName', $event)"
+              />
             }
             @case ('apply_perk') {
-              <input type="text" placeholder="Perk name" [ngModel]="effect.params['perkName']" (ngModelChange)="setEffectParam($index, 'perkName', $event)" />
+              <input
+                type="text"
+                placeholder="Perk name"
+                [ngModel]="effect.params['perkName']"
+                (ngModelChange)="setEffectParam($index, 'perkName', $event)"
+              />
             }
             @case ('apply_flaw') {
-              <input type="text" placeholder="Flaw name" [ngModel]="effect.params['flawName']" (ngModelChange)="setEffectParam($index, 'flawName', $event)" />
+              <input
+                type="text"
+                placeholder="Flaw name"
+                [ngModel]="effect.params['flawName']"
+                (ngModelChange)="setEffectParam($index, 'flawName', $event)"
+              />
             }
             @case ('adjust_stat') {
-              <select [ngModel]="effect.params['attribute']" (ngModelChange)="setEffectParam($index, 'attribute', $event)">
+              <select
+                [ngModel]="effect.params['attribute']"
+                (ngModelChange)="setEffectParam($index, 'attribute', $event)"
+              >
                 @for (a of attributes; track a) {
                   <option [value]="a">{{ a }}</option>
                 }
               </select>
-              <input type="number" [ngModel]="effect.params['amount']" (ngModelChange)="setEffectParam($index, 'amount', asNumber($event))" />
+              <input
+                type="number"
+                [ngModel]="effect.params['amount']"
+                (ngModelChange)="setEffectParam($index, 'amount', asNumber($event))"
+              />
             }
           }
 
@@ -55,9 +87,17 @@
     @case ('check') {
       <label>
         Percentage (chance of success)
-        <input type="number" min="0" max="100" [ngModel]="node().roll?.params?.['percentage']" (ngModelChange)="setRollParam('percentage', asNumber($event))" />
+        <input
+          type="number"
+          min="0"
+          max="100"
+          [ngModel]="node().roll?.params?.['percentage']"
+          (ngModelChange)="setRollParam('percentage', asNumber($event))"
+        />
       </label>
-      <p class="hint">Resolves to success/failure. Route outgoing links with a "previous_outcome" condition.</p>
+      <p class="hint">
+        Resolves to success/failure. Route outgoing links with a "previous_outcome" condition.
+      </p>
       <app-tag-text-field
         label="Completion message (optional, shown when this node's outgoing link is taken)"
         [rows]="3"
@@ -68,8 +108,8 @@
 
     @case ('seed') {
       <p class="hint">
-        Declares shop items / missions this opera wants seeded. This has no effect on the game yet --
-        it's data for the opera engine to read once it exists. For now it only shows up as a step
+        Declares shop items / missions this opera wants seeded. This has no effect on the game yet
+        -- it's data for the opera engine to read once it exists. For now it only shows up as a step
         during Quick Generation.
       </p>
 
@@ -84,13 +124,28 @@
 
           @switch (entry.target) {
             @case ('shop') {
-              <input type="text" placeholder="Item name" [ngModel]="entry.params['itemName']" (ngModelChange)="setSeedParam($index, 'itemName', $event)" />
+              <input
+                type="text"
+                placeholder="Item name"
+                [ngModel]="entry.params['itemName']"
+                (ngModelChange)="setSeedParam($index, 'itemName', $event)"
+              />
             }
             @case ('mission') {
-              <input type="text" placeholder="Mission template id" [ngModel]="entry.params['templateId']" (ngModelChange)="setSeedParam($index, 'templateId', $event)" />
+              <input
+                type="text"
+                placeholder="Mission template id"
+                [ngModel]="entry.params['templateId']"
+                (ngModelChange)="setSeedParam($index, 'templateId', $event)"
+              />
             }
             @case ('candidate') {
-              <input type="text" placeholder="Seed id, e.g. poach-target" [ngModel]="entry.params['seedId']" (ngModelChange)="setSeedParam($index, 'seedId', $event)" />
+              <input
+                type="text"
+                placeholder="Seed id, e.g. poach-target"
+                [ngModel]="entry.params['seedId']"
+                (ngModelChange)="setSeedParam($index, 'seedId', $event)"
+              />
             }
           }
 
@@ -116,32 +171,56 @@
 
     @case ('mission') {
       <p class="hint">
-        Injects this personalized mission into the player's mission list and blocks the walk until it resolves,
-        branching on outcome exactly like a check node's roll. Route outgoing links with a "previous_outcome" condition.
+        Injects this personalized mission into the player's mission list and blocks the walk until
+        it resolves, branching on outcome exactly like a check node's roll. Route outgoing links
+        with a "previous_outcome" condition.
       </p>
 
-      <app-tag-text-field label="Title" [rows]="1" [value]="node().mission?.title" (valueChange)="setMission({ title: $event })" />
-      <p class="hint">Your own name for the mission in this opera's story -- not what the generated mission will be called.</p>
-      <app-tag-text-field label="Description (optional)" [rows]="3" [value]="node().mission?.description" (valueChange)="setMission({ description: $event || undefined })" />
+      <app-tag-text-field
+        label="Title"
+        [rows]="1"
+        [value]="node().mission?.title"
+        (valueChange)="setMission({ title: $event })"
+      />
+      <p class="hint">
+        Your own name for the mission in this opera's story -- not what the generated mission will
+        be called.
+      </p>
+      <app-tag-text-field
+        label="Description (optional)"
+        [rows]="3"
+        [value]="node().mission?.description"
+        (valueChange)="setMission({ description: $event || undefined })"
+      />
 
       <label>
         Difficulty (optional)
-        <select [ngModel]="node().mission?.difficulty ?? ''" (ngModelChange)="setMissionDifficulty($event)">
+        <select
+          [ngModel]="node().mission?.difficulty ?? ''"
+          (ngModelChange)="setMissionDifficulty($event)"
+        >
           <option value="">(none)</option>
           @for (d of missionDifficulties; track d) {
             <option [value]="d">{{ d }}</option>
           }
         </select>
       </label>
-      <p class="hint">Overrides the engine's weighted difficulty roll. Leave unset to let it roll normally.</p>
+      <p class="hint">
+        Overrides the engine's weighted difficulty roll. Leave unset to let it roll normally.
+      </p>
 
       <label>
         Tags (comma separated, optional)
-        <input type="text" [ngModel]="missionTagsText()" (ngModelChange)="setMissionTagsText($event)" />
+        <input
+          type="text"
+          [ngModel]="missionTagsText()"
+          (ngModelChange)="setMissionTagsText($event)"
+        />
       </label>
       <p class="hint">
-        Generation guidelines, not flavor text -- narrows which mission type/template the engine generates from,
-        the same way a planet's tags narrow mission-type candidates. Not shown to the player.
+        Generation guidelines, not flavor text -- narrows which mission type/template the engine
+        generates from, the same way a planet's tags narrow mission-type candidates. Not shown to
+        the player.
       </p>
 
       <app-tag-text-field
@@ -154,21 +233,39 @@
 
     @case ('choice') {
       <p class="hint">
-        Presents the player a decision and blocks the walk until they pick one. Route outgoing links with a
-        "choice_made" condition matching each option's id.
+        Presents the player a decision and blocks the walk until they pick one. Route outgoing links
+        with a "choice_made" condition matching each option's id.
       </p>
-      <app-tag-text-field label="Prompt" [rows]="3" [value]="node().text" (valueChange)="setText($event)" />
+      <app-tag-text-field
+        label="Prompt"
+        [rows]="3"
+        [value]="node().text"
+        (valueChange)="setText($event)"
+      />
 
       <h3>Options</h3>
       @for (opt of node().choiceOptions ?? []; track $index) {
         <div class="row">
-          <input type="text" class="option-id" placeholder="option id" [ngModel]="opt.id" (ngModelChange)="setChoiceOptionId($index, $event)" />
-          <input type="text" placeholder="Label shown to the player" [ngModel]="opt.label" (ngModelChange)="setChoiceOptionLabel($index, $event)" />
+          <input
+            type="text"
+            class="option-id"
+            placeholder="option id"
+            [ngModel]="opt.id"
+            (ngModelChange)="setChoiceOptionId($index, $event)"
+          />
+          <input
+            type="text"
+            placeholder="Label shown to the player"
+            [ngModel]="opt.label"
+            (ngModelChange)="setChoiceOptionLabel($index, $event)"
+          />
           <button type="button" class="danger" (click)="removeChoiceOption($index)">&times;</button>
         </div>
       }
       <button type="button" (click)="addChoiceOption()">+ Option</button>
-      <p class="hint">Labels may reference {{ '{' }}tagName{{ '}' }} placeholders, same as any other text field.</p>
+      <p class="hint">
+        Labels may reference {{ '{' }}tagName{{ '}' }} placeholders, same as any other text field.
+      </p>
 
       <app-tag-text-field
         label="Completion message (optional, shown when this node's outgoing link is taken)"
@@ -187,7 +284,12 @@
           }
         </select>
       </label>
-      <app-tag-text-field label="Text" [rows]="4" [value]="node().text" (valueChange)="setText($event)" />
+      <app-tag-text-field
+        label="Text"
+        [rows]="4"
+        [value]="node().text"
+        (valueChange)="setText($event)"
+      />
     }
   }
 

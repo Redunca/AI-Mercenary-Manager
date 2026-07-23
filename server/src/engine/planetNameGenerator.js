@@ -1,6 +1,6 @@
-'use strict';
+'use strict'
 
-const { createSeededRng } = require('../utils/random');
+const { createSeededRng } = require('../utils/random')
 
 // Each palette is a small CV(C) syllable kit: an onset (leading consonant
 // cluster), a nucleus (vowel sound), and an optional coda (trailing
@@ -47,7 +47,7 @@ const PLANET_NAME_PALETTES = {
     nuclei: ['a', 'e', 'i', 'o'],
     codas: ['', '', 'n', 'ra', 'on'],
   },
-};
+}
 
 // Checked in order; the first entry with a matching tag wins. Keeping this
 // as an explicit priority list (rather than e.g. scoring every match) means
@@ -61,41 +61,43 @@ const PALETTE_TAG_PRIORITY = [
   { palette: 'jungle', tags: ['jungle'] },
   { palette: 'urban', tags: ['urban', 'megacity', 'corporate'] },
   { palette: 'arid', tags: ['arid', 'frontier', 'mining', 'isolated', 'desert'] },
-];
+]
 
 function paletteKeyForTags(tags) {
   for (const { palette, tags: matchTags } of PALETTE_TAG_PRIORITY) {
-    if (matchTags.some((t) => tags.includes(t))) return palette;
+    if (matchTags.some((t) => tags.includes(t))) return palette
   }
-  return 'default';
+  return 'default'
 }
 
 /** djb2 string hash, folded into an unsigned 32-bit int for use as a PRNG seed. */
 function hashString(str) {
-  let hash = 5381;
+  let hash = 5381
   for (let i = 0; i < str.length; i++) {
-    hash = ((hash * 33) ^ str.charCodeAt(i)) >>> 0;
+    hash = ((hash * 33) ^ str.charCodeAt(i)) >>> 0
   }
-  return hash >>> 0;
+  return hash >>> 0
 }
 
 function pickFrom(rng, array) {
-  return array[Math.floor(rng() * array.length)];
+  return array[Math.floor(rng() * array.length)]
 }
 
 function buildSyllable(palette, rng) {
-  return pickFrom(rng, palette.onsets) + pickFrom(rng, palette.nuclei) + pickFrom(rng, palette.codas);
+  return (
+    pickFrom(rng, palette.onsets) + pickFrom(rng, palette.nuclei) + pickFrom(rng, palette.codas)
+  )
 }
 
 function capitalize(word) {
-  return word.charAt(0).toUpperCase() + word.slice(1);
+  return word.charAt(0).toUpperCase() + word.slice(1)
 }
 
 /** 1-2 syllables, used as one half of a hyphenated two-part name. */
 function buildWordPart(palette, rng) {
-  let part = buildSyllable(palette, rng);
-  if (rng() < 0.15) part += buildSyllable(palette, rng);
-  return part;
+  let part = buildSyllable(palette, rng)
+  if (rng() < 0.15) part += buildSyllable(palette, rng)
+  return part
 }
 
 /**
@@ -113,22 +115,22 @@ function buildWordPart(palette, rng) {
  * varies from planet to planet without breaking determinism.
  */
 function generatePlanetName(tags, systemId, position) {
-  const palette = PLANET_NAME_PALETTES[paletteKeyForTags(tags)];
-  const rng = createSeededRng(hashString(`${systemId}-${position}`));
+  const palette = PLANET_NAME_PALETTES[paletteKeyForTags(tags)]
+  const rng = createSeededRng(hashString(`${systemId}-${position}`))
 
-  const twoPart = rng() < 0.5;
+  const twoPart = rng() < 0.5
   if (twoPart) {
-    return `${capitalize(buildWordPart(palette, rng))}-${capitalize(buildWordPart(palette, rng))}`;
+    return `${capitalize(buildWordPart(palette, rng))}-${capitalize(buildWordPart(palette, rng))}`
   }
 
-  const syllableCount = 2;
-  let word = '';
-  for (let i = 0; i < syllableCount; i++) word += buildSyllable(palette, rng);
-  return capitalize(word);
+  const syllableCount = 2
+  let word = ''
+  for (let i = 0; i < syllableCount; i++) word += buildSyllable(palette, rng)
+  return capitalize(word)
 }
 
 module.exports = {
   generatePlanetName,
   paletteKeyForTags,
   PLANET_NAME_PALETTES,
-};
+}

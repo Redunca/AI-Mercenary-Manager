@@ -4,8 +4,10 @@ const shop = require('../src/services/shop.service')
 
 jest.mock('../src/services/shop.service')
 jest.mock('../src/db/pool', () => {
+  const actual = jest.requireActual('../src/db/pool')
   const mockClient = { query: jest.fn(), release: jest.fn() }
-  return { pool: { connect: jest.fn().mockResolvedValue(mockClient) } }
+  actual.pool.connect = jest.fn().mockResolvedValue(mockClient)
+  return actual
 })
 
 const { pool } = require('../src/db/pool')
@@ -32,7 +34,7 @@ describe('Shop Routes', () => {
   })
 
   describe('GET /api/shop/items/:id', () => {
-    test("returns the requested item", async () => {
+    test('returns the requested item', async () => {
       shop.getShopItem.mockResolvedValue({ id: 1, name: 'Corsair' })
 
       const res = await request(app).get('/api/shop/items/1')

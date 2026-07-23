@@ -1,8 +1,17 @@
-const { TAG_CATALOG, extractPlaceholders, renderPreview, exampleContext, findTag } = require('../src/domain/tags')
+const {
+  TAG_CATALOG,
+  extractPlaceholders,
+  renderPreview,
+  exampleContext,
+  findTag,
+} = require('../src/domain/tags')
 
 describe('extractPlaceholders', () => {
   test('extracts unique {tagName} references', () => {
-    expect(extractPlaceholders('{planetName} is near {planetName}, close to {faction}.')).toEqual(['planetName', 'faction'])
+    expect(extractPlaceholders('{planetName} is near {planetName}, close to {faction}.')).toEqual([
+      'planetName',
+      'faction',
+    ])
   })
 
   test('returns an empty array for text with no placeholders', () => {
@@ -17,10 +26,10 @@ describe('extractPlaceholders', () => {
 describe('renderPreview', () => {
   test('substitutes every resolved tag', () => {
     const { text, missing } = renderPreview('Welcome to {planetName}, courtesy of {faction}.', {
-      planetName: 'Kestrel\'s Rest',
+      planetName: "Kestrel's Rest",
       faction: 'the Void Brotherhood',
     })
-    expect(text).toBe('Welcome to Kestrel\'s Rest, courtesy of the Void Brotherhood.')
+    expect(text).toBe("Welcome to Kestrel's Rest, courtesy of the Void Brotherhood.")
     expect(missing).toEqual([])
   })
 

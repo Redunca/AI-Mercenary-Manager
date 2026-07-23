@@ -13,7 +13,7 @@ import { OperaService } from './opera.service';
 
 @Injectable({ providedIn: 'root' })
 export class CommandService {
-  constructor(public layout: LayoutService) {
+  constructor() {
     this.registerGlobalCommands('recruit', this.handleRecruit.bind(this));
     this.registerGlobalCommands('focus', this.handleFocus.bind(this));
     this.registerGlobalCommands('mission', this.handleMission.bind(this));
@@ -30,6 +30,7 @@ export class CommandService {
     this.registerGlobalCommands('dev', this.handleDev.bind(this));
   }
 
+  layout = inject(LayoutService);
   missionService = inject(MissionService);
   candidateService = inject(CandidateService);
   shipService = inject(ShipService);
@@ -94,7 +95,6 @@ export class CommandService {
     }
   }
 
-
   routeCommand(input: string, panelId: number) {
     const { command, args } = this.parse(input);
 
@@ -119,111 +119,146 @@ export class CommandService {
       return;
     }
 
-    console.warn("Unknown command:", command);
+    console.warn('Unknown command:', command);
   }
 
-
   private handleRecruit(...args: string[]) {
-
     const panelId = this.layout.activePanelId;
     if (!panelId) return;
 
     if (args.length === 0) {
-      console.log("Usage: recruit -l | --list | -d <id>");
+      console.log('Usage: recruit -l | --list | -d <id>');
       return;
     }
 
-    const opt = args[0];
+    const [opt, arg] = args;
 
-    if (opt === "list" || opt === "-l" || opt === "--list") {
-      this.layout.setPanelModule(panelId, PanelModule.RecruitList);
-      return;
-    }
-
-    if ((opt === "detail" || opt === "-d" || opt === "--detail") && args[1]) {
-      this.layout.setPanelModule(panelId, PanelModule.RecruitDetail, { id: args[1] });
-      return;
-    }
-
-    if (opt === "hire" && args[1]) {
-      void this.candidateService.hireCandidate(args[1]).then(recruit => {
-        if (recruit) {
-          this.layout.setPanelModule(panelId, PanelModule.RecruitDetail, { id: recruit.id });
-        }
-      });
-      return;
-    }
-
-    if (opt === "fire" && args[1]) {
-      void this.game.fireRecruit(args[1]).then(err => {
-        if (err) { console.error(`[recruit fire] ${err}`); return; }
+    // Every case below falls through to the closing "Unknown option" warning
+    // when its required arg is missing, rather than silently doing nothing.
+    switch (opt) {
+      case 'list':
+      case '-l':
+      case '--list':
         this.layout.setPanelModule(panelId, PanelModule.RecruitList);
-      });
-      return;
+        return;
+
+      case 'detail':
+      case '-d':
+      case '--detail':
+        if (arg) {
+          this.layout.setPanelModule(panelId, PanelModule.RecruitDetail, { id: arg });
+          return;
+        }
+        break;
+
+      case 'hire':
+        if (arg) {
+          void this.candidateService.hireCandidate(arg).then((recruit) => {
+            if (recruit) {
+              this.layout.setPanelModule(panelId, PanelModule.RecruitDetail, { id: recruit.id });
+            }
+          });
+          return;
+        }
+        break;
+
+      case 'fire':
+        if (arg) {
+          void this.game.fireRecruit(arg).then((err) => {
+            if (err) {
+              console.error(`[recruit fire] ${err}`);
+              return;
+            }
+            this.layout.setPanelModule(panelId, PanelModule.RecruitList);
+          });
+          return;
+        }
+        break;
     }
 
-    console.warn("Unknown option:", opt);
+    console.warn('Unknown option:', opt);
   }
   private handleFocus(arg: string) {
     // focus by ID
-  const id = Number(arg);
-  if (!isNaN(id)) {
-    this.layout.setActivePanel(id);
-    return;
-  }
-
-  // directional focus
-  const dir = arg as 'left' | 'right' | 'up' | 'down';
-  this.layout.focus(dir);
-  }
-
-
-  private handleMission(action: string, ...args: string[]) {
-  switch (action) {
-    case "list":
-    case "-l":
-    case "--list": {
-      const completed = args[0] === "--completed" || args[0] === "-c";
-      this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.MissionList, completed ? { completed: true } : undefined);
-      break;
+    const id = Number(arg);
+    if (!isNaN(id)) {
+      this.layout.setActivePanel(id);
+      return;
     }
 
-    // Bare shorthand for "mission list --completed", mirroring how -l/--list
-    // is itself a shorthand for "list" — lets "mission -c" work on its own
-    // without needing "list" spelled out.
-    case "-c":
-    case "--completed":
-      this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.MissionList, { completed: true });
-      break;
-
-    case "start":
-      void this.missionService.startMission(Number(args[0]), Number(args[1])).then(err => {
-        if (err) { console.error(`[mission start] ${err}`); return; }
-        this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.MissionDetail, { id: Number(args[0]) });
-      });
-      break;
-
-    case "stop":
-      void this.missionService.stopMission(Number(args[0])).then(err => {
-        if (err) { console.error(`[mission stop] ${err}`); return; }
-        this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.MissionDetail, { id: Number(args[0]) });
-      });
-      break;
-
-    case "detail":
-    case "-d":
-    case "--detail":
-      this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.MissionDetail, { id: Number(args[0]) });
-      break;
-
-    case "logs":
-      this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.MissionLogs, { id: Number(args[0]) });
-      break;
-
-    default:
-      console.warn('Usage: mission list [--completed|-c] | mission start <shipId> <missionId> | mission stop <id> | mission detail <id> | mission logs <id>');
+    // directional focus
+    const dir = arg as 'left' | 'right' | 'up' | 'down';
+    this.layout.focus(dir);
   }
-}
+
+  private handleMission(action: string, ...args: string[]) {
+    switch (action) {
+      case 'list':
+      case '-l':
+      case '--list': {
+        const completed = args[0] === '--completed' || args[0] === '-c';
+        this.layout.setPanelModule(
+          this.layout.activePanelId!,
+          PanelModule.MissionList,
+          completed ? { completed: true } : undefined,
+        );
+        break;
+      }
+
+      // Bare shorthand for "mission list --completed", mirroring how -l/--list
+      // is itself a shorthand for "list" — lets "mission -c" work on its own
+      // without needing "list" spelled out.
+      case '-c':
+      case '--completed':
+        this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.MissionList, {
+          completed: true,
+        });
+        break;
+
+      case 'start':
+        void this.missionService.startMission(Number(args[0]), Number(args[1])).then((err) => {
+          if (err) {
+            console.error(`[mission start] ${err}`);
+            return;
+          }
+          this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.MissionDetail, {
+            id: Number(args[0]),
+          });
+        });
+        break;
+
+      case 'stop':
+        void this.missionService.stopMission(Number(args[0])).then((err) => {
+          if (err) {
+            console.error(`[mission stop] ${err}`);
+            return;
+          }
+          this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.MissionDetail, {
+            id: Number(args[0]),
+          });
+        });
+        break;
+
+      case 'detail':
+      case '-d':
+      case '--detail':
+        this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.MissionDetail, {
+          id: Number(args[0]),
+        });
+        break;
+
+      case 'logs':
+        this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.MissionLogs, {
+          id: Number(args[0]),
+        });
+        break;
+
+      default:
+        console.warn(
+          'Usage: mission list [--completed|-c] | mission start <shipId> <missionId> | mission stop <id> | mission detail <id> | mission logs <id>',
+        );
+    }
+  }
 
   private handleLogs() {
     this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.Logs);
@@ -248,12 +283,18 @@ export class CommandService {
       case '-d':
       case '--detail':
         if (args[0]) {
-          this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.CandidateDetail, { id: args[0] });
+          this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.CandidateDetail, {
+            id: args[0],
+          });
         }
         break;
       default:
         console.warn('Usage: candidate list | candidate detail <id>');
     }
+  }
+
+  private logShipError(action: string, err: any) {
+    console.error(`[ship ${action}]`, err?.error?.error ?? err?.message ?? err);
   }
 
   private handleShip(action: string, ...args: string[]) {
@@ -268,48 +309,72 @@ export class CommandService {
       case '-d':
       case '--detail':
         if (args[0]) {
-          this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShipDetail, { id: args[0] });
+          this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShipDetail, {
+            id: args[0],
+          });
         }
         break;
 
       case 'assign':
         if (args[0] && args[1]) {
-          void this.shipService.assignCrewToShip(Number(args[0]), [Number(args[1])])
+          void this.shipService
+            .assignCrewToShip(Number(args[0]), [Number(args[1])])
             .then(() => this.gameSync.sync())
-            .then(() => this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShipDetail, { id: args[0] }))
-            .catch(err => console.error('[ship assign]', err?.error?.error ?? err?.message ?? err));
+            .then(() =>
+              this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShipDetail, {
+                id: args[0],
+              }),
+            )
+            .catch((err) => this.logShipError('assign', err));
         }
         break;
 
       case 'unassign':
         if (args[0] && args[1]) {
-          void this.shipService.unassignCrewFromShip(Number(args[0]), Number(args[1]))
+          void this.shipService
+            .unassignCrewFromShip(Number(args[0]), Number(args[1]))
             .then(() => this.gameSync.sync())
-            .then(() => this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShipDetail, { id: args[0] }))
-            .catch(err => console.error('[ship unassign]', err?.error?.error ?? err?.message ?? err));
+            .then(() =>
+              this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShipDetail, {
+                id: args[0],
+              }),
+            )
+            .catch((err) => this.logShipError('unassign', err));
         }
         break;
 
       case 'rename':
         if (args[0]) {
-          void this.shipService.renameShip(Number(args[0]), args.slice(1).join(' '))
+          void this.shipService
+            .renameShip(Number(args[0]), args.slice(1).join(' '))
             .then(() => this.gameSync.sync())
-            .then(() => this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShipDetail, { id: args[0] }))
-            .catch(err => console.error('[ship rename]', err?.error?.error ?? err?.message ?? err));
+            .then(() =>
+              this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShipDetail, {
+                id: args[0],
+              }),
+            )
+            .catch((err) => this.logShipError('rename', err));
         }
         break;
 
       case 'load':
         if (args[0] && args[1]) {
-          void this.shipService.loadConsumableOntoShip(Number(args[0]), Number(args[1]), args[2] ? Number(args[2]) : 1)
+          void this.shipService
+            .loadConsumableOntoShip(Number(args[0]), Number(args[1]), args[2] ? Number(args[2]) : 1)
             .then(() => this.gameSync.sync())
-            .then(() => this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShipDetail, { id: args[0] }))
-            .catch(err => console.error('[ship load]', err?.error?.error ?? err?.message ?? err));
+            .then(() =>
+              this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShipDetail, {
+                id: args[0],
+              }),
+            )
+            .catch((err) => this.logShipError('load', err));
         }
         break;
 
       default:
-        console.warn('Usage: ship list | ship detail <id> | ship assign <shipId> <recruitId> | ship unassign <shipId> <recruitId> | ship rename <shipId> <newName> | ship load <shipId> <consumableId> [quantity]');
+        console.warn(
+          'Usage: ship list | ship detail <id> | ship assign <shipId> <recruitId> | ship unassign <shipId> <recruitId> | ship rename <shipId> <newName> | ship load <shipId> <consumableId> [quantity]',
+        );
     }
   }
 
@@ -325,13 +390,15 @@ export class CommandService {
       case '-d':
       case '--detail':
         if (args[0]) {
-          this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShopDetail, { id: args[0] });
+          this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShopDetail, {
+            id: args[0],
+          });
         }
         break;
 
       case 'buy':
         if (args[0]) {
-          void this.shopService.buyItem(Number(args[0])).then(result => {
+          void this.shopService.buyItem(Number(args[0])).then((result) => {
             if (result?.error) {
               console.warn('Purchase failed:', result.error);
               return;
@@ -359,7 +426,7 @@ export class CommandService {
     }
 
     if (action === 'buy' && args[0]) {
-      void this.selfService.buyUpgrade(Number(args[0])).then(result => {
+      void this.selfService.buyUpgrade(Number(args[0])).then((result) => {
         if (result?.error) {
           console.warn('Purchase failed:', result.error);
           return;
@@ -386,7 +453,9 @@ export class CommandService {
       case '-d':
       case '--detail':
         if (args[0]) {
-          this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.OperaDetail, { id: args[0] });
+          this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.OperaDetail, {
+            id: args[0],
+          });
         }
         break;
 
@@ -402,8 +471,11 @@ export class CommandService {
   private handleDev(action?: string, ...args: string[]) {
     switch (action) {
       case 'refresh':
-        void this.gameApi.devRefresh().then(result => {
-          if (result?.error) { console.warn('[dev refresh]', result.error); return; }
+        void this.gameApi.devRefresh().then((result) => {
+          if (result?.error) {
+            console.warn('[dev refresh]', result.error);
+            return;
+          }
           void this.gameSync.sync();
         });
         break;
@@ -411,9 +483,15 @@ export class CommandService {
       case 'credit':
       case 'credits': {
         const amount = Number(args[0]);
-        if (isNaN(amount)) { console.warn('Usage: dev credit <amount>'); break; }
-        void this.gameApi.devSetCredits(amount).then(result => {
-          if (result?.error) { console.warn('[dev credit]', result.error); return; }
+        if (isNaN(amount)) {
+          console.warn('Usage: dev credit <amount>');
+          break;
+        }
+        void this.gameApi.devSetCredits(amount).then((result) => {
+          if (result?.error) {
+            console.warn('[dev credit]', result.error);
+            return;
+          }
           void this.gameSync.sync();
         });
         break;
@@ -422,9 +500,15 @@ export class CommandService {
       case 'token':
       case 'tokens': {
         const amount = Number(args[0]);
-        if (isNaN(amount)) { console.warn('Usage: dev token <amount>'); break; }
-        void this.gameApi.devSetTokens(amount).then(result => {
-          if (result?.error) { console.warn('[dev token]', result.error); return; }
+        if (isNaN(amount)) {
+          console.warn('Usage: dev token <amount>');
+          break;
+        }
+        void this.gameApi.devSetTokens(amount).then((result) => {
+          if (result?.error) {
+            console.warn('[dev token]', result.error);
+            return;
+          }
           void this.gameSync.sync();
         });
         break;
@@ -432,11 +516,16 @@ export class CommandService {
 
       case 'reboot':
         if (args[0] !== 'confirm') {
-          console.warn('This wipes the database and starts a fresh game. Run "dev reboot confirm" to proceed.');
+          console.warn(
+            'This wipes the database and starts a fresh game. Run "dev reboot confirm" to proceed.',
+          );
           break;
         }
-        void this.gameApi.devReboot().then(result => {
-          if (result?.error) { console.warn('[dev reboot]', result.error); return; }
+        void this.gameApi.devReboot().then((result) => {
+          if (result?.error) {
+            console.warn('[dev reboot]', result.error);
+            return;
+          }
           void this.gameSync.sync().then(() => {
             this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.Dashboard);
           });
@@ -444,8 +533,9 @@ export class CommandService {
         break;
 
       default:
-        console.warn('Usage: dev refresh | dev credit <amount> | dev token <amount> | dev reboot confirm');
+        console.warn(
+          'Usage: dev refresh | dev credit <amount> | dev token <amount> | dev reboot confirm',
+        );
     }
   }
-
 }

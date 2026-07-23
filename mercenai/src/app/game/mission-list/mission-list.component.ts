@@ -1,4 +1,13 @@
-import { Component, inject, Input, NgZone, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  inject,
+  Input,
+  NgZone,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  SimpleChanges,
+} from '@angular/core';
 import { CommonModule, NgFor } from '@angular/common';
 import { MissionService } from '../../core/mission.service';
 import { LayoutService } from '../../core/layout.service';
@@ -13,7 +22,7 @@ import { msUntilNextRefresh, formatCountdown } from '../../core/refresh-countdow
   standalone: true,
   imports: [CommonModule, NgFor],
   templateUrl: './mission-list.component.html',
-  styleUrl: './mission-list.component.scss'
+  styleUrl: './mission-list.component.scss',
 })
 export class MissionListComponent implements OnInit, OnChanges, OnDestroy {
   // Whether this panel shows the live batch (default) or full mission
@@ -89,17 +98,21 @@ export class MissionListComponent implements OnInit, OnChanges, OnDestroy {
 
   registerCommands() {
     return {
-      'detail': (id: string) => {
+      detail: (id: string) => {
         if (!id) {
           console.warn('Usage: detail <id>');
           return;
         }
-        this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.MissionDetail, { id: Number(id) });
+        this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.MissionDetail, {
+          id: Number(id),
+        });
       },
       // Local equivalent of the global "mission list --completed" / "mission -c"
       // command, shortcut-able from within the mission-list panel itself.
-      'completed': () => {
-        this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.MissionList, { completed: true });
+      completed: () => {
+        this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.MissionList, {
+          completed: true,
+        });
       },
     };
   }

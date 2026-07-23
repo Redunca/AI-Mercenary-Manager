@@ -1,6 +1,11 @@
 import { Component, OnDestroy, OnInit, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ShopService, ShopItem, SHOP_ITEMS_REFRESH_INTERVAL_MS, isSoldOut } from '../../../core/shop.service';
+import {
+  ShopService,
+  ShopItem,
+  SHOP_ITEMS_REFRESH_INTERVAL_MS,
+  isSoldOut,
+} from '../../../core/shop.service';
 import { LayoutService } from '../../../core/layout.service';
 import { GameSyncService } from '../../../core/game-sync.service';
 import { PanelModule } from '../../../models/panel';
@@ -10,7 +15,7 @@ import { PanelModule } from '../../../models/panel';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './shop-detail.component.html',
-  styleUrl: './shop-detail.component.scss'
+  styleUrl: './shop-detail.component.scss',
 })
 export class ShopDetailComponent implements OnInit, OnDestroy {
   @Input() id?: string;
@@ -40,8 +45,12 @@ export class ShopDetailComponent implements OnInit, OnDestroy {
   private refreshItem(): void {
     if (!this.id) return;
     this.shopService.getShopItem(Number(this.id)).subscribe({
-      next: item => { this.item = item; },
-      error: () => { this.item = null; },
+      next: (item) => {
+        this.item = item;
+      },
+      error: () => {
+        this.item = null;
+      },
     });
   }
 
@@ -49,8 +58,11 @@ export class ShopDetailComponent implements OnInit, OnDestroy {
 
   registerCommands() {
     return {
-      'buy': (qtyStr?: string) => {
-        if (!this.item) { console.warn('Item not loaded'); return; }
+      buy: (qtyStr?: string) => {
+        if (!this.item) {
+          console.warn('Item not loaded');
+          return;
+        }
 
         if (isSoldOut(this.item)) {
           this.buyError = 'This item is sold out.';
@@ -58,7 +70,7 @@ export class ShopDetailComponent implements OnInit, OnDestroy {
         }
 
         const qty = qtyStr ? Number(qtyStr) : 1;
-        void this.shopService.buyItem(this.item.id, qty).then(result => {
+        void this.shopService.buyItem(this.item.id, qty).then((result) => {
           if (result?.error) {
             // Race condition: sold out (e.g. by a rotation refresh) between
             // load and this attempt. Refresh so the panel reflects the
@@ -71,7 +83,8 @@ export class ShopDetailComponent implements OnInit, OnDestroy {
           const isShip = this.item?.type === 'ship';
           this.refreshItem();
           void this.gameSync.sync().then(() => {
-            if (isShip) this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShipList);
+            if (isShip)
+              this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShipList);
           });
         });
       },

@@ -60,66 +60,105 @@ function createFakeClient() {
     if (s.includes('INSERT INTO players')) {
       const [id, display_name] = params
       const player = {
-        id, display_name, wallet: 10000, tokens: 0,
-        max_recruits: 5, max_available_missions: 5,
-        next_candidate_id: 1, next_recruit_id: 1, next_ship_id: 1,
-        next_template_id: 1, mission_refresh_at: null, shop_refresh_at: null, candidate_refresh_at: null,
-        mission_refresh_interval_ms: 900000, shop_refresh_interval_ms: 900000, candidate_refresh_interval_ms: 300000,
-        shop_rotation_size: 5, inventory_capacity: 5, hp_regen_interval_ms: 60000,
+        id,
+        display_name,
+        wallet: 10000,
+        tokens: 0,
+        max_recruits: 5,
+        max_available_missions: 5,
+        next_candidate_id: 1,
+        next_recruit_id: 1,
+        next_ship_id: 1,
+        next_template_id: 1,
+        mission_refresh_at: null,
+        shop_refresh_at: null,
+        candidate_refresh_at: null,
+        mission_refresh_interval_ms: 900000,
+        shop_refresh_interval_ms: 900000,
+        candidate_refresh_interval_ms: 300000,
+        shop_rotation_size: 5,
+        inventory_capacity: 5,
+        hp_regen_interval_ms: 60000,
       }
       state.players.push(player)
       return { rows: [player] }
     }
     if (s === 'SELECT hp_regen_interval_ms FROM players WHERE id = $1') {
-      return { rows: state.players.filter(p => p.id === params[0]).map(p => ({ hp_regen_interval_ms: p.hp_regen_interval_ms })) }
+      return {
+        rows: state.players
+          .filter((p) => p.id === params[0])
+          .map((p) => ({ hp_regen_interval_ms: p.hp_regen_interval_ms })),
+      }
     }
     if (s.includes('SELECT max_recruits, max_available_missions, wallet, tokens,')) {
-      const p = state.players.find(p => p.id === params[0])
+      const p = state.players.find((p) => p.id === params[0])
       return {
-        rows: p ? [{
-          max_recruits: p.max_recruits, max_available_missions: p.max_available_missions,
-          wallet: p.wallet, tokens: p.tokens,
-          mission_refresh_interval_ms: p.mission_refresh_interval_ms,
-          shop_refresh_interval_ms: p.shop_refresh_interval_ms,
-          candidate_refresh_interval_ms: p.candidate_refresh_interval_ms,
-        }] : [],
+        rows: p
+          ? [
+              {
+                max_recruits: p.max_recruits,
+                max_available_missions: p.max_available_missions,
+                wallet: p.wallet,
+                tokens: p.tokens,
+                mission_refresh_interval_ms: p.mission_refresh_interval_ms,
+                shop_refresh_interval_ms: p.shop_refresh_interval_ms,
+                candidate_refresh_interval_ms: p.candidate_refresh_interval_ms,
+              },
+            ]
+          : [],
       }
     }
     if (s.includes('UPDATE players SET next_candidate_id = $1 WHERE id = $2')) {
       const [nextId, id] = params
-      Object.assign(state.players.find(p => p.id === id), { next_candidate_id: nextId })
+      Object.assign(
+        state.players.find((p) => p.id === id),
+        { next_candidate_id: nextId },
+      )
       return { rows: [] }
     }
     if (s.includes('UPDATE players SET next_ship_id = next_ship_id + 1')) {
-      state.players.find(p => p.id === params[0]).next_ship_id++
+      state.players.find((p) => p.id === params[0]).next_ship_id++
       return { rows: [] }
     }
     if (s.includes('UPDATE players SET next_recruit_id = next_recruit_id + 1')) {
-      state.players.find(p => p.id === params[0]).next_recruit_id++
+      state.players.find((p) => p.id === params[0]).next_recruit_id++
       return { rows: [] }
     }
     if (s.includes('UPDATE players SET last_tick_at = NOW()')) {
       return { rows: [] }
     }
     if (s === 'SELECT * FROM players WHERE id = $1') {
-      return { rows: state.players.filter(p => p.id === params[0]) }
+      return { rows: state.players.filter((p) => p.id === params[0]) }
     }
     if (s === 'SELECT wallet, tokens FROM players WHERE id = $1 FOR UPDATE') {
-      return { rows: state.players.filter(p => p.id === params[0]).map(p => ({ wallet: p.wallet, tokens: p.tokens })) }
+      return {
+        rows: state.players
+          .filter((p) => p.id === params[0])
+          .map((p) => ({ wallet: p.wallet, tokens: p.tokens })),
+      }
     }
     if (s === 'UPDATE players SET wallet = $1, tokens = $2 WHERE id = $3') {
       const [wallet, tokens, id] = params
-      Object.assign(state.players.find(p => p.id === id), { wallet, tokens })
+      Object.assign(
+        state.players.find((p) => p.id === id),
+        { wallet, tokens },
+      )
       return { rows: [] }
     }
     if (s === 'UPDATE players SET wallet = $1 WHERE id = $2') {
       const [wallet, id] = params
-      Object.assign(state.players.find(p => p.id === id), { wallet })
+      Object.assign(
+        state.players.find((p) => p.id === id),
+        { wallet },
+      )
       return { rows: [] }
     }
     if (s === 'UPDATE players SET tokens = $1 WHERE id = $2') {
       const [tokens, id] = params
-      Object.assign(state.players.find(p => p.id === id), { tokens })
+      Object.assign(
+        state.players.find((p) => p.id === id),
+        { tokens },
+      )
       return { rows: [] }
     }
     if (s === 'DELETE FROM players') {
@@ -137,90 +176,167 @@ function createFakeClient() {
 
     // candidates
     if (s.includes('INSERT INTO candidates')) {
-      const [id, player_id, name, job_title, archetype, hp, max_hp, attributes, perks, flaws, personality] = params
+      const [
+        id,
+        player_id,
+        name,
+        job_title,
+        archetype,
+        hp,
+        max_hp,
+        attributes,
+        perks,
+        flaws,
+        personality,
+      ] = params
       state.candidates.push({
-        id, player_id, name, job_title, archetype, hp, max_hp,
-        attributes: JSON.parse(attributes), perks: JSON.parse(perks), flaws: JSON.parse(flaws), personality,
+        id,
+        player_id,
+        name,
+        job_title,
+        archetype,
+        hp,
+        max_hp,
+        attributes: JSON.parse(attributes),
+        perks: JSON.parse(perks),
+        flaws: JSON.parse(flaws),
+        personality,
       })
       return { rows: [] }
     }
     if (s === 'SELECT COUNT(*)::int AS count FROM candidates WHERE player_id = $1') {
-      return { rows: [{ count: state.candidates.filter(c => c.player_id === params[0]).length }] }
+      return { rows: [{ count: state.candidates.filter((c) => c.player_id === params[0]).length }] }
     }
     if (s === 'SELECT id FROM candidates WHERE player_id = $1 ORDER BY id LIMIT 1') {
-      const list = state.candidates.filter(c => c.player_id === params[0]).sort((a, b) => a.id - b.id)
+      const list = state.candidates
+        .filter((c) => c.player_id === params[0])
+        .sort((a, b) => a.id - b.id)
       return { rows: list.length ? [{ id: list[0].id }] : [] }
     }
     if (s === 'SELECT * FROM candidates WHERE player_id = $1 AND id = $2') {
-      return { rows: state.candidates.filter(c => c.player_id === params[0] && c.id === params[1]) }
+      return {
+        rows: state.candidates.filter((c) => c.player_id === params[0] && c.id === params[1]),
+      }
     }
     if (s === 'DELETE FROM candidates WHERE player_id = $1 AND id = $2') {
-      state.candidates = state.candidates.filter(c => !(c.player_id === params[0] && c.id === params[1]))
+      state.candidates = state.candidates.filter(
+        (c) => !(c.player_id === params[0] && c.id === params[1]),
+      )
       return { rows: [] }
     }
     if (s === 'DELETE FROM candidates WHERE player_id = $1') {
-      state.candidates = state.candidates.filter(c => c.player_id !== params[0])
+      state.candidates = state.candidates.filter((c) => c.player_id !== params[0])
       return { rows: [] }
     }
     if (s === 'SELECT * FROM candidates WHERE player_id = $1 ORDER BY id') {
-      return { rows: state.candidates.filter(c => c.player_id === params[0]).sort((a, b) => a.id - b.id) }
+      return {
+        rows: state.candidates.filter((c) => c.player_id === params[0]).sort((a, b) => a.id - b.id),
+      }
     }
 
     // recruits
     if (s.startsWith('SELECT * FROM recruits WHERE player_id = $1 AND id = $2')) {
-      return { rows: state.recruits.filter(r => r.player_id === params[0] && sameId(r.id, params[1])) }
+      return {
+        rows: state.recruits.filter((r) => r.player_id === params[0] && sameId(r.id, params[1])),
+      }
     }
     if (s.includes('UPDATE recruits SET hp = $1, max_hp = $2, status = $3')) {
       const [hp, max_hp, status, playerId, id] = params
-      const r = state.recruits.find(r => r.player_id === playerId && sameId(r.id, id))
+      const r = state.recruits.find((r) => r.player_id === playerId && sameId(r.id, id))
       if (r) Object.assign(r, { hp, max_hp, status })
       return { rows: [] }
     }
     if (s.includes('UPDATE recruits SET hp = $1, status = $2')) {
       const [hp, status, playerId, id] = params
-      const r = state.recruits.find(r => r.player_id === playerId && sameId(r.id, id))
+      const r = state.recruits.find((r) => r.player_id === playerId && sameId(r.id, id))
       if (r) Object.assign(r, { hp, status })
       return { rows: [] }
     }
-    if (s.includes("UPDATE recruits SET status = $1") && s.includes("status != 'dead'")) {
+    if (s.includes('UPDATE recruits SET status = $1') && s.includes("status != 'dead'")) {
       const [status, playerId, id] = params
-      const r = state.recruits.find(r => r.player_id === playerId && sameId(r.id, id))
+      const r = state.recruits.find((r) => r.player_id === playerId && sameId(r.id, id))
       if (r && r.status !== 'dead') Object.assign(r, { status, last_hp_regen_at: new Date() })
       return { rows: [] }
     }
-    if (s === "SELECT * FROM recruits WHERE player_id = $1 AND status NOT IN ('in_mission', 'dead') AND hp < max_hp") {
-      return { rows: state.recruits.filter(r => r.player_id === params[0] && r.status !== 'in_mission' && r.status !== 'dead' && r.hp < r.max_hp) }
+    if (
+      s ===
+      "SELECT * FROM recruits WHERE player_id = $1 AND status NOT IN ('in_mission', 'dead') AND hp < max_hp"
+    ) {
+      return {
+        rows: state.recruits.filter(
+          (r) =>
+            r.player_id === params[0] &&
+            r.status !== 'in_mission' &&
+            r.status !== 'dead' &&
+            r.hp < r.max_hp,
+        ),
+      }
     }
-    if (s === 'UPDATE recruits SET hp = $1, last_hp_regen_at = $2 WHERE player_id = $3 AND id = $4') {
+    if (
+      s === 'UPDATE recruits SET hp = $1, last_hp_regen_at = $2 WHERE player_id = $3 AND id = $4'
+    ) {
       const [hp, last_hp_regen_at, playerId, id] = params
-      const r = state.recruits.find(r => r.player_id === playerId && sameId(r.id, id))
+      const r = state.recruits.find((r) => r.player_id === playerId && sameId(r.id, id))
       if (r) Object.assign(r, { hp, last_hp_regen_at })
       return { rows: [] }
     }
     if (s === 'SELECT name FROM recruits WHERE player_id = $1 AND id = $2') {
-      const r = state.recruits.find(r => r.player_id === params[0] && sameId(r.id, params[1]))
+      const r = state.recruits.find((r) => r.player_id === params[0] && sameId(r.id, params[1]))
       return { rows: r ? [{ name: r.name }] : [] }
     }
-    if (s === 'SELECT COUNT(*)::int AS count FROM recruits WHERE player_id = $1 AND deleted_at IS NULL') {
-      return { rows: [{ count: state.recruits.filter(r => r.player_id === params[0] && !r.deleted_at).length }] }
+    if (
+      s ===
+      'SELECT COUNT(*)::int AS count FROM recruits WHERE player_id = $1 AND deleted_at IS NULL'
+    ) {
+      return {
+        rows: [
+          {
+            count: state.recruits.filter((r) => r.player_id === params[0] && !r.deleted_at).length,
+          },
+        ],
+      }
     }
     if (s.includes('INSERT INTO recruits')) {
-      const [id, player_id, name, job_title, hp, max_hp, original_max_hp, attributes, perks, flaws, personality] = params
+      const [
+        id,
+        player_id,
+        name,
+        job_title,
+        hp,
+        max_hp,
+        original_max_hp,
+        attributes,
+        perks,
+        flaws,
+        personality,
+      ] = params
       state.recruits.push({
-        id, player_id, name, job_title, status: 'available', hp, max_hp, original_max_hp,
-        attributes: JSON.parse(attributes), perks: JSON.parse(perks), flaws: JSON.parse(flaws), personality,
+        id,
+        player_id,
+        name,
+        job_title,
+        status: 'available',
+        hp,
+        max_hp,
+        original_max_hp,
+        attributes: JSON.parse(attributes),
+        perks: JSON.parse(perks),
+        flaws: JSON.parse(flaws),
+        personality,
         last_hp_regen_at: new Date(),
       })
       return { rows: [] }
     }
     if (s.includes('UPDATE recruits SET name = $1')) {
       const [name, playerId, id] = params
-      const r = state.recruits.find(r => r.player_id === playerId && sameId(r.id, id))
+      const r = state.recruits.find((r) => r.player_id === playerId && sameId(r.id, id))
       if (r) r.name = name
       return { rows: r ? [r] : [] }
     }
     if (s === 'SELECT * FROM recruits WHERE player_id = $1 AND deleted_at IS NULL ORDER BY id') {
-      return { rows: state.recruits.filter(r => r.player_id === params[0]).sort((a, b) => a.id - b.id) }
+      return {
+        rows: state.recruits.filter((r) => r.player_id === params[0]).sort((a, b) => a.id - b.id),
+      }
     }
 
     // mission_templates
@@ -230,120 +346,183 @@ function createFakeClient() {
     if (s.includes('INSERT INTO mission_templates')) {
       const [id, name, description, difficulty, events, planet] = params
       const tpl = {
-        id, name, description, difficulty,
+        id,
+        name,
+        description,
+        difficulty,
         events: JSON.parse(events),
         planet: planet ? JSON.parse(planet) : null,
       }
-      const existing = state.missionTemplates.find(t => t.id === id)
+      const existing = state.missionTemplates.find((t) => t.id === id)
       if (existing) Object.assign(existing, tpl)
       else state.missionTemplates.push(tpl)
       return { rows: [] }
     }
     if (s === 'SELECT * FROM mission_templates WHERE id = $1') {
-      return { rows: state.missionTemplates.filter(t => t.id === params[0]) }
+      return { rows: state.missionTemplates.filter((t) => t.id === params[0]) }
     }
     if (s === 'SELECT * FROM mission_templates ORDER BY id') {
       return { rows: [...state.missionTemplates].sort((a, b) => a.id - b.id) }
     }
     if (s === 'SELECT id FROM mission_templates WHERE opera_instance_id IS NULL') {
-      return { rows: state.missionTemplates.filter(t => !t.opera_instance_id).map(t => ({ id: t.id })) }
+      return {
+        rows: state.missionTemplates.filter((t) => !t.opera_instance_id).map((t) => ({ id: t.id })),
+      }
     }
     if (s === 'DELETE FROM mission_templates WHERE id = ANY($1::int[])') {
       const ids = new Set(params[0])
-      state.missionTemplates = state.missionTemplates.filter(t => !ids.has(t.id))
+      state.missionTemplates = state.missionTemplates.filter((t) => !ids.has(t.id))
       return { rows: [] }
     }
     if (s === 'SELECT DISTINCT template_id FROM mission_instances WHERE player_id = $1') {
-      const ids = new Set(state.missionInstances.filter(i => i.player_id === params[0]).map(i => i.template_id))
-      return { rows: [...ids].map(template_id => ({ template_id })) }
+      const ids = new Set(
+        state.missionInstances.filter((i) => i.player_id === params[0]).map((i) => i.template_id),
+      )
+      return { rows: [...ids].map((template_id) => ({ template_id })) }
     }
     if (s === 'UPDATE players SET next_template_id = $1, mission_refresh_at = $2 WHERE id = $3') {
       const [next_template_id, mission_refresh_at, id] = params
-      Object.assign(state.players.find(p => p.id === id), { next_template_id, mission_refresh_at })
+      Object.assign(
+        state.players.find((p) => p.id === id),
+        { next_template_id, mission_refresh_at },
+      )
       return { rows: [] }
     }
     if (s === 'UPDATE players SET candidate_refresh_at = $1 WHERE id = $2') {
       const [candidate_refresh_at, id] = params
-      Object.assign(state.players.find(p => p.id === id), { candidate_refresh_at })
+      Object.assign(
+        state.players.find((p) => p.id === id),
+        { candidate_refresh_at },
+      )
       return { rows: [] }
     }
 
     // mission_instances
     if (s === 'SELECT * FROM mission_instances WHERE player_id = $1 AND template_id = $2') {
-      return { rows: state.missionInstances.filter(i => i.player_id === params[0] && i.template_id === params[1]) }
+      return {
+        rows: state.missionInstances.filter(
+          (i) => i.player_id === params[0] && i.template_id === params[1],
+        ),
+      }
     }
     if (s.includes('INSERT INTO mission_instances')) {
       const [player_id, template_id, ship_id, travel_segment_ms, events_segment_ms] = params
       const instance = {
-        id: nextInstanceId++, player_id, template_id, ship_id, status: 'in_progress', phase: 'EN_ROUTE',
-        progress: 0, started_at: new Date(), failed: false, reward_forfeited: false, current_event_index: 0,
-        event_results: [], forced_return: false, return_started_at: null, progress_at_return: null,
-        travel_segment_ms, events_segment_ms,
+        id: nextInstanceId++,
+        player_id,
+        template_id,
+        ship_id,
+        status: 'in_progress',
+        phase: 'EN_ROUTE',
+        progress: 0,
+        started_at: new Date(),
+        failed: false,
+        reward_forfeited: false,
+        current_event_index: 0,
+        event_results: [],
+        forced_return: false,
+        return_started_at: null,
+        progress_at_return: null,
+        travel_segment_ms,
+        events_segment_ms,
       }
       state.missionInstances.push(instance)
       return { rows: [instance] }
     }
     if (s === 'DELETE FROM mission_instances WHERE id = $1') {
-      state.missionInstances = state.missionInstances.filter(i => i.id !== params[0])
+      state.missionInstances = state.missionInstances.filter((i) => i.id !== params[0])
       return { rows: [] }
     }
-    if (s.includes('forced_return = TRUE, return_started_at = NOW(), progress_at_return = progress')) {
-      const i = state.missionInstances.find(i => i.id === params[0])
-      Object.assign(i, { forced_return: true, return_started_at: new Date(), progress_at_return: i.progress, phase: 'RETURN' })
+    if (
+      s.includes('forced_return = TRUE, return_started_at = NOW(), progress_at_return = progress')
+    ) {
+      const i = state.missionInstances.find((i) => i.id === params[0])
+      Object.assign(i, {
+        forced_return: true,
+        return_started_at: new Date(),
+        progress_at_return: i.progress,
+        phase: 'RETURN',
+      })
       return { rows: [] }
     }
     if (s === 'SELECT * FROM mission_instances WHERE player_id = $1 AND status = $2') {
-      return { rows: state.missionInstances.filter(i => i.player_id === params[0] && i.status === params[1]) }
+      return {
+        rows: state.missionInstances.filter(
+          (i) => i.player_id === params[0] && i.status === params[1],
+        ),
+      }
     }
     if (s.includes('forced_return = TRUE, return_started_at = NOW(), progress_at_return = $5')) {
       const [failed, rewardForfeited, currentEventIndex, eventResults, progress, id] = params
-      const i = state.missionInstances.find(i => i.id === id)
+      const i = state.missionInstances.find((i) => i.id === id)
       Object.assign(i, {
-        failed, reward_forfeited: rewardForfeited, current_event_index: currentEventIndex,
-        event_results: JSON.parse(eventResults), forced_return: true, return_started_at: new Date(),
-        progress_at_return: progress, phase: 'RETURN', progress,
+        failed,
+        reward_forfeited: rewardForfeited,
+        current_event_index: currentEventIndex,
+        event_results: JSON.parse(eventResults),
+        forced_return: true,
+        return_started_at: new Date(),
+        progress_at_return: progress,
+        phase: 'RETURN',
+        progress,
       })
       return { rows: [] }
     }
     if (s.includes("phase = 'COMPLETED', progress = 100, status = 'failed'")) {
       const [failed, rewardForfeited, currentEventIndex, eventResults, id] = params
-      const i = state.missionInstances.find(i => i.id === id)
+      const i = state.missionInstances.find((i) => i.id === id)
       Object.assign(i, {
-        failed, reward_forfeited: rewardForfeited, current_event_index: currentEventIndex,
-        event_results: JSON.parse(eventResults), phase: 'COMPLETED', progress: 100, status: 'failed',
+        failed,
+        reward_forfeited: rewardForfeited,
+        current_event_index: currentEventIndex,
+        event_results: JSON.parse(eventResults),
+        phase: 'COMPLETED',
+        progress: 100,
+        status: 'failed',
       })
       return { rows: [] }
     }
-    if (s.includes("UPDATE mission_instances SET phase = 'COMPLETED', progress = 100, failed = $1")) {
+    if (
+      s.includes("UPDATE mission_instances SET phase = 'COMPLETED', progress = 100, failed = $1")
+    ) {
       const [failed, rewardForfeited, currentEventIndex, eventResults, status, id] = params
-      const i = state.missionInstances.find(i => i.id === id)
+      const i = state.missionInstances.find((i) => i.id === id)
       Object.assign(i, {
-        phase: 'COMPLETED', progress: 100, failed, reward_forfeited: rewardForfeited,
-        current_event_index: currentEventIndex, event_results: JSON.parse(eventResults), status,
+        phase: 'COMPLETED',
+        progress: 100,
+        failed,
+        reward_forfeited: rewardForfeited,
+        current_event_index: currentEventIndex,
+        event_results: JSON.parse(eventResults),
+        status,
       })
       return { rows: [] }
     }
     if (s.includes('UPDATE mission_instances SET phase = $1, progress = $2, failed = $3')) {
       const [phase, progress, failed, rewardForfeited, currentEventIndex, eventResults, id] = params
-      const i = state.missionInstances.find(i => i.id === id)
+      const i = state.missionInstances.find((i) => i.id === id)
       Object.assign(i, {
-        phase, progress, failed, reward_forfeited: rewardForfeited,
-        current_event_index: currentEventIndex, event_results: JSON.parse(eventResults),
+        phase,
+        progress,
+        failed,
+        reward_forfeited: rewardForfeited,
+        current_event_index: currentEventIndex,
+        event_results: JSON.parse(eventResults),
       })
       return { rows: [] }
     }
     if (s === 'SELECT * FROM mission_instances WHERE player_id = $1') {
-      return { rows: state.missionInstances.filter(i => i.player_id === params[0]) }
+      return { rows: state.missionInstances.filter((i) => i.player_id === params[0]) }
     }
 
     // ships (only the raw read used by buildGameState — the rest goes through ShipService, mocked)
     if (s === 'SELECT * FROM ships WHERE player_id = $1 AND deleted_at IS NULL ORDER BY id') {
-      return { rows: state.ships.filter(sh => sh.player_id === params[0]) }
+      return { rows: state.ships.filter((sh) => sh.player_id === params[0]) }
     }
 
     // log_entries (writes go through log.service, mocked; only the read is direct)
     if (s.includes('SELECT tag, message, mission_id AS "missionId" FROM log_entries')) {
-      return { rows: state.logEntries.filter(l => l.player_id === params[0]) }
+      return { rows: state.logEntries.filter((l) => l.player_id === params[0]) }
     }
 
     throw new Error(`Query not handled by the fake test client: ${s}`)
@@ -364,7 +543,15 @@ function createFakeClient() {
 // missionGenerator.js produces, and insert them straight into the fake
 // client's state (at ids the natural weighted batch won't use, since a
 // fresh batch only ever occupies ids 1-5).
-function buildEvent({ id = 'test-event', beat = 'EXECUTION', type, attribute = null, dc = 10, failureConsequence = null, rewardAmount = 100 }) {
+function buildEvent({
+  id = 'test-event',
+  beat = 'EXECUTION',
+  type,
+  attribute = null,
+  dc = 10,
+  failureConsequence = null,
+  rewardAmount = 100,
+}) {
   return {
     id,
     beat,
@@ -377,9 +564,19 @@ function buildEvent({ id = 'test-event', beat = 'EXECUTION', type, attribute = n
   }
 }
 
-function seedTemplate(state, { id, difficulty = 'STANDARD', events, name = 'Test Mission', description = 'A test mission.', planet = null }) {
+function seedTemplate(
+  state,
+  {
+    id,
+    difficulty = 'STANDARD',
+    events,
+    name = 'Test Mission',
+    description = 'A test mission.',
+    planet = null,
+  },
+) {
   const template = { id, name, description, difficulty, events, planet }
-  const existing = state.missionTemplates.find(t => t.id === id)
+  const existing = state.missionTemplates.find((t) => t.id === id)
   if (existing) Object.assign(existing, template)
   else state.missionTemplates.push(template)
   return template
@@ -408,7 +605,11 @@ describe('GameService', () => {
     rollDie.mockReturnValue(3)
     LogService.buildPhaseLogs.mockReturnValue({ mission: [], global: [] })
     LogService.buildEventResultLogs.mockReturnValue({ mission: [], global: [] })
-    LogService.buildCombatRoundLog.mockReturnValue({ tag: '[SYS]', message: '', missionId: undefined })
+    LogService.buildCombatRoundLog.mockReturnValue({
+      tag: '[SYS]',
+      message: '',
+      missionId: undefined,
+    })
     LogService.buildCombatEventLogs.mockReturnValue({ mission: [], global: [] })
     LogService.insertLogEntries.mockResolvedValue(undefined)
 
@@ -431,7 +632,9 @@ describe('GameService', () => {
       expect(ShipService.createHangar).toHaveBeenCalledWith(expect.anything(), 1)
       expect(ShipService.createDockingStation).toHaveBeenCalledWith(expect.anything(), 1, 5)
       expect(ShipService.createShip).toHaveBeenCalledWith(
-        expect.anything(), 1, expect.objectContaining({ rarity: 'common' }),
+        expect.anything(),
+        1,
+        expect.objectContaining({ rarity: 'common' }),
       )
       expect(state.candidates).toHaveLength(4)
       expect(state.recruits).toHaveLength(1)
@@ -483,7 +686,7 @@ describe('GameService', () => {
       jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] })
       jest.setSystemTime(new Date('2026-01-01T10:00:00Z'))
       await GameService.initGame()
-      const firstBatchIds = state.missionTemplates.map(t => t.id).sort((a, b) => a - b)
+      const firstBatchIds = state.missionTemplates.map((t) => t.id).sort((a, b) => a - b)
       const refreshAtAfterFirst = state.players[0].mission_refresh_at
       const nextTemplateIdAfterFirst = state.players[0].next_template_id
 
@@ -492,7 +695,7 @@ describe('GameService', () => {
       await GameService.getGameState()
       await GameService.syncGame()
 
-      expect(state.missionTemplates.map(t => t.id).sort((a, b) => a - b)).toEqual(firstBatchIds)
+      expect(state.missionTemplates.map((t) => t.id).sort((a, b) => a - b)).toEqual(firstBatchIds)
       expect(state.players[0].mission_refresh_at).toEqual(refreshAtAfterFirst)
       expect(state.players[0].next_template_id).toBe(nextTemplateIdAfterFirst)
     })
@@ -501,34 +704,42 @@ describe('GameService', () => {
       jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] })
       jest.setSystemTime(new Date('2026-01-01T10:00:00Z'))
       await GameService.initGame()
-      const firstBatchIds = state.missionTemplates.map(t => t.id).sort((a, b) => a - b)
+      const firstBatchIds = state.missionTemplates.map((t) => t.id).sort((a, b) => a - b)
       expect(firstBatchIds).toHaveLength(5)
 
       // Start one template from the first batch so it should survive the refresh.
       const startedId = firstBatchIds[0]
       state.recruits[0].id = 1
-      ShipService.getShip.mockResolvedValue({ id: 1, player_id: 1, crew: [1], status: 'docked', deleted_at: null })
+      ShipService.getShip.mockResolvedValue({
+        id: 1,
+        player_id: 1,
+        crew: [1],
+        status: 'docked',
+        deleted_at: null,
+      })
       await GameService.startMission(startedId, 1)
 
       jest.setSystemTime(new Date('2026-01-01T10:15:00Z')) // exactly the next 15-minute boundary
       await GameService.initGame()
 
-      const templateIds = state.missionTemplates.map(t => t.id).sort((a, b) => a - b)
+      const templateIds = state.missionTemplates.map((t) => t.id).sort((a, b) => a - b)
       // the started template persists...
       expect(templateIds).toContain(startedId)
       // ...but the other, never-started templates from the first batch are gone
-      const discardedIds = firstBatchIds.filter(id => id !== startedId)
+      const discardedIds = firstBatchIds.filter((id) => id !== startedId)
       for (const id of discardedIds) {
         expect(templateIds).not.toContain(id)
       }
       // a fresh batch of exactly 5 new, unstarted templates now exists alongside the started one
-      const startedTemplateIds = new Set(state.missionInstances.map(i => i.template_id))
-      const unstarted = state.missionTemplates.filter(t => !startedTemplateIds.has(t.id))
+      const startedTemplateIds = new Set(state.missionInstances.map((i) => i.template_id))
+      const unstarted = state.missionTemplates.filter((t) => !startedTemplateIds.has(t.id))
       expect(unstarted).toHaveLength(5)
       expect(state.missionTemplates).toHaveLength(6) // 1 persisted (started) + 5 new
       // ids are never reused: the counter continues past the highest id ever issued
       expect(state.players[0].next_template_id).toBe(Math.max(...firstBatchIds) + 1 + 5)
-      expect(new Date(state.players[0].mission_refresh_at).toISOString()).toBe('2026-01-01T10:15:00.000Z')
+      expect(new Date(state.players[0].mission_refresh_at).toISOString()).toBe(
+        '2026-01-01T10:15:00.000Z',
+      )
     })
 
     // Covers the "missionList" self-upgrade: raising players.max_available_missions
@@ -560,18 +771,24 @@ describe('GameService', () => {
       jest.setSystemTime(new Date('2026-01-01T10:15:00Z'))
       await GameService.initGame()
 
-      expect(state.missionTemplates.filter(t => t.id > 5)).toHaveLength(5)
+      expect(state.missionTemplates.filter((t) => t.id > 5)).toHaveLength(5)
     })
 
     test('a completed (succeeded) template also survives a refresh, exactly like an in-progress one', async () => {
       jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] })
       jest.setSystemTime(new Date('2026-01-01T10:00:00Z'))
       await GameService.initGame()
-      const firstBatchIds = state.missionTemplates.map(t => t.id).sort((a, b) => a - b)
+      const firstBatchIds = state.missionTemplates.map((t) => t.id).sort((a, b) => a - b)
       const completedId = firstBatchIds[0]
 
       state.recruits[0].id = 1
-      ShipService.getShip.mockResolvedValue({ id: 1, player_id: 1, crew: [1], status: 'docked', deleted_at: null })
+      ShipService.getShip.mockResolvedValue({
+        id: 1,
+        player_id: 1,
+        crew: [1],
+        status: 'docked',
+        deleted_at: null,
+      })
       await GameService.startMission(completedId, 1)
       state.missionInstances[0].started_at = new Date(Date.now() - 60 * 60 * 1000) // well past the mission's duration
       rollAction.mockReturnValue({ d20: 20, bonus: 0, diceNotation: '—', total: 9999 }) // trivially wins/succeeds every event, combat included
@@ -581,7 +798,7 @@ describe('GameService', () => {
       jest.setSystemTime(new Date('2026-01-01T10:15:00Z')) // next 15-minute boundary
       await GameService.initGame()
 
-      expect(state.missionTemplates.map(t => t.id)).toContain(completedId)
+      expect(state.missionTemplates.map((t) => t.id)).toContain(completedId)
     })
 
     // Integration check spanning the mission-batching (discard-unstarted-on-
@@ -596,19 +813,25 @@ describe('GameService', () => {
       jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] })
       jest.setSystemTime(new Date('2026-01-01T10:00:00Z'))
       await GameService.initGame()
-      const firstBatchIds = state.missionTemplates.map(t => t.id).sort((a, b) => a - b)
+      const firstBatchIds = state.missionTemplates.map((t) => t.id).sort((a, b) => a - b)
       const startedId = firstBatchIds[0]
 
       state.recruits[0].id = 1
-      ShipService.getShip.mockResolvedValue({ id: 1, player_id: 1, crew: [1], status: 'docked', deleted_at: null })
+      ShipService.getShip.mockResolvedValue({
+        id: 1,
+        player_id: 1,
+        crew: [1],
+        status: 'docked',
+        deleted_at: null,
+      })
       await GameService.startMission(startedId, 1)
 
       // Still inside the same window: live view shows it in progress, and
       // history already reports the same live status too.
       let live = await GameService.getGameState()
-      expect(live.missions.find(m => m.id === startedId)).toMatchObject({ status: 'in_progress' })
+      expect(live.missions.find((m) => m.id === startedId)).toMatchObject({ status: 'in_progress' })
       let history = await GameService.getMissionHistory()
-      expect(history.find(m => m.id === startedId)).toMatchObject({ status: 'in_progress' })
+      expect(history.find((m) => m.id === startedId)).toMatchObject({ status: 'in_progress' })
 
       // Cross the wall-clock boundary: unstarted siblings from the first
       // batch get discarded and replaced, but the started template must
@@ -621,15 +844,15 @@ describe('GameService', () => {
       await GameService.initGame()
 
       live = await GameService.getGameState()
-      expect(live.missions.map(m => m.id)).toContain(startedId)
-      expect(live.missions.find(m => m.id === startedId)).toMatchObject({ status: 'in_progress' })
-      const discardedIds = firstBatchIds.filter(id => id !== startedId)
+      expect(live.missions.map((m) => m.id)).toContain(startedId)
+      expect(live.missions.find((m) => m.id === startedId)).toMatchObject({ status: 'in_progress' })
+      const discardedIds = firstBatchIds.filter((id) => id !== startedId)
       for (const id of discardedIds) {
-        expect(live.missions.map(m => m.id)).not.toContain(id)
+        expect(live.missions.map((m) => m.id)).not.toContain(id)
       }
 
       history = await GameService.getMissionHistory()
-      expect(history.find(m => m.id === startedId)).toMatchObject({ status: 'in_progress' })
+      expect(history.find((m) => m.id === startedId)).toMatchObject({ status: 'in_progress' })
 
       // Let the mission actually finish, still after the refresh boundary.
       state.missionInstances[0].started_at = new Date(Date.now() - 60 * 60 * 1000)
@@ -642,17 +865,17 @@ describe('GameService', () => {
       // reachable, tagged 'success', from the full history — never absent
       // from both at once.
       live = await GameService.getGameState()
-      expect(live.missions.some(m => m.id === startedId)).toBe(false)
+      expect(live.missions.some((m) => m.id === startedId)).toBe(false)
 
       history = await GameService.getMissionHistory()
-      expect(history.find(m => m.id === startedId)).toMatchObject({ status: 'success' })
+      expect(history.find((m) => m.id === startedId)).toMatchObject({ status: 'success' })
 
       // A further refresh (a second 15-minute boundary) must not discard it
       // from history either, since it was started (and completed).
       jest.setSystemTime(new Date('2026-01-01T10:30:00Z'))
       await GameService.initGame()
       history = await GameService.getMissionHistory()
-      expect(history.find(m => m.id === startedId)).toMatchObject({ status: 'success' })
+      expect(history.find((m) => m.id === startedId)).toMatchObject({ status: 'success' })
     })
   })
 
@@ -661,13 +884,18 @@ describe('GameService', () => {
       const result = await GameService.getGameState()
 
       expect(result.player).toEqual({
-        maxNumberOfRecruits: 5, maxAvailableMissions: 5, credits: 10000, tokens: 0,
-        missionRefreshIntervalMs: 900000, shopRefreshIntervalMs: 900000, candidateRefreshIntervalMs: 300000,
+        maxNumberOfRecruits: 5,
+        maxAvailableMissions: 5,
+        credits: 10000,
+        tokens: 0,
+        missionRefreshIntervalMs: 900000,
+        shopRefreshIntervalMs: 900000,
+        candidateRefreshIntervalMs: 300000,
       })
       expect(result.recruits).toHaveLength(1)
       expect(result.candidates).toHaveLength(4)
       expect(result.missions.length).toBeLessThanOrEqual(5)
-      expect(result.missions.every(m => m.status === 'available')).toBe(true)
+      expect(result.missions.every((m) => m.status === 'available')).toBe(true)
     })
   })
 
@@ -680,11 +908,11 @@ describe('GameService', () => {
 
       expect(result.error).toBeUndefined()
       expect(result.recruit.status).toBe('available')
-      expect(state.candidates.find(c => c.id === candidateId)).toBeUndefined()
+      expect(state.candidates.find((c) => c.id === candidateId)).toBeUndefined()
       expect(state.recruits).toHaveLength(2)
     })
 
-    test("fails when the maximum number of recruits is reached", async () => {
+    test('fails when the maximum number of recruits is reached', async () => {
       await GameService.initGame()
       state.players[0].max_recruits = 1
       const candidateId = state.candidates[0].id
@@ -713,17 +941,27 @@ describe('GameService', () => {
       return { recruitId, ship }
     }
 
-    test("launches the mission, switches the crew to in_mission and the ship to in_mission", async () => {
+    test('launches the mission, switches the crew to in_mission and the ship to in_mission', async () => {
       const { recruitId } = await bootstrapWithDockedShip()
       state.recruits[0].id = 1 // aligns with the crew of the simulated ship
 
       const result = await GameService.startMission(1, 1)
 
       expect(result.error).toBeUndefined()
-      expect(ShipService.updateShipStatus).toHaveBeenCalledWith(expect.anything(), 1, 1, 'in_mission')
-      expect(state.recruits.find(r => r.id === 1).status).toBe('in_mission')
+      expect(ShipService.updateShipStatus).toHaveBeenCalledWith(
+        expect.anything(),
+        1,
+        1,
+        'in_mission',
+      )
+      expect(state.recruits.find((r) => r.id === 1).status).toBe('in_mission')
       expect(state.missionInstances).toHaveLength(1)
-      expect(state.missionInstances[0]).toMatchObject({ template_id: 1, ship_id: 1, phase: 'EN_ROUTE', progress: 0 })
+      expect(state.missionInstances[0]).toMatchObject({
+        template_id: 1,
+        ship_id: 1,
+        phase: 'EN_ROUTE',
+        progress: 0,
+      })
     })
 
     test('refuses an unknown mission', async () => {
@@ -749,12 +987,17 @@ describe('GameService', () => {
       expect(result.error).toBe('Ship not found')
     })
 
-    test("refuses a ship that is not docked", async () => {
+    test('refuses a ship that is not docked', async () => {
       await GameService.initGame()
-      ShipService.getShip.mockResolvedValue({ id: 1, crew: [1], status: 'in_mission', deleted_at: null })
+      ShipService.getShip.mockResolvedValue({
+        id: 1,
+        crew: [1],
+        status: 'in_mission',
+        deleted_at: null,
+      })
 
       const result = await GameService.startMission(1, 1)
-      expect(result.error).toBe("The ship is not docked")
+      expect(result.error).toBe('The ship is not docked')
     })
 
     test('refuses a ship with no crew', async () => {
@@ -762,16 +1005,16 @@ describe('GameService', () => {
       ShipService.getShip.mockResolvedValue({ id: 1, crew: [], status: 'docked', deleted_at: null })
 
       const result = await GameService.startMission(1, 1)
-      expect(result.error).toBe("The ship has no crew")
+      expect(result.error).toBe('The ship has no crew')
     })
 
-    test("refuses if a crew member is not available", async () => {
+    test('refuses if a crew member is not available', async () => {
       await bootstrapWithDockedShip()
       state.recruits[0].id = 1
       state.recruits[0].status = 'in_mission'
 
       const result = await GameService.startMission(1, 1)
-      expect(result.error).toBe("At least one crew member is not available")
+      expect(result.error).toBe('At least one crew member is not available')
     })
 
     test('consuming a valid speed-boost item shortens the stored travel segment', async () => {
@@ -779,23 +1022,38 @@ describe('GameService', () => {
       await bootstrapWithDockedShip()
       state.recruits[0].id = 1
       ConsumableService.getConsumable.mockResolvedValue({
-        id: 5, assigned_to_ship: 1, effect: 'SPEED_BOOST', effect_data: { multiplier: 2 },
+        id: 5,
+        assigned_to_ship: 1,
+        effect: 'SPEED_BOOST',
+        effect_data: { multiplier: 2 },
       })
       ConsumableService.consumeFromShipInventory.mockResolvedValue({ id: 5 })
 
       const result = await GameService.startMission(1, 1, 5)
 
       expect(result.error).toBeUndefined()
-      expect(ConsumableService.consumeFromShipInventory).toHaveBeenCalledWith(expect.anything(), 1, 'SPEED_BOOST')
-      const template = state.missionTemplates.find(t => t.id === 1)
-      expect(state.missionInstances[0].travel_segment_ms).toBe(travelSegmentMs(template.difficulty, 200))
-      expect(state.missionInstances[0].events_segment_ms).toBe(eventsSegmentMs(template.difficulty, template.events.length))
+      expect(ConsumableService.consumeFromShipInventory).toHaveBeenCalledWith(
+        expect.anything(),
+        1,
+        'SPEED_BOOST',
+      )
+      const template = state.missionTemplates.find((t) => t.id === 1)
+      expect(state.missionInstances[0].travel_segment_ms).toBe(
+        travelSegmentMs(template.difficulty, 200),
+      )
+      expect(state.missionInstances[0].events_segment_ms).toBe(
+        eventsSegmentMs(template.difficulty, template.events.length),
+      )
     })
 
-    test('refuses when the speed-boost item is not in this ship\'s inventory', async () => {
+    test("refuses when the speed-boost item is not in this ship's inventory", async () => {
       await bootstrapWithDockedShip()
       state.recruits[0].id = 1
-      ConsumableService.getConsumable.mockResolvedValue({ id: 5, assigned_to_ship: 999, effect: 'SPEED_BOOST' })
+      ConsumableService.getConsumable.mockResolvedValue({
+        id: 5,
+        assigned_to_ship: 999,
+        effect: 'SPEED_BOOST',
+      })
 
       const result = await GameService.startMission(1, 1, 5)
 
@@ -812,8 +1070,10 @@ describe('GameService', () => {
       await GameService.startMission(1, 1)
 
       expect(ConsumableService.getConsumable).not.toHaveBeenCalled()
-      const template = state.missionTemplates.find(t => t.id === 1)
-      expect(state.missionInstances[0].travel_segment_ms).toBe(travelSegmentMs(template.difficulty, 100))
+      const template = state.missionTemplates.find((t) => t.id === 1)
+      expect(state.missionInstances[0].travel_segment_ms).toBe(
+        travelSegmentMs(template.difficulty, 100),
+      )
     })
   })
 
@@ -822,7 +1082,13 @@ describe('GameService', () => {
       await GameService.initGame() // creates the natural batch first
       seedTemplate(state, templateDef) // ...then add the custom template, so it isn't discarded as an "unstarted leftover"
       state.recruits[0].id = crewId
-      ShipService.getShip.mockResolvedValue({ id: 1, player_id: 1, crew: [crewId], status: 'docked', deleted_at: null })
+      ShipService.getShip.mockResolvedValue({
+        id: 1,
+        player_id: 1,
+        crew: [crewId],
+        status: 'docked',
+        deleted_at: null,
+      })
       await GameService.startMission(templateDef.id, 1)
       return state.missionInstances[0]
     }
@@ -843,9 +1109,30 @@ describe('GameService', () => {
         id: PACED_TEMPLATE_ID,
         difficulty,
         events: [
-          buildEvent({ id: 'e1', type: 'RECON', attribute: 'perception', dc: 10, failureConsequence: 'HP_LOSS', rewardAmount: 100 }),
-          buildEvent({ id: 'e2', type: 'BREACH', attribute: 'engineering', dc: 10, failureConsequence: 'HP_LOSS', rewardAmount: 100 }),
-          buildEvent({ id: 'e3', type: 'SURVIVAL', attribute: 'survival', dc: 10, failureConsequence: 'HP_LOSS', rewardAmount: 100 }),
+          buildEvent({
+            id: 'e1',
+            type: 'RECON',
+            attribute: 'perception',
+            dc: 10,
+            failureConsequence: 'HP_LOSS',
+            rewardAmount: 100,
+          }),
+          buildEvent({
+            id: 'e2',
+            type: 'BREACH',
+            attribute: 'engineering',
+            dc: 10,
+            failureConsequence: 'HP_LOSS',
+            rewardAmount: 100,
+          }),
+          buildEvent({
+            id: 'e3',
+            type: 'SURVIVAL',
+            attribute: 'survival',
+            dc: 10,
+            failureConsequence: 'HP_LOSS',
+            rewardAmount: 100,
+          }),
         ],
       })
       rollAction.mockReturnValue({ d20: 20, bonus: 0, diceNotation: '—', total: 20 })
@@ -877,8 +1164,22 @@ describe('GameService', () => {
         id: TWO_EVENT_TEMPLATE_ID,
         difficulty: 'ROUTINE',
         events: [
-          buildEvent({ id: 'e1', type: 'RECON', attribute: 'perception', dc: 10, failureConsequence: 'HP_LOSS', rewardAmount: 100 }),
-          buildEvent({ id: 'e2', type: 'BREACH', attribute: 'engineering', dc: 10, failureConsequence: 'HP_LOSS', rewardAmount: 150 }),
+          buildEvent({
+            id: 'e1',
+            type: 'RECON',
+            attribute: 'perception',
+            dc: 10,
+            failureConsequence: 'HP_LOSS',
+            rewardAmount: 100,
+          }),
+          buildEvent({
+            id: 'e2',
+            type: 'BREACH',
+            attribute: 'engineering',
+            dc: 10,
+            failureConsequence: 'HP_LOSS',
+            rewardAmount: 150,
+          }),
         ],
       })
       instance.started_at = new Date(Date.now() - 60 * 60 * 1000) // well past the mission's duration
@@ -890,8 +1191,8 @@ describe('GameService', () => {
       expect(updated.status).toBe('success')
       expect(updated.phase).toBe('COMPLETED')
       expect(updated.event_results).toHaveLength(2)
-      expect(updated.event_results.every(r => r.success)).toBe(true)
-      expect(state.recruits.find(r => r.id === 1).status).toBe('available')
+      expect(updated.event_results.every((r) => r.success)).toBe(true)
+      expect(state.recruits.find((r) => r.id === 1).status).toBe('available')
       expect(ShipService.updateShipStatus).toHaveBeenCalledWith(expect.anything(), 1, 1, 'docked')
 
       const totalReward = updated.event_results.reduce((sum, r) => sum + r.rewardEarned.amount, 0)
@@ -905,14 +1206,32 @@ describe('GameService', () => {
         id: HP_LOSS_TEMPLATE_ID,
         difficulty: 'STANDARD',
         events: [
-          buildEvent({ id: 'e1', type: 'ENGINEERING', attribute: 'engineering', dc: 18, failureConsequence: 'HP_LOSS' }),
-          buildEvent({ id: 'e2', type: 'ENGINEERING', attribute: 'engineering', dc: 10, failureConsequence: 'HP_LOSS' }),
-          buildEvent({ id: 'e3', type: 'SURVIVAL', attribute: 'survival', dc: 20, failureConsequence: 'HP_LOSS' }),
+          buildEvent({
+            id: 'e1',
+            type: 'ENGINEERING',
+            attribute: 'engineering',
+            dc: 18,
+            failureConsequence: 'HP_LOSS',
+          }),
+          buildEvent({
+            id: 'e2',
+            type: 'ENGINEERING',
+            attribute: 'engineering',
+            dc: 10,
+            failureConsequence: 'HP_LOSS',
+          }),
+          buildEvent({
+            id: 'e3',
+            type: 'SURVIVAL',
+            attribute: 'survival',
+            dc: 20,
+            failureConsequence: 'HP_LOSS',
+          }),
         ],
       })
       instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
       rollAction.mockReturnValue({ d20: 1, bonus: 0, diceNotation: '—', total: 1 })
-      state.recruits.find(r => r.id === 1).hp = 3 // dies on the first HP_LOSS failure (rollDie -> 3)
+      state.recruits.find((r) => r.id === 1).hp = 3 // dies on the first HP_LOSS failure (rollDie -> 3)
       rollDie.mockReturnValue(3)
 
       await GameService.syncGame()
@@ -930,23 +1249,41 @@ describe('GameService', () => {
         id: HP_LOSS_TEMPLATE_ID,
         difficulty: 'STANDARD',
         events: [
-          buildEvent({ id: 'e1', type: 'ENGINEERING', attribute: 'engineering', dc: 5, failureConsequence: 'HP_LOSS' }),
-          buildEvent({ id: 'e2', type: 'ENGINEERING', attribute: 'engineering', dc: 5, failureConsequence: 'HP_LOSS' }),
-          buildEvent({ id: 'e3', type: 'SURVIVAL', attribute: 'survival', dc: 30, failureConsequence: 'HP_LOSS' }),
+          buildEvent({
+            id: 'e1',
+            type: 'ENGINEERING',
+            attribute: 'engineering',
+            dc: 5,
+            failureConsequence: 'HP_LOSS',
+          }),
+          buildEvent({
+            id: 'e2',
+            type: 'ENGINEERING',
+            attribute: 'engineering',
+            dc: 5,
+            failureConsequence: 'HP_LOSS',
+          }),
+          buildEvent({
+            id: 'e3',
+            type: 'SURVIVAL',
+            attribute: 'survival',
+            dc: 30,
+            failureConsequence: 'HP_LOSS',
+          }),
         ],
       })
       instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
       rollAction
         .mockReturnValueOnce({ d20: 20, bonus: 0, diceNotation: '—', total: 20 }) // e1 success
         .mockReturnValueOnce({ d20: 20, bonus: 0, diceNotation: '—', total: 20 }) // e2 success
-        .mockReturnValueOnce({ d20: 1, bonus: 0, diceNotation: '—', total: 1 })   // e3 failure (HP_LOSS)
+        .mockReturnValueOnce({ d20: 1, bonus: 0, diceNotation: '—', total: 1 }) // e3 failure (HP_LOSS)
       rollDie.mockReturnValue(4) // survivable HP loss
 
       await GameService.syncGame()
       const updated = state.missionInstances[0]
 
       expect(updated.status).toBe('success')
-      expect(updated.event_results.filter(r => r.success)).toHaveLength(2)
+      expect(updated.event_results.filter((r) => r.success)).toHaveLength(2)
       expect(state.players[0].tokens).toBe(17)
     })
 
@@ -961,13 +1298,27 @@ describe('GameService', () => {
         id: TWO_EVENT_TEMPLATE_ID,
         difficulty: 'ROUTINE',
         events: [
-          buildEvent({ id: 'e1', type: 'RECON', attribute: 'perception', dc: 30, failureConsequence: 'NO_REWARD', rewardAmount: 100 }),
-          buildEvent({ id: 'e2', type: 'BREACH', attribute: 'engineering', dc: 5, failureConsequence: 'NO_REWARD', rewardAmount: 150 }),
+          buildEvent({
+            id: 'e1',
+            type: 'RECON',
+            attribute: 'perception',
+            dc: 30,
+            failureConsequence: 'NO_REWARD',
+            rewardAmount: 100,
+          }),
+          buildEvent({
+            id: 'e2',
+            type: 'BREACH',
+            attribute: 'engineering',
+            dc: 5,
+            failureConsequence: 'NO_REWARD',
+            rewardAmount: 150,
+          }),
         ],
       })
       instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
       rollAction
-        .mockReturnValueOnce({ d20: 1, bonus: 0, diceNotation: '—', total: 1 })   // e1 fails -> NO_REWARD, rewardForfeited = true
+        .mockReturnValueOnce({ d20: 1, bonus: 0, diceNotation: '—', total: 1 }) // e1 fails -> NO_REWARD, rewardForfeited = true
         .mockReturnValueOnce({ d20: 20, bonus: 0, diceNotation: '—', total: 20 }) // e2 succeeds
 
       await GameService.syncGame()
@@ -985,9 +1336,27 @@ describe('GameService', () => {
         id: HP_LOSS_TEMPLATE_ID,
         difficulty: 'STANDARD',
         events: [
-          buildEvent({ id: 'e1', type: 'ENGINEERING', attribute: 'engineering', dc: 18, failureConsequence: 'HP_LOSS' }),
-          buildEvent({ id: 'e2', type: 'ENGINEERING', attribute: 'engineering', dc: 10, failureConsequence: 'HP_LOSS' }),
-          buildEvent({ id: 'e3', type: 'SURVIVAL', attribute: 'survival', dc: 20, failureConsequence: 'HP_LOSS' }),
+          buildEvent({
+            id: 'e1',
+            type: 'ENGINEERING',
+            attribute: 'engineering',
+            dc: 18,
+            failureConsequence: 'HP_LOSS',
+          }),
+          buildEvent({
+            id: 'e2',
+            type: 'ENGINEERING',
+            attribute: 'engineering',
+            dc: 10,
+            failureConsequence: 'HP_LOSS',
+          }),
+          buildEvent({
+            id: 'e3',
+            type: 'SURVIVAL',
+            attribute: 'survival',
+            dc: 20,
+            failureConsequence: 'HP_LOSS',
+          }),
         ],
       })
       instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
@@ -995,11 +1364,13 @@ describe('GameService', () => {
       rollDie.mockReturnValue(4)
 
       await GameService.syncGame()
-      const recruit = state.recruits.find(r => r.id === 1)
+      const recruit = state.recruits.find((r) => r.id === 1)
       const updated = state.missionInstances[0]
 
       expect(recruit.hp).toBeLessThan(recruit.max_hp)
-      expect(updated.event_results.some(r => r.consequence === 'HP_LOSS' && r.hpLost === 4)).toBe(true)
+      expect(updated.event_results.some((r) => r.consequence === 'HP_LOSS' && r.hpLost === 4)).toBe(
+        true,
+      )
       // no event of this mission sets `failed`, the recruit survives: the mission ends in success
       expect(updated.status).toBe('success')
       expect(recruit.status).toBe('available')
@@ -1011,18 +1382,36 @@ describe('GameService', () => {
         id: HP_LOSS_TEMPLATE_ID,
         difficulty: 'STANDARD',
         events: [
-          buildEvent({ id: 'e1', type: 'ENGINEERING', attribute: 'engineering', dc: 18, failureConsequence: 'HP_LOSS' }),
-          buildEvent({ id: 'e2', type: 'ENGINEERING', attribute: 'engineering', dc: 10, failureConsequence: 'HP_LOSS' }),
-          buildEvent({ id: 'e3', type: 'SURVIVAL', attribute: 'survival', dc: 20, failureConsequence: 'HP_LOSS' }),
+          buildEvent({
+            id: 'e1',
+            type: 'ENGINEERING',
+            attribute: 'engineering',
+            dc: 18,
+            failureConsequence: 'HP_LOSS',
+          }),
+          buildEvent({
+            id: 'e2',
+            type: 'ENGINEERING',
+            attribute: 'engineering',
+            dc: 10,
+            failureConsequence: 'HP_LOSS',
+          }),
+          buildEvent({
+            id: 'e3',
+            type: 'SURVIVAL',
+            attribute: 'survival',
+            dc: 20,
+            failureConsequence: 'HP_LOSS',
+          }),
         ],
       })
       instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
       rollAction.mockReturnValue({ d20: 1, bonus: 0, diceNotation: '—', total: 1 })
-      state.recruits.find(r => r.id === 1).hp = 3 // dies on the first HP_LOSS failure (rollDie -> 3)
+      state.recruits.find((r) => r.id === 1).hp = 3 // dies on the first HP_LOSS failure (rollDie -> 3)
       rollDie.mockReturnValue(3)
 
       await GameService.syncGame()
-      const recruit = state.recruits.find(r => r.id === 1)
+      const recruit = state.recruits.find((r) => r.id === 1)
       const updated = state.missionInstances[0]
 
       expect(recruit.status).toBe('dead')
@@ -1039,14 +1428,26 @@ describe('GameService', () => {
         id: FORCED_DEPARTURE_TEMPLATE_ID,
         difficulty: 'HARD',
         events: [
-          buildEvent({ id: 'e1', type: 'RECON', attribute: 'perception', dc: 17, failureConsequence: 'HP_LOSS' }),
-          buildEvent({ id: 'e2', type: 'RECON', attribute: 'perception', dc: 21, failureConsequence: 'FORCED_DEPARTURE' }),
+          buildEvent({
+            id: 'e1',
+            type: 'RECON',
+            attribute: 'perception',
+            dc: 17,
+            failureConsequence: 'HP_LOSS',
+          }),
+          buildEvent({
+            id: 'e2',
+            type: 'RECON',
+            attribute: 'perception',
+            dc: 21,
+            failureConsequence: 'FORCED_DEPARTURE',
+          }),
         ],
       })
       instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
       rollAction
         .mockReturnValueOnce({ d20: 20, bonus: 0, diceNotation: '—', total: 20 }) // 1st RECON success (dc17)
-        .mockReturnValueOnce({ d20: 1, bonus: 0, diceNotation: '—', total: 1 })   // 2nd RECON failure -> FORCED_DEPARTURE
+        .mockReturnValueOnce({ d20: 1, bonus: 0, diceNotation: '—', total: 1 }) // 2nd RECON failure -> FORCED_DEPARTURE
 
       await GameService.syncGame()
       const updated = state.missionInstances[0]
@@ -1056,7 +1457,12 @@ describe('GameService', () => {
       expect(updated.failed).toBe(true)
       expect(updated.current_event_index).toBe(2) // stops after the 2nd event (index 1 + 1)
       expect(updated.event_results).toHaveLength(2)
-      expect(ShipService.updateShipStatus).not.toHaveBeenCalledWith(expect.anything(), 1, 1, 'docked')
+      expect(ShipService.updateShipStatus).not.toHaveBeenCalledWith(
+        expect.anything(),
+        1,
+        1,
+        'docked',
+      )
 
       // Regression check: this branch used to pass buildEventResultLogs a
       // flat { missionId, missionName, recruitName, ... } bag instead of the
@@ -1067,7 +1473,10 @@ describe('GameService', () => {
       // directly on what it was called with.
       expect(LogService.buildEventResultLogs).toHaveBeenLastCalledWith(
         expect.objectContaining({
-          context: expect.objectContaining({ missionId: FORCED_DEPARTURE_TEMPLATE_ID, actingRecruit: expect.objectContaining({ name: expect.any(String) }) }),
+          context: expect.objectContaining({
+            missionId: FORCED_DEPARTURE_TEMPLATE_ID,
+            actingRecruit: expect.objectContaining({ name: expect.any(String) }),
+          }),
         }),
       )
     })
@@ -1077,19 +1486,31 @@ describe('GameService', () => {
         id: FORCED_DEPARTURE_TEMPLATE_ID,
         difficulty: 'HARD',
         events: [
-          buildEvent({ id: 'e1', type: 'RECON', attribute: 'perception', dc: 17, failureConsequence: 'HP_LOSS' }),
-          buildEvent({ id: 'e2', type: 'RECON', attribute: 'perception', dc: 21, failureConsequence: 'FORCED_DEPARTURE' }),
+          buildEvent({
+            id: 'e1',
+            type: 'RECON',
+            attribute: 'perception',
+            dc: 17,
+            failureConsequence: 'HP_LOSS',
+          }),
+          buildEvent({
+            id: 'e2',
+            type: 'RECON',
+            attribute: 'perception',
+            dc: 21,
+            failureConsequence: 'FORCED_DEPARTURE',
+          }),
         ],
       })
       state.missionInstances[0].started_at = new Date(Date.now() - 60 * 60 * 1000)
       rollAction
         .mockReturnValueOnce({ d20: 20, bonus: 0, diceNotation: '—', total: 20 }) // RECON success
-        .mockReturnValueOnce({ d20: 1, bonus: 0, diceNotation: '—', total: 1 })   // RECON failure -> FORCED_DEPARTURE
+        .mockReturnValueOnce({ d20: 1, bonus: 0, diceNotation: '—', total: 1 }) // RECON failure -> FORCED_DEPARTURE
       await GameService.syncGame() // switches to RETURN
 
       await GameService.syncGame() // the return trip has already elapsed (progress_at_return already at 100)
       const updated = state.missionInstances[0]
-      const recruit = state.recruits.find(r => r.id === 1)
+      const recruit = state.recruits.find((r) => r.id === 1)
 
       expect(updated.phase).toBe('COMPLETED')
       expect(updated.status).toBe('failed')
@@ -1110,7 +1531,13 @@ describe('GameService', () => {
         id: COMBAT_TEMPLATE_ID,
         difficulty: 'STANDARD',
         events: [
-          buildEvent({ id: 'e1', type: 'RECON', attribute: 'perception', dc: 14, failureConsequence: 'HP_LOSS' }),
+          buildEvent({
+            id: 'e1',
+            type: 'RECON',
+            attribute: 'perception',
+            dc: 14,
+            failureConsequence: 'HP_LOSS',
+          }),
           buildEvent({ id: 'e2', type: 'COMBAT' }),
           buildEvent({ id: 'e3', type: 'COMBAT' }),
         ],
@@ -1121,7 +1548,13 @@ describe('GameService', () => {
       await GameService.initGame() // creates the natural batch first
       seedCombatTemplate() // ...then add the custom template, so it isn't discarded as an "unstarted leftover"
       state.recruits[0].id = crewId
-      ShipService.getShip.mockResolvedValue({ id: 1, player_id: 1, crew: [crewId], status: 'docked', deleted_at: null })
+      ShipService.getShip.mockResolvedValue({
+        id: 1,
+        player_id: 1,
+        crew: [crewId],
+        status: 'docked',
+        deleted_at: null,
+      })
       await GameService.startMission(COMBAT_TEMPLATE_ID, 1)
       return state.missionInstances[0]
     }
@@ -1136,14 +1569,14 @@ describe('GameService', () => {
       rollInRange.mockReturnValue(0) // enemy Guard 0, Might primary (still tied vs recruit's agility 4)
 
       await GameService.syncGame()
-      const recruit = state.recruits.find(r => r.id === 1)
+      const recruit = state.recruits.find((r) => r.id === 1)
       const updated = state.missionInstances[0]
 
       expect(updated.status).toBe('success')
       expect(updated.event_results).toHaveLength(3)
-      const combatResults = updated.event_results.filter(r => r.combat)
+      const combatResults = updated.event_results.filter((r) => r.combat)
       expect(combatResults).toHaveLength(2)
-      expect(combatResults.every(r => r.enemyDefeated && r.success)).toBe(true)
+      expect(combatResults.every((r) => r.enemyDefeated && r.success)).toBe(true)
       expect(recruit.hp).toBe(recruit.max_hp) // the enemy never got a turn
       expect(LogService.buildCombatRoundLog).toHaveBeenCalledTimes(2) // one round per COMBAT event
       expect(LogService.buildCombatEventLogs).toHaveBeenCalledTimes(2)
@@ -1162,7 +1595,7 @@ describe('GameService', () => {
       ConsumableService.countShipInventoryEffect.mockResolvedValue(0) // no HEAL available
 
       await GameService.syncGame()
-      const recruit = state.recruits.find(r => r.id === 1)
+      const recruit = state.recruits.find((r) => r.id === 1)
       const updated = state.missionInstances[0]
 
       expect(updated.phase).toBe('RETURN')
@@ -1193,10 +1626,10 @@ describe('GameService', () => {
       )
     })
 
-    test('a HEAL consumable intercepts a would-be knockout during combat, preventing that knockout\'s permanent injury', async () => {
+    test("a HEAL consumable intercepts a would-be knockout during combat, preventing that knockout's permanent injury", async () => {
       const instance = await launchCombatMission()
       instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
-      const recruit = state.recruits.find(r => r.id === 1)
+      const recruit = state.recruits.find((r) => r.id === 1)
       recruit.hp = 5 // one big hit would otherwise knock them out
       // Enemy Agility primary (6) so it acts first and hits hard (total 999);
       // Guard is rolled at 25 (irrelevant here since 999 clears it easily), so
@@ -1206,11 +1639,15 @@ describe('GameService', () => {
       ConsumableService.countShipInventoryEffect.mockResolvedValue(1) // one HEAL charge available
 
       await GameService.syncGame()
-      const finalRecruit = state.recruits.find(r => r.id === 1)
+      const finalRecruit = state.recruits.find((r) => r.id === 1)
       const updated = state.missionInstances[0]
-      const combatResult = updated.event_results.find(r => r.combat)
+      const combatResult = updated.event_results.find((r) => r.combat)
 
-      expect(ConsumableService.consumeFromShipInventory).toHaveBeenCalledWith(expect.anything(), 1, 'HEAL')
+      expect(ConsumableService.consumeFromShipInventory).toHaveBeenCalledWith(
+        expect.anything(),
+        1,
+        'HEAL',
+      )
       expect(finalRecruit.max_hp).toBe(26) // no permanent reduction: the HEAL charge intercepted the only knockout
       expect(finalRecruit.hp).toBe(26)
       expect(combatResult.enemyDefeated).toBe(true)
@@ -1219,7 +1656,7 @@ describe('GameService', () => {
     test('a knockout that drops max HP to half the original (or below) kills the recruit', async () => {
       const instance = await launchCombatMission()
       instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
-      const recruit = state.recruits.find(r => r.id === 1)
+      const recruit = state.recruits.find((r) => r.id === 1)
       recruit.max_hp = 4
       recruit.hp = 3 // original_max_hp is still 26 from hiring, so half of it is 13
       rollAction.mockReturnValue({ d20: 17, bonus: 0, diceNotation: '—', total: 17 })
@@ -1242,7 +1679,13 @@ describe('GameService', () => {
       await GameService.initGame() // creates the natural batch first
       seedTemplate(state, templateDef) // ...then add the custom template, so it isn't discarded as an "unstarted leftover"
       state.recruits[0].id = crewId
-      ShipService.getShip.mockResolvedValue({ id: 1, player_id: 1, crew: [crewId], status: 'docked', deleted_at: null })
+      ShipService.getShip.mockResolvedValue({
+        id: 1,
+        player_id: 1,
+        crew: [crewId],
+        status: 'docked',
+        deleted_at: null,
+      })
       await GameService.startMission(templateDef.id, 1)
       return state.missionInstances[0]
     }
@@ -1256,18 +1699,32 @@ describe('GameService', () => {
         id: ATTRIBUTE_BOOST_TEMPLATE_ID,
         difficulty: 'ROUTINE',
         events: [
-          buildEvent({ id: 'e1', type: 'BREACH', attribute: 'learning', dc: 15, failureConsequence: 'HP_LOSS' }),
-          buildEvent({ id: 'e2', type: 'INFILTRATION', attribute: 'agility', dc: 10, failureConsequence: 'HP_LOSS' }),
+          buildEvent({
+            id: 'e1',
+            type: 'BREACH',
+            attribute: 'learning',
+            dc: 15,
+            failureConsequence: 'HP_LOSS',
+          }),
+          buildEvent({
+            id: 'e2',
+            type: 'INFILTRATION',
+            attribute: 'agility',
+            dc: 10,
+            failureConsequence: 'HP_LOSS',
+          }),
         ],
       })
       instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
       rollAction.mockReturnValue({ d20: 20, bonus: 0, diceNotation: '—', total: 20 })
-      ConsumableService.consumeFromShipInventory.mockImplementation((client, shipId, effect, matcher) => {
-        if (effect === 'ATTRIBUTE_BOOST' && matcher && matcher({ attribute: 'learning' })) {
-          return Promise.resolve({ id: 42, effect_data: { advantage: 1 } })
-        }
-        return Promise.resolve(null)
-      })
+      ConsumableService.consumeFromShipInventory.mockImplementation(
+        (client, shipId, effect, matcher) => {
+          if (effect === 'ATTRIBUTE_BOOST' && matcher && matcher({ attribute: 'learning' })) {
+            return Promise.resolve({ id: 42, effect_data: { advantage: 1 } })
+          }
+          return Promise.resolve(null)
+        },
+      )
 
       await GameService.syncGame()
 
@@ -1281,22 +1738,41 @@ describe('GameService', () => {
         id: HEAL_TEMPLATE_ID,
         difficulty: 'STANDARD',
         events: [
-          buildEvent({ id: 'e1', type: 'ENGINEERING', attribute: 'engineering', dc: 18, failureConsequence: 'HP_LOSS' }),
-          buildEvent({ id: 'e2', type: 'ENGINEERING', attribute: 'engineering', dc: 10, failureConsequence: 'HP_LOSS' }),
-          buildEvent({ id: 'e3', type: 'SURVIVAL', attribute: 'survival', dc: 20, failureConsequence: 'HP_LOSS' }),
+          buildEvent({
+            id: 'e1',
+            type: 'ENGINEERING',
+            attribute: 'engineering',
+            dc: 18,
+            failureConsequence: 'HP_LOSS',
+          }),
+          buildEvent({
+            id: 'e2',
+            type: 'ENGINEERING',
+            attribute: 'engineering',
+            dc: 10,
+            failureConsequence: 'HP_LOSS',
+          }),
+          buildEvent({
+            id: 'e3',
+            type: 'SURVIVAL',
+            attribute: 'survival',
+            dc: 20,
+            failureConsequence: 'HP_LOSS',
+          }),
         ],
       })
       instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
       rollAction
-        .mockReturnValueOnce({ d20: 1, bonus: 0, diceNotation: '—', total: 1 })   // ENGINEERING(HP_LOSS) failure
-        .mockReturnValue({ d20: 20, bonus: 0, diceNotation: '—', total: 20 })     // remaining events succeed
-      state.recruits.find(r => r.id === 1).hp = 3
+        .mockReturnValueOnce({ d20: 1, bonus: 0, diceNotation: '—', total: 1 }) // ENGINEERING(HP_LOSS) failure
+        .mockReturnValue({ d20: 20, bonus: 0, diceNotation: '—', total: 20 }) // remaining events succeed
+      state.recruits.find((r) => r.id === 1).hp = 3
       rollDie.mockReturnValue(3) // lethal hit, exactly at the recruit's remaining HP
       ConsumableService.consumeFromShipInventory.mockImplementation((client, shipId, effect) =>
-        Promise.resolve(effect === 'HEAL' ? { id: 7 } : null))
+        Promise.resolve(effect === 'HEAL' ? { id: 7 } : null),
+      )
 
       await GameService.syncGame()
-      const recruit = state.recruits.find(r => r.id === 1)
+      const recruit = state.recruits.find((r) => r.id === 1)
       const updated = state.missionInstances[0]
 
       expect(recruit.status).not.toBe('dead')
@@ -1309,21 +1785,44 @@ describe('GameService', () => {
         id: SHIP_DAMAGE_TEMPLATE_ID,
         difficulty: 'PERILOUS',
         events: [
-          buildEvent({ id: 'e1', type: 'RECON', attribute: 'perception', dc: 20, failureConsequence: 'HP_LOSS' }),
-          buildEvent({ id: 'e2', type: 'BREACH', attribute: 'learning', dc: 30, failureConsequence: 'FORCED_DEPARTURE' }),
-          buildEvent({ id: 'e3', type: 'BREACH', attribute: 'learning', dc: 30, failureConsequence: 'SHIP_DAMAGE' }),
+          buildEvent({
+            id: 'e1',
+            type: 'RECON',
+            attribute: 'perception',
+            dc: 20,
+            failureConsequence: 'HP_LOSS',
+          }),
+          buildEvent({
+            id: 'e2',
+            type: 'BREACH',
+            attribute: 'learning',
+            dc: 30,
+            failureConsequence: 'FORCED_DEPARTURE',
+          }),
+          buildEvent({
+            id: 'e3',
+            type: 'BREACH',
+            attribute: 'learning',
+            dc: 30,
+            failureConsequence: 'SHIP_DAMAGE',
+          }),
         ],
       })
       instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
       rollAction
         .mockReturnValueOnce({ d20: 30, bonus: 0, diceNotation: '—', total: 30 }) // RECON success
         .mockReturnValueOnce({ d20: 30, bonus: 0, diceNotation: '—', total: 30 }) // BREACH(FORCED_DEPARTURE) success
-        .mockReturnValueOnce({ d20: 1, bonus: 0, diceNotation: '—', total: 1 })   // BREACH(SHIP_DAMAGE) failure
-        .mockReturnValue({ d20: 30, bonus: 0, diceNotation: '—', total: 30 })     // remaining events succeed
+        .mockReturnValueOnce({ d20: 1, bonus: 0, diceNotation: '—', total: 1 }) // BREACH(SHIP_DAMAGE) failure
+        .mockReturnValue({ d20: 30, bonus: 0, diceNotation: '—', total: 30 }) // remaining events succeed
       rollDie.mockReturnValue(3)
-      ShipService.damageShip.mockResolvedValue({ id: 1, status: 'broken', stats: { durability: 0, max_durability: 10 } })
+      ShipService.damageShip.mockResolvedValue({
+        id: 1,
+        status: 'broken',
+        stats: { durability: 0, max_durability: 10 },
+      })
       ConsumableService.consumeFromShipInventory.mockImplementation((client, shipId, effect) =>
-        Promise.resolve(effect === 'REPAIR' ? { id: 9 } : null))
+        Promise.resolve(effect === 'REPAIR' ? { id: 9 } : null),
+      )
 
       await GameService.syncGame()
       const updated = state.missionInstances[0]
@@ -1331,7 +1830,9 @@ describe('GameService', () => {
       expect(ShipService.damageShip).toHaveBeenCalledWith(expect.anything(), 1, 1, 3)
       expect(ShipService.repairShip).toHaveBeenCalledWith(expect.anything(), 1, 1)
       expect(updated.forced_return).toBe(false)
-      expect(updated.event_results.find(r => r.consequence === 'SHIP_DAMAGE').shipAutoRepaired).toBe(true)
+      expect(
+        updated.event_results.find((r) => r.consequence === 'SHIP_DAMAGE').shipAutoRepaired,
+      ).toBe(true)
     })
 
     test('a SHIP_DAMAGE failure without a REPAIR item breaks the ship and forces a return', async () => {
@@ -1339,18 +1840,40 @@ describe('GameService', () => {
         id: SHIP_DAMAGE_TEMPLATE_ID,
         difficulty: 'PERILOUS',
         events: [
-          buildEvent({ id: 'e1', type: 'RECON', attribute: 'perception', dc: 20, failureConsequence: 'HP_LOSS' }),
-          buildEvent({ id: 'e2', type: 'BREACH', attribute: 'learning', dc: 30, failureConsequence: 'FORCED_DEPARTURE' }),
-          buildEvent({ id: 'e3', type: 'BREACH', attribute: 'learning', dc: 30, failureConsequence: 'SHIP_DAMAGE' }),
+          buildEvent({
+            id: 'e1',
+            type: 'RECON',
+            attribute: 'perception',
+            dc: 20,
+            failureConsequence: 'HP_LOSS',
+          }),
+          buildEvent({
+            id: 'e2',
+            type: 'BREACH',
+            attribute: 'learning',
+            dc: 30,
+            failureConsequence: 'FORCED_DEPARTURE',
+          }),
+          buildEvent({
+            id: 'e3',
+            type: 'BREACH',
+            attribute: 'learning',
+            dc: 30,
+            failureConsequence: 'SHIP_DAMAGE',
+          }),
         ],
       })
       instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
       rollAction
         .mockReturnValueOnce({ d20: 30, bonus: 0, diceNotation: '—', total: 30 }) // RECON success
         .mockReturnValueOnce({ d20: 30, bonus: 0, diceNotation: '—', total: 30 }) // BREACH(FORCED_DEPARTURE) success
-        .mockReturnValueOnce({ d20: 1, bonus: 0, diceNotation: '—', total: 1 })   // BREACH(SHIP_DAMAGE) failure
+        .mockReturnValueOnce({ d20: 1, bonus: 0, diceNotation: '—', total: 1 }) // BREACH(SHIP_DAMAGE) failure
       rollDie.mockReturnValue(10)
-      ShipService.damageShip.mockResolvedValue({ id: 1, status: 'broken', stats: { durability: 0, max_durability: 10 } })
+      ShipService.damageShip.mockResolvedValue({
+        id: 1,
+        status: 'broken',
+        stats: { durability: 0, max_durability: 10 },
+      })
 
       await GameService.syncGame()
       const updated = state.missionInstances[0]
@@ -1365,7 +1888,10 @@ describe('GameService', () => {
       // branch used to pass a flat args bag instead of { context }.
       expect(LogService.buildEventResultLogs).toHaveBeenLastCalledWith(
         expect.objectContaining({
-          context: expect.objectContaining({ missionId: SHIP_DAMAGE_TEMPLATE_ID, actingRecruit: expect.objectContaining({ name: expect.any(String) }) }),
+          context: expect.objectContaining({
+            missionId: SHIP_DAMAGE_TEMPLATE_ID,
+            actingRecruit: expect.objectContaining({ name: expect.any(String) }),
+          }),
         }),
       )
     })
@@ -1432,18 +1958,35 @@ describe('GameService', () => {
       await GameService.syncGame()
 
       const expectedNewRegenAt = new Date(startedAt.getTime() + 3 * 60000)
-      expect(new Date(state.recruits[0].last_hp_regen_at).getTime()).toBe(expectedNewRegenAt.getTime())
+      expect(new Date(state.recruits[0].last_hp_regen_at).getTime()).toBe(
+        expectedNewRegenAt.getTime(),
+      )
     })
 
     test('resets the regen clock to NOW() when a recruit returns from a mission, instead of crediting the whole mission duration', async () => {
       await GameService.initGame()
       seedTemplate(state, {
-        id: 201, difficulty: 'ROUTINE',
-        events: [buildEvent({ id: 'e1', type: 'RECON', attribute: 'perception', dc: 10, failureConsequence: 'HP_LOSS' })],
+        id: 201,
+        difficulty: 'ROUTINE',
+        events: [
+          buildEvent({
+            id: 'e1',
+            type: 'RECON',
+            attribute: 'perception',
+            dc: 10,
+            failureConsequence: 'HP_LOSS',
+          }),
+        ],
       })
       state.recruits[0].id = 1
       state.recruits[0].last_hp_regen_at = new Date(Date.now() - 60 * 60000) // stale, from long before the mission
-      ShipService.getShip.mockResolvedValue({ id: 1, player_id: 1, crew: [1], status: 'docked', deleted_at: null })
+      ShipService.getShip.mockResolvedValue({
+        id: 1,
+        player_id: 1,
+        crew: [1],
+        status: 'docked',
+        deleted_at: null,
+      })
       await GameService.startMission(201, 1)
       rollAction.mockReturnValue({ d20: 20, bonus: 0, diceNotation: '—', total: 20 })
       state.missionInstances[0].started_at = new Date(Date.now() - 60 * 60 * 1000) // well past the mission's duration
@@ -1463,14 +2006,20 @@ describe('GameService', () => {
     test('releases crew and ship then deletes the mission in progress', async () => {
       await GameService.initGame()
       state.recruits[0].id = 1
-      ShipService.getShip.mockResolvedValue({ id: 1, player_id: 1, crew: [1], status: 'docked', deleted_at: null })
+      ShipService.getShip.mockResolvedValue({
+        id: 1,
+        player_id: 1,
+        crew: [1],
+        status: 'docked',
+        deleted_at: null,
+      })
       await GameService.startMission(1, 1)
 
       const result = await GameService.stopMission(1)
 
       expect(result.error).toBeUndefined()
       expect(state.missionInstances).toHaveLength(0)
-      expect(state.recruits.find(r => r.id === 1).status).toBe('available')
+      expect(state.recruits.find((r) => r.id === 1).status).toBe('available')
       expect(ShipService.updateShipStatus).toHaveBeenCalledWith(expect.anything(), 1, 1, 'docked')
     })
 
@@ -1485,7 +2034,13 @@ describe('GameService', () => {
     test('triggers a forced return on a mission in progress', async () => {
       await GameService.initGame()
       state.recruits[0].id = 1
-      ShipService.getShip.mockResolvedValue({ id: 1, player_id: 1, crew: [1], status: 'docked', deleted_at: null })
+      ShipService.getShip.mockResolvedValue({
+        id: 1,
+        player_id: 1,
+        crew: [1],
+        status: 'docked',
+        deleted_at: null,
+      })
       await GameService.startMission(1, 1)
 
       const result = await GameService.forceReturnMission(1)
@@ -1504,7 +2059,13 @@ describe('GameService', () => {
     test('refuses a second forced return once RETURN phase is reached', async () => {
       await GameService.initGame()
       state.recruits[0].id = 1
-      ShipService.getShip.mockResolvedValue({ id: 1, player_id: 1, crew: [1], status: 'docked', deleted_at: null })
+      ShipService.getShip.mockResolvedValue({
+        id: 1,
+        player_id: 1,
+        crew: [1],
+        status: 'docked',
+        deleted_at: null,
+      })
       await GameService.startMission(1, 1)
       await GameService.forceReturnMission(1)
 
@@ -1518,7 +2079,7 @@ describe('GameService', () => {
       jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] })
       jest.setSystemTime(new Date('2026-01-01T10:00:00Z'))
       await GameService.initGame()
-      const firstBatchIds = state.candidates.map(c => c.id).sort((a, b) => a - b)
+      const firstBatchIds = state.candidates.map((c) => c.id).sort((a, b) => a - b)
       const refreshAtAfterFirst = state.players[0].candidate_refresh_at
 
       jest.setSystemTime(new Date('2026-01-01T10:04:59Z')) // still inside the same 5-minute window
@@ -1526,7 +2087,7 @@ describe('GameService', () => {
       await GameService.getGameState()
       await GameService.syncGame()
 
-      expect(state.candidates.map(c => c.id).sort((a, b) => a - b)).toEqual(firstBatchIds)
+      expect(state.candidates.map((c) => c.id).sort((a, b) => a - b)).toEqual(firstBatchIds)
       expect(state.players[0].candidate_refresh_at).toEqual(refreshAtAfterFirst)
     })
 
@@ -1534,7 +2095,7 @@ describe('GameService', () => {
       jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] })
       jest.setSystemTime(new Date('2026-01-01T10:00:00Z'))
       await GameService.initGame() // seeds 5, hires 1 -> 4 remain
-      const firstBatchIds = state.candidates.map(c => c.id).sort((a, b) => a - b)
+      const firstBatchIds = state.candidates.map((c) => c.id).sort((a, b) => a - b)
       expect(firstBatchIds).toHaveLength(4)
 
       // Hiring another doesn't top the pool back up before the next boundary.
@@ -1549,9 +2110,11 @@ describe('GameService', () => {
       // reset back to 1 (unlike mission templates; see generateCandidateBatch's
       // own comment on why that's safe for candidates specifically).
       expect(state.candidates).toHaveLength(5)
-      expect(state.candidates.map(c => c.id).sort((a, b) => a - b)).toEqual([1, 2, 3, 4, 5])
+      expect(state.candidates.map((c) => c.id).sort((a, b) => a - b)).toEqual([1, 2, 3, 4, 5])
       expect(state.players[0].next_candidate_id).toBe(6)
-      expect(new Date(state.players[0].candidate_refresh_at).toISOString()).toBe('2026-01-01T10:05:00.000Z')
+      expect(new Date(state.players[0].candidate_refresh_at).toISOString()).toBe(
+        '2026-01-01T10:05:00.000Z',
+      )
     })
   })
 
@@ -1582,7 +2145,7 @@ describe('GameService', () => {
       await GameService.initGame()
       await GameService.devSetCredits(1)
       const oldRecruitId = state.recruits[0].id
-      const oldTemplateIds = state.missionTemplates.map(t => t.id)
+      const oldTemplateIds = state.missionTemplates.map((t) => t.id)
 
       const result = await GameService.devReboot()
 
@@ -1591,7 +2154,7 @@ describe('GameService', () => {
       expect(state.recruits).toHaveLength(1)
       expect(state.recruits[0].id).toBe(oldRecruitId) // ids restart from 1, same as a fresh initGame()
       expect(state.missionTemplates).toHaveLength(5)
-      expect(state.missionTemplates.map(t => t.id)).toEqual(oldTemplateIds)
+      expect(state.missionTemplates.map((t) => t.id)).toEqual(oldTemplateIds)
       expect(result.state.player.credits).toBe(10000)
     })
   })
@@ -1625,7 +2188,7 @@ describe('GameService', () => {
         if (sql.includes('FROM log_entries') && sql.includes('mission_id = $2')) {
           return {
             rows: state.logEntries
-              .filter(l => l.player_id === params[0] && l.mission_id === params[1])
+              .filter((l) => l.player_id === params[0] && l.mission_id === params[1])
               .map(({ tag, message }) => ({ tag, message })),
           }
         }
@@ -1646,31 +2209,58 @@ describe('GameService', () => {
 
       state.missionInstances.push(
         {
-          id: 1000, player_id: 1, template_id: 1, ship_id: 5, status: 'success',
-          phase: 'COMPLETED', progress: 100, current_event_index: 0, event_results: [],
-          failed: false, reward_forfeited: false,
+          id: 1000,
+          player_id: 1,
+          template_id: 1,
+          ship_id: 5,
+          status: 'success',
+          phase: 'COMPLETED',
+          progress: 100,
+          current_event_index: 0,
+          event_results: [],
+          failed: false,
+          reward_forfeited: false,
         },
         {
-          id: 1001, player_id: 1, template_id: 2, ship_id: 7, status: 'failed',
-          phase: 'COMPLETED', progress: 100, current_event_index: 0, event_results: [],
-          failed: true, reward_forfeited: false,
+          id: 1001,
+          player_id: 1,
+          template_id: 2,
+          ship_id: 7,
+          status: 'failed',
+          phase: 'COMPLETED',
+          progress: 100,
+          current_event_index: 0,
+          event_results: [],
+          failed: true,
+          reward_forfeited: false,
         },
       )
 
       const history = await GameService.getMissionHistory()
 
       expect(history).toHaveLength(2)
-      expect(history.find(m => m.id === 1)).toMatchObject({ status: 'success', assignedShipId: 5 })
-      expect(history.find(m => m.id === 2)).toMatchObject({ status: 'failed', assignedShipId: 7 })
-      expect(history.some(m => m.id === 3)).toBe(false)
+      expect(history.find((m) => m.id === 1)).toMatchObject({
+        status: 'success',
+        assignedShipId: 5,
+      })
+      expect(history.find((m) => m.id === 2)).toMatchObject({ status: 'failed', assignedShipId: 7 })
+      expect(history.some((m) => m.id === 3)).toBe(false)
     })
 
     test('reports an in-progress mission with its live status, not just success/failed', async () => {
       seedTemplate(state, { id: 4, events: [] })
       state.missionInstances.push({
-        id: 1002, player_id: 1, template_id: 4, ship_id: 2, status: 'in_progress',
-        phase: 'EVENT', progress: 40, current_event_index: 1, event_results: [],
-        failed: false, reward_forfeited: false,
+        id: 1002,
+        player_id: 1,
+        template_id: 4,
+        ship_id: 2,
+        status: 'in_progress',
+        phase: 'EVENT',
+        progress: 40,
+        current_event_index: 1,
+        event_results: [],
+        failed: false,
+        reward_forfeited: false,
       })
 
       const history = await GameService.getMissionHistory()
@@ -1688,12 +2278,20 @@ describe('GameService', () => {
       expect(history).toEqual([])
     })
 
-    test('only returns history for the requesting player, not other players\' instances', async () => {
+    test("only returns history for the requesting player, not other players' instances", async () => {
       seedTemplate(state, { id: 6, events: [] })
       state.missionInstances.push({
-        id: 1003, player_id: 999, template_id: 6, ship_id: 1, status: 'success',
-        phase: 'COMPLETED', progress: 100, current_event_index: 0, event_results: [],
-        failed: false, reward_forfeited: false,
+        id: 1003,
+        player_id: 999,
+        template_id: 6,
+        ship_id: 1,
+        status: 'success',
+        phase: 'COMPLETED',
+        progress: 100,
+        current_event_index: 0,
+        event_results: [],
+        failed: false,
+        reward_forfeited: false,
       })
 
       const history = await GameService.getMissionHistory()

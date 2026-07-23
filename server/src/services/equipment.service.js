@@ -23,10 +23,10 @@ async function listEquipped(client, playerId) {
 }
 
 async function getEquipment(client, playerId, equipmentId) {
-  const result = await client.query(
-    'SELECT * FROM equipment WHERE player_id = $1 AND id = $2',
-    [playerId, equipmentId],
-  )
+  const result = await client.query('SELECT * FROM equipment WHERE player_id = $1 AND id = $2', [
+    playerId,
+    equipmentId,
+  ])
   return result.rows[0] || null
 }
 
@@ -74,7 +74,10 @@ async function equipArmor(client, playerId, equipmentId, recruitId) {
     [recruitId, playerId, equipmentId],
   )
 
-  await OperaService.recordOperaAction(client, playerId, 'equip_item', { recruitId, itemName: target.name })
+  await OperaService.recordOperaAction(client, playerId, 'equip_item', {
+    recruitId,
+    itemName: target.name,
+  })
 
   return { success: true, equipment: updated.rows[0] }
 }
@@ -93,10 +96,10 @@ async function unequipArmor(client, playerId, equipmentId) {
 // Called when a recruit dies (see damageRecruit / applyCombatResult in
 // game.service.js): equipped gear is destroyed, not returned to the stash.
 async function destroyEquipmentForRecruit(client, playerId, recruitId) {
-  await client.query(
-    'DELETE FROM equipment WHERE player_id = $1 AND assigned_to_recruit_id = $2',
-    [playerId, recruitId],
-  )
+  await client.query('DELETE FROM equipment WHERE player_id = $1 AND assigned_to_recruit_id = $2', [
+    playerId,
+    recruitId,
+  ])
 }
 
 async function buyArmor(client, playerId, shopItem, price) {
@@ -106,8 +109,14 @@ async function buyArmor(client, playerId, shopItem, price) {
      VALUES ($1, 'armor', $2, $3, $4, $5, $6, $7, $8, $9)
      RETURNING *`,
     [
-      playerId, shopItem.name, shopItem.description, shopItem.rarity,
-      stats.armorType, stats.guardBonus || 0, stats.requiredFortitude || 0, stats.speedPenalty || 0,
+      playerId,
+      shopItem.name,
+      shopItem.description,
+      shopItem.rarity,
+      stats.armorType,
+      stats.guardBonus || 0,
+      stats.requiredFortitude || 0,
+      stats.speedPenalty || 0,
       price,
     ],
   )

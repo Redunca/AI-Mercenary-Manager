@@ -47,18 +47,21 @@ export class CandidateListComponent implements OnInit, OnDestroy {
 
   archetypeLabel(c: Candidate): string {
     switch (c.archetype) {
-      case 'specialized':        return 'Specialist';
-      case 'well-rounded':       return 'Versatile';
-      case 'jack-of-all-trades': return 'Jack-of-all-trades';
+      case 'specialized':
+        return 'Specialist';
+      case 'well-rounded':
+        return 'Versatile';
+      case 'jack-of-all-trades':
+        return 'Jack-of-all-trades';
     }
   }
 
   perkNames(c: Candidate): string {
-    return c.perks.map(p => p.name).join(', ');
+    return c.perks.map((p) => p.name).join(', ');
   }
 
   flawNames(c: Candidate): string {
-    return c.flaws.map(f => f.name).join(', ');
+    return c.flaws.map((f) => f.name).join(', ');
   }
 
   private tickCountdown(): void {
@@ -68,8 +71,11 @@ export class CandidateListComponent implements OnInit, OnDestroy {
 
   registerCommands() {
     return {
-      'detail': (id: string) => {
-        if (!id) { console.warn('Usage: detail <id>'); return; }
+      detail: (id: string) => {
+        if (!id) {
+          console.warn('Usage: detail <id>');
+          return;
+        }
         this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.CandidateDetail, { id });
       },
     };

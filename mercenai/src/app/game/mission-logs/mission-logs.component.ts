@@ -9,7 +9,7 @@ import { isBanterTag } from '../../models/log';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './mission-logs.component.html',
-  styleUrl: './mission-logs.component.scss'
+  styleUrl: './mission-logs.component.scss',
 })
 export class MissionLogsComponent implements OnInit, OnDestroy {
   @Input() id!: number;
@@ -27,7 +27,11 @@ export class MissionLogsComponent implements OnInit, OnDestroy {
     this.sync.unwatchMissionProgress();
   }
 
-  get logs() { return this.logService.missionLogs[this.id] ?? []; }
+  get logs() {
+    return this.logService.missionLogs[this.id] ?? [];
+  }
 
-  registerCommands() { return {}; }
+  registerCommands() {
+    return {};
+  }
 }

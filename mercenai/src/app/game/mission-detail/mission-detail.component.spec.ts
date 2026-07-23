@@ -8,12 +8,22 @@ import { of } from 'rxjs';
 
 const MOCK_MISSIONS: Mission[] = [
   {
-    id: 1, name: 'Corridor Patrol', description: 'Desc 1',
-    difficulty: 'ROUTINE', events: [], assignedShipId: null, status: 'available',
+    id: 1,
+    name: 'Corridor Patrol',
+    description: 'Desc 1',
+    difficulty: 'ROUTINE',
+    events: [],
+    assignedShipId: null,
+    status: 'available',
   },
   {
-    id: 2, name: 'Express Delivery', description: 'Desc 2',
-    difficulty: 'STANDARD', events: [], assignedShipId: null, status: 'available',
+    id: 2,
+    name: 'Express Delivery',
+    description: 'Desc 2',
+    difficulty: 'STANDARD',
+    events: [],
+    assignedShipId: null,
+    status: 'available',
   },
 ];
 

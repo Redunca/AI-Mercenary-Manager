@@ -1,25 +1,25 @@
-import { TerminalController } from "../core/terminal-controller";
+import { TerminalController } from '../core/terminal-controller';
 
-export enum PanelModule{
-  None='none',
-  RecruitList='recruit-list',
-  RecruitDetail='recruit-detail',
-  MissionList = "mission-list",
-  MissionDetail = "mission-detail",
-  Logs = "logs",
-  MissionLogs = "mission-logs",
-  Dashboard = "dashboard",
-  Help = "help",
-  CandidateList = "candidate-list",
-  CandidateDetail = "candidate-detail",
-  ShipList = "ship-list",
-  ShipDetail = "ship-detail",
-  ShopList = "shop-list",
-  ShopDetail = "shop-detail",
-  Self = "self",
-  OperaList = "opera-list",
-  OperaDetail = "opera-detail",
-  Items = "items",
+export enum PanelModule {
+  None = 'none',
+  RecruitList = 'recruit-list',
+  RecruitDetail = 'recruit-detail',
+  MissionList = 'mission-list',
+  MissionDetail = 'mission-detail',
+  Logs = 'logs',
+  MissionLogs = 'mission-logs',
+  Dashboard = 'dashboard',
+  Help = 'help',
+  CandidateList = 'candidate-list',
+  CandidateDetail = 'candidate-detail',
+  ShipList = 'ship-list',
+  ShipDetail = 'ship-detail',
+  ShopList = 'shop-list',
+  ShopDetail = 'shop-detail',
+  Self = 'self',
+  OperaList = 'opera-list',
+  OperaDetail = 'opera-detail',
+  Items = 'items',
 }
 
 export interface Panel {

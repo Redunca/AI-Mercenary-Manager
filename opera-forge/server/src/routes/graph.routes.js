@@ -5,7 +5,8 @@ const { analyzeGraph, runGeneration } = require('../domain/graph')
 const router = express.Router()
 
 function sendError(res, err) {
-  const status = err.statusCode ?? (/must be|missing|unknown|duplicate|requires/.test(err.message) ? 400 : 500)
+  const status =
+    err.statusCode ?? (/must be|missing|unknown|duplicate|requires/.test(err.message) ? 400 : 500)
   res.status(status).json({ error: err.message })
 }
 

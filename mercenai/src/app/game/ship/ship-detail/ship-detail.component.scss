@@ -1,13 +1,27 @@
-.task-title { font-weight: bold; }
+.task-title {
+  font-weight: bold;
+}
 
-.indent-one { margin-left: 1rem; }
-.indent-two { margin-left: 2rem; }
+.indent-one {
+  margin-left: 1rem;
+}
+.indent-two {
+  margin-left: 2rem;
+}
 
-.status-docked     { color: #7ecf7e; }
-.status-in_mission { color: inherit; }
-.status-destroyed  { color: #cf7e7e; }
+.status-docked {
+  color: #7ecf7e;
+}
+.status-in_mission {
+  color: inherit;
+}
+.status-destroyed {
+  color: #cf7e7e;
+}
 
-.muted { opacity: 0.5; }
+.muted {
+  opacity: 0.5;
+}
 
 .hint {
   margin-top: 0.5rem;

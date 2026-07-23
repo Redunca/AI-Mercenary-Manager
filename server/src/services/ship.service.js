@@ -5,7 +5,7 @@ const OperaService = require('./opera.service')
 async function getShips(client, playerId) {
   const result = await client.query(
     'SELECT * FROM ships WHERE player_id = $1 AND deleted_at IS NULL ORDER BY created_at',
-    [playerId]
+    [playerId],
   )
   return result.rows
 }
@@ -13,7 +13,7 @@ async function getShips(client, playerId) {
 async function getShip(client, playerId, shipId) {
   const result = await client.query(
     'SELECT * FROM ships WHERE player_id = $1 AND id = $2 AND deleted_at IS NULL',
-    [playerId, shipId]
+    [playerId, shipId],
   )
   return result.rows[0]
 }
@@ -26,7 +26,7 @@ async function createShip(client, playerId, shipData) {
     `INSERT INTO ships (player_id, id, name, galactic_id, rarity, stats, crew, status)
      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
      RETURNING *`,
-    [playerId, shipData.id, name, galacticId, rarity, JSON.stringify(stats), '{}', 'docked']
+    [playerId, shipData.id, name, galacticId, rarity, JSON.stringify(stats), '{}', 'docked'],
   )
   return result.rows[0]
 }
@@ -37,7 +37,7 @@ async function assignCrewToShip(client, playerId, shipId, recruitIds) {
      SET crew = $1 
      WHERE player_id = $2 AND id = $3 AND deleted_at IS NULL
      RETURNING *`,
-    [recruitIds, playerId, shipId]
+    [recruitIds, playerId, shipId],
   )
   return result.rows[0]
 }
@@ -48,7 +48,7 @@ async function updateShipStatus(client, playerId, shipId, status) {
      SET status = $1 
      WHERE player_id = $2 AND id = $3 AND deleted_at IS NULL
      RETURNING *`,
-    [status, playerId, shipId]
+    [status, playerId, shipId],
   )
   return result.rows[0]
 }
@@ -59,7 +59,7 @@ async function destroyShip(client, playerId, shipId) {
      SET status = 'destroyed', deleted_at = NOW()
      WHERE player_id = $1 AND id = $2
      RETURNING *`,
-    [playerId, shipId]
+    [playerId, shipId],
   )
   return result.rows[0]
 }
@@ -69,7 +69,7 @@ async function destroyShip(client, playerId, shipId) {
 async function damageShip(client, playerId, shipId, amount) {
   const row = await client.query(
     'SELECT * FROM ships WHERE player_id = $1 AND id = $2 AND deleted_at IS NULL FOR UPDATE',
-    [playerId, shipId]
+    [playerId, shipId],
   )
   if (row.rows.length === 0) return null
 
@@ -80,7 +80,7 @@ async function damageShip(client, playerId, shipId, amount) {
 
   const updated = await client.query(
     'UPDATE ships SET stats = $1, status = $2 WHERE player_id = $3 AND id = $4 RETURNING *',
-    [JSON.stringify(stats), status, playerId, shipId]
+    [JSON.stringify(stats), status, playerId, shipId],
   )
   return updated.rows[0]
 }
@@ -89,7 +89,7 @@ async function damageShip(client, playerId, shipId, amount) {
 async function repairShip(client, playerId, shipId) {
   const row = await client.query(
     'SELECT * FROM ships WHERE player_id = $1 AND id = $2 AND deleted_at IS NULL FOR UPDATE',
-    [playerId, shipId]
+    [playerId, shipId],
   )
   if (row.rows.length === 0) return null
 
@@ -99,16 +99,13 @@ async function repairShip(client, playerId, shipId) {
 
   const updated = await client.query(
     'UPDATE ships SET stats = $1, status = $2 WHERE player_id = $3 AND id = $4 RETURNING *',
-    [JSON.stringify(stats), status, playerId, shipId]
+    [JSON.stringify(stats), status, playerId, shipId],
   )
   return updated.rows[0]
 }
 
 async function getHangar(client, playerId) {
-  const result = await client.query(
-    'SELECT * FROM hangars WHERE player_id = $1',
-    [playerId]
-  )
+  const result = await client.query('SELECT * FROM hangars WHERE player_id = $1', [playerId])
   return result.rows[0]
 }
 
@@ -117,7 +114,7 @@ async function createHangar(client, playerId) {
     `INSERT INTO hangars (player_id, max_ships)
      VALUES ($1, $2)
      RETURNING *`,
-    [playerId, 5]
+    [playerId, 5],
   )
   return result.rows[0]
 }
@@ -125,7 +122,7 @@ async function createHangar(client, playerId) {
 async function getDockingStations(client, playerId) {
   const result = await client.query(
     'SELECT * FROM docking_stations WHERE player_id = $1 ORDER BY id',
-    [playerId]
+    [playerId],
   )
   return result.rows
 }
@@ -135,7 +132,7 @@ async function createDockingStation(client, playerId, capacity = 5) {
     `INSERT INTO docking_stations (player_id, capacity)
      VALUES ($1, $2)
      RETURNING *`,
-    [playerId, capacity]
+    [playerId, capacity],
   )
   return result.rows[0]
 }
@@ -147,10 +144,13 @@ async function appendCrewMember(client, playerId, shipId, recruitId) {
      WHERE player_id = $1 AND id = $2 AND deleted_at IS NULL
        AND NOT ($3 = ANY(crew))
      RETURNING *`,
-    [playerId, shipId, recruitId]
+    [playerId, shipId, recruitId],
   )
   if (result.rows[0]) {
-    await OperaService.recordOperaAction(client, playerId, 'assign_crew_to_ship', { shipId, recruitId })
+    await OperaService.recordOperaAction(client, playerId, 'assign_crew_to_ship', {
+      shipId,
+      recruitId,
+    })
   }
   return result.rows[0]
 }
@@ -161,7 +161,7 @@ async function removeCrewMember(client, playerId, shipId, recruitId) {
      SET crew = array_remove(crew, $3)
      WHERE player_id = $1 AND id = $2 AND deleted_at IS NULL
      RETURNING *`,
-    [playerId, shipId, recruitId]
+    [playerId, shipId, recruitId],
   )
   return result.rows[0]
 }
@@ -172,7 +172,7 @@ async function renameShip(client, playerId, shipId, name) {
      SET name = $3
      WHERE player_id = $1 AND id = $2 AND deleted_at IS NULL
      RETURNING *`,
-    [playerId, shipId, name]
+    [playerId, shipId, name],
   )
   return result.rows[0]
 }

@@ -16,13 +16,19 @@
   </label>
   <label>
     Ship crew count
-    <input type="number" min="0" [ngModel]="shipCrewCount()" (ngModelChange)="shipCrewCount.set(asNumber($event))" />
+    <input
+      type="number"
+      min="0"
+      [ngModel]="shipCrewCount()"
+      (ngModelChange)="shipCrewCount.set(asNumber($event))"
+    />
   </label>
 
   <h3>Mission outcomes, in order</h3>
   <p class="hint">
-    A mission node doesn't roll dice -- its real outcome comes from actually playing the mission. Script what each
-    mission node the walk reaches should resolve to, in order; a mission reached past the end of this list defaults to "success".
+    A mission node doesn't roll dice -- its real outcome comes from actually playing the mission.
+    Script what each mission node the walk reaches should resolve to, in order; a mission reached
+    past the end of this list defaults to "success".
   </p>
   @for (outcome of missionOutcomes(); track $index) {
     <div class="row">
@@ -38,19 +44,28 @@
 
   <h3>Choices made, in order</h3>
   <p class="hint">
-    A choice node blocks the walk until the player picks an option -- script which option id the walk should pick
-    at each choice node reached, in order; a choice reached past the end of this list defaults to its first option.
+    A choice node blocks the walk until the player picks an option -- script which option id the
+    walk should pick at each choice node reached, in order; a choice reached past the end of this
+    list defaults to its first option.
   </p>
   @for (choice of choicesMade(); track $index) {
     <div class="row">
-      <input type="text" placeholder="Option id" [ngModel]="choice" (ngModelChange)="setChoiceMade($index, $event)" />
+      <input
+        type="text"
+        placeholder="Option id"
+        [ngModel]="choice"
+        (ngModelChange)="setChoiceMade($index, $event)"
+      />
       <button type="button" class="danger" (click)="removeChoiceMade($index)">&times;</button>
     </div>
   }
   <button type="button" (click)="addChoiceMade()">+ Choice made</button>
 
   <h3>Actions performed, in order</h3>
-  <p class="hint">Consumed in order by "action_performed" conditions -- the Nth such condition reached must match the Nth entry here.</p>
+  <p class="hint">
+    Consumed in order by "action_performed" conditions -- the Nth such condition reached must match
+    the Nth entry here.
+  </p>
   @for (action of actionsPerformed(); track $index) {
     <div class="action">
       <div class="row">
@@ -64,11 +79,26 @@
 
       <div class="row action-match">
         @if (action.actionType === 'execute_command') {
-          <input type="text" placeholder="Command, e.g. split-v" [ngModel]="matchValue($index, 'command')" (ngModelChange)="setCommand($index, $event)" />
-          <input type="text" placeholder="Args, comma separated (optional)" [ngModel]="argsText($index)" (ngModelChange)="setArgsText($index, $event)" />
+          <input
+            type="text"
+            placeholder="Command, e.g. split-v"
+            [ngModel]="matchValue($index, 'command')"
+            (ngModelChange)="setCommand($index, $event)"
+          />
+          <input
+            type="text"
+            placeholder="Args, comma separated (optional)"
+            [ngModel]="argsText($index)"
+            (ngModelChange)="setArgsText($index, $event)"
+          />
         } @else {
           @if (actionMatchField(action.actionType); as field) {
-            <input type="text" [placeholder]="field" [ngModel]="matchValue($index, field)" (ngModelChange)="setMatchValue($index, field, $event)" />
+            <input
+              type="text"
+              [placeholder]="field"
+              [ngModel]="matchValue($index, field)"
+              (ngModelChange)="setMatchValue($index, field, $event)"
+            />
           } @else {
             <select [ngModel]="matchKind($index)" (ngModelChange)="setMatchKind($index, $event)">
               <option value="any">Any</option>
@@ -77,7 +107,12 @@
               }
             </select>
             @if (matchKind($index) !== 'any') {
-              <input type="text" [placeholder]="matchKind($index)" [ngModel]="matchValue($index, matchKind($index))" (ngModelChange)="setMatchValue($index, matchKind($index), $event)" />
+              <input
+                type="text"
+                [placeholder]="matchKind($index)"
+                [ngModel]="matchValue($index, matchKind($index))"
+                (ngModelChange)="setMatchValue($index, matchKind($index), $event)"
+              />
             }
           }
         }
@@ -88,8 +123,9 @@
 
   <h3>Tags</h3>
   <p class="hint">
-    Mock {{ '{' }}tagName{{ '}' }} values -- the same tag collection a generated planet/mission carries in the
-    main game. Node text/completionText referencing a tag left blank here is shown unresolved in the preview below.
+    Mock {{ '{' }}tagName{{ '}' }} values -- the same tag collection a generated planet/mission
+    carries in the main game. Node text/completionText referencing a tag left blank here is shown
+    unresolved in the preview below.
   </p>
   <div class="row">
     <button type="button" (click)="fillExampleTags()">Fill example values</button>
@@ -101,7 +137,12 @@
       @for (tag of group.tags; track tag.name) {
         <label class="tag-field" [title]="tag.description">
           {{ tag.name }}
-          <input type="text" [placeholder]="tag.example" [ngModel]="tagValue(tag.name)" (ngModelChange)="setTagValue(tag.name, $event)" />
+          <input
+            type="text"
+            [placeholder]="tag.example"
+            [ngModel]="tagValue(tag.name)"
+            (ngModelChange)="setTagValue(tag.name, $event)"
+          />
         </label>
       }
     </div>
@@ -112,7 +153,11 @@
     @for (a of attributes; track a) {
       <label class="attr">
         {{ a }}
-        <input type="number" [ngModel]="attributeValues()[a] ?? 0" (ngModelChange)="setAttribute(a, $event)" />
+        <input
+          type="number"
+          [ngModel]="attributeValues()[a] ?? 0"
+          (ngModelChange)="setAttribute(a, $event)"
+        />
       </label>
     }
   </div>
@@ -135,7 +180,12 @@
 
   @if (result(); as r) {
     <div class="result">
-      <p class="reason">Ended: {{ r.reason }}@if (r.endedAt) { at "{{ r.endedAt }}" }</p>
+      <p class="reason">
+        Ended: {{ r.reason }}
+        @if (r.endedAt) {
+          at "{{ r.endedAt }}"
+        }
+      </p>
 
       <ol class="path">
         @for (step of r.path; track $index) {
@@ -146,7 +196,10 @@
             }
             @if (step.mission; as mission) {
               <p class="mission-title">
-                {{ mission.title }}@if (mission.difficulty) { <span class="mission-difficulty">({{ mission.difficulty }})</span> }
+                {{ mission.title }}
+                @if (mission.difficulty) {
+                  <span class="mission-difficulty">({{ mission.difficulty }})</span>
+                }
               </p>
               @if (mission.description) {
                 <p class="mission-description">{{ mission.description }}</p>
@@ -159,7 +212,10 @@
               <ul class="choice-options">
                 @for (opt of step.choiceOptions; track opt.id) {
                   <li [class.chosen]="opt.id === step.choiceMade">
-                    {{ opt.label }}@if (opt.id === step.choiceMade) { <span class="muted">(chosen)</span> }
+                    {{ opt.label }}
+                    @if (opt.id === step.choiceMade) {
+                      <span class="muted">(chosen)</span>
+                    }
                   </li>
                 }
               </ul>
@@ -181,8 +237,11 @@
               <ul class="seeds">
                 @for (s of step.seeds; track $index) {
                   <li>
-                    seed {{ s.target }}: {{ s.target === 'shop' ? s.params['itemName'] : s.params['templateId'] }}
-                    @if (s.note) { — {{ s.note }} }
+                    seed {{ s.target }}:
+                    {{ s.target === 'shop' ? s.params['itemName'] : s.params['templateId'] }}
+                    @if (s.note) {
+                      — {{ s.note }}
+                    }
                   </li>
                 }
               </ul>

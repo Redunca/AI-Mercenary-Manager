@@ -8,7 +8,7 @@ import { ConsumableService, Consumable } from '../../core/consumable.service';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './items.component.html',
-  styleUrl: './items.component.scss'
+  styleUrl: './items.component.scss',
 })
 export class ItemsComponent implements OnInit {
   private equipmentService = inject(EquipmentService);
@@ -18,9 +18,11 @@ export class ItemsComponent implements OnInit {
   cargoStash: Consumable[] = [];
 
   ngOnInit() {
-    this.equipmentService.getEquipment().subscribe(state => this.armorStash = state.stash);
-    this.consumableService.getConsumables(true).subscribe(items => this.cargoStash = items);
+    this.equipmentService.getEquipment().subscribe((state) => (this.armorStash = state.stash));
+    this.consumableService.getConsumables(true).subscribe((items) => (this.cargoStash = items));
   }
 
-  registerCommands() { return {}; }
+  registerCommands() {
+    return {};
+  }
 }

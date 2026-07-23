@@ -15,9 +15,8 @@ describe('RecruitListComponent', () => {
     await TestBed.configureTestingModule({
       imports: [RecruitListComponent],
       providers: [provideHttpClient(), provideHttpClientTesting()],
-    })
-    .compileComponents();
-    
+    }).compileComponents();
+
     fixture = TestBed.createComponent(RecruitListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

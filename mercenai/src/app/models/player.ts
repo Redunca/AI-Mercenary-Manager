@@ -1,16 +1,15 @@
-
 export interface DockingStation {
-  id : string;
-  size : number;
+  id: string;
+  size: number;
 }
 
 export interface Player {
-  maxNumberOfRecruits : number;
-  maxAvailableMissions : number;
-  credits : number;
-  tokens : number;
-  dockingStations : DockingStation[]
-  missionRefreshIntervalMs : number;
-  shopRefreshIntervalMs : number;
-  candidateRefreshIntervalMs : number;
+  maxNumberOfRecruits: number;
+  maxAvailableMissions: number;
+  credits: number;
+  tokens: number;
+  dockingStations: DockingStation[];
+  missionRefreshIntervalMs: number;
+  shopRefreshIntervalMs: number;
+  candidateRefreshIntervalMs: number;
 }

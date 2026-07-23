@@ -4,7 +4,11 @@
 
   <label>
     Priority (lower evaluated first)
-    <input type="number" [ngModel]="link().priority" (ngModelChange)="setPriority(asNumber($event))" />
+    <input
+      type="number"
+      [ngModel]="link().priority"
+      (ngModelChange)="setPriority(asNumber($event))"
+    />
   </label>
 
   <h3>Conditions (all must pass)</h3>
@@ -19,28 +23,54 @@
 
         @switch (condition.type) {
           @case ('chance') {
-            <input type="number" min="0" max="100" placeholder="%" [ngModel]="condition.params['percentage']" (ngModelChange)="setConditionParam($index, 'percentage', asNumber($event))" />
+            <input
+              type="number"
+              min="0"
+              max="100"
+              placeholder="%"
+              [ngModel]="condition.params['percentage']"
+              (ngModelChange)="setConditionParam($index, 'percentage', asNumber($event))"
+            />
           }
           @case ('has_item') {
-            <input type="text" placeholder="Item name" [ngModel]="condition.params['itemName']" (ngModelChange)="setConditionParam($index, 'itemName', $event)" />
+            <input
+              type="text"
+              placeholder="Item name"
+              [ngModel]="condition.params['itemName']"
+              (ngModelChange)="setConditionParam($index, 'itemName', $event)"
+            />
           }
           @case ('previous_outcome') {
-            <select [ngModel]="condition.params['equals']" (ngModelChange)="setConditionParam($index, 'equals', $event)">
+            <select
+              [ngModel]="condition.params['equals']"
+              (ngModelChange)="setConditionParam($index, 'equals', $event)"
+            >
               @for (o of outcomes; track o) {
                 <option [value]="o">{{ o }}</option>
               }
             </select>
           }
           @case ('crew_threshold') {
-            <select [ngModel]="condition.params['operator']" (ngModelChange)="setConditionParam($index, 'operator', $event)">
+            <select
+              [ngModel]="condition.params['operator']"
+              (ngModelChange)="setConditionParam($index, 'operator', $event)"
+            >
               @for (o of operators; track o) {
                 <option [value]="o">{{ o }}</option>
               }
             </select>
-            <input type="number" placeholder="Crew count" [ngModel]="condition.params['value']" (ngModelChange)="setConditionParam($index, 'value', asNumber($event))" />
+            <input
+              type="number"
+              placeholder="Crew count"
+              [ngModel]="condition.params['value']"
+              (ngModelChange)="setConditionParam($index, 'value', asNumber($event))"
+            />
           }
           @case ('action_performed') {
-            <select [ngModel]="condition.params['actionType']" (ngModelChange)="setActionType($index, $event)">
+            <select
+              [ngModel]="condition.params['actionType']"
+              (ngModelChange)="setActionType($index, $event)"
+            >
               @for (a of actionTypes; track a) {
                 <option [value]="a">{{ a }}</option>
               }
@@ -48,13 +78,21 @@
           }
           @case ('choice_made') {
             @if (choiceOptionsForLink().length > 0) {
-              <select [ngModel]="condition.params['optionId']" (ngModelChange)="setConditionParam($index, 'optionId', $event)">
+              <select
+                [ngModel]="condition.params['optionId']"
+                (ngModelChange)="setConditionParam($index, 'optionId', $event)"
+              >
                 @for (opt of choiceOptionsForLink(); track opt.id) {
                   <option [value]="opt.id">{{ opt.id }} — {{ opt.label || '(no label)' }}</option>
                 }
               </select>
             } @else {
-              <input type="text" placeholder="Option id" [ngModel]="condition.params['optionId']" (ngModelChange)="setConditionParam($index, 'optionId', $event)" />
+              <input
+                type="text"
+                placeholder="Option id"
+                [ngModel]="condition.params['optionId']"
+                (ngModelChange)="setConditionParam($index, 'optionId', $event)"
+              />
             }
           }
         }
@@ -65,11 +103,26 @@
       @if (condition.type === 'action_performed') {
         <div class="row action-match">
           @if (condition.params['actionType'] === 'execute_command') {
-            <input type="text" placeholder="Command, e.g. split-v" [ngModel]="matchValue($index, 'command')" (ngModelChange)="setCommand($index, $event)" />
-            <input type="text" placeholder="Args, comma separated (optional)" [ngModel]="argsText($index)" (ngModelChange)="setArgsText($index, $event)" />
+            <input
+              type="text"
+              placeholder="Command, e.g. split-v"
+              [ngModel]="matchValue($index, 'command')"
+              (ngModelChange)="setCommand($index, $event)"
+            />
+            <input
+              type="text"
+              placeholder="Args, comma separated (optional)"
+              [ngModel]="argsText($index)"
+              (ngModelChange)="setArgsText($index, $event)"
+            />
           } @else {
             @if (actionMatchField(condition.params['actionType']); as field) {
-              <input type="text" [placeholder]="field" [ngModel]="matchValue($index, field)" (ngModelChange)="setMatchValue($index, field, $event)" />
+              <input
+                type="text"
+                [placeholder]="field"
+                [ngModel]="matchValue($index, field)"
+                (ngModelChange)="setMatchValue($index, field, $event)"
+              />
             } @else {
               <select [ngModel]="matchKind($index)" (ngModelChange)="setMatchKind($index, $event)">
                 <option value="any">Any</option>
@@ -78,7 +131,12 @@
                 }
               </select>
               @if (matchKind($index) !== 'any') {
-                <input type="text" [placeholder]="matchKind($index)" [ngModel]="matchValue($index, matchKind($index))" (ngModelChange)="setMatchValue($index, matchKind($index), $event)" />
+                <input
+                  type="text"
+                  [placeholder]="matchKind($index)"
+                  [ngModel]="matchValue($index, matchKind($index))"
+                  (ngModelChange)="setMatchValue($index, matchKind($index), $event)"
+                />
               }
             }
           }

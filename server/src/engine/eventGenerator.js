@@ -1,7 +1,7 @@
-'use strict';
+'use strict'
 
-const { pickOne, rollWithVariance, randInt } = require('../utils/random');
-const { render } = require('../utils/template');
+const { pickOne, rollWithVariance, randInt } = require('../utils/random')
+const { render } = require('../utils/template')
 
 /**
  * Builds a concrete event from an archetype (see data/events.json).
@@ -11,29 +11,22 @@ const { render } = require('../utils/template');
  */
 function generateEvent(archetype, context, difficultyTable) {
   if (!context.hasAll(archetype.consumes)) {
-    const missing = archetype.consumes.filter((k) => !context.has(k));
+    const missing = archetype.consumes.filter((k) => !context.has(k))
     throw new Error(
-      `Event archetype "${archetype.id}" consumes unresolved tags: [${missing.join(', ')}]`
-    );
+      `Event archetype "${archetype.id}" consumes unresolved tags: [${missing.join(', ')}]`,
+    )
   }
 
-  const dc = Math.max(
-    1,
-    rollWithVariance(difficultyTable.dcBase, difficultyTable.dcVariance)
-  );
+  const dc = Math.max(1, rollWithVariance(difficultyTable.dcBase, difficultyTable.dcVariance))
 
-  const descriptionTemplate = pickOne(archetype.descriptionTemplates);
-  const description = render(descriptionTemplate, context.getAll());
+  const descriptionTemplate = pickOne(archetype.descriptionTemplates)
+  const description = render(descriptionTemplate, context.getAll())
 
-  const rewardAmount = randInt(
-    difficultyTable.rewardRange.min,
-    difficultyTable.rewardRange.max
-  );
-  const rewardDescription = pickOne(archetype.rewardDescriptions);
+  const rewardAmount = randInt(difficultyTable.rewardRange.min, difficultyTable.rewardRange.max)
+  const rewardDescription = pickOne(archetype.rewardDescriptions)
 
-  const failureConsequences =
-    archetype.failureConsequences || difficultyTable.failureConsequences;
-  const failureConsequence = pickOne(failureConsequences);
+  const failureConsequences = archetype.failureConsequences || difficultyTable.failureConsequences
+  const failureConsequence = pickOne(failureConsequences)
 
   return {
     id: archetype.id,
@@ -48,7 +41,7 @@ function generateEvent(archetype, context, difficultyTable) {
       description: rewardDescription,
     },
     failureConsequence,
-  };
+  }
 }
 
-module.exports = { generateEvent };
+module.exports = { generateEvent }

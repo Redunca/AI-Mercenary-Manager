@@ -35,18 +35,20 @@ const SHOP_REFRESH_INTERVAL_MS = 15 * 60 * 1000
 function drawShopRotation(masterPool, rotationSize = SHOP_ROTATION_SIZE) {
   if (!masterPool || masterPool.length === 0) return []
 
-  const ships = masterPool.filter(item => item.type === 'ship')
+  const ships = masterPool.filter((item) => item.type === 'ship')
   const guaranteedShip = ships.length > 0 ? pickOne(ships) : null
 
-  const guaranteedQuestItems = masterPool.filter(item => (
-    item.is_quest_item && (!guaranteedShip || item.id !== guaranteedShip.id)
-  ))
+  const guaranteedQuestItems = masterPool.filter(
+    (item) => item.is_quest_item && (!guaranteedShip || item.id !== guaranteedShip.id),
+  )
 
-  const guaranteed = guaranteedShip ? [guaranteedShip, ...guaranteedQuestItems] : guaranteedQuestItems
-  const guaranteedIds = new Set(guaranteed.map(item => item.id))
+  const guaranteed = guaranteedShip
+    ? [guaranteedShip, ...guaranteedQuestItems]
+    : guaranteedQuestItems
+  const guaranteedIds = new Set(guaranteed.map((item) => item.id))
 
   const remainingSlots = rotationSize - guaranteed.length
-  const rest = masterPool.filter(item => !guaranteedIds.has(item.id))
+  const rest = masterPool.filter((item) => !guaranteedIds.has(item.id))
 
   const fillers = sampleWithCoverage(rest, Math.min(Math.max(remainingSlots, 0), rest.length))
 
@@ -64,7 +66,8 @@ async function refreshShopRotation(client, playerId, now) {
     'SELECT shop_rotation_size, shop_refresh_interval_ms FROM players WHERE id = $1',
     [playerId],
   )
-  const { shop_rotation_size: rotationSize, shop_refresh_interval_ms: refreshIntervalMs } = playerResult.rows[0]
+  const { shop_rotation_size: rotationSize, shop_refresh_interval_ms: refreshIntervalMs } =
+    playerResult.rows[0]
 
   const pool = (await client.query('SELECT * FROM shop_items ORDER BY id')).rows
   const chosen = drawShopRotation(pool, rotationSize)
@@ -78,7 +81,10 @@ async function refreshShopRotation(client, playerId, now) {
   }
 
   const refreshedAt = new Date(currentIntervalBoundary(now, refreshIntervalMs))
-  await client.query('UPDATE players SET shop_refresh_at = $1 WHERE id = $2', [refreshedAt, playerId])
+  await client.query('UPDATE players SET shop_refresh_at = $1 WHERE id = $2', [
+    refreshedAt,
+    playerId,
+  ])
   return refreshedAt
 }
 
@@ -135,10 +141,23 @@ async function lockRotationItem(client, playerId, itemId) {
   return result.rows[0] || null
 }
 
-async function buyShip(client, playerId, shopItemId, now = new Date()) {
+// Shared purchase flow behind buyShip/buyConsumable/buyArmor: lock the
+// player row and refresh the rotation if due, find+lock the listing and
+// check its type/stock/price, hand off to `fulfill` for the type-specific
+// side effect (create the ship/consumable/equipment; may itself fail, e.g.
+// docking capacity or a full stash), then deduct the wallet, record the
+// purchase, fire the Opera hooks, and decrement stock. `fulfill`'s return
+// value is spread into the final result, so it supplies the response's
+// type-specific key (`ship`/`consumable`/`equipment`).
+async function purchaseShopItem(
+  client,
+  playerId,
+  shopItemId,
+  { itemType, notFoundError, outOfStockError, quantity = 1, now = new Date(), fulfill },
+) {
   const player = await client.query(
     'SELECT wallet, shop_refresh_at, shop_refresh_interval_ms FROM players WHERE id = $1 FOR UPDATE',
-    [playerId]
+    [playerId],
   )
   if (player.rows.length === 0) return { error: 'Player not found' }
 
@@ -147,102 +166,12 @@ async function buyShip(client, playerId, shopItemId, now = new Date()) {
   }
 
   const item = await lockRotationItem(client, playerId, shopItemId)
-  if (!item || item.type !== 'ship') {
-    return { error: 'Ship not found' }
-  }
-
-  if (item.remaining_stock <= 0) {
-    return { error: 'Ship already purchased' }
-  }
-
-  if (player.rows[0].wallet < item.price) {
-    return { error: 'Insufficient credit' }
-  }
-
-  // Docked-ship cap is total ships owned (deleted_at IS NULL), not "currently
-  // at the station" — there's no separate docked/in-mission distinction for
-  // capacity purposes. Effective cap is SUM(docking_stations.capacity),
-  // grown by the "dockedShips" self-upgrade (see self.service.js), which
-  // inserts an extra capacity:1 row rather than updating a single column.
-  const shipCount = (await client.query(
-    'SELECT COUNT(*)::int AS count FROM ships WHERE player_id = $1 AND deleted_at IS NULL',
-    [playerId],
-  )).rows[0].count
-  const dockingCapacity = (await client.query(
-    'SELECT COALESCE(SUM(capacity), 0)::int AS capacity FROM docking_stations WHERE player_id = $1',
-    [playerId],
-  )).rows[0].capacity
-  if (shipCount >= dockingCapacity) {
-    return { error: 'Docking capacity full' }
-  }
-
-  // Create ship from shop item
-  const nextShipId = await client.query(
-    'SELECT next_ship_id FROM players WHERE id = $1',
-    [playerId]
-  )
-  const shipId = nextShipId.rows[0].next_ship_id
-
-  const stats = item.stats || { speed: 100, capacity: 1, inventory_space: 0, durability: 10, price: 0 }
-  const shipData = {
-    id: shipId,
-    name: item.name,
-    rarity: item.rarity,
-    stats: { max_durability: stats.durability, ...stats },
-  }
-
-  await ShipService.createShip(client, playerId, shipData)
-
-  // Deduct from wallet
-  const newWallet = player.rows[0].wallet - item.price
-  await client.query(
-    'UPDATE players SET wallet = $1, next_ship_id = next_ship_id + 1 WHERE id = $2',
-    [newWallet, playerId]
-  )
-
-  // Record purchase
-  await client.query(
-    `INSERT INTO purchase_history (player_id, item_id, item_type, price_paid)
-     VALUES ($1, $2, $3, $4)`,
-    [playerId, shopItemId, 'ship', item.price]
-  )
-
-  await OperaService.recordOperaAction(client, playerId, 'purchase_item', { itemName: item.name, itemType: item.type })
-  if (item.is_quest_item) {
-    await OperaService.recordOperaAction(client, playerId, 'purchase_quest_item', { itemName: item.name })
-  }
-
-  // Ships are single-buy: this always takes remaining_stock to 0.
-  await client.query(
-    'UPDATE shop_rotation SET remaining_stock = remaining_stock - 1 WHERE player_id = $1 AND shop_item_id = $2',
-    [playerId, shopItemId]
-  )
-
-  return { 
-    success: true, 
-    ship: await ShipService.getShip(client, playerId, shipId),
-    wallet: newWallet
-  }
-}
-
-async function buyConsumable(client, playerId, shopItemId, quantity = 1, now = new Date()) {
-  const player = await client.query(
-    'SELECT wallet, shop_refresh_at, shop_refresh_interval_ms FROM players WHERE id = $1 FOR UPDATE',
-    [playerId]
-  )
-  if (player.rows.length === 0) return { error: 'Player not found' }
-
-  if (isRefreshDue(player.rows[0].shop_refresh_at, now, player.rows[0].shop_refresh_interval_ms)) {
-    await refreshShopRotation(client, playerId, now)
-  }
-
-  const item = await lockRotationItem(client, playerId, shopItemId)
-  if (!item || item.type !== 'consumable') {
-    return { error: 'Consumable not found' }
+  if (!item || item.type !== itemType) {
+    return { error: notFoundError }
   }
 
   if (item.remaining_stock < quantity) {
-    return { error: 'Not enough stock remaining' }
+    return { error: outOfStockError }
   }
 
   const totalCost = item.price * quantity
@@ -250,105 +179,131 @@ async function buyConsumable(client, playerId, shopItemId, quantity = 1, now = n
     return { error: 'Insufficient credit' }
   }
 
-  // Purchased consumables start in the player's stash (not assigned to any
-  // ship); they only take effect once loaded into a ship's inventory.
-  const consumable = await ConsumableService.addToStash(client, playerId, {
-    name: item.name,
-    description: item.description,
-    rarity: item.rarity,
-    price: item.price,
-    effect: item.effect,
-    effectData: item.effect_data,
-    quantity,
-  })
-  if (!consumable) {
-    return { error: 'Stash is full' }
-  }
+  const fulfilled = await fulfill(item)
+  if (fulfilled.error) return fulfilled
 
   // Deduct from wallet
   const newWallet = player.rows[0].wallet - totalCost
-  await client.query(
-    'UPDATE players SET wallet = $1 WHERE id = $2',
-    [newWallet, playerId]
-  )
+  await client.query('UPDATE players SET wallet = $1 WHERE id = $2', [newWallet, playerId])
 
   // Record purchase
   await client.query(
     `INSERT INTO purchase_history (player_id, item_id, item_type, price_paid)
      VALUES ($1, $2, $3, $4)`,
-    [playerId, shopItemId, 'consumable', totalCost]
+    [playerId, shopItemId, itemType, totalCost],
   )
 
-  await OperaService.recordOperaAction(client, playerId, 'purchase_item', { itemName: item.name, itemType: item.type })
+  await OperaService.recordOperaAction(client, playerId, 'purchase_item', {
+    itemName: item.name,
+    itemType: item.type,
+  })
   if (item.is_quest_item) {
-    await OperaService.recordOperaAction(client, playerId, 'purchase_quest_item', { itemName: item.name })
+    await OperaService.recordOperaAction(client, playerId, 'purchase_quest_item', {
+      itemName: item.name,
+    })
   }
 
   await client.query(
     'UPDATE shop_rotation SET remaining_stock = remaining_stock - $1 WHERE player_id = $2 AND shop_item_id = $3',
-    [quantity, playerId, shopItemId]
+    [quantity, playerId, shopItemId],
   )
 
-  return {
-    success: true,
-    consumable,
-    wallet: newWallet
-  }
+  return { success: true, wallet: newWallet, ...fulfilled }
+}
+
+async function buyShip(client, playerId, shopItemId, now = new Date()) {
+  return purchaseShopItem(client, playerId, shopItemId, {
+    itemType: 'ship',
+    notFoundError: 'Ship not found',
+    outOfStockError: 'Ship already purchased',
+    now,
+    fulfill: async (item) => {
+      // Docked-ship cap is total ships owned (deleted_at IS NULL), not "currently
+      // at the station" — there's no separate docked/in-mission distinction for
+      // capacity purposes. Effective cap is SUM(docking_stations.capacity),
+      // grown by the "dockedShips" self-upgrade (see self.service.js), which
+      // inserts an extra capacity:1 row rather than updating a single column.
+      const shipCount = (
+        await client.query(
+          'SELECT COUNT(*)::int AS count FROM ships WHERE player_id = $1 AND deleted_at IS NULL',
+          [playerId],
+        )
+      ).rows[0].count
+      const dockingCapacity = (
+        await client.query(
+          'SELECT COALESCE(SUM(capacity), 0)::int AS capacity FROM docking_stations WHERE player_id = $1',
+          [playerId],
+        )
+      ).rows[0].capacity
+      if (shipCount >= dockingCapacity) {
+        return { error: 'Docking capacity full' }
+      }
+
+      // Create ship from shop item
+      const nextShipId = await client.query('SELECT next_ship_id FROM players WHERE id = $1', [
+        playerId,
+      ])
+      const shipId = nextShipId.rows[0].next_ship_id
+
+      const stats = item.stats || {
+        speed: 100,
+        capacity: 1,
+        inventory_space: 0,
+        durability: 10,
+        price: 0,
+      }
+      const shipData = {
+        id: shipId,
+        name: item.name,
+        rarity: item.rarity,
+        stats: { max_durability: stats.durability, ...stats },
+      }
+
+      await ShipService.createShip(client, playerId, shipData)
+      await client.query('UPDATE players SET next_ship_id = next_ship_id + 1 WHERE id = $1', [
+        playerId,
+      ])
+
+      return { ship: await ShipService.getShip(client, playerId, shipId) }
+    },
+  })
+}
+
+async function buyConsumable(client, playerId, shopItemId, quantity = 1, now = new Date()) {
+  return purchaseShopItem(client, playerId, shopItemId, {
+    itemType: 'consumable',
+    notFoundError: 'Consumable not found',
+    outOfStockError: 'Not enough stock remaining',
+    quantity,
+    now,
+    fulfill: async (item) => {
+      // Purchased consumables start in the player's stash (not assigned to any
+      // ship); they only take effect once loaded into a ship's inventory.
+      const consumable = await ConsumableService.addToStash(client, playerId, {
+        name: item.name,
+        description: item.description,
+        rarity: item.rarity,
+        price: item.price,
+        effect: item.effect,
+        effectData: item.effect_data,
+        quantity,
+      })
+      if (!consumable) return { error: 'Stash is full' }
+      return { consumable }
+    },
+  })
 }
 
 async function buyArmor(client, playerId, shopItemId, now = new Date()) {
-  const player = await client.query(
-    'SELECT wallet, shop_refresh_at, shop_refresh_interval_ms FROM players WHERE id = $1 FOR UPDATE',
-    [playerId]
-  )
-  if (player.rows.length === 0) return { error: 'Player not found' }
-
-  if (isRefreshDue(player.rows[0].shop_refresh_at, now, player.rows[0].shop_refresh_interval_ms)) {
-    await refreshShopRotation(client, playerId, now)
-  }
-
-  const item = await lockRotationItem(client, playerId, shopItemId)
-  if (!item || item.type !== 'armor') {
-    return { error: 'Armor not found' }
-  }
-
-  if (item.remaining_stock <= 0) {
-    return { error: 'Armor already purchased' }
-  }
-
-  if (player.rows[0].wallet < item.price) {
-    return { error: 'Insufficient credit' }
-  }
-
-  const equipment = await EquipmentService.buyArmor(client, playerId, item, item.price)
-
-  const newWallet = player.rows[0].wallet - item.price
-  await client.query(
-    'UPDATE players SET wallet = $1 WHERE id = $2',
-    [newWallet, playerId]
-  )
-
-  await client.query(
-    `INSERT INTO purchase_history (player_id, item_id, item_type, price_paid)
-     VALUES ($1, $2, $3, $4)`,
-    [playerId, shopItemId, 'armor', item.price]
-  )
-
-  await OperaService.recordOperaAction(client, playerId, 'purchase_item', { itemName: item.name, itemType: item.type })
-  if (item.is_quest_item) {
-    await OperaService.recordOperaAction(client, playerId, 'purchase_quest_item', { itemName: item.name })
-  }
-
-  await client.query(
-    'UPDATE shop_rotation SET remaining_stock = remaining_stock - 1 WHERE player_id = $1 AND shop_item_id = $2',
-    [playerId, shopItemId]
-  )
-
-  return {
-    success: true,
-    equipment,
-    wallet: newWallet
-  }
+  return purchaseShopItem(client, playerId, shopItemId, {
+    itemType: 'armor',
+    notFoundError: 'Armor not found',
+    outOfStockError: 'Armor already purchased',
+    now,
+    fulfill: async (item) => ({
+      equipment: await EquipmentService.buyArmor(client, playerId, item, item.price),
+    }),
+  })
 }
 
 const ATTRIBUTE_ITEM_NAMES = {
@@ -374,7 +329,7 @@ const MAX_STOCK_BY_RARITY = {
 }
 
 function buildAttributeConsumables() {
-  return ATTRIBUTE_KEYS.map(attribute => ({
+  return ATTRIBUTE_KEYS.map((attribute) => ({
     name: ATTRIBUTE_ITEM_NAMES[attribute],
     description: `Grants Advantage 1 on the next event using ${attribute}. Must be in the ship's inventory; consumed once used.`,
     type: 'consumable',
@@ -393,7 +348,14 @@ async function seedShopItems(client) {
       type: 'ship',
       rarity: 'common',
       price: 5000,
-      stats: { speed: 120, capacity: 2, inventory_space: 10, durability: 8, max_durability: 8, price: 5000 }
+      stats: {
+        speed: 120,
+        capacity: 2,
+        inventory_space: 10,
+        durability: 8,
+        max_durability: 8,
+        price: 5000,
+      },
     },
     {
       name: 'Frigate',
@@ -401,7 +363,14 @@ async function seedShopItems(client) {
       type: 'ship',
       rarity: 'rare',
       price: 12000,
-      stats: { speed: 100, capacity: 4, inventory_space: 20, durability: 15, max_durability: 15, price: 12000 }
+      stats: {
+        speed: 100,
+        capacity: 4,
+        inventory_space: 20,
+        durability: 15,
+        max_durability: 15,
+        price: 12000,
+      },
     },
     {
       name: 'Cruiser',
@@ -409,15 +378,23 @@ async function seedShopItems(client) {
       type: 'ship',
       rarity: 'epic',
       price: 25000,
-      stats: { speed: 80, capacity: 6, inventory_space: 30, durability: 25, max_durability: 25, price: 25000 }
-    }
+      stats: {
+        speed: 80,
+        capacity: 6,
+        inventory_space: 30,
+        durability: 25,
+        max_durability: 25,
+        price: 25000,
+      },
+    },
   ]
 
   const consumables = [
     ...buildAttributeConsumables(),
     {
       name: 'Trauma Nanites',
-      description: 'The instant a crew member would die, revives them to full health. Must be in the ship\'s inventory; consumed automatically.',
+      description:
+        "The instant a crew member would die, revives them to full health. Must be in the ship's inventory; consumed automatically.",
       type: 'consumable',
       rarity: 'rare',
       price: 2500,
@@ -426,7 +403,8 @@ async function seedShopItems(client) {
     },
     {
       name: 'Hull Auto-Patch',
-      description: 'The instant the ship would break down, repairs it back to full durability. Must be in the ship\'s inventory; consumed automatically.',
+      description:
+        "The instant the ship would break down, repairs it back to full durability. Must be in the ship's inventory; consumed automatically.",
       type: 'consumable',
       rarity: 'rare',
       price: 2000,
@@ -435,7 +413,8 @@ async function seedShopItems(client) {
     },
     {
       name: 'Overdrive Injector',
-      description: 'Used when launching a mission: temporarily boosts the ship\'s speed, shortening travel to and from the mission.',
+      description:
+        "Used when launching a mission: temporarily boosts the ship's speed, shortening travel to and from the mission.",
       type: 'consumable',
       rarity: 'uncommon',
       price: 1200,
@@ -494,7 +473,7 @@ async function seedShopItems(client) {
       `INSERT INTO shop_items (name, description, type, rarity, price, stats, available, max_stock)
        VALUES ($1, $2, $3, $4, $5, $6, TRUE, 1)
        ON CONFLICT DO NOTHING`,
-      [ship.name, ship.description, ship.type, ship.rarity, ship.price, JSON.stringify(ship.stats)]
+      [ship.name, ship.description, ship.type, ship.rarity, ship.price, JSON.stringify(ship.stats)],
     )
   }
 
@@ -503,7 +482,14 @@ async function seedShopItems(client) {
       `INSERT INTO shop_items (name, description, type, rarity, price, stats, available, max_stock)
        VALUES ($1, $2, 'armor', $3, $4, $5, TRUE, $6)
        ON CONFLICT DO NOTHING`,
-      [armor.name, armor.description, armor.rarity, armor.price, JSON.stringify(armor.stats), armor.maxStock]
+      [
+        armor.name,
+        armor.description,
+        armor.rarity,
+        armor.price,
+        JSON.stringify(armor.stats),
+        armor.maxStock,
+      ],
     )
   }
 
@@ -513,7 +499,16 @@ async function seedShopItems(client) {
       `INSERT INTO shop_items (name, description, type, rarity, price, effect, effect_data, available, max_stock)
        VALUES ($1, $2, $3, $4, $5, $6, $7, TRUE, $8)
        ON CONFLICT DO NOTHING`,
-      [item.name, item.description, item.type, item.rarity, item.price, item.effect, JSON.stringify(item.effectData), maxStock]
+      [
+        item.name,
+        item.description,
+        item.type,
+        item.rarity,
+        item.price,
+        item.effect,
+        JSON.stringify(item.effectData),
+        maxStock,
+      ],
     )
   }
 }

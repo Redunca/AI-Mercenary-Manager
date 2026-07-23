@@ -5,8 +5,10 @@ import { Component } from '@angular/core';
   standalone: true,
   imports: [],
   templateUrl: './help.component.html',
-  styleUrl: './help.component.scss'
+  styleUrl: './help.component.scss',
 })
 export class HelpComponent {
-  registerCommands() { return {}; }
+  registerCommands() {
+    return {};
+  }
 }

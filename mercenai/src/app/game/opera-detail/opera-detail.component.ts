@@ -9,7 +9,7 @@ import { LogEntry, isBanterTag } from '../../models/log';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './opera-detail.component.html',
-  styleUrl: './opera-detail.component.scss'
+  styleUrl: './opera-detail.component.scss',
 })
 export class OperaDetailComponent {
   @Input() id!: string;
@@ -28,9 +28,12 @@ export class OperaDetailComponent {
 
   registerCommands() {
     return {
-      'choose': (optionId: string) => {
-        if (!optionId) { console.warn('Usage: choose <optionId>'); return; }
-        void this.operaService.chooseOpera(this.id, optionId).then(err => {
+      choose: (optionId: string) => {
+        if (!optionId) {
+          console.warn('Usage: choose <optionId>');
+          return;
+        }
+        void this.operaService.chooseOpera(this.id, optionId).then((err) => {
           if (err) console.error(`[opera choose] ${err}`);
         });
       },

@@ -11,28 +11,31 @@ function pickEventRecruitQuote({ eventType, success, perks, flaws, personality }
   const dir = path.join(DATA_DIR, eventType.toLowerCase())
   if (!fs.existsSync(dir)) return null
 
-  const availableFiles = fs.readdirSync(dir)
-    .filter(f => f.endsWith('.json'))
-    .map(f => f.replace('.json', ''))
+  const availableFiles = fs
+    .readdirSync(dir)
+    .filter((f) => f.endsWith('.json'))
+    .map((f) => f.replace('.json', ''))
 
   const perkFlawSlugs = [
-    ...(Array.isArray(perks) ? perks : []).map(p => slugify(p.name)),
-    ...(Array.isArray(flaws) ? flaws : []).map(f => slugify(f.name)),
+    ...(Array.isArray(perks) ? perks : []).map((p) => slugify(p.name)),
+    ...(Array.isArray(flaws) ? flaws : []).map((f) => slugify(f.name)),
   ]
-  const matches = perkFlawSlugs.filter(slug => availableFiles.includes(slug))
-  const fileKey = matches.length > 0
-    ? matches[Math.floor(Math.random() * matches.length)]
-    : 'perk-and-flawless'
+  const matches = perkFlawSlugs.filter((slug) => availableFiles.includes(slug))
+  const fileKey =
+    matches.length > 0 ? matches[Math.floor(Math.random() * matches.length)] : 'perk-and-flawless'
 
   if (!availableFiles.includes(fileKey)) return null
 
   try {
     const data = JSON.parse(fs.readFileSync(path.join(dir, `${fileKey}.json`), 'utf8'))
     const outcomeKey = success ? 'success' : 'failure'
-    const phrases = data[eventType.toUpperCase()]?.[outcomeKey]?.[fileKey]?.[personality ?? 'Explorer']
+    const phrases =
+      data[eventType.toUpperCase()]?.[outcomeKey]?.[fileKey]?.[personality ?? 'Explorer']
     if (!Array.isArray(phrases) || phrases.length === 0) return null
     return phrases[Math.floor(Math.random() * phrases.length)]
-  } catch { return null }
+  } catch {
+    return null
+  }
 }
 
 /**
@@ -51,9 +54,9 @@ function pickPlanetTagQuote({ tags, channel, avoid = [] }) {
     return null
   }
 
-  const phrases = tags.flatMap(tag => (
-    Array.isArray(data[tag]?.[channel]) ? data[tag][channel] : []
-  ))
+  const phrases = tags.flatMap((tag) =>
+    Array.isArray(data[tag]?.[channel]) ? data[tag][channel] : [],
+  )
   if (phrases.length === 0) return null
 
   return pick(phrases, avoid)
@@ -62,99 +65,188 @@ function pickPlanetTagQuote({ tags, channel, avoid = [] }) {
 const POOL = {
   EN_ROUTE: {
     sys: [
-      "Unit moving toward the operation zone.", "Departure confirmed. No incidents on launch.",
-      "All systems nominal for departure.", "Course locked in.",
+      'Unit moving toward the operation zone.',
+      'Departure confirmed. No incidents on launch.',
+      'All systems nominal for departure.',
+      'Course locked in.',
     ],
     ia: [
-      "No anomalies detected.", "Trajectory nominal. Monitoring active.",
-      "Fuel consumption within projected range.", "Communication link stable.",
+      'No anomalies detected.',
+      'Trajectory nominal. Monitoring active.',
+      'Fuel consumption within projected range.',
+      'Communication link stable.',
     ],
-    recruit: ["We went the wrong way.", "I forgot my stuff.", "Is it far?", "This ship smells weird.", "Are we there yet?"],
+    recruit: [
+      'We went the wrong way.',
+      'I forgot my stuff.',
+      'Is it far?',
+      'This ship smells weird.',
+      'Are we there yet?',
+    ],
   },
   EVENT: {
     sys: [
-      "Contact established with target zone.", "Event in progress. Outcome undetermined.",
-      "First signs of the objective spotted.", "Proximity alert: something's here.",
+      'Contact established with target zone.',
+      'Event in progress. Outcome undetermined.',
+      'First signs of the objective spotted.',
+      "Proximity alert: something's here.",
     ],
     ia: [
-      "Situation analysis in progress.", "Environmental variables unstable.",
-      "Readings inconclusive so far.", "Recommend caution going forward.",
+      'Situation analysis in progress.',
+      'Environmental variables unstable.',
+      'Readings inconclusive so far.',
+      'Recommend caution going forward.',
     ],
-    recruit: ["What is that thing?!", "Nobody told me it would be like this.", "Okay, stay sharp.", "This wasn't in the briefing."],
+    recruit: [
+      'What is that thing?!',
+      'Nobody told me it would be like this.',
+      'Okay, stay sharp.',
+      "This wasn't in the briefing.",
+    ],
   },
   RETURN: {
     sys: [
-      "Return phase initiated.", "Mission accomplished. Returning.",
-      "Objective cleared. Heading home.", "Return trajectory locked in.",
+      'Return phase initiated.',
+      'Mission accomplished. Returning.',
+      'Objective cleared. Heading home.',
+      'Return trajectory locked in.',
     ],
     ia: [
-      "Unit en route home. Nominal outcome.", "Efficiency: acceptable.",
-      "Fuel reserves sufficient for the return leg.", "No pursuit detected.",
+      'Unit en route home. Nominal outcome.',
+      'Efficiency: acceptable.',
+      'Fuel reserves sufficient for the return leg.',
+      'No pursuit detected.',
     ],
-    recruit: ["We're finally heading back.", "Almost died but whatever.", "I want a bonus.", "Let's not do that again.", "Anyone else starving?"],
+    recruit: [
+      "We're finally heading back.",
+      'Almost died but whatever.',
+      'I want a bonus.',
+      "Let's not do that again.",
+      'Anyone else starving?',
+    ],
   },
   COMPLETED: {
     sys: [
-      "Mission complete. Unit returned to base.", "Objective achieved.",
-      "Unit docked. Standing down.", "Debrief pending.",
+      'Mission complete. Unit returned to base.',
+      'Objective achieved.',
+      'Unit docked. Standing down.',
+      'Debrief pending.',
     ],
     ia: [
-      "Operation concluded.", "Performance within acceptable parameters.",
-      "Systems powering down to standby.", "Logs archived.",
+      'Operation concluded.',
+      'Performance within acceptable parameters.',
+      'Systems powering down to standby.',
+      'Logs archived.',
     ],
-    recruit: ["When do we go again?", "I'm going to sleep.", "Anyone got food?", "That's a story for the bar.", "Worth it."],
+    recruit: [
+      'When do we go again?',
+      "I'm going to sleep.",
+      'Anyone got food?',
+      "That's a story for the bar.",
+      'Worth it.',
+    ],
   },
 }
 
 const POOL_FAILED = {
   RETURN: {
     sys: [
-      "Emergency extraction. Mission aborted.", "Hasty retreat. Objective not achieved.",
-      "Mission scrubbed. Falling back to base.", "Withdrawal underway, objective unmet.",
+      'Emergency extraction. Mission aborted.',
+      'Hasty retreat. Objective not achieved.',
+      'Mission scrubbed. Falling back to base.',
+      'Withdrawal underway, objective unmet.',
     ],
     ia: [
-      "Extraction protocol activated.", "Operational failure. Root cause analysis in progress.",
-      "Casualty and damage report compiling.", "Command notified of the setback.",
+      'Extraction protocol activated.',
+      'Operational failure. Root cause analysis in progress.',
+      'Casualty and damage report compiling.',
+      'Command notified of the setback.',
     ],
   },
   COMPLETED: {
     sys: [
-      "Mission failed. Unit returned to base.", "Operation aborted.",
-      "Contract unfulfilled. Standing down.", "Objective lost. Unit recalled.",
+      'Mission failed. Unit returned to base.',
+      'Operation aborted.',
+      'Contract unfulfilled. Standing down.',
+      'Objective lost. Unit recalled.',
     ],
     ia: [
-      "Negative outcome. No objective achieved.", "Failure debrief scheduled.",
-      "Post-mortem scheduled for this operation.", "Lessons logged for the next attempt.",
+      'Negative outcome. No objective achieved.',
+      'Failure debrief scheduled.',
+      'Post-mortem scheduled for this operation.',
+      'Lessons logged for the next attempt.',
     ],
   },
 }
 
 const EVENT_PHRASES = {
-  success_ia: ["Intermediate objective validated.", "Result matches projections.", "Nominal execution."],
-  success_recruit: ["Too easy.", "I knew I'd pull it off.", "Shall we continue?"],
-  hp_loss_ia: ["Damage recorded. Recruit still operational.", "Non-critical injury. Mission continues."],
-  hp_loss_recruit: ["That hurt but I'm holding up.", "That one stung.", "Just a scratch."],
-  abort_ia: ["Extraction protocol activated. Mission aborted.", "Situation uncontrollable. Immediate withdrawal."],
-  abort_recruit: ["We're getting out of here!", "Too hot, we're bailing.", "I didn't sign up for this."],
-  no_reward_ia: ["Objective not achieved. No payment issued.", "Contract not honored. Mission closed without payment."],
-  no_reward_recruit: ["We're coming back empty-handed.", "I did my best.", "No credits, but we're all in one piece."],
-  death_ia: ["Vital signs lost. Recruit neutralized.", "Loss confirmed. Filing the record."],
-  last_words: [
-    "Give my regards to no one in particular.", "I should have asked for a bigger bonus.",
-    "...", "I knew it would end like this.", "Take care of the rest of the team.",
+  success_ia: [
+    'Intermediate objective validated.',
+    'Result matches projections.',
+    'Nominal execution.',
   ],
-  revived_ia: ["Flatline reversed. Nanite injection successful.", "Vital signs restored. Recruit stabilized."],
-  revived_recruit: ["I was gone for a second there.", "Remind me to thank whoever packed the medkit."],
-  ship_damage_ia: ["Hull integrity compromised.", "Structural damage sustained."],
+  success_recruit: ['Too easy.', "I knew I'd pull it off.", 'Shall we continue?'],
+  hp_loss_ia: [
+    'Damage recorded. Recruit still operational.',
+    'Non-critical injury. Mission continues.',
+  ],
+  hp_loss_recruit: ["That hurt but I'm holding up.", 'That one stung.', 'Just a scratch.'],
+  abort_ia: [
+    'Extraction protocol activated. Mission aborted.',
+    'Situation uncontrollable. Immediate withdrawal.',
+  ],
+  abort_recruit: [
+    "We're getting out of here!",
+    "Too hot, we're bailing.",
+    "I didn't sign up for this.",
+  ],
+  no_reward_ia: [
+    'Objective not achieved. No payment issued.',
+    'Contract not honored. Mission closed without payment.',
+  ],
+  no_reward_recruit: [
+    "We're coming back empty-handed.",
+    'I did my best.',
+    "No credits, but we're all in one piece.",
+  ],
+  death_ia: ['Vital signs lost. Recruit neutralized.', 'Loss confirmed. Filing the record.'],
+  last_words: [
+    'Give my regards to no one in particular.',
+    'I should have asked for a bigger bonus.',
+    '...',
+    'I knew it would end like this.',
+    'Take care of the rest of the team.',
+  ],
+  revived_ia: [
+    'Flatline reversed. Nanite injection successful.',
+    'Vital signs restored. Recruit stabilized.',
+  ],
+  revived_recruit: [
+    'I was gone for a second there.',
+    'Remind me to thank whoever packed the medkit.',
+  ],
+  ship_damage_ia: ['Hull integrity compromised.', 'Structural damage sustained.'],
   ship_damage_recruit: ["That's coming out of the bonus.", "We're not landing softly after that."],
-  ship_broken_ia: ["Hull integrity critical. Vessel disabled.", "Ship inoperable. Grounding on return."],
-  ship_broken_recruit: ["We're not flying this thing again anytime soon.", "That's it, she's done."],
-  ship_repaired_ia: ["Auto-patch engaged. Hull integrity restored.", "Repair systems compensated for the damage."],
-  ship_repaired_recruit: ["Patched up and still flying.", "Good thing we packed spares."],
-  combat_won_ia: ["Hostile threat neutralized.", "Engagement resolved in our favor."],
+  ship_broken_ia: [
+    'Hull integrity critical. Vessel disabled.',
+    'Ship inoperable. Grounding on return.',
+  ],
+  ship_broken_recruit: [
+    "We're not flying this thing again anytime soon.",
+    "That's it, she's done.",
+  ],
+  ship_repaired_ia: [
+    'Auto-patch engaged. Hull integrity restored.',
+    'Repair systems compensated for the damage.',
+  ],
+  ship_repaired_recruit: ['Patched up and still flying.', 'Good thing we packed spares.'],
+  combat_won_ia: ['Hostile threat neutralized.', 'Engagement resolved in our favor.'],
   combat_won_recruit: ["Didn't even break a sweat.", "That's one less problem."],
-  combat_lost_ia: ["Engagement untenable. Withdrawal required.", "Hostile force too strong. Pulling back."],
-  combat_lost_recruit: ["We need to fall back, now!", "This fight's not winnable."],
+  combat_lost_ia: [
+    'Engagement untenable. Withdrawal required.',
+    'Hostile force too strong. Pulling back.',
+  ],
+  combat_lost_recruit: ['We need to fall back, now!', "This fight's not winnable."],
 }
 
 /**
@@ -165,7 +257,7 @@ const EVENT_PHRASES = {
  */
 function pick(arr, avoid = []) {
   if (avoid.length > 0) {
-    const fresh = arr.filter(item => !avoid.some(message => message.includes(item)))
+    const fresh = arr.filter((item) => !avoid.some((message) => message.includes(item)))
     if (fresh.length > 0) return fresh[Math.floor(Math.random() * fresh.length)]
   }
   return arr[Math.floor(Math.random() * arr.length)]
@@ -190,7 +282,7 @@ async function getRecentMissionMessages(client, playerId, missionId, limit = 10)
      ORDER BY id DESC LIMIT $3`,
     [playerId, missionId, limit],
   )
-  return result.rows.map(row => row.message)
+  return result.rows.map((row) => row.message)
 }
 
 async function insertLogEntries(client, playerId, entries) {
@@ -219,21 +311,31 @@ async function insertLogEntries(client, playerId, entries) {
  *   banter entry defines them (see pickTagFlavoredContent), falling back to its generic lines/reply otherwise.
  */
 
-function buildPhaseLogs({ context, phase, failed, rewardForfeited, recruitName, injuredCount = 0, avoid = [] }) {
+function buildPhaseLogs({
+  context,
+  phase,
+  failed,
+  rewardForfeited,
+  recruitName,
+  injuredCount = 0,
+  avoid = [],
+}) {
   const { missionId, missionName, missionDifficulty, planet } = context
   const failedPool = failed ? POOL_FAILED[phase] : null
   const pool = POOL[phase]
-  const prefix = missionDifficulty ? `[${missionName} · ${missionDifficulty}] ` : `[${missionName}] `
+  const prefix = missionDifficulty
+    ? `[${missionName} · ${missionDifficulty}] `
+    : `[${missionName}] `
   // A failed phase transition has its own headline text (e.g. "Emergency
   // extraction") that must win over generic planet-tag weather flavor, or the
   // mission's outcome never actually gets said out loud -- planet-tag flavor
   // only fills in when the mission didn't fail.
   const sysLine = failedPool
     ? pick(failedPool.sys, avoid)
-    : pickPlanetTagQuote({ tags: planet?.tags, channel: 'sys', avoid }) ?? pick(pool.sys, avoid)
+    : (pickPlanetTagQuote({ tags: planet?.tags, channel: 'sys', avoid }) ?? pick(pool.sys, avoid))
   const iaLine = failedPool
     ? pick(failedPool.ia, avoid)
-    : pickPlanetTagQuote({ tags: planet?.tags, channel: 'ia', avoid }) ?? pick(pool.ia, avoid)
+    : (pickPlanetTagQuote({ tags: planet?.tags, channel: 'ia', avoid }) ?? pick(pool.ia, avoid))
   const entries = [
     { tag: '[SYS]', message: `${prefix}${sysLine}`, missionId },
     { tag: '[IA]', message: iaLine, missionId },
@@ -256,9 +358,7 @@ function buildPhaseLogs({ context, phase, failed, rewardForfeited, recruitName, 
   }
   if (phase === 'COMPLETED') {
     const outcome = failed ? 'FAILURE' : rewardForfeited ? 'NO REWARD' : 'SUCCESS'
-    const injurySuffix = injuredCount > 0
-      ? ` — ${injuredCount} crew hospitalized`
-      : ''
+    const injurySuffix = injuredCount > 0 ? ` — ${injuredCount} crew hospitalized` : ''
     global.push({
       tag: '[SYS]',
       message: `Mission "${missionName}" completed [${outcome}] — Recruit: ${recruitName}${injurySuffix}`,
@@ -298,7 +398,11 @@ function buildEventResultLogs({ context, eventResult }) {
   }
 
   if (r.recruitDied) {
-    entries.push({ tag: '[SYS]', message: `${r.type}${r.attribute ? ` [${r.attribute}]` : ''} — ${rollStr} → KILLED IN ACTION`, missionId })
+    entries.push({
+      tag: '[SYS]',
+      message: `${r.type}${r.attribute ? ` [${r.attribute}]` : ''} — ${rollStr} → KILLED IN ACTION`,
+      missionId,
+    })
     entries.push({ tag: '[IA]', message: iaLine(EVENT_PHRASES.death_ia), missionId })
     entries.push({ tag, message: `"${pick(EVENT_PHRASES.last_words)}"`, missionId })
     return {
@@ -309,36 +413,68 @@ function buildEventResultLogs({ context, eventResult }) {
 
   const typeLabel = `${r.type}${r.attribute ? ` [${r.attribute}]` : ''}`
   if (r.recruitRevived) {
-    entries.push({ tag: '[SYS]', message: `${typeLabel} — ${rollStr} → FAILURE — -${r.hpLost} HP → REVIVED`, missionId })
+    entries.push({
+      tag: '[SYS]',
+      message: `${typeLabel} — ${rollStr} → FAILURE — -${r.hpLost} HP → REVIVED`,
+      missionId,
+    })
     entries.push({ tag: '[IA]', message: pick(EVENT_PHRASES.revived_ia), missionId })
     entries.push({ tag, message: recruitQuote(EVENT_PHRASES.revived_recruit), missionId })
   } else if (!r.success && r.consequence === 'FORCED_DEPARTURE') {
-    entries.push({ tag: '[SYS]', message: `${typeLabel} — ${rollStr} → FAILURE — Forced extraction`, missionId })
+    entries.push({
+      tag: '[SYS]',
+      message: `${typeLabel} — ${rollStr} → FAILURE — Forced extraction`,
+      missionId,
+    })
     entries.push({ tag: '[IA]', message: iaLine(EVENT_PHRASES.abort_ia), missionId })
     entries.push({ tag, message: recruitQuote(EVENT_PHRASES.abort_recruit), missionId })
   } else if (!r.success && r.consequence === 'NO_REWARD') {
-    entries.push({ tag: '[SYS]', message: `${typeLabel} — ${rollStr} → FAILURE — no reward`, missionId })
+    entries.push({
+      tag: '[SYS]',
+      message: `${typeLabel} — ${rollStr} → FAILURE — no reward`,
+      missionId,
+    })
     entries.push({ tag: '[IA]', message: iaLine(EVENT_PHRASES.no_reward_ia), missionId })
     entries.push({ tag, message: recruitQuote(EVENT_PHRASES.no_reward_recruit), missionId })
   } else if (!r.success && r.consequence === 'HP_LOSS') {
-    entries.push({ tag: '[SYS]', message: `${typeLabel} — ${rollStr} → FAILURE — -${r.hpLost} HP`, missionId })
+    entries.push({
+      tag: '[SYS]',
+      message: `${typeLabel} — ${rollStr} → FAILURE — -${r.hpLost} HP`,
+      missionId,
+    })
     entries.push({ tag: '[IA]', message: iaLine(EVENT_PHRASES.hp_loss_ia), missionId })
     entries.push({ tag, message: recruitQuote(EVENT_PHRASES.hp_loss_recruit), missionId })
   } else if (!r.success && r.consequence === 'SHIP_DAMAGE' && r.shipBroken) {
-    entries.push({ tag: '[SYS]', message: `${typeLabel} — ${rollStr} → FAILURE — ship disabled, forced extraction`, missionId })
+    entries.push({
+      tag: '[SYS]',
+      message: `${typeLabel} — ${rollStr} → FAILURE — ship disabled, forced extraction`,
+      missionId,
+    })
     entries.push({ tag: '[IA]', message: pick(EVENT_PHRASES.ship_broken_ia), missionId })
     entries.push({ tag, message: recruitQuote(EVENT_PHRASES.ship_broken_recruit), missionId })
   } else if (!r.success && r.consequence === 'SHIP_DAMAGE' && r.shipAutoRepaired) {
-    entries.push({ tag: '[SYS]', message: `${typeLabel} — ${rollStr} → FAILURE — ship damaged, auto-repaired`, missionId })
+    entries.push({
+      tag: '[SYS]',
+      message: `${typeLabel} — ${rollStr} → FAILURE — ship damaged, auto-repaired`,
+      missionId,
+    })
     entries.push({ tag: '[IA]', message: pick(EVENT_PHRASES.ship_repaired_ia), missionId })
     entries.push({ tag, message: recruitQuote(EVENT_PHRASES.ship_repaired_recruit), missionId })
   } else if (!r.success && r.consequence === 'SHIP_DAMAGE') {
-    entries.push({ tag: '[SYS]', message: `${typeLabel} — ${rollStr} → FAILURE — ship damaged, no reward`, missionId })
+    entries.push({
+      tag: '[SYS]',
+      message: `${typeLabel} — ${rollStr} → FAILURE — ship damaged, no reward`,
+      missionId,
+    })
     entries.push({ tag: '[IA]', message: pick(EVENT_PHRASES.ship_damage_ia), missionId })
     entries.push({ tag, message: recruitQuote(EVENT_PHRASES.ship_damage_recruit), missionId })
   } else {
     const rewardStr = r.rewardEarned ? ` [+${r.rewardEarned.amount} ${r.rewardEarned.type}]` : ''
-    entries.push({ tag: '[SYS]', message: `${typeLabel} — ${rollStr} → SUCCESS${rewardStr}`, missionId })
+    entries.push({
+      tag: '[SYS]',
+      message: `${typeLabel} — ${rollStr} → SUCCESS${rewardStr}`,
+      missionId,
+    })
     entries.push({ tag: '[IA]', message: iaLine(EVENT_PHRASES.success_ia), missionId })
     entries.push({ tag, message: recruitQuote(EVENT_PHRASES.success_recruit), missionId })
   }
@@ -359,7 +495,8 @@ function summarizeCombatEntry(entry) {
   }
 
   if (!entry.hit) return `Hostiles miss ${entry.targetName}`
-  if (entry.revived) return `Hostiles hit ${entry.targetName} for ${entry.damage} — revived by nanites`
+  if (entry.revived)
+    return `Hostiles hit ${entry.targetName} for ${entry.damage} — revived by nanites`
   if (entry.died) return `Hostiles hit ${entry.targetName} for ${entry.damage} — KILLED IN ACTION`
   if (entry.downed) return `Hostiles hit ${entry.targetName} for ${entry.damage} — down, max HP -1`
   return `Hostiles hit ${entry.targetName} for ${entry.damage} (${entry.targetHpAfter} HP left)`
@@ -378,8 +515,8 @@ function buildCombatRoundLog({ round, missionId }) {
 function buildCombatEventLogs({ context, event, combatResult }) {
   const { missionId, missionName, crew } = context
   const won = combatResult.enemyDefeated
-  const deadThisFight = combatResult.crewResults.filter(r => r.status === 'dead')
-  const survivors = crew.filter(c => !deadThisFight.some(d => String(d.id) === String(c.id)))
+  const deadThisFight = combatResult.crewResults.filter((r) => r.status === 'dead')
+  const survivors = crew.filter((c) => !deadThisFight.some((d) => String(d.id) === String(c.id)))
 
   const rewardStr = won && event.reward ? ` [+${event.reward.amount} ${event.reward.type}]` : ''
   const entries = [
@@ -388,7 +525,11 @@ function buildCombatEventLogs({ context, event, combatResult }) {
       message: `${event.type} — ${won ? 'VICTORY' : 'DEFEAT'} vs Hostiles (${combatResult.rounds.length} round${combatResult.rounds.length === 1 ? '' : 's'})${rewardStr}`,
       missionId,
     },
-    { tag: '[IA]', message: pick(won ? EVENT_PHRASES.combat_won_ia : EVENT_PHRASES.combat_lost_ia), missionId },
+    {
+      tag: '[IA]',
+      message: pick(won ? EVENT_PHRASES.combat_won_ia : EVENT_PHRASES.combat_lost_ia),
+      missionId,
+    },
   ]
 
   const spokesperson = survivors.length > 0 ? pick(survivors) : null
@@ -402,9 +543,13 @@ function buildCombatEventLogs({ context, event, combatResult }) {
 
   const global = []
   for (const dead of deadThisFight) {
-    const recruit = crew.find(c => String(c.id) === String(dead.id))
+    const recruit = crew.find((c) => String(c.id) === String(dead.id))
     const name = recruit?.name ?? 'A recruit'
-    entries.push({ tag: `[${name.toUpperCase()}]`, message: `"${pick(EVENT_PHRASES.last_words)}"`, missionId })
+    entries.push({
+      tag: `[${name.toUpperCase()}]`,
+      message: `"${pick(EVENT_PHRASES.last_words)}"`,
+      missionId,
+    })
     global.push({ tag: '[SYS]', message: `${name} died during mission "${missionName}".` })
   }
 
@@ -415,12 +560,12 @@ function buildCombatEventLogs({ context, event, combatResult }) {
 
 function hasTrait(recruit, kind, slug) {
   const list = kind === 'perk' ? recruit?.perks : recruit?.flaws
-  return Array.isArray(list) && list.some(t => slugify(t.name) === slug)
+  return Array.isArray(list) && list.some((t) => slugify(t.name) === slug)
 }
 
 function parseTrigger(trigger) {
   // "flaw:bloodlust+flaw:pacifist" -> [{kind:'flaw',slug:'bloodlust'}, {kind:'flaw',slug:'pacifist'}]
-  return trigger.split('+').map(part => {
+  return trigger.split('+').map((part) => {
     const [kind, slug] = part.split(':')
     return { kind, slug }
   })
@@ -518,10 +663,13 @@ async function getLastBanterPairNames(client, playerId, missionId) {
  */
 function pickTagFlavoredContent(entry, tags) {
   if (Array.isArray(tags) && tags.length > 0 && entry.tagLines) {
-    const matches = tags.filter(tag => (
-      Array.isArray(entry.tagLines[tag]?.lines) && entry.tagLines[tag].lines.length > 0 &&
-      Array.isArray(entry.tagLines[tag]?.reply) && entry.tagLines[tag].reply.length > 0
-    ))
+    const matches = tags.filter(
+      (tag) =>
+        Array.isArray(entry.tagLines[tag]?.lines) &&
+        entry.tagLines[tag].lines.length > 0 &&
+        Array.isArray(entry.tagLines[tag]?.reply) &&
+        entry.tagLines[tag].reply.length > 0,
+    )
     if (matches.length > 0) {
       const tag = matches[Math.floor(Math.random() * matches.length)]
       return entry.tagLines[tag]
@@ -546,14 +694,15 @@ async function buildBanterLog(client, playerId, context) {
   if (eligiblePairs.length === 0) return null
 
   const traitMatches = collectTraitMatches(eligiblePairs)
-  const chosen = traitMatches.length > 0
-    ? traitMatches[Math.floor(Math.random() * traitMatches.length)]
-    : (() => {
-        const personalityMatches = collectPersonalityMatches(eligiblePairs)
-        return personalityMatches.length > 0
-          ? personalityMatches[Math.floor(Math.random() * personalityMatches.length)]
-          : null
-      })()
+  const chosen =
+    traitMatches.length > 0
+      ? traitMatches[Math.floor(Math.random() * traitMatches.length)]
+      : (() => {
+          const personalityMatches = collectPersonalityMatches(eligiblePairs)
+          return personalityMatches.length > 0
+            ? personalityMatches[Math.floor(Math.random() * personalityMatches.length)]
+            : null
+        })()
 
   if (!chosen) return null
 

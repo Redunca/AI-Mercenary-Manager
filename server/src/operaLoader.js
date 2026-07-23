@@ -14,7 +14,7 @@ let cache = null
 function loadOperaDefinitions() {
   if (cache) return cache
 
-  const files = fs.readdirSync(OPERA_GRAPH_DIR).filter(f => f.endsWith('.json'))
+  const files = fs.readdirSync(OPERA_GRAPH_DIR).filter((f) => f.endsWith('.json'))
   const byId = new Map()
   for (const file of files) {
     const def = JSON.parse(fs.readFileSync(path.join(OPERA_GRAPH_DIR, file), 'utf8'))
@@ -40,7 +40,12 @@ function getAllOperaDefinitions() {
 // operaGraph.js's "special-cased by id" comment) -- the draw pool for
 // OperaService.maintainOperaSlots.
 function getGenerationPoolDefinitions() {
-  return getAllOperaDefinitions().filter(def => def.id !== 'tutorial')
+  return getAllOperaDefinitions().filter((def) => def.id !== 'tutorial')
 }
 
-module.exports = { loadOperaDefinitions, getOperaDefinition, getAllOperaDefinitions, getGenerationPoolDefinitions }
+module.exports = {
+  loadOperaDefinitions,
+  getOperaDefinition,
+  getAllOperaDefinitions,
+  getGenerationPoolDefinitions,
+}

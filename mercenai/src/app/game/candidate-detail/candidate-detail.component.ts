@@ -19,14 +19,17 @@ export class CandidateDetailComponent {
   hireError: string | null = null;
 
   get candidate(): Candidate | null {
-    return this.candidateService.candidates.find(c => c.id === this.id) ?? null;
+    return this.candidateService.candidates.find((c) => c.id === this.id) ?? null;
   }
 
   archetypeLabel(c: Candidate): string {
     switch (c.archetype) {
-      case 'specialized':        return 'Specialist';
-      case 'well-rounded':       return 'Versatile';
-      case 'jack-of-all-trades': return 'Jack-of-all-trades';
+      case 'specialized':
+        return 'Specialist';
+      case 'well-rounded':
+        return 'Versatile';
+      case 'jack-of-all-trades':
+        return 'Jack-of-all-trades';
     }
   }
 
@@ -36,9 +39,9 @@ export class CandidateDetailComponent {
 
   registerCommands() {
     return {
-      'hire': () => {
+      hire: () => {
         if (!this.candidate) return;
-        void this.candidateService.hireCandidate(this.candidate.id).then(result => {
+        void this.candidateService.hireCandidate(this.candidate.id).then((result) => {
           if (!result) {
             this.hireError = `Roster full (max ${this.game.player$.value.maxNumberOfRecruits} recruits)`;
           }

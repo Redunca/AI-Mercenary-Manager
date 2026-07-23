@@ -58,7 +58,7 @@ async function getRecruitRow(client, playerId, recruitId) {
 async function applyPerk(client, playerId, recruitId, perkName, description = '') {
   const recruit = await getRecruitRow(client, playerId, recruitId)
   if (!recruit) return null
-  if (recruit.perks.some(p => p.name === perkName)) return recruit
+  if (recruit.perks.some((p) => p.name === perkName)) return recruit
 
   const perks = [...recruit.perks, { name: perkName, description }]
   const result = await client.query(
@@ -71,7 +71,7 @@ async function applyPerk(client, playerId, recruitId, perkName, description = ''
 async function applyFlaw(client, playerId, recruitId, flawName, description = '') {
   const recruit = await getRecruitRow(client, playerId, recruitId)
   if (!recruit) return null
-  if (recruit.flaws.some(f => f.name === flawName)) return recruit
+  if (recruit.flaws.some((f) => f.name === flawName)) return recruit
 
   const flaws = [...recruit.flaws, { name: flawName, description }]
   const result = await client.query(
@@ -90,7 +90,10 @@ async function adjustAttribute(client, playerId, recruitId, attribute, amount) {
   const recruit = await getRecruitRow(client, playerId, recruitId)
   if (!recruit) return null
 
-  const attributes = { ...recruit.attributes, [attribute]: (recruit.attributes[attribute] ?? 0) + amount }
+  const attributes = {
+    ...recruit.attributes,
+    [attribute]: (recruit.attributes[attribute] ?? 0) + amount,
+  }
 
   if (['fortitude', 'presence', 'will'].includes(attribute)) {
     const maxHp = computeMaxHp(attributes)
@@ -121,8 +124,12 @@ async function giveItem(client, playerId, itemName) {
 
   if (item.type === 'consumable') {
     return ConsumableService.addToStash(client, playerId, {
-      name: item.name, description: item.description, rarity: item.rarity,
-      price: item.price, effect: item.effect, effectData: item.effect_data,
+      name: item.name,
+      description: item.description,
+      rarity: item.rarity,
+      price: item.price,
+      effect: item.effect,
+      effectData: item.effect_data,
     })
   }
   if (item.type === 'armor') {
@@ -137,7 +144,9 @@ async function giveItem(client, playerId, itemName) {
 // matching {seedId} can find it (see operaGraph's seed-key resolution).
 async function insertSeededCandidate(client, playerId, seedKey) {
   const perksFlaws = loadPerksFlaws()
-  const player = (await client.query('SELECT next_candidate_id FROM players WHERE id = $1', [playerId])).rows[0]
+  const player = (
+    await client.query('SELECT next_candidate_id FROM players WHERE id = $1', [playerId])
+  ).rows[0]
   const candidate = generateCandidate(player.next_candidate_id, perksFlaws, rollInRange)
 
   const result = await client.query(
@@ -146,12 +155,23 @@ async function insertSeededCandidate(client, playerId, seedKey) {
      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
      RETURNING *`,
     [
-      candidate.id, playerId, candidate.name, candidate.jobTitle, candidate.archetype,
-      candidate.hp, candidate.maxHp, JSON.stringify(candidate.attributes),
-      JSON.stringify(candidate.perks), JSON.stringify(candidate.flaws), candidate.personality, seedKey,
+      candidate.id,
+      playerId,
+      candidate.name,
+      candidate.jobTitle,
+      candidate.archetype,
+      candidate.hp,
+      candidate.maxHp,
+      JSON.stringify(candidate.attributes),
+      JSON.stringify(candidate.perks),
+      JSON.stringify(candidate.flaws),
+      candidate.personality,
+      seedKey,
     ],
   )
-  await client.query('UPDATE players SET next_candidate_id = next_candidate_id + 1 WHERE id = $1', [playerId])
+  await client.query('UPDATE players SET next_candidate_id = next_candidate_id + 1 WHERE id = $1', [
+    playerId,
+  ])
   return result.rows[0]
 }
 

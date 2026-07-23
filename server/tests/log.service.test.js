@@ -1,6 +1,12 @@
 const {
-  insertLogEntries, buildPhaseLogs, buildEventResultLogs, pickPlanetTagQuote, buildBanterLog,
-  buildCombatRoundLog, buildCombatEventLogs, getRecentMissionMessages,
+  insertLogEntries,
+  buildPhaseLogs,
+  buildEventResultLogs,
+  pickPlanetTagQuote,
+  buildBanterLog,
+  buildCombatRoundLog,
+  buildCombatEventLogs,
+  getRecentMissionMessages,
 } = require('../src/services/log.service')
 const planetTags = require('../data/planet-tags.json')
 const banterPairs = require('../data/banter/pairs.json')
@@ -32,7 +38,9 @@ describe('insertLogEntries', () => {
 
 describe('getRecentMissionMessages', () => {
   test('queries the most recent messages for this player/mission, most-recent first', async () => {
-    const client = { query: jest.fn().mockResolvedValue({ rows: [{ message: 'B' }, { message: 'A' }] }) }
+    const client = {
+      query: jest.fn().mockResolvedValue({ rows: [{ message: 'B' }, { message: 'A' }] }),
+    }
 
     const result = await getRecentMissionMessages(client, 1, 5)
 
@@ -53,7 +61,7 @@ describe('getRecentMissionMessages', () => {
 })
 
 describe('pickPlanetTagQuote', () => {
-  test('single tag match returns a line from that tag\'s pool', () => {
+  test("single tag match returns a line from that tag's pool", () => {
     const result = pickPlanetTagQuote({ tags: ['isolated'], channel: 'sys' })
     expect(planetTags.isolated.sys).toContain(result)
   })
@@ -92,7 +100,11 @@ describe('pickPlanetTagQuote', () => {
   })
 
   test('falls back to reusing a line when every candidate is in avoid', () => {
-    const result = pickPlanetTagQuote({ tags: ['isolated'], channel: 'sys', avoid: planetTags.isolated.sys })
+    const result = pickPlanetTagQuote({
+      tags: ['isolated'],
+      channel: 'sys',
+      avoid: planetTags.isolated.sys,
+    })
     expect(planetTags.isolated.sys).toContain(result)
   })
 })
@@ -121,7 +133,7 @@ describe('buildPhaseLogs', () => {
     expect(mission[1].tag).toBe('[IA]')
     expect(mission[2].tag).toBe('[KADE]')
     expect(mission[2].message).toMatch(/^".*"$/)
-    expect(mission.every(e => e.missionId === 1)).toBe(true)
+    expect(mission.every((e) => e.missionId === 1)).toBe(true)
 
     expect(global).toHaveLength(1)
     expect(global[0].message).toContain('Mission "Corridor Patrol" launched')
@@ -153,12 +165,16 @@ describe('buildPhaseLogs', () => {
 
   test('RETURN when failed uses the failure phrase pool even when the planet has matching tags (regression: planet flavor used to mask the failure headline)', () => {
     const failedReturnSys = [
-      'Emergency extraction. Mission aborted.', 'Hasty retreat. Objective not achieved.',
-      'Mission scrubbed. Falling back to base.', 'Withdrawal underway, objective unmet.',
+      'Emergency extraction. Mission aborted.',
+      'Hasty retreat. Objective not achieved.',
+      'Mission scrubbed. Falling back to base.',
+      'Withdrawal underway, objective unmet.',
     ]
     const failedReturnIa = [
-      'Extraction protocol activated.', 'Operational failure. Root cause analysis in progress.',
-      'Casualty and damage report compiling.', 'Command notified of the setback.',
+      'Extraction protocol activated.',
+      'Operational failure. Root cause analysis in progress.',
+      'Casualty and damage report compiling.',
+      'Command notified of the setback.',
     ]
 
     for (let i = 0; i < 20; i++) {
@@ -177,12 +193,16 @@ describe('buildPhaseLogs', () => {
 
   test('COMPLETED when failed uses the failure phrase pool even when the planet has matching tags', () => {
     const failedCompletedSys = [
-      'Mission failed. Unit returned to base.', 'Operation aborted.',
-      'Contract unfulfilled. Standing down.', 'Objective lost. Unit recalled.',
+      'Mission failed. Unit returned to base.',
+      'Operation aborted.',
+      'Contract unfulfilled. Standing down.',
+      'Objective lost. Unit recalled.',
     ]
     const failedCompletedIa = [
-      'Negative outcome. No objective achieved.', 'Failure debrief scheduled.',
-      'Post-mortem scheduled for this operation.', 'Lessons logged for the next attempt.',
+      'Negative outcome. No objective achieved.',
+      'Failure debrief scheduled.',
+      'Post-mortem scheduled for this operation.',
+      'Lessons logged for the next attempt.',
     ]
 
     const { mission } = buildPhaseLogs({
@@ -290,7 +310,7 @@ describe('buildPhaseLogs', () => {
     expect(planetTags.isolated.ia).toContain(mission[1].message)
   })
 
-  test('falls back to the generic pool when none of the planet\'s tags have flavor content', () => {
+  test("falls back to the generic pool when none of the planet's tags have flavor content", () => {
     const { mission } = buildPhaseLogs({
       ...base,
       phase: 'EN_ROUTE',
@@ -395,14 +415,28 @@ describe('buildEventResultLogs', () => {
   })
 
   test('formats the roll as 1d20(d20) + notation(bonus) = total vs DC dc', () => {
-    const result = eventResult({ d20: 12, bonus: 5, diceNotation: '2d6', total: 17, dc: 15, success: true })
+    const result = eventResult({
+      d20: 12,
+      bonus: 5,
+      diceNotation: '2d6',
+      total: 17,
+      dc: 15,
+      success: true,
+    })
     const { mission } = buildEventResultLogs({ ...baseArgs, eventResult: result })
 
     expect(mission[0].message).toContain('1d20(12) + 2d6(5) = 17 vs DC 15')
   })
 
   test('omits the bonus segment when bonus is 0', () => {
-    const result = eventResult({ d20: 12, bonus: 0, diceNotation: '—', total: 12, dc: 10, success: true })
+    const result = eventResult({
+      d20: 12,
+      bonus: 0,
+      diceNotation: '—',
+      total: 12,
+      dc: 10,
+      success: true,
+    })
     const { mission } = buildEventResultLogs({ ...baseArgs, eventResult: result })
 
     expect(mission[0].message).toContain('1d20(12) = 12 vs DC 10')
@@ -444,11 +478,17 @@ describe('buildEventResultLogs', () => {
     const { mission } = buildEventResultLogs({
       ...baseArgs,
       eventResult: result,
-      context: { ...baseArgs.context, planet: { id: 'p2', name: 'Nowhere', tags: ['not-a-real-tag'] } },
+      context: {
+        ...baseArgs.context,
+        planet: { id: 'p2', name: 'Nowhere', tags: ['not-a-real-tag'] },
+      },
     })
 
-    expect(['Intermediate objective validated.', 'Result matches projections.', 'Nominal execution.'])
-      .toContain(mission[1].message)
+    expect([
+      'Intermediate objective validated.',
+      'Result matches projections.',
+      'Nominal execution.',
+    ]).toContain(mission[1].message)
   })
 })
 
@@ -457,8 +497,23 @@ describe('buildCombatRoundLog', () => {
     const round = {
       round: 2,
       entries: [
-        { actor: 'crew', actorId: 1, actorName: 'Vex', attribute: 'agility', hit: true, damage: 7, enemyHpAfter: 33 },
-        { actor: 'enemy', targetId: 2, targetName: 'Sable', hit: true, damage: 4, targetHpAfter: 12 },
+        {
+          actor: 'crew',
+          actorId: 1,
+          actorName: 'Vex',
+          attribute: 'agility',
+          hit: true,
+          damage: 7,
+          enemyHpAfter: 33,
+        },
+        {
+          actor: 'enemy',
+          targetId: 2,
+          targetName: 'Sable',
+          hit: true,
+          damage: 4,
+          targetHpAfter: 12,
+        },
       ],
     }
 
@@ -488,12 +543,29 @@ describe('buildCombatRoundLog', () => {
   })
 
   test('flags a downed or killed target distinctly from a normal hit', () => {
-    const downedRound = { round: 3, entries: [{ actor: 'enemy', targetId: 2, targetName: 'Sable', hit: true, damage: 5, downed: true }] }
-    const deadRound = { round: 4, entries: [{ actor: 'enemy', targetId: 2, targetName: 'Sable', hit: true, damage: 5, died: true }] }
-    const revivedRound = { round: 5, entries: [{ actor: 'enemy', targetId: 2, targetName: 'Sable', hit: true, damage: 5, revived: true }] }
+    const downedRound = {
+      round: 3,
+      entries: [
+        { actor: 'enemy', targetId: 2, targetName: 'Sable', hit: true, damage: 5, downed: true },
+      ],
+    }
+    const deadRound = {
+      round: 4,
+      entries: [
+        { actor: 'enemy', targetId: 2, targetName: 'Sable', hit: true, damage: 5, died: true },
+      ],
+    }
+    const revivedRound = {
+      round: 5,
+      entries: [
+        { actor: 'enemy', targetId: 2, targetName: 'Sable', hit: true, damage: 5, revived: true },
+      ],
+    }
 
     expect(buildCombatRoundLog({ round: downedRound, missionId: 1 }).message).toContain('down')
-    expect(buildCombatRoundLog({ round: deadRound, missionId: 1 }).message).toContain('KILLED IN ACTION')
+    expect(buildCombatRoundLog({ round: deadRound, missionId: 1 }).message).toContain(
+      'KILLED IN ACTION',
+    )
     expect(buildCombatRoundLog({ round: revivedRound, missionId: 1 }).message).toContain('revived')
   })
 })
@@ -526,7 +598,10 @@ describe('buildCombatEventLogs', () => {
   test('defeat with a casualty: adds a last-words line and a global death log', () => {
     const combatResult = {
       enemyDefeated: false,
-      rounds: [{ round: 1, entries: [] }, { round: 2, entries: [] }],
+      rounds: [
+        { round: 1, entries: [] },
+        { round: 2, entries: [] },
+      ],
       crewResults: [{ id: 1, status: 'dead' }],
     }
     const event = { type: 'AMBUSH' }
@@ -534,7 +609,7 @@ describe('buildCombatEventLogs', () => {
     const { mission, global } = buildCombatEventLogs({ context, event, combatResult })
 
     expect(mission[0].message).toContain('DEFEAT')
-    expect(mission.some(m => m.tag === '[VEX]')).toBe(true)
+    expect(mission.some((m) => m.tag === '[VEX]')).toBe(true)
     expect(global).toEqual([
       { tag: '[SYS]', message: 'Vex died during mission "Corridor Patrol".' },
     ])
@@ -554,26 +629,30 @@ describe('perk/flaw-specific event quote files', () => {
     return name.toLowerCase().replace(/\s+/g, '-')
   }
 
-  const { perks, flaws } = JSON.parse(fs.readFileSync(path.join(DATA_DIR, 'perks-flaws.json'), 'utf8'))
+  const { perks, flaws } = JSON.parse(
+    fs.readFileSync(path.join(DATA_DIR, 'perks-flaws.json'), 'utf8'),
+  )
   const bySlug = new Map()
-  perks.forEach(p => bySlug.set(slugify(p.name), { name: p.name, kind: 'perk' }))
-  flaws.forEach(f => bySlug.set(slugify(f.name), { name: f.name, kind: 'flaw' }))
+  perks.forEach((p) => bySlug.set(slugify(p.name), { name: p.name, kind: 'perk' }))
+  flaws.forEach((f) => bySlug.set(slugify(f.name), { name: f.name, kind: 'flaw' }))
 
-  const eventTypeDirs = fs.readdirSync(DATA_DIR)
-    .filter(f => fs.statSync(path.join(DATA_DIR, f)).isDirectory())
+  const eventTypeDirs = fs
+    .readdirSync(DATA_DIR)
+    .filter((f) => fs.statSync(path.join(DATA_DIR, f)).isDirectory())
     // banter/ holds relationship-dialogue files (pairs.json, personality-pairs.json) keyed by
     // trait *pairs* or personality combos, not a single perk/flaw name — out of scope here.
     // opera-graphs/ holds Opera Generating Logic templates (tutorial.json, ...) keyed by
     // template id, not a perk/flaw name either — also out of scope here.
-    .filter(f => f !== 'banter' && f !== 'opera-graphs')
+    .filter((f) => f !== 'banter' && f !== 'opera-graphs')
 
   // Discover every perk/flaw-specific file across every event-type folder, and pair each
   // with the perk/flaw it's supposed to represent (via the reverse of the slug lookup above).
   const cases = []
   for (const dir of eventTypeDirs) {
-    const files = fs.readdirSync(path.join(DATA_DIR, dir))
-      .filter(f => f.endsWith('.json') && f !== 'perk-and-flawless.json')
-      .map(f => f.replace('.json', ''))
+    const files = fs
+      .readdirSync(path.join(DATA_DIR, dir))
+      .filter((f) => f.endsWith('.json') && f !== 'perk-and-flawless.json')
+      .map((f) => f.replace('.json', ''))
 
     for (const slug of files) {
       cases.push({ dir, slug, entry: bySlug.get(slug) })
@@ -585,15 +664,15 @@ describe('perk/flaw-specific event quote files', () => {
     expect(cases.length).toBeGreaterThan(0)
   })
 
-  test.each(cases.map(c => [`${c.dir}/${c.slug}.json`, c]))(
+  test.each(cases.map((c) => [`${c.dir}/${c.slug}.json`, c]))(
     '%s filename matches a real perk/flaw name (no silent typo)',
     (_label, { entry, dir, slug }) => {
       expect(entry).toBeDefined()
       if (entry) expect(slugify(entry.name)).toBe(slug)
-    }
+    },
   )
 
-  describe.each(cases.map(c => [`${c.dir}/${c.slug}.json`, c]))(
+  describe.each(cases.map((c) => [`${c.dir}/${c.slug}.json`, c]))(
     '%s',
     (_label, { dir, slug, entry }) => {
       if (!entry) return // already reported as a failure above; avoid a second confusing failure here
@@ -604,7 +683,7 @@ describe('perk/flaw-specific event quote files', () => {
         for (const personality of PERSONALITIES) {
           test(`resolves a ${outcome} quote for ${personality}`, () => {
             const fileContents = JSON.parse(
-              fs.readFileSync(path.join(DATA_DIR, dir, `${slug}.json`), 'utf8')
+              fs.readFileSync(path.join(DATA_DIR, dir, `${slug}.json`), 'utf8'),
             )
             const expectedPool = fileContents[eventType]?.[outcome]?.[slug]?.[personality]
 
@@ -618,9 +697,30 @@ describe('perk/flaw-specific event quote files', () => {
               perks: entry.kind === 'perk' ? [{ name: entry.name }] : [],
               flaws: entry.kind === 'flaw' ? [{ name: entry.name }] : [],
             }
-            const result = outcome === 'success'
-              ? { eventIndex: 0, type: eventType, d20: 15, bonus: 3, diceNotation: '1d4', total: 18, dc: 10, success: true }
-              : { eventIndex: 0, type: eventType, d20: 5, bonus: 0, diceNotation: '—', total: 5, dc: 10, success: false, consequence: 'HP_LOSS', hpLost: 1 }
+            const result =
+              outcome === 'success'
+                ? {
+                    eventIndex: 0,
+                    type: eventType,
+                    d20: 15,
+                    bonus: 3,
+                    diceNotation: '1d4',
+                    total: 18,
+                    dc: 10,
+                    success: true,
+                  }
+                : {
+                    eventIndex: 0,
+                    type: eventType,
+                    d20: 5,
+                    bonus: 0,
+                    diceNotation: '—',
+                    total: 5,
+                    dc: 10,
+                    success: false,
+                    consequence: 'HP_LOSS',
+                    hpLost: 1,
+                  }
 
             const { mission } = buildEventResultLogs({
               context: {
@@ -639,16 +739,15 @@ describe('perk/flaw-specific event quote files', () => {
           })
         }
       }
-    }
+    },
   )
 })
 
 describe('buildBanterLog', () => {
   function fakeClient(priorTag) {
     return {
-      query: async (sql) => (sql.includes('log_entries')
-        ? { rows: priorTag ? [{ tag: priorTag }] : [] }
-        : { rows: [] }),
+      query: async (sql) =>
+        sql.includes('log_entries') ? { rows: priorTag ? [{ tag: priorTag }] : [] } : { rows: [] },
     }
   }
 
@@ -677,28 +776,28 @@ describe('buildBanterLog', () => {
     // The Bloodlust holder is speaker A per pairs.json's "speaker": "A" for this trigger.
     expect(result.mission[0].tag).toBe('[KADE→VEX]')
     expect(result.mission[1].tag).toBe('[VEX→KADE]')
-    const entry = banterPairs.find(p => p.trigger === 'flaw:bloodlust+flaw:pacifist')
-    expect(entry.lines.map(l => l.replace(/\{A\}/g, 'Kade').replace(/\{B\}/g, 'Vex'))).toContain(result.mission[0].message)
-    expect(entry.reply.map(l => l.replace(/\{A\}/g, 'Kade').replace(/\{B\}/g, 'Vex'))).toContain(result.mission[1].message)
+    const entry = banterPairs.find((p) => p.trigger === 'flaw:bloodlust+flaw:pacifist')
+    expect(entry.lines.map((l) => l.replace(/\{A\}/g, 'Kade').replace(/\{B\}/g, 'Vex'))).toContain(
+      result.mission[0].message,
+    )
+    expect(entry.reply.map((l) => l.replace(/\{A\}/g, 'Kade').replace(/\{B\}/g, 'Vex'))).toContain(
+      result.mission[1].message,
+    )
   })
 
   test('falls back to a personality-pair template when no trait pair matches', async () => {
-    const crew = [
-      recruit(1, 'Kade', 'Explorer'),
-      recruit(2, 'Vex', 'Sentinel'),
-    ]
+    const crew = [recruit(1, 'Kade', 'Explorer'), recruit(2, 'Vex', 'Sentinel')]
     const result = await buildBanterLog(fakeClient(null), 1, { missionId: 1, crew })
 
     expect(result).not.toBeNull()
     const entry = personalityPairs['Explorer+Sentinel']
-    expect(entry.lines.map(l => l.replace(/\{A\}/g, 'Kade').replace(/\{B\}/g, 'Vex'))).toContain(result.mission[0].message)
+    expect(entry.lines.map((l) => l.replace(/\{A\}/g, 'Kade').replace(/\{B\}/g, 'Vex'))).toContain(
+      result.mission[0].message,
+    )
   })
 
   test('does not fire when neither a trait pair nor a personality pair matches', async () => {
-    const crew = [
-      recruit(1, 'Kade', 'NotARealPersonality'),
-      recruit(2, 'Vex', 'AlsoNotReal'),
-    ]
+    const crew = [recruit(1, 'Kade', 'NotARealPersonality'), recruit(2, 'Vex', 'AlsoNotReal')]
     expect(await buildBanterLog(fakeClient(null), 1, { missionId: 1, crew })).toBeNull()
   })
 
@@ -740,7 +839,7 @@ describe('buildBanterLog', () => {
       recruit(1, 'Kade', 'Explorer', { flaws: [{ name: 'Bloodlust' }] }),
       recruit(2, 'Vex', 'Sentinel', { flaws: [{ name: 'Pacifist' }] }),
     ]
-    const entry = banterPairs.find(p => p.trigger === 'flaw:bloodlust+flaw:pacifist')
+    const entry = banterPairs.find((p) => p.trigger === 'flaw:bloodlust+flaw:pacifist')
     const originalTagLines = entry.tagLines
     entry.tagLines = {
       'hostile-fauna': {
@@ -750,10 +849,14 @@ describe('buildBanterLog', () => {
     }
     try {
       const result = await buildBanterLog(fakeClient(null), 1, {
-        missionId: 1, crew, planet: { tags: ['hostile-fauna'] },
+        missionId: 1,
+        crew,
+        planet: { tags: ['hostile-fauna'] },
       })
       expect(result).not.toBeNull()
-      expect(result.mission[0].message).toBe('Kade keeps swinging at the wildlife. Vex is done asking nicely.')
+      expect(result.mission[0].message).toBe(
+        'Kade keeps swinging at the wildlife. Vex is done asking nicely.',
+      )
       expect(result.mission[1].message).toBe('Not everything out here is a threat, Kade.')
     } finally {
       if (originalTagLines === undefined) delete entry.tagLines
@@ -766,12 +869,16 @@ describe('buildBanterLog', () => {
       recruit(1, 'Kade', 'Explorer', { flaws: [{ name: 'Bloodlust' }] }),
       recruit(2, 'Vex', 'Sentinel', { flaws: [{ name: 'Pacifist' }] }),
     ]
-    const entry = banterPairs.find(p => p.trigger === 'flaw:bloodlust+flaw:pacifist')
+    const entry = banterPairs.find((p) => p.trigger === 'flaw:bloodlust+flaw:pacifist')
     const result = await buildBanterLog(fakeClient(null), 1, {
-      missionId: 1, crew, planet: { tags: ['some-unrelated-tag'] },
+      missionId: 1,
+      crew,
+      planet: { tags: ['some-unrelated-tag'] },
     })
     expect(result).not.toBeNull()
-    expect(entry.lines.map(l => l.replace(/\{A\}/g, 'Kade').replace(/\{B\}/g, 'Vex'))).toContain(result.mission[0].message)
+    expect(entry.lines.map((l) => l.replace(/\{A\}/g, 'Kade').replace(/\{B\}/g, 'Vex'))).toContain(
+      result.mission[0].message,
+    )
   })
 
   test('does not crash when planet or planet.tags is missing', async () => {
@@ -779,9 +886,15 @@ describe('buildBanterLog', () => {
       recruit(1, 'Kade', 'Explorer', { flaws: [{ name: 'Bloodlust' }] }),
       recruit(2, 'Vex', 'Sentinel', { flaws: [{ name: 'Pacifist' }] }),
     ]
-    await expect(buildBanterLog(fakeClient(null), 1, { missionId: 1, crew })).resolves.not.toBeNull()
-    await expect(buildBanterLog(fakeClient(null), 1, { missionId: 1, crew, planet: {} })).resolves.not.toBeNull()
-    await expect(buildBanterLog(fakeClient(null), 1, { missionId: 1, crew, planet: { tags: [] } })).resolves.not.toBeNull()
+    await expect(
+      buildBanterLog(fakeClient(null), 1, { missionId: 1, crew }),
+    ).resolves.not.toBeNull()
+    await expect(
+      buildBanterLog(fakeClient(null), 1, { missionId: 1, crew, planet: {} }),
+    ).resolves.not.toBeNull()
+    await expect(
+      buildBanterLog(fakeClient(null), 1, { missionId: 1, crew, planet: { tags: [] } }),
+    ).resolves.not.toBeNull()
   })
 
   test('duplicate crew names do not crash and still resolve via distinct ids', async () => {
@@ -811,11 +924,14 @@ describe('banter content coverage', () => {
   }
 
   const { perks, flaws } = JSON.parse(
-    fs.readFileSync(path.join(__dirname, '../data/perks-flaws.json'), 'utf8')
+    fs.readFileSync(path.join(__dirname, '../data/perks-flaws.json'), 'utf8'),
   )
-  const validSlugs = new Set([...perks.map(p => slugify(p.name)), ...flaws.map(f => slugify(f.name))])
+  const validSlugs = new Set([
+    ...perks.map((p) => slugify(p.name)),
+    ...flaws.map((f) => slugify(f.name)),
+  ])
 
-  test.each(banterPairs.map(entry => [entry.trigger, entry]))(
+  test.each(banterPairs.map((entry) => [entry.trigger, entry]))(
     'trigger "%s" resolves to two real perk/flaw slugs',
     (_label, entry) => {
       const parts = entry.trigger.split('+')
@@ -825,7 +941,7 @@ describe('banter content coverage', () => {
         expect(['perk', 'flaw']).toContain(kind)
         expect(validSlugs.has(slug)).toBe(true)
       }
-    }
+    },
   )
 
   test('every personality-pairs.json key uses two real personalities', () => {

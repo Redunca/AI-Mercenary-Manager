@@ -13,11 +13,12 @@ async function migrate() {
   `)
 
   const applied = new Set(
-    (await pool.query('SELECT version FROM schema_migrations')).rows.map(r => r.version),
+    (await pool.query('SELECT version FROM schema_migrations')).rows.map((r) => r.version),
   )
 
-  const files = fs.readdirSync(MIGRATIONS_DIR)
-    .filter(f => f.endsWith('.sql'))
+  const files = fs
+    .readdirSync(MIGRATIONS_DIR)
+    .filter((f) => f.endsWith('.sql'))
     .sort()
 
   for (const file of files) {

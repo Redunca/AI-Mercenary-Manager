@@ -7,7 +7,9 @@
     "start": "node index.js",
     "dev": "node --watch index.js",
     "test": "jest",
-    "publish-opera": "node ../scripts/publish.js"
+    "publish-opera": "node ../scripts/publish.js",
+    "lint": "eslint .",
+    "format": "prettier --write ."
   },
   "author": "Cléophée",
   "license": "ISC",
@@ -17,7 +19,12 @@
     "express": "^5.2.1"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "eslint": "^9.39.5",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.7.0",
     "jest": "^30.4.2",
+    "prettier": "^3.9.6",
     "supertest": "^7.2.2"
   }
 }

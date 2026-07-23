@@ -1,4 +1,14 @@
-import { AfterViewChecked, AfterViewInit, Component, ElementRef, forwardRef, inject, Input, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterViewChecked,
+  AfterViewInit,
+  Component,
+  ElementRef,
+  forwardRef,
+  inject,
+  Input,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { Panel, PanelModule } from '../../models/panel';
 import { CommonModule } from '@angular/common';
 import { CommandService } from '../../core/command.service';
@@ -47,7 +57,7 @@ import { ItemsComponent } from '../../game/items/items.component';
     SelfComponent,
     OperaListComponent,
     OperaDetailComponent,
-    ItemsComponent
+    ItemsComponent,
   ],
   templateUrl: './terminal-panel.component.html',
   styleUrl: './terminal-panel.component.scss',
@@ -66,9 +76,9 @@ export class TerminalPanelComponent implements OnInit, AfterViewChecked, AfterVi
 
   // commandes locales
   localCommands: { [name: string]: (...args: string[]) => void } = {
-    "split-h": () => this.layout.split(this.getPanelId(), 'row'),
-    "split-v": () => this.layout.split(this.getPanelId(), 'column'),
-    "close": () => this.layout.closePanel(this.getPanelId())
+    'split-h': () => this.layout.split(this.getPanelId(), 'row'),
+    'split-v': () => this.layout.split(this.getPanelId(), 'column'),
+    close: () => this.layout.closePanel(this.getPanelId()),
   };
 
   private lastModuleInstance: any = null;

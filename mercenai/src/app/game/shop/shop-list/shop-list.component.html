@@ -4,10 +4,21 @@
 <div class="indent-one">"nextRefresh" : "{{ nextRefreshLabel }}",</div>
 <div class="indent-one">"items" : [</div>
 <div *ngFor="let item of items" class="indent-two item-entry" [class.sold]="isSoldOut(item)">
-  <div>[{{ item.id }}] <span class="item-name">{{ item.name }}</span> — <span class="muted">{{ item.type === 'ship' ? 'SHIP' : item.type === 'armor' ? 'ARMOR' : 'CONSUMABLE' }}</span> <span [class]="'rarity-' + item.rarity">({{ item.rarity }})</span> — {{ item.price }} ¥ <span class="stock" [class.stock-sold]="isSoldOut(item)">{{ isSoldOut(item) ? 'SOLD' : (item.remaining_stock + '/' + item.max_stock) }}</span></div>
+  <div>
+    [{{ item.id }}] <span class="item-name">{{ item.name }}</span> —
+    <span class="muted">{{
+      item.type === 'ship' ? 'SHIP' : item.type === 'armor' ? 'ARMOR' : 'CONSUMABLE'
+    }}</span>
+    <span [class]="'rarity-' + item.rarity">({{ item.rarity }})</span> — {{ item.price }} ¥
+    <span class="stock" [class.stock-sold]="isSoldOut(item)">{{
+      isSoldOut(item) ? 'SOLD' : item.remaining_stock + '/' + item.max_stock
+    }}</span>
+  </div>
   <div class="indent-three muted">{{ item.description }}</div>
 </div>
 <div *ngIf="items.length === 0" class="indent-two muted">— shop empty —</div>
 <div class="indent-one">]</div>
 <div>{{ '}' }}</div>
-<div class="hint">Terminal usage: shop detail &lt;id&gt; | shop buy &lt;id&gt; (SOLD items can't be bought)</div>
+<div class="hint">
+  Terminal usage: shop detail &lt;id&gt; | shop buy &lt;id&gt; (SOLD items can't be bought)
+</div>

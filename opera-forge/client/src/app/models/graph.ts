@@ -32,7 +32,14 @@ export type SeedTarget = (typeof SEED_TARGETS)[number];
 // pairs with a check/mission node's outcome -- it's keyed by optionId
 // instead of success/failure/neutral because a choice node's options are
 // author-defined per node, not a fixed enum.
-export const CONDITION_TYPES = ['chance', 'has_item', 'previous_outcome', 'crew_threshold', 'action_performed', 'choice_made'] as const;
+export const CONDITION_TYPES = [
+  'chance',
+  'has_item',
+  'previous_outcome',
+  'crew_threshold',
+  'action_performed',
+  'choice_made',
+] as const;
 export type ConditionType = (typeof CONDITION_TYPES)[number];
 
 // Mirrors STEP_TYPES in server/src/domain/opera.js -- the vocabulary of
@@ -87,8 +94,16 @@ export const OUTCOMES = ['success', 'failure', 'neutral'] as const;
 export type Outcome = (typeof OUTCOMES)[number];
 
 export const ATTRIBUTES = [
-  'agility', 'fortitude', 'might', 'learning', 'logic',
-  'perception', 'will', 'deception', 'persuasion', 'presence',
+  'agility',
+  'fortitude',
+  'might',
+  'learning',
+  'logic',
+  'perception',
+  'will',
+  'deception',
+  'persuasion',
+  'presence',
 ] as const;
 export type Attribute = (typeof ATTRIBUTES)[number];
 
@@ -297,8 +312,15 @@ export interface GenerationResult {
 
 export function emptyMockState(): MockState {
   return {
-    items: [], perks: [], flaws: [], attributes: {}, actionsPerformed: [], tags: {}, shipCrewCount: 0,
-    missionOutcomes: [], choicesMade: [],
+    items: [],
+    perks: [],
+    flaws: [],
+    attributes: {},
+    actionsPerformed: [],
+    tags: {},
+    shipCrewCount: 0,
+    missionOutcomes: [],
+    choicesMade: [],
   };
 }
 
@@ -307,13 +329,19 @@ export function defaultMissionDetails(): MissionDetails {
 }
 
 export function defaultChoiceOptions(): ChoiceOption[] {
-  return [{ id: 'option-1', label: 'Option 1' }, { id: 'option-2', label: 'Option 2' }];
+  return [
+    { id: 'option-1', label: 'Option 1' },
+    { id: 'option-2', label: 'Option 2' },
+  ];
 }
 
-export function defaultParamsFor(kind: 'condition', type: ConditionType): Record<string, unknown>
-export function defaultParamsFor(kind: 'effect', type: EffectType): Record<string, unknown>
-export function defaultParamsFor(kind: 'seed', type: SeedTarget): Record<string, unknown>
-export function defaultParamsFor(_kind: 'condition' | 'effect' | 'seed', type: string): Record<string, unknown> {
+export function defaultParamsFor(kind: 'condition', type: ConditionType): Record<string, unknown>;
+export function defaultParamsFor(kind: 'effect', type: EffectType): Record<string, unknown>;
+export function defaultParamsFor(kind: 'seed', type: SeedTarget): Record<string, unknown>;
+export function defaultParamsFor(
+  _kind: 'condition' | 'effect' | 'seed',
+  type: string,
+): Record<string, unknown> {
   switch (type) {
     case 'chance':
       return { percentage: 50 };

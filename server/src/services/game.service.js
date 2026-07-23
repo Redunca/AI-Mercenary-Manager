@@ -2,12 +2,27 @@ const fs = require('fs')
 const path = require('path')
 const { pool } = require('../db/pool')
 const { rollAction, rollDie, rollInRange } = require('./dice.service')
-const { generateCandidate, rowToCandidate, rowToRecruit, computeMaxHp } = require('../domain/recruit')
-const { buildEnemy, runAutoBattle } = require('../domain/combat')
-const { travelSegmentMs, eventsSegmentMs, dueEventCount, phaseAndProgressFromElapsed } = require('../domain/mission')
 const {
-  insertLogEntries, buildPhaseLogs, buildEventResultLogs, buildBanterLog,
-  buildCombatRoundLog, buildCombatEventLogs, getRecentMissionMessages,
+  generateCandidate,
+  rowToCandidate,
+  rowToRecruit,
+  computeMaxHp,
+} = require('../domain/recruit')
+const { buildEnemy, runAutoBattle } = require('../domain/combat')
+const {
+  travelSegmentMs,
+  eventsSegmentMs,
+  dueEventCount,
+  phaseAndProgressFromElapsed,
+} = require('../domain/mission')
+const {
+  insertLogEntries,
+  buildPhaseLogs,
+  buildEventResultLogs,
+  buildBanterLog,
+  buildCombatRoundLog,
+  buildCombatEventLogs,
+  getRecentMissionMessages,
 } = require('./log.service')
 const { createStarterShip, validateCrewAssignment } = require('../domain/ship')
 const ShipService = require('./ship.service')
@@ -16,7 +31,6 @@ const EquipmentService = require('./equipment.service')
 const OperaService = require('./opera.service')
 const ShopService = require('./shop.service')
 const RecruitService = require('./recruit.service')
-
 
 const { loadData } = require('../dataLoader')
 const { generateMission } = require('../engine/missionGenerator')
@@ -90,22 +104,26 @@ function buildLogContext({ template, crewMembers = [], actingRecruit = null }) {
 // or a maxed-out board would just show fewer available missions per cycle.
 async function generateMissionBatch(client, player, now) {
   const startedTemplateIds = new Set(
-    (await client.query(
-      'SELECT DISTINCT template_id FROM mission_instances WHERE player_id = $1',
-      [player.id],
-    )).rows.map(row => row.template_id),
+    (
+      await client.query(
+        'SELECT DISTINCT template_id FROM mission_instances WHERE player_id = $1',
+        [player.id],
+      )
+    ).rows.map((row) => row.template_id),
   )
   // Opera-injected missions (opera_instance_id set -- see OperaService's
   // insertOperaMission) are never swept here regardless of started status:
   // a 'mission' node's task must survive batch refreshes until the paused
   // opera walk actually resolves it, the same way a regular unstarted
   // template survives only until the next refresh.
-  const existingTemplateIds = (await client.query(
-    'SELECT id FROM mission_templates WHERE opera_instance_id IS NULL',
-  )).rows.map(row => row.id)
-  const unstartedTemplateIds = existingTemplateIds.filter(id => !startedTemplateIds.has(id))
+  const existingTemplateIds = (
+    await client.query('SELECT id FROM mission_templates WHERE opera_instance_id IS NULL')
+  ).rows.map((row) => row.id)
+  const unstartedTemplateIds = existingTemplateIds.filter((id) => !startedTemplateIds.has(id))
   if (unstartedTemplateIds.length > 0) {
-    await client.query('DELETE FROM mission_templates WHERE id = ANY($1::int[])', [unstartedTemplateIds])
+    await client.query('DELETE FROM mission_templates WHERE id = ANY($1::int[])', [
+      unstartedTemplateIds,
+    ])
   }
 
   const data = loadData()
@@ -117,8 +135,12 @@ async function generateMissionBatch(client, player, now) {
       `INSERT INTO mission_templates (id, name, description, difficulty, events, planet)
        VALUES ($1, $2, $3, $4, $5, $6)`,
       [
-        nextId, mission.name, mission.description, mission.difficulty,
-        JSON.stringify(mission.events), JSON.stringify(mission.planet),
+        nextId,
+        mission.name,
+        mission.description,
+        mission.difficulty,
+        JSON.stringify(mission.events),
+        JSON.stringify(mission.planet),
       ],
     )
     nextId++
@@ -174,18 +196,23 @@ async function generateCandidatesForPlayer(client, player, count = 5) {
         (id, player_id, name, job_title, archetype, hp, max_hp, attributes, perks, flaws, personality)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
       [
-        candidate.id, player.id, candidate.name, candidate.jobTitle, candidate.archetype,
-        candidate.hp, candidate.maxHp, JSON.stringify(candidate.attributes),
-        JSON.stringify(candidate.perks), JSON.stringify(candidate.flaws), candidate.personality,
+        candidate.id,
+        player.id,
+        candidate.name,
+        candidate.jobTitle,
+        candidate.archetype,
+        candidate.hp,
+        candidate.maxHp,
+        JSON.stringify(candidate.attributes),
+        JSON.stringify(candidate.perks),
+        JSON.stringify(candidate.flaws),
+        candidate.personality,
       ],
     )
     nextId++
   }
 
-  await client.query(
-    'UPDATE players SET next_candidate_id = $1 WHERE id = $2',
-    [nextId, player.id],
-  )
+  await client.query('UPDATE players SET next_candidate_id = $1 WHERE id = $2', [nextId, player.id])
 }
 
 // Discards every existing candidate and draws a fresh batch, mirroring
@@ -195,10 +222,17 @@ async function generateCandidatesForPlayer(client, player, count = 5) {
 // into a recruit, so the whole batch is always safe to replace outright.
 async function generateCandidateBatch(client, player, now) {
   await client.query('DELETE FROM candidates WHERE player_id = $1', [player.id])
-  await generateCandidatesForPlayer(client, { ...player, next_candidate_id: 1 }, CANDIDATE_BATCH_SIZE)
+  await generateCandidatesForPlayer(
+    client,
+    { ...player, next_candidate_id: 1 },
+    CANDIDATE_BATCH_SIZE,
+  )
 
   const refreshedAt = new Date(currentIntervalBoundary(now, player.candidate_refresh_interval_ms))
-  await client.query('UPDATE players SET candidate_refresh_at = $1 WHERE id = $2', [refreshedAt, player.id])
+  await client.query('UPDATE players SET candidate_refresh_at = $1 WHERE id = $2', [
+    refreshedAt,
+    player.id,
+  ])
   player.candidate_refresh_at = refreshedAt
 }
 
@@ -226,10 +260,9 @@ async function bootstrapPlayer(client) {
   if (ships.length === 0) {
     const starterShip = createStarterShip(player.next_ship_id, rollInRange)
     await ShipService.createShip(client, player.id, starterShip)
-    await client.query(
-      'UPDATE players SET next_ship_id = next_ship_id + 1 WHERE id = $1',
-      [player.id],
-    )
+    await client.query('UPDATE players SET next_ship_id = next_ship_id + 1 WHERE id = $1', [
+      player.id,
+    ])
   }
 
   await ensureCandidateBatch(client, player)
@@ -261,6 +294,58 @@ async function getRecruit(client, playerId, recruitId) {
   return result.rows[0] ? rowToRecruit(result.rows[0]) : null
 }
 
+// Fetches `shipId`'s ship and crew together, joining crew names for a
+// log/response (falling back to `emptyLabel` when the ship has no crew).
+// Missing/deleted individual recruits are silently dropped from the joined
+// list rather than replaced with a placeholder -- contrast completeMission's
+// own per-member "Recruit <id>" fallback, which isn't a fit for this shared
+// shape. Only for call sites that don't already have `ship` in scope --
+// startMission fetches it earlier for validation and builds crew names
+// itself rather than re-fetching here.
+async function loadCrewContext(client, playerId, shipId, emptyLabel = 'No crew') {
+  const ship = await ShipService.getShip(client, playerId, shipId)
+  const crewMembers = await Promise.all(
+    (ship?.crew ?? []).map((id) => getRecruit(client, playerId, id)),
+  )
+  const crewNames =
+    ship?.crew?.length > 0
+      ? crewMembers
+          .map((r) => r?.name)
+          .filter(Boolean)
+          .join(', ')
+      : emptyLabel
+  return { ship, crewMembers, crewNames }
+}
+
+// Emits a phase-transition mission log plus its trailing crew banter (if
+// any triggers) -- the sequence repeated at every EN_ROUTE/RETURN
+// transition. `global` opts into also inserting the phase log's
+// global-feed entries: only startMission's EN_ROUTE kickoff does that --
+// RETURN transitions are mission-log-only.
+async function emitPhaseTransition(
+  client,
+  playerId,
+  logContext,
+  { phase, failed, rewardForfeited, recruitName, global = false },
+) {
+  const phaseLogs = buildPhaseLogs({
+    phase,
+    failed,
+    rewardForfeited,
+    recruitName,
+    context: logContext,
+    avoid: await getRecentMissionMessages(client, playerId, logContext.missionId),
+  })
+  await insertLogEntries(
+    client,
+    playerId,
+    global ? [...phaseLogs.mission, ...phaseLogs.global] : phaseLogs.mission,
+  )
+
+  const banterLogs = await buildBanterLog(client, playerId, logContext)
+  if (banterLogs) await insertLogEntries(client, playerId, banterLogs.mission)
+}
+
 // `shipId` lets a fatal hit be intercepted by a HEAL consumable sitting in
 // that ship's inventory: the recruit is revived to full HP instead of dying,
 // and the item is spent. Without a matching item, death is permanent.
@@ -276,7 +361,9 @@ async function damageRecruit(client, playerId, recruitId, amount, shipId) {
   let revived = false
 
   if (hp === 0) {
-    const healed = shipId ? await ConsumableService.consumeFromShipInventory(client, shipId, 'HEAL') : null
+    const healed = shipId
+      ? await ConsumableService.consumeFromShipInventory(client, shipId, 'HEAL')
+      : null
     if (healed) {
       hp = row.rows[0].max_hp
       revived = true
@@ -285,10 +372,12 @@ async function damageRecruit(client, playerId, recruitId, amount, shipId) {
     }
   }
 
-  await client.query(
-    'UPDATE recruits SET hp = $1, status = $2 WHERE player_id = $3 AND id = $4',
-    [hp, status, playerId, recruitId],
-  )
+  await client.query('UPDATE recruits SET hp = $1, status = $2 WHERE player_id = $3 AND id = $4', [
+    hp,
+    status,
+    playerId,
+    recruitId,
+  ])
   if (status === 'dead') {
     await EquipmentService.destroyEquipmentForRecruit(client, playerId, recruitId)
   }
@@ -300,10 +389,10 @@ async function damageRecruit(client, playerId, recruitId, amount, shipId) {
 // accumulated injuries, their permanent 'dead' status). Combat never touches
 // a recruit's mission status column otherwise (e.g. 'in_mission' stays put).
 async function applyCombatResult(client, playerId, recruitId, { hp, maxHp, dead }) {
-  const row = await client.query(
-    'SELECT * FROM recruits WHERE player_id = $1 AND id = $2',
-    [playerId, recruitId],
-  )
+  const row = await client.query('SELECT * FROM recruits WHERE player_id = $1 AND id = $2', [
+    playerId,
+    recruitId,
+  ])
   if (row.rows.length === 0) return null
   const status = dead ? 'dead' : row.rows[0].status
 
@@ -328,6 +417,46 @@ async function setRecruitStatus(client, playerId, recruitId, status) {
   )
 }
 
+// Ends resolveEvents() early for a "stopped partway" outcome (crew-wipe
+// from HP_LOSS, FORCED_DEPARTURE, or a SHIP_DAMAGE break with no REPAIR on
+// hand): stamps the event's final index/result, emits its logs, and returns
+// the shape resolveEvents()/advanceMission() expect. shipDestroyed is
+// always false here -- nothing in this resolution path destroys the ship
+// outright.
+async function finalizeTerminalEvent(
+  client,
+  playerId,
+  {
+    template,
+    crewMembers,
+    actingRecruit,
+    result,
+    eventIndex,
+    eventResults,
+    failed,
+    rewardForfeited,
+    forceReturn,
+    completed,
+  },
+) {
+  const currentEventIndex = eventIndex + 1
+  eventResults.push(result)
+  const eventLogs = buildEventResultLogs({
+    eventResult: result,
+    context: buildLogContext({ template, crewMembers, actingRecruit }),
+  })
+  await insertLogEntries(client, playerId, [...eventLogs.mission, ...eventLogs.global])
+  return {
+    failed,
+    rewardForfeited,
+    currentEventIndex,
+    eventResults,
+    forceReturn,
+    completed,
+    shipDestroyed: false,
+  }
+}
+
 async function resolveEvents(client, playerId, instance, template, crewMembers, targetEventIndex) {
   const events = template.events
   const eventResults = [...instance.event_results]
@@ -336,7 +465,6 @@ async function resolveEvents(client, playerId, instance, template, crewMembers, 
   let currentEventIndex = instance.current_event_index
   const missionId = template.id
   const shipId = instance.ship_id
-  const logs = []
   let crewDead = []
 
   // Only resolves events due by targetEventIndex, not every remaining one --
@@ -344,12 +472,12 @@ async function resolveEvents(client, playerId, instance, template, crewMembers, 
   // below (failure/crew-wipe/forced-return) and the final fallthrough return
   // already correctly represent "stopped partway, not a failure" either way.
   for (let i = currentEventIndex; i < targetEventIndex; i++) {
-    if (failed || crewMembers.filter(r => r.status !== 'dead').length === 0) break
+    if (failed || crewMembers.filter((r) => r.status !== 'dead').length === 0) break
 
     const event = events[i]
 
     // Find crew member with highest stat for this event
-    const activeCrew = crewMembers.filter(r => r.status !== 'dead')
+    const activeCrew = crewMembers.filter((r) => r.status !== 'dead')
     if (activeCrew.length === 0) {
       failed = true
       break
@@ -361,8 +489,15 @@ async function resolveEvents(client, playerId, instance, template, crewMembers, 
     if (event.type === 'COMBAT') {
       const enemy = buildEnemy(template.difficulty, rollInRange)
       const healCharges = await ConsumableService.countShipInventoryEffect(client, shipId, 'HEAL')
-      const armorByRecruit = await EquipmentService.getEquippedByRecruitIds(client, playerId, activeCrew.map(r => r.id))
-      const armedCrew = activeCrew.map(r => ({ ...r, equippedArmor: armorByRecruit.get(String(r.id)) || null }))
+      const armorByRecruit = await EquipmentService.getEquippedByRecruitIds(
+        client,
+        playerId,
+        activeCrew.map((r) => r.id),
+      )
+      const armedCrew = activeCrew.map((r) => ({
+        ...r,
+        equippedArmor: armorByRecruit.get(String(r.id)) || null,
+      }))
       const combatResult = runAutoBattle({ crew: armedCrew, enemy, rollAction, healCharges })
 
       for (const round of combatResult.rounds) {
@@ -375,11 +510,13 @@ async function resolveEvents(client, playerId, instance, template, crewMembers, 
 
       for (const outcome of combatResult.crewResults) {
         const updated = await applyCombatResult(client, playerId, outcome.id, {
-          hp: outcome.hp, maxHp: outcome.maxHp, dead: outcome.status === 'dead',
+          hp: outcome.hp,
+          maxHp: outcome.maxHp,
+          dead: outcome.status === 'dead',
         })
         // Keep this resolveEvents() call's in-memory crew state in sync, so
         // later events in the same pass see accurate hp/maxHp/status.
-        const local = crewMembers.find(r => String(r.id) === String(outcome.id))
+        const local = crewMembers.find((r) => String(r.id) === String(outcome.id))
         if (local && updated) {
           local.hp = updated.hp
           local.maxHp = updated.maxHp
@@ -391,12 +528,12 @@ async function resolveEvents(client, playerId, instance, template, crewMembers, 
       // (see combat.js's "downed" branch) -- track that separately from deaths
       // so completeMission() can call out lasting injuries in its summary.
       const recruitsDowned = combatResult.crewResults
-        .filter(c => c.status !== 'dead')
-        .filter(c => {
-          const before = armedCrew.find(r => String(r.id) === String(c.id))
+        .filter((c) => c.status !== 'dead')
+        .filter((c) => {
+          const before = armedCrew.find((r) => String(r.id) === String(c.id))
           return before && c.maxHp < before.maxHp
         })
-        .map(c => c.id)
+        .map((c) => c.id)
 
       const result = {
         eventIndex: i,
@@ -405,7 +542,7 @@ async function resolveEvents(client, playerId, instance, template, crewMembers, 
         rounds: combatResult.rounds.length,
         enemyDefeated: combatResult.enemyDefeated,
         success: combatResult.enemyDefeated,
-        recruitsDied: combatResult.crewResults.filter(c => c.status === 'dead').map(c => c.id),
+        recruitsDied: combatResult.crewResults.filter((c) => c.status === 'dead').map((c) => c.id),
         recruitsDowned,
       }
       if (combatResult.enemyDefeated) {
@@ -427,7 +564,15 @@ async function resolveEvents(client, playerId, instance, template, crewMembers, 
 
       if (!combatResult.enemyDefeated) {
         failed = true
-        return { failed, rewardForfeited, currentEventIndex, eventResults, forceReturn: true, completed: false, shipDestroyed: false }
+        return {
+          failed,
+          rewardForfeited,
+          currentEventIndex,
+          eventResults,
+          forceReturn: true,
+          completed: false,
+          shipDestroyed: false,
+        }
       }
 
       continue
@@ -442,7 +587,10 @@ async function resolveEvents(client, playerId, instance, template, crewMembers, 
     // An ATTRIBUTE_BOOST consumable sitting in the ship's own inventory grants
     // Advantage on the one roll it matches, then is spent regardless of outcome.
     const boost = await ConsumableService.consumeFromShipInventory(
-      client, shipId, 'ATTRIBUTE_BOOST', data => data?.attribute === event.attribute,
+      client,
+      shipId,
+      'ATTRIBUTE_BOOST',
+      (data) => data?.attribute === event.attribute,
     )
     const advantage = boost ? (boost.effect_data?.advantage ?? 1) : 0
 
@@ -478,56 +626,61 @@ async function resolveEvents(client, playerId, instance, template, crewMembers, 
         } else if (!updated || updated.status === 'dead') {
           result.recruitDied = true
           crewDead.push(bestRecruit.id)
-          if (crewMembers.filter(r => r.status !== 'dead').length === 1) {
-            failed = true
-            currentEventIndex = i + 1
-            eventResults.push(result)
-            logs.push(buildEventResultLogs({
-              eventResult: result,
-              context: buildLogContext({ template, crewMembers, actingRecruit: bestRecruit }),
-            }))
-            await insertLogEntries(client, playerId, [
-              ...logs[logs.length - 1].mission,
-              ...logs[logs.length - 1].global,
-            ])
-            return { failed, rewardForfeited, currentEventIndex, eventResults, forceReturn: false, completed: true, shipDestroyed: false }
+          if (crewMembers.filter((r) => r.status !== 'dead').length === 1) {
+            return finalizeTerminalEvent(client, playerId, {
+              template,
+              crewMembers,
+              actingRecruit: bestRecruit,
+              result,
+              eventIndex: i,
+              eventResults,
+              failed: true,
+              rewardForfeited,
+              forceReturn: false,
+              completed: true,
+            })
           }
         }
       } else if (event.failureConsequence === 'FORCED_DEPARTURE') {
-        failed = true
-        currentEventIndex = i + 1
-        eventResults.push(result)
-        logs.push(buildEventResultLogs({
-          eventResult: result,
-          context: buildLogContext({ template, crewMembers, actingRecruit: bestRecruit }),
-        }))
-        await insertLogEntries(client, playerId, [
-          ...logs[logs.length - 1].mission,
-          ...logs[logs.length - 1].global,
-        ])
-        return { failed, rewardForfeited, currentEventIndex, eventResults, forceReturn: true, completed: false, shipDestroyed: false }
+        return finalizeTerminalEvent(client, playerId, {
+          template,
+          crewMembers,
+          actingRecruit: bestRecruit,
+          result,
+          eventIndex: i,
+          eventResults,
+          failed: true,
+          rewardForfeited,
+          forceReturn: true,
+          completed: false,
+        })
       } else if (event.failureConsequence === 'SHIP_DAMAGE') {
         rewardForfeited = true
         result.shipDamaged = true
         const damaged = await ShipService.damageShip(client, playerId, shipId, rollDie(6))
         if (damaged?.status === 'broken') {
-          const repaired = await ConsumableService.consumeFromShipInventory(client, shipId, 'REPAIR')
+          const repaired = await ConsumableService.consumeFromShipInventory(
+            client,
+            shipId,
+            'REPAIR',
+          )
           if (repaired) {
             await ShipService.repairShip(client, playerId, shipId)
             result.shipAutoRepaired = true
           } else {
             result.shipBroken = true
-            currentEventIndex = i + 1
-            eventResults.push(result)
-            logs.push(buildEventResultLogs({
-              eventResult: result,
-              context: buildLogContext({ template, crewMembers, actingRecruit: bestRecruit }),
-            }))
-            await insertLogEntries(client, playerId, [
-              ...logs[logs.length - 1].mission,
-              ...logs[logs.length - 1].global,
-            ])
-            return { failed, rewardForfeited, currentEventIndex, eventResults, forceReturn: true, completed: false, shipDestroyed: false }
+            return finalizeTerminalEvent(client, playerId, {
+              template,
+              crewMembers,
+              actingRecruit: bestRecruit,
+              result,
+              eventIndex: i,
+              eventResults,
+              failed,
+              rewardForfeited,
+              forceReturn: true,
+              completed: false,
+            })
           }
         }
       } else {
@@ -544,12 +697,20 @@ async function resolveEvents(client, playerId, instance, template, crewMembers, 
     await insertLogEntries(client, playerId, [...eventLogs.mission, ...eventLogs.global])
   }
 
-  return { failed, rewardForfeited, currentEventIndex, eventResults, forceReturn: false, completed: false, shipDestroyed: false }
+  return {
+    failed,
+    rewardForfeited,
+    currentEventIndex,
+    eventResults,
+    forceReturn: false,
+    completed: false,
+    shipDestroyed: false,
+  }
 }
 
 async function completeMission(client, playerId, instance, template, failed, shipDestroyed) {
   const status = failed ? 'failed' : 'success'
-  
+
   if (shipDestroyed) {
     // Return crew via shuttle
     const ship = await ShipService.getShip(client, playerId, instance.ship_id)
@@ -582,36 +743,40 @@ async function completeMission(client, playerId, instance, template, failed, shi
     const tokenBase = loadJson('difficulty-tables.json')[template.difficulty]?.tokenBase ?? 0
     const tokensWon = calculateTokenReward(tokenBase, instance.event_results, totalEvents)
 
-    const creditsWon = instance.reward_forfeited ? 0 : instance.event_results
-      .filter(r => r.rewardEarned?.type === 'CREDITS')
-      .reduce((sum, r) => sum + r.rewardEarned.amount, 0)
+    const creditsWon = instance.reward_forfeited
+      ? 0
+      : instance.event_results
+          .filter((r) => r.rewardEarned?.type === 'CREDITS')
+          .reduce((sum, r) => sum + r.rewardEarned.amount, 0)
 
     if (creditsWon > 0 || tokensWon > 0) {
       const player = await client.query(
         'SELECT wallet, tokens FROM players WHERE id = $1 FOR UPDATE',
         [playerId],
       )
-      await client.query(
-        'UPDATE players SET wallet = $1, tokens = $2 WHERE id = $3',
-        [player.rows[0].wallet + creditsWon, player.rows[0].tokens + tokensWon, playerId],
-      )
+      await client.query('UPDATE players SET wallet = $1, tokens = $2 WHERE id = $3', [
+        player.rows[0].wallet + creditsWon,
+        player.rows[0].tokens + tokensWon,
+        playerId,
+      ])
     }
   }
 
   const shipData = await ShipService.getShip(client, playerId, instance.ship_id)
   const crewMembers = await Promise.all(
-    (shipData?.crew ?? []).map(id => getRecruit(client, playerId, id))
+    (shipData?.crew ?? []).map((id) => getRecruit(client, playerId, id)),
   )
-  const crewNames = shipData?.crew?.length > 0
-    ? crewMembers.map(r => r?.name || `Recruit ${r?.id}`).join(', ')
-    : 'No crew'
+  const crewNames =
+    shipData?.crew?.length > 0
+      ? crewMembers.map((r) => r?.name || `Recruit ${r?.id}`).join(', ')
+      : 'No crew'
 
   // Distinct recruits who took a lasting (max-HP-reducing) injury at some point
   // this mission, across every combat event -- surfaced in the completion
   // summary so a rough mission doesn't read as a clean success/failure with no
   // human cost.
   const injuredCount = new Set(
-    (instance.event_results ?? []).flatMap(r => r.recruitsDowned ?? [])
+    (instance.event_results ?? []).flatMap((r) => r.recruitsDowned ?? []),
   ).size
 
   const completedLogs = buildPhaseLogs({
@@ -629,7 +794,8 @@ async function completeMission(client, playerId, instance, template, failed, shi
   // previous_outcome exactly like a 'check' node's roll, so it needs to
   // hear about a failed mission too, not just a successful one.
   await OperaService.recordOperaAction(client, playerId, 'complete_quest', {
-    templateId: template.id, outcome: failed ? 'failure' : 'success',
+    templateId: template.id,
+    outcome: failed ? 'failure' : 'success',
   })
 }
 
@@ -646,9 +812,10 @@ async function advanceMission(client, playerId, instance, template, now) {
   if (instance.forced_return && instance.return_started_at) {
     const totalMs = travelMs * 2 + eventsMs
     const returnElapsed = now - new Date(instance.return_started_at).getTime()
-    const returnDurationMs = (instance.progress_at_return ?? 0) <= 33
-      ? ((instance.progress_at_return ?? 0) / 100) * totalMs
-      : travelMs
+    const returnDurationMs =
+      (instance.progress_at_return ?? 0) <= 33
+        ? ((instance.progress_at_return ?? 0) / 100) * totalMs
+        : travelMs
     const returnTicks = Math.max(1, returnDurationMs)
     const delta = Math.min(
       100 - instance.progress_at_return,
@@ -678,17 +845,10 @@ async function advanceMission(client, playerId, instance, template, now) {
   const pastEventPhase = targetEventIndex > currentEventIndex
 
   if (pastEventPhase) {
-    const ship = await ShipService.getShip(client, playerId, instance.ship_id)
-    const crewMembers = await Promise.all(
-      ship.crew.map(id => getRecruit(client, playerId, id))
-    )
+    const { crewMembers, crewNames } = await loadCrewContext(client, playerId, instance.ship_id)
     const logContext = buildLogContext({ template, crewMembers })
 
     if (storedPhase === 'EN_ROUTE') {
-      const crewNames = ship?.crew?.length > 0
-        ? crewMembers.map(r => r?.name).filter(Boolean).join(', ')
-        : 'No crew'
-
       const eventPhaseLogs = buildPhaseLogs({
         phase: 'EVENT',
         failed: false,
@@ -700,7 +860,14 @@ async function advanceMission(client, playerId, instance, template, now) {
       await insertLogEntries(client, playerId, eventPhaseLogs.mission)
     }
 
-    const resolution = await resolveEvents(client, playerId, instance, template, crewMembers, targetEventIndex)
+    const resolution = await resolveEvents(
+      client,
+      playerId,
+      instance,
+      template,
+      crewMembers,
+      targetEventIndex,
+    )
     failed = resolution.failed
     rewardForfeited = resolution.rewardForfeited
     currentEventIndex = resolution.currentEventIndex
@@ -717,20 +884,21 @@ async function advanceMission(client, playerId, instance, template, now) {
           failed = $1, reward_forfeited = $2, current_event_index = $3, event_results = $4,
           forced_return = TRUE, return_started_at = NOW(), progress_at_return = $5, phase = 'RETURN', progress = $5
          WHERE id = $6`,
-        [failed, rewardForfeited, currentEventIndex, JSON.stringify(eventResults), progress, instance.id],
+        [
+          failed,
+          rewardForfeited,
+          currentEventIndex,
+          JSON.stringify(eventResults),
+          progress,
+          instance.id,
+        ],
       )
-      const returnLogs = buildPhaseLogs({
+      await emitPhaseTransition(client, playerId, logContext, {
         phase: 'RETURN',
         failed: true,
         rewardForfeited,
         recruitName: 'Crew',
-        context: logContext,
-        avoid: await getRecentMissionMessages(client, playerId, template.id),
       })
-      await insertLogEntries(client, playerId, returnLogs.mission)
-
-      const retourBanter = await buildBanterLog(client, playerId, logContext)
-      if (retourBanter) await insertLogEntries(client, playerId, retourBanter.mission)
 
       return
     }
@@ -743,33 +911,27 @@ async function advanceMission(client, playerId, instance, template, now) {
          WHERE id = $5`,
         [failed, rewardForfeited, currentEventIndex, JSON.stringify(eventResults), instance.id],
       )
-      await completeMission(client, playerId, { ...instance, failed, reward_forfeited: rewardForfeited, event_results: eventResults }, template, true, resolution.shipDestroyed)
+      await completeMission(
+        client,
+        playerId,
+        { ...instance, failed, reward_forfeited: rewardForfeited, event_results: eventResults },
+        template,
+        true,
+        resolution.shipDestroyed,
+      )
       return
     }
   }
 
   if (phase === 'RETURN' && storedPhase !== 'RETURN' && !instance.forced_return) {
-    const ship = await ShipService.getShip(client, playerId, instance.ship_id)
-    const crewMembers = await Promise.all(
-      (ship?.crew ?? []).map(id => getRecruit(client, playerId, id))
-    )
-    const crewNames = ship?.crew?.length > 0
-      ? crewMembers.map(r => r?.name).filter(Boolean).join(', ')
-      : 'No crew'
-
+    const { crewMembers, crewNames } = await loadCrewContext(client, playerId, instance.ship_id)
     const logContext = buildLogContext({ template, crewMembers })
-    const returnLogs = buildPhaseLogs({
+    await emitPhaseTransition(client, playerId, logContext, {
       phase: 'RETURN',
       failed,
       rewardForfeited,
       recruitName: crewNames,
-      context: logContext,
-      avoid: await getRecentMissionMessages(client, playerId, template.id),
     })
-    await insertLogEntries(client, playerId, returnLogs.mission)
-
-    const banterLogs = await buildBanterLog(client, playerId, logContext)
-    if (banterLogs) await insertLogEntries(client, playerId, banterLogs.mission)
   }
 
   if (phase === 'COMPLETED') {
@@ -778,17 +940,43 @@ async function advanceMission(client, playerId, instance, template, now) {
         phase = 'COMPLETED', progress = 100, failed = $1, reward_forfeited = $2,
         current_event_index = $3, event_results = $4, status = $5
        WHERE id = $6`,
-      [failed, rewardForfeited, currentEventIndex, JSON.stringify(eventResults), failed ? 'failed' : 'success', instance.id],
+      [
+        failed,
+        rewardForfeited,
+        currentEventIndex,
+        JSON.stringify(eventResults),
+        failed ? 'failed' : 'success',
+        instance.id,
+      ],
     )
-    await completeMission(client, playerId, { ...instance, failed, reward_forfeited: rewardForfeited, event_results: eventResults }, template, failed, false)
+    await completeMission(
+      client,
+      playerId,
+      { ...instance, failed, reward_forfeited: rewardForfeited, event_results: eventResults },
+      template,
+      failed,
+      false,
+    )
     return
   }
 
-  if (storedPhase !== phase || instance.progress !== progress || instance.current_event_index !== currentEventIndex) {
+  if (
+    storedPhase !== phase ||
+    instance.progress !== progress ||
+    instance.current_event_index !== currentEventIndex
+  ) {
     await client.query(
       `UPDATE mission_instances SET phase = $1, progress = $2, failed = $3, reward_forfeited = $4,
         current_event_index = $5, event_results = $6 WHERE id = $7`,
-      [phase, progress, failed, rewardForfeited, currentEventIndex, JSON.stringify(eventResults), instance.id],
+      [
+        phase,
+        progress,
+        failed,
+        rewardForfeited,
+        currentEventIndex,
+        JSON.stringify(eventResults),
+        instance.id,
+      ],
     )
   }
 }
@@ -801,10 +989,9 @@ async function syncMissions(client, playerId) {
   const now = Date.now()
 
   for (const instance of instances.rows) {
-    const templateResult = await client.query(
-      'SELECT * FROM mission_templates WHERE id = $1',
-      [instance.template_id],
-    )
+    const templateResult = await client.query('SELECT * FROM mission_templates WHERE id = $1', [
+      instance.template_id,
+    ])
     const template = {
       ...templateResult.rows[0],
       events: templateResult.rows[0].events,
@@ -823,17 +1010,18 @@ async function syncMissions(client, playerId) {
 // whole ticks rather than snapped to `now`, so a leftover fractional tick
 // isn't lost to poll-cadence rounding.
 async function regenerateRecruits(client, playerId, now = new Date()) {
-  const player = (await client.query(
-    'SELECT hp_regen_interval_ms FROM players WHERE id = $1',
-    [playerId],
-  )).rows[0]
+  const player = (
+    await client.query('SELECT hp_regen_interval_ms FROM players WHERE id = $1', [playerId])
+  ).rows[0]
   const intervalMs = player.hp_regen_interval_ms
 
-  const recruits = (await client.query(
-    `SELECT * FROM recruits
+  const recruits = (
+    await client.query(
+      `SELECT * FROM recruits
      WHERE player_id = $1 AND status NOT IN ('in_mission', 'dead') AND hp < max_hp`,
-    [playerId],
-  )).rows
+      [playerId],
+    )
+  ).rows
 
   for (const row of recruits) {
     const lastRegenAt = new Date(row.last_hp_regen_at)
@@ -851,10 +1039,12 @@ async function regenerateRecruits(client, playerId, now = new Date()) {
 
 async function hireCandidate(client, playerId, candidateId) {
   const player = (await client.query('SELECT * FROM players WHERE id = $1', [playerId])).rows[0]
-  const recruitCount = (await client.query(
-    'SELECT COUNT(*)::int AS count FROM recruits WHERE player_id = $1 AND deleted_at IS NULL',
-    [playerId],
-  )).rows[0].count
+  const recruitCount = (
+    await client.query(
+      'SELECT COUNT(*)::int AS count FROM recruits WHERE player_id = $1 AND deleted_at IS NULL',
+      [playerId],
+    )
+  ).rows[0].count
 
   if (recruitCount >= player.max_recruits) return null
 
@@ -872,38 +1062,47 @@ async function hireCandidate(client, playerId, candidateId) {
       (id, player_id, name, job_title, status, hp, max_hp, original_max_hp, attributes, perks, flaws, personality)
      VALUES ($1, $2, $3, $4, 'available', $5, $6, $7, $8, $9, $10, $11)`,
     [
-      recruitId, playerId, candidate.name, candidate.job_title,
-      candidate.hp, candidate.max_hp, candidate.max_hp,
-      JSON.stringify(candidate.attributes), JSON.stringify(candidate.perks), JSON.stringify(candidate.flaws),
+      recruitId,
+      playerId,
+      candidate.name,
+      candidate.job_title,
+      candidate.hp,
+      candidate.max_hp,
+      candidate.max_hp,
+      JSON.stringify(candidate.attributes),
+      JSON.stringify(candidate.perks),
+      JSON.stringify(candidate.flaws),
       candidate.personality,
     ],
   )
-  await client.query(
-    'DELETE FROM candidates WHERE player_id = $1 AND id = $2',
-    [playerId, candidate.id],
-  )
-  await client.query(
-    'UPDATE players SET next_recruit_id = next_recruit_id + 1 WHERE id = $1',
-    [playerId],
-  )
+  await client.query('DELETE FROM candidates WHERE player_id = $1 AND id = $2', [
+    playerId,
+    candidate.id,
+  ])
+  await client.query('UPDATE players SET next_recruit_id = next_recruit_id + 1 WHERE id = $1', [
+    playerId,
+  ])
 
   // seedId lets a 'candidate' opera seed's later hire_recruit gate resolve
   // (see operaGraph's seed-key resolution) -- undefined for an ordinary,
   // non-seeded candidate, which never matches a {seedId} condition.
-  await OperaService.recordOperaAction(client, playerId, 'hire_recruit', { recruitId, seedId: candidate.seed_key ?? undefined })
+  await OperaService.recordOperaAction(client, playerId, 'hire_recruit', {
+    recruitId,
+    seedId: candidate.seed_key ?? undefined,
+  })
 
   return getRecruit(client, playerId, recruitId)
 }
 
 async function startMission(client, playerId, templateId, shipId, speedConsumableId = null) {
-  const templateResult = await client.query(
-    'SELECT * FROM mission_templates WHERE id = $1',
-    [templateId],
-  )
+  const templateResult = await client.query('SELECT * FROM mission_templates WHERE id = $1', [
+    templateId,
+  ])
   // Most commonly hit when the mission board has rotated since the client
   // last synced (unstarted templates are discarded on refresh, see
   // generateMissionBatch) -- not usually a truly bogus id.
-  if (templateResult.rows.length === 0) return { error: 'Mission not found -- the board may have refreshed' }
+  if (templateResult.rows.length === 0)
+    return { error: 'Mission not found -- the board may have refreshed' }
 
   const existing = await client.query(
     'SELECT * FROM mission_instances WHERE player_id = $1 AND template_id = $2',
@@ -911,7 +1110,9 @@ async function startMission(client, playerId, templateId, shipId, speedConsumabl
   )
   if (existing.rows.length > 0) {
     const s = existing.rows[0].status
-    return { error: s === 'in_progress' ? 'Mission already in progress' : 'Mission already completed' }
+    return {
+      error: s === 'in_progress' ? 'Mission already in progress' : 'Mission already completed',
+    }
   }
 
   const ship = await ShipService.getShip(client, playerId, shipId)
@@ -929,12 +1130,16 @@ async function startMission(client, playerId, templateId, shipId, speedConsumabl
 
   // Validate all crew members are available
   const crewResults = await Promise.all(
-    ship.crew.map(id => client.query(
-      'SELECT * FROM recruits WHERE player_id = $1 AND id = $2 AND deleted_at IS NULL',
-      [playerId, id]
-    ))
+    ship.crew.map((id) =>
+      client.query(
+        'SELECT * FROM recruits WHERE player_id = $1 AND id = $2 AND deleted_at IS NULL',
+        [playerId, id],
+      ),
+    ),
   )
-  const unavailable = crewResults.filter(r => r.rows.length === 0 || r.rows[0].status !== 'available')
+  const unavailable = crewResults.filter(
+    (r) => r.rows.length === 0 || r.rows[0].status !== 'available',
+  )
   if (unavailable.length > 0) {
     return { error: 'At least one crew member is not available' }
   }
@@ -945,7 +1150,7 @@ async function startMission(client, playerId, templateId, shipId, speedConsumabl
   if (speedConsumableId) {
     const item = await ConsumableService.getConsumable(client, speedConsumableId)
     if (!item || item.assigned_to_ship !== shipId || item.effect !== 'SPEED_BOOST') {
-      return { error: 'Speed-boost item not found in this ship\'s inventory' }
+      return { error: "Speed-boost item not found in this ship's inventory" }
     }
     speedMultiplier = item.effect_data?.multiplier ?? 1
     await ConsumableService.consumeFromShipInventory(client, shipId, 'SPEED_BOOST')
@@ -972,27 +1177,24 @@ async function startMission(client, playerId, templateId, shipId, speedConsumabl
     [playerId, templateId, shipId, travelMs, eventsMs],
   )
 
-  const crewMembers = await Promise.all(
-    ship.crew.map(id => getRecruit(client, playerId, id))
-  )
-  const crewNames = crewMembers.map(r => r?.name).filter(Boolean).join(', ')
+  const crewMembers = await Promise.all(ship.crew.map((id) => getRecruit(client, playerId, id)))
+  const crewNames = crewMembers
+    .map((r) => r?.name)
+    .filter(Boolean)
+    .join(', ')
 
   const logContext = buildLogContext({ template, crewMembers })
-  const phaseLogs = buildPhaseLogs({
+  await emitPhaseTransition(client, playerId, logContext, {
     phase: 'EN_ROUTE',
     failed: false,
     rewardForfeited: false,
     recruitName: crewNames,
-    context: logContext,
-    avoid: await getRecentMissionMessages(client, playerId, template.id),
+    global: true,
   })
-  await insertLogEntries(client, playerId, [...phaseLogs.mission, ...phaseLogs.global])
-
-  const banterLogs = await buildBanterLog(client, playerId, logContext)
-  if (banterLogs) await insertLogEntries(client, playerId, banterLogs.mission)
 
   await OperaService.recordOperaAction(client, playerId, 'send_recruit_to_quest', {
-    templateId, recruitIds: ship.crew,
+    templateId,
+    recruitIds: ship.crew,
   })
 
   return { instance: inserted.rows[0] }
@@ -1007,13 +1209,13 @@ async function stopMission(client, playerId, templateId) {
 
   const row = instance.rows[0]
   const ship = await ShipService.getShip(client, playerId, row.ship_id)
-  
+
   if (ship && ship.crew) {
     for (const recruitId of ship.crew) {
       await setRecruitStatus(client, playerId, recruitId, 'available')
     }
   }
-  
+
   await ShipService.updateShipStatus(client, playerId, row.ship_id, 'docked')
   await client.query('DELETE FROM mission_instances WHERE id = $1', [row.id])
   return { ok: true }
@@ -1031,32 +1233,24 @@ async function forceReturnMission(client, playerId, templateId) {
     return { error: 'Return already in progress or mission completed' }
   }
 
-  const template = (await client.query(
-    'SELECT * FROM mission_templates WHERE id = $1',
-    [instance.template_id],
-  )).rows[0]
+  const template = (
+    await client.query('SELECT * FROM mission_templates WHERE id = $1', [instance.template_id])
+  ).rows[0]
 
-  const ship = await ShipService.getShip(client, playerId, instance.ship_id)
-  const crewMembers = await Promise.all(
-    (ship?.crew ?? []).map(id => getRecruit(client, playerId, id))
+  const { crewMembers, crewNames } = await loadCrewContext(
+    client,
+    playerId,
+    instance.ship_id,
+    'Crew',
   )
-  const crewNames = ship?.crew?.length > 0
-    ? crewMembers.map(r => r?.name).filter(Boolean).join(', ')
-    : 'Crew'
 
   const logContext = buildLogContext({ template, crewMembers })
-  const returnLogs = buildPhaseLogs({
+  await emitPhaseTransition(client, playerId, logContext, {
     phase: 'RETURN',
     failed: instance.failed,
     rewardForfeited: instance.reward_forfeited,
     recruitName: crewNames,
-    context: logContext,
-    avoid: await getRecentMissionMessages(client, playerId, template.id),
   })
-  await insertLogEntries(client, playerId, returnLogs.mission)
-
-  const banterLogs = await buildBanterLog(client, playerId, logContext)
-  if (banterLogs) await insertLogEntries(client, playerId, banterLogs.mission)
 
   await client.query(
     `UPDATE mission_instances SET
@@ -1143,10 +1337,10 @@ async function buildGameState(client, playerId) {
   )
 
   const instanceByTemplate = Object.fromEntries(
-    instancesResult.rows.map(row => [row.template_id, row]),
+    instancesResult.rows.map((row) => [row.template_id, row]),
   )
 
-  const missions = templatesResult.rows.map(t => {
+  const missions = templatesResult.rows.map((t) => {
     const instance = instanceByTemplate[t.id]
     let status = 'available'
     let assignedShipId = null
@@ -1169,7 +1363,7 @@ async function buildGameState(client, playerId) {
   const missionStates = {}
   for (const instance of instancesResult.rows) {
     if (instance.status !== 'in_progress') continue
-    const template = templatesResult.rows.find(t => t.id === instance.template_id)
+    const template = templatesResult.rows.find((t) => t.id === instance.template_id)
     missionStates[instance.template_id] = {
       missionId: instance.template_id,
       shipId: instance.ship_id,
@@ -1200,10 +1394,10 @@ async function buildGameState(client, playerId) {
   // -- the same "never stuck waiting on rotation luck" guarantee
   // shop.service.js's is_quest_item items already get -- a 'mission' node
   // blocks its opera's walk, so it must never be capacity-sliced away.
-  const nonFinal = missions.filter(m => m.status !== 'failed' && m.status !== 'success')
+  const nonFinal = missions.filter((m) => m.status !== 'failed' && m.status !== 'success')
   const visibleMissions = [
-    ...nonFinal.filter(m => m.isOperaMission),
-    ...nonFinal.filter(m => !m.isOperaMission).slice(0, player.max_available_missions),
+    ...nonFinal.filter((m) => m.isOperaMission),
+    ...nonFinal.filter((m) => !m.isOperaMission).slice(0, player.max_available_missions),
   ]
 
   // Opera state enriches the synced snapshot but must never be a hard
@@ -1256,11 +1450,11 @@ async function getMissionHistory(client, playerId) {
     [playerId],
   )
   const instanceByTemplate = Object.fromEntries(
-    instancesResult.rows.map(row => [row.template_id, row]),
+    instancesResult.rows.map((row) => [row.template_id, row]),
   )
 
   return templatesResult.rows
-    .map(t => {
+    .map((t) => {
       const instance = instanceByTemplate[t.id]
       if (!instance) return null
       return {
@@ -1289,6 +1483,21 @@ async function withTransaction(fn) {
   } finally {
     client.release()
   }
+}
+
+// Wraps an exported player action in the shape used by (almost) every
+// action in module.exports below: run `fn` inside a transaction, and
+// unless it returns an {error}, merge whatever it does return with a
+// fresh buildGameState() snapshot. syncGame()/getGameState() aren't built
+// on this since they return the snapshot directly, unwrapped, rather than
+// as a `state` field alongside other data.
+function withPlayerAction(fn) {
+  return (...args) =>
+    withTransaction(async (client) => {
+      const result = await fn(client, ...args)
+      if (result?.error) return result
+      return { ...result, state: await buildGameState(client, DEFAULT_PLAYER_ID) }
+    })
 }
 
 async function initGame() {
@@ -1330,60 +1539,68 @@ module.exports = {
   getGameState,
   getMissionLogs: (missionId) => getMissionLogs(DEFAULT_PLAYER_ID, missionId),
   getMissionHistory: () => getMissionHistory(pool, DEFAULT_PLAYER_ID),
-  hireCandidate: (candidateId) => withTransaction(async (client) => {
+  hireCandidate: withPlayerAction(async (client, candidateId) => {
     await bootstrapPlayer(client)
     const recruit = await hireCandidate(client, DEFAULT_PLAYER_ID, candidateId)
     if (!recruit) return { error: 'Recruitment failed' }
     await syncMissions(client, DEFAULT_PLAYER_ID)
-    return { recruit, state: await buildGameState(client, DEFAULT_PLAYER_ID) }
+    return { recruit }
   }),
-  startMission: (templateId, shipId, speedConsumableId) => withTransaction(async (client) => {
+  startMission: withPlayerAction(async (client, templateId, shipId, speedConsumableId) => {
     await bootstrapPlayer(client)
-    const result = await startMission(client, DEFAULT_PLAYER_ID, templateId, shipId, speedConsumableId)
+    const result = await startMission(
+      client,
+      DEFAULT_PLAYER_ID,
+      templateId,
+      shipId,
+      speedConsumableId,
+    )
     if (result.error) return result
     await syncMissions(client, DEFAULT_PLAYER_ID)
-    return { state: await buildGameState(client, DEFAULT_PLAYER_ID) }
+    return {}
   }),
-  stopMission: (templateId) => withTransaction(async (client) => {
+  stopMission: withPlayerAction(async (client, templateId) => {
     const result = await stopMission(client, DEFAULT_PLAYER_ID, templateId)
     if (result.error) return result
-    return { state: await buildGameState(client, DEFAULT_PLAYER_ID) }
+    return {}
   }),
-  forceReturnMission: (templateId) => withTransaction(async (client) => {
+  forceReturnMission: withPlayerAction(async (client, templateId) => {
     const result = await forceReturnMission(client, DEFAULT_PLAYER_ID, templateId)
     if (result.error) return result
     await syncMissions(client, DEFAULT_PLAYER_ID)
-    return { state: await buildGameState(client, DEFAULT_PLAYER_ID) }
+    return {}
   }),
-  devRefresh: () => withTransaction(async (client) => {
+  devRefresh: withPlayerAction(async (client) => {
     await bootstrapPlayer(client)
     await devRefreshPools(client)
     await syncMissions(client, DEFAULT_PLAYER_ID)
-    return { state: await buildGameState(client, DEFAULT_PLAYER_ID) }
+    return {}
   }),
-  devSetCredits: (amount) => withTransaction(async (client) => {
+  devSetCredits: withPlayerAction(async (client, amount) => {
     await bootstrapPlayer(client)
     await devSetCredits(client, DEFAULT_PLAYER_ID, amount)
-    return { state: await buildGameState(client, DEFAULT_PLAYER_ID) }
+    return {}
   }),
-  devSetTokens: (amount) => withTransaction(async (client) => {
+  devSetTokens: withPlayerAction(async (client, amount) => {
     await bootstrapPlayer(client)
     await devSetTokens(client, DEFAULT_PLAYER_ID, amount)
-    return { state: await buildGameState(client, DEFAULT_PLAYER_ID) }
+    return {}
   }),
-  devReboot: () => withTransaction(async (client) => {
+  devReboot: withPlayerAction(async (client) => {
     await devReboot(client)
-    return { state: await buildGameState(client, DEFAULT_PLAYER_ID) }
+    return {}
   }),
-  renameRecruit: (recruitId, newName) => withTransaction(async (client) => {
+  renameRecruit: withPlayerAction(async (client, recruitId, newName) => {
     const recruit = await renameRecruit(client, DEFAULT_PLAYER_ID, recruitId, newName)
     if (!recruit) return { error: 'Recruit not found' }
-    return { recruit, state: await buildGameState(client, DEFAULT_PLAYER_ID) }
+    return { recruit }
   }),
-  fireRecruit: (recruitId) => withTransaction(async (client) => {
+  fireRecruit: withPlayerAction(async (client, recruitId) => {
     const recruit = await RecruitService.fireRecruit(client, DEFAULT_PLAYER_ID, Number(recruitId))
     if (!recruit) return { error: 'Recruit not found' }
-    await OperaService.recordOperaAction(client, DEFAULT_PLAYER_ID, 'fire_recruit', { recruitId: Number(recruitId) })
-    return { state: await buildGameState(client, DEFAULT_PLAYER_ID) }
+    await OperaService.recordOperaAction(client, DEFAULT_PLAYER_ID, 'fire_recruit', {
+      recruitId: Number(recruitId),
+    })
+    return {}
   }),
 }

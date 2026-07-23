@@ -1,11 +1,15 @@
 const {
-  DIFFICULTY_VALUES, travelSegmentMs, eventsSegmentMs, dueEventCount, phaseAndProgressFromElapsed,
+  DIFFICULTY_VALUES,
+  travelSegmentMs,
+  eventsSegmentMs,
+  dueEventCount,
+  phaseAndProgressFromElapsed,
 } = require('../src/domain/mission')
 
 const MINUTE_MS = 60_000
 
 describe('travelSegmentMs', () => {
-  test('at speed 100, is 2x this tier\'s fixed per-event duration', () => {
+  test("at speed 100, is 2x this tier's fixed per-event duration", () => {
     expect(travelSegmentMs('HARD', 100)).toBe(2 * DIFFICULTY_VALUES.HARD * MINUTE_MS)
   })
 
@@ -29,7 +33,7 @@ describe('travelSegmentMs', () => {
 })
 
 describe('eventsSegmentMs', () => {
-  test('is unaffected by ship speed and is eventCount x this tier\'s fixed per-event duration', () => {
+  test("is unaffected by ship speed and is eventCount x this tier's fixed per-event duration", () => {
     expect(eventsSegmentMs('STANDARD', 4)).toBe(4 * DIFFICULTY_VALUES.STANDARD * MINUTE_MS)
   })
 })
@@ -57,7 +61,9 @@ describe('dueEventCount', () => {
 
   test('is clamped to eventCount once the full events window has elapsed', () => {
     expect(dueEventCount(travelMs + eventsMs, travelMs, eventsMs, eventCount)).toBe(eventCount)
-    expect(dueEventCount(travelMs + eventsMs + 999_999, travelMs, eventsMs, eventCount)).toBe(eventCount)
+    expect(dueEventCount(travelMs + eventsMs + 999_999, travelMs, eventsMs, eventCount)).toBe(
+      eventCount,
+    )
   })
 
   test('returns 0 for a zero-event mission', () => {
@@ -72,7 +78,10 @@ describe('phaseAndProgressFromElapsed', () => {
   const eventsMs = eventsSegmentMs(difficulty, eventCount)
 
   test('starts EN_ROUTE at progress 0', () => {
-    expect(phaseAndProgressFromElapsed(0, travelMs, eventsMs)).toEqual({ phase: 'EN_ROUTE', progress: 0 })
+    expect(phaseAndProgressFromElapsed(0, travelMs, eventsMs)).toEqual({
+      phase: 'EN_ROUTE',
+      progress: 0,
+    })
   })
 
   test('reaches EVENT once the travel leg elapses', () => {
@@ -87,8 +96,14 @@ describe('phaseAndProgressFromElapsed', () => {
 
   test('completes once the full duration (travel*2 + events) has elapsed', () => {
     const totalMs = travelMs * 2 + eventsMs
-    expect(phaseAndProgressFromElapsed(totalMs, travelMs, eventsMs)).toEqual({ phase: 'COMPLETED', progress: 100 })
-    expect(phaseAndProgressFromElapsed(totalMs * 10, travelMs, eventsMs)).toEqual({ phase: 'COMPLETED', progress: 100 })
+    expect(phaseAndProgressFromElapsed(totalMs, travelMs, eventsMs)).toEqual({
+      phase: 'COMPLETED',
+      progress: 100,
+    })
+    expect(phaseAndProgressFromElapsed(totalMs * 10, travelMs, eventsMs)).toEqual({
+      phase: 'COMPLETED',
+      progress: 100,
+    })
   })
 
   test('a shorter travel leg (speed boost) reaches EVENT sooner in absolute time', () => {
@@ -99,7 +114,11 @@ describe('phaseAndProgressFromElapsed', () => {
 
   test('a shorter travel leg does not shrink the event segment duration', () => {
     const boostedTravelMs = travelSegmentMs(difficulty, 200)
-    const justBeforeEventsEnd = phaseAndProgressFromElapsed(boostedTravelMs + eventsMs - 1, boostedTravelMs, eventsMs)
+    const justBeforeEventsEnd = phaseAndProgressFromElapsed(
+      boostedTravelMs + eventsMs - 1,
+      boostedTravelMs,
+      eventsMs,
+    )
     expect(justBeforeEventsEnd.phase).toBe('EVENT')
   })
 })

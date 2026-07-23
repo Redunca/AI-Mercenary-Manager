@@ -23,7 +23,9 @@
     font-size: 0.85em;
   }
 
-  input, select, textarea {
+  input,
+  select,
+  textarea {
     padding: 0.35rem;
     font-family: inherit;
   }
@@ -187,7 +189,9 @@
       border-left-color: #e07b39;
     }
 
-    .effects, .seeds, .choice-options {
+    .effects,
+    .seeds,
+    .choice-options {
       margin: 0.2rem 0 0;
       padding-left: 1rem;
       font-size: 0.9em;

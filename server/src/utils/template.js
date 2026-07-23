@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 /**
  * Replaces {tagName} placeholders in a template string with values from
@@ -12,17 +12,17 @@ function render(template, context) {
     if (!(key in context) || context[key] === undefined) {
       throw new Error(
         `Template references unresolved tag "{${key}}" in: "${template}". ` +
-        `Available tags: [${Object.keys(context).join(', ')}]`
-      );
+          `Available tags: [${Object.keys(context).join(', ')}]`,
+      )
     }
-    return context[key];
-  });
+    return context[key]
+  })
 }
 
 /** Extracts the set of {placeholder} names referenced by a template string. */
 function extractPlaceholders(template) {
-  const matches = template.matchAll(/\{(\w+)\}/g);
-  return [...matches].map((m) => m[1]);
+  const matches = template.matchAll(/\{(\w+)\}/g)
+  return [...matches].map((m) => m[1])
 }
 
-module.exports = { render, extractPlaceholders };
+module.exports = { render, extractPlaceholders }

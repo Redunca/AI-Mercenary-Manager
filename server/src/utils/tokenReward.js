@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 /**
  * Computes the token payout for a completed mission:
@@ -21,10 +21,10 @@
  * ever does.
  */
 function calculateTokenReward(tokenBase, eventResults, totalEvents) {
-  if (totalEvents === 0) return 0;
+  if (totalEvents === 0) return 0
 
-  const successes = eventResults.filter(r => r.success).length;
-  return Math.round(tokenBase * (0.5 + successes / totalEvents));
+  const successes = eventResults.filter((r) => r.success).length
+  return Math.round(tokenBase * (0.5 + successes / totalEvents))
 }
 
-module.exports = { calculateTokenReward };
+module.exports = { calculateTokenReward }

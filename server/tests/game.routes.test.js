@@ -2,7 +2,12 @@ const request = require('supertest')
 const { app } = require('../index')
 const GameService = require('../src/services/game.service')
 
-jest.mock('../src/db/pool')
+jest.mock('../src/db/pool', () => {
+  const actual = jest.requireActual('../src/db/pool')
+  const mockClient = { query: jest.fn(), release: jest.fn() }
+  actual.pool.connect = jest.fn().mockResolvedValue(mockClient)
+  return actual
+})
 jest.mock('../src/services/game.service')
 
 describe('Game Routes', () => {
@@ -11,7 +16,7 @@ describe('Game Routes', () => {
   })
 
   describe('GET /api/game/state', () => {
-    test("returns the current game state", async () => {
+    test('returns the current game state', async () => {
       const mockState = { recruits: [], candidates: [], missions: [] }
       GameService.getGameState.mockResolvedValue(mockState)
 
@@ -31,7 +36,7 @@ describe('Game Routes', () => {
   })
 
   describe('POST /api/game/sync', () => {
-    test("triggers the sync and returns the updated state", async () => {
+    test('triggers the sync and returns the updated state', async () => {
       const mockState = { recruits: [], candidates: [], missions: [] }
       GameService.syncGame.mockResolvedValue(mockState)
 
@@ -48,9 +53,7 @@ describe('Game Routes', () => {
       const recruit = { id: '1', name: 'New Name' }
       GameService.renameRecruit.mockResolvedValue({ recruit, state: {} })
 
-      const res = await request(app)
-        .patch('/api/game/recruits/1')
-        .send({ name: 'New Name' })
+      const res = await request(app).patch('/api/game/recruits/1').send({ name: 'New Name' })
 
       expect(res.status).toBe(200)
       expect(res.body.recruit).toEqual(recruit)
@@ -60,9 +63,7 @@ describe('Game Routes', () => {
     test('returns 400 if the recruit cannot be found', async () => {
       GameService.renameRecruit.mockResolvedValue({ error: 'Recruit not found' })
 
-      const res = await request(app)
-        .patch('/api/game/recruits/999')
-        .send({ name: 'X' })
+      const res = await request(app).patch('/api/game/recruits/999').send({ name: 'X' })
 
       expect(res.status).toBe(400)
       expect(res.body.error).toBe('Recruit not found')
@@ -119,9 +120,7 @@ describe('Game Routes', () => {
     test('starts a mission with a valid ship', async () => {
       GameService.startMission.mockResolvedValue({ state: {} })
 
-      const res = await request(app)
-        .post('/api/game/missions/1/start')
-        .send({ shipId: 1 })
+      const res = await request(app).post('/api/game/missions/1/start').send({ shipId: 1 })
 
       expect(res.status).toBe(200)
       expect(GameService.startMission).toHaveBeenCalledWith(1, 1)
@@ -138,9 +137,7 @@ describe('Game Routes', () => {
     test('returns 400 when the service reports an error', async () => {
       GameService.startMission.mockResolvedValue({ error: 'Mission not found' })
 
-      const res = await request(app)
-        .post('/api/game/missions/999/start')
-        .send({ shipId: 1 })
+      const res = await request(app).post('/api/game/missions/999/start').send({ shipId: 1 })
 
       expect(res.status).toBe(400)
       expect(res.body.error).toBe('Mission not found')

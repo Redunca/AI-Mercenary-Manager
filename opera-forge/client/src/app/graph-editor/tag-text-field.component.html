@@ -18,7 +18,12 @@
   @if (usedTags.length > 0) {
     <ul class="tag-chips">
       @for (tag of usedTags; track tag) {
-        <li [class.unknown]="!isKnownTag(tag)" [title]="isKnownTag(tag) ? '' : 'Not in the shared tag catalog'">{{ '{' }}{{ tag }}{{ '}' }}</li>
+        <li
+          [class.unknown]="!isKnownTag(tag)"
+          [title]="isKnownTag(tag) ? '' : 'Not in the shared tag catalog'"
+        >
+          {{ '{' }}{{ tag }}{{ '}' }}
+        </li>
       }
     </ul>
   }

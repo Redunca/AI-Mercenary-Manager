@@ -1,12 +1,11 @@
 export class TerminalController {
-
   private input = '';
   private history: string[] = [];
   private index = -1;
 
   constructor(
     public panelId: number,
-    public localCommands: { [name: string]: (...args: string[]) => void }
+    public localCommands: { [name: string]: (...args: string[]) => void },
   ) {}
 
   setInput(value: string) {
@@ -50,4 +49,3 @@ export class TerminalController {
     }
   }
 }
-

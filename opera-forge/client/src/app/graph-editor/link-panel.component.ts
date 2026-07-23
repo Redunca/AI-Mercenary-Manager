@@ -3,12 +3,27 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GraphService } from '../core/graph.service';
 import {
-  ACTION_MATCH_FIELDS, ACTION_TYPES, CONDITION_TYPES, Condition, ConditionType, GraphLink, OPERATORS,
-  OUTCOMES, ActionType, defaultActionMatch, defaultParamsFor,
+  ACTION_MATCH_FIELDS,
+  ACTION_TYPES,
+  CONDITION_TYPES,
+  Condition,
+  ConditionType,
+  GraphLink,
+  OPERATORS,
+  OUTCOMES,
+  ActionType,
+  defaultActionMatch,
+  defaultParamsFor,
 } from '../models/graph';
 
 type MatchKind = 'any' | 'itemName' | 'recruitId' | 'shipId' | 'templateId' | 'seedId';
-const MATCH_KEYS: Exclude<MatchKind, 'any'>[] = ['itemName', 'recruitId', 'shipId', 'templateId', 'seedId'];
+const MATCH_KEYS: Exclude<MatchKind, 'any'>[] = [
+  'itemName',
+  'recruitId',
+  'shipId',
+  'templateId',
+  'seedId',
+];
 
 @Component({
   selector: 'app-link-panel',
@@ -33,7 +48,7 @@ export class LinkPanelComponent {
   // OUTCOMES -- look it up so the picker can offer a dropdown instead of a
   // freeform id the author has to retype correctly.
   choiceOptionsForLink(): { id: string; label: string }[] {
-    const sourceNode = this.graphService.graph()?.nodes.find(n => n.id === this.link().from);
+    const sourceNode = this.graphService.graph()?.nodes.find((n) => n.id === this.link().from);
     return sourceNode?.type === 'choice' ? (sourceNode.choiceOptions ?? []) : [];
   }
 
@@ -43,7 +58,10 @@ export class LinkPanelComponent {
 
   addCondition(): void {
     const link = this.link();
-    const condition: Condition = { type: 'chance', params: defaultParamsFor('condition', 'chance') };
+    const condition: Condition = {
+      type: 'chance',
+      params: defaultParamsFor('condition', 'chance'),
+    };
     this.graphService.updateLink(link.id, { conditions: [...link.conditions, condition] });
   }
 
@@ -57,13 +75,18 @@ export class LinkPanelComponent {
   setConditionParam(index: number, key: string, value: unknown): void {
     const link = this.link();
     const conditions = [...link.conditions];
-    conditions[index] = { ...conditions[index], params: { ...conditions[index].params, [key]: value } };
+    conditions[index] = {
+      ...conditions[index],
+      params: { ...conditions[index].params, [key]: value },
+    };
     this.graphService.updateLink(link.id, { conditions });
   }
 
   removeCondition(index: number): void {
     const link = this.link();
-    this.graphService.updateLink(link.id, { conditions: link.conditions.filter((_, i) => i !== index) });
+    this.graphService.updateLink(link.id, {
+      conditions: link.conditions.filter((_, i) => i !== index),
+    });
   }
 
   // Sets actionType and match in one shot rather than two chained
@@ -77,7 +100,10 @@ export class LinkPanelComponent {
   setActionType(index: number, actionType: ActionType): void {
     const link = this.link();
     const conditions = [...link.conditions];
-    conditions[index] = { ...conditions[index], params: { actionType, match: defaultActionMatch(actionType) } };
+    conditions[index] = {
+      ...conditions[index],
+      params: { actionType, match: defaultActionMatch(actionType) },
+    };
     this.graphService.updateLink(link.id, { conditions });
   }
 
@@ -91,20 +117,22 @@ export class LinkPanelComponent {
   }
 
   argsText(index: number): string {
-    const match = this.link().conditions[index].params['match'] as Record<string, unknown> | undefined;
+    const match = this.link().conditions[index].params['match'] as
+      Record<string, unknown> | undefined;
     const args = match?.['args'];
     return Array.isArray(args) ? args.join(', ') : '';
   }
 
   setArgsText(index: number, text: string): void {
     const match = (this.link().conditions[index].params['match'] as Record<string, unknown>) ?? {};
-    const args = text.trim() ? text.split(',').map(s => s.trim()) : undefined;
+    const args = text.trim() ? text.split(',').map((s) => s.trim()) : undefined;
     const { args: _drop, ...rest } = match;
     this.setConditionParam(index, 'match', args ? { ...rest, args } : rest);
   }
 
   matchKind(index: number): MatchKind {
-    const match = this.link().conditions[index].params['match'] as Record<string, unknown> | undefined;
+    const match = this.link().conditions[index].params['match'] as
+      Record<string, unknown> | undefined;
     if (!match) return 'any';
     for (const key of MATCH_KEYS) {
       if (key in match) return key;
@@ -117,7 +145,8 @@ export class LinkPanelComponent {
   }
 
   matchValue(index: number, key: string): string {
-    const match = this.link().conditions[index].params['match'] as Record<string, unknown> | undefined;
+    const match = this.link().conditions[index].params['match'] as
+      Record<string, unknown> | undefined;
     return (match?.[key] as string) ?? '';
   }
 

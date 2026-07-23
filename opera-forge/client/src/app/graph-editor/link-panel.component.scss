@@ -30,7 +30,9 @@
     font-size: 0.85em;
   }
 
-  textarea, input, select {
+  textarea,
+  input,
+  select {
     padding: 0.35rem;
   }
 
@@ -39,7 +41,8 @@
     gap: 0.3rem;
     align-items: center;
 
-    select, input {
+    select,
+    input {
       flex: 1;
       min-width: 0;
     }

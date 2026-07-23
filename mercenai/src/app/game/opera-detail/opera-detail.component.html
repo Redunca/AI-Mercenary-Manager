@@ -1,10 +1,13 @@
-<div>TASK: [<span class="task-title">Opera detail — {{ id }}</span>] ******************************************</div>
+<div>
+  TASK: [<span class="task-title">Opera detail — {{ id }}</span
+  >] ******************************************
+</div>
 <div>ok ==> {{ '{' }}</div>
 
 <ng-container *ngIf="opera; else notFound">
-  <div class="indent-one">"title"  : "{{ opera.title }}",</div>
+  <div class="indent-one">"title" : "{{ opera.title }}",</div>
   <div class="indent-one">"status" : "{{ opera.status }}",</div>
-  <div class="indent-one">"tasks"  : [</div>
+  <div class="indent-one">"tasks" : [</div>
   <div *ngFor="let task of opera.tasks" class="indent-two">
     [{{ task.status === 'done' ? 'x' : ' ' }}] {{ task.text }}
   </div>
@@ -14,13 +17,16 @@
   <ng-container *ngIf="opera.pendingChoice as choice">
     <div class="indent-one">"choice" : {{ '{' }}</div>
     <div class="indent-two">"{{ choice.text }}"</div>
-    <div *ngFor="let option of choice.options" class="indent-two">- ({{ option.id }}) {{ option.label }}</div>
+    <div *ngFor="let option of choice.options" class="indent-two">
+      - ({{ option.id }}) {{ option.label }}
+    </div>
     <div class="indent-one">{{ '}' }},</div>
   </ng-container>
 
   <div class="indent-one">"log" : [</div>
   <div *ngFor="let entry of logs" class="indent-two log-entry">
-    <span class="tag" [class.tag-banter]="isBanterTag(entry.tag)">{{ entry.tag }}</span> {{ entry.message }}
+    <span class="tag" [class.tag-banter]="isBanterTag(entry.tag)">{{ entry.tag }}</span>
+    {{ entry.message }}
   </div>
   <div *ngIf="logs.length === 0" class="indent-two muted">— no entries yet —</div>
   <div class="indent-one">]</div>

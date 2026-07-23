@@ -19,17 +19,31 @@ const SHOP_REFRESH_SPEED = 6
 const MISSION_REFRESH_SPEED = 7
 const HP_REGEN_SPEED = 8
 
-function createFakeClient({ tokens = 1000, tiers = {}, shopCatalogCount = 16, consumableCatalogCount = 13, playerExists = true } = {}) {
+function createFakeClient({
+  tokens = 1000,
+  tiers = {},
+  shopCatalogCount = 16,
+  consumableCatalogCount = 13,
+  playerExists = true,
+} = {}) {
   const state = { tokens, tiers: { ...tiers }, dockingStationInserts: [], columnUpdates: {} }
 
   const query = jest.fn(async (sql, params = []) => {
     const s = sql.replace(/\s+/g, ' ').trim()
 
-    if (s === 'SELECT tokens FROM players WHERE id = $1' || s === 'SELECT tokens FROM players WHERE id = $1 FOR UPDATE') {
+    if (
+      s === 'SELECT tokens FROM players WHERE id = $1' ||
+      s === 'SELECT tokens FROM players WHERE id = $1 FOR UPDATE'
+    ) {
       return { rows: playerExists ? [{ tokens: state.tokens }] : [] }
     }
     if (s === 'SELECT upgrade_id, tier FROM player_upgrades WHERE player_id = $1') {
-      return { rows: Object.entries(state.tiers).map(([upgrade_id, tier]) => ({ upgrade_id: Number(upgrade_id), tier })) }
+      return {
+        rows: Object.entries(state.tiers).map(([upgrade_id, tier]) => ({
+          upgrade_id: Number(upgrade_id),
+          tier,
+        })),
+      }
     }
     if (s === 'SELECT tier FROM player_upgrades WHERE player_id = $1 AND upgrade_id = $2') {
       return { rows: [{ tier: state.tiers[params[1]] ?? 0 }] }
@@ -73,8 +87,14 @@ describe('SelfService', () => {
       const result = await SelfService.getUpgradeCatalog(client, 1)
 
       expect(result.tokens).toBe(500)
-      const recruits = result.upgrades.find(u => u.id === RECRUITS)
-      expect(recruits).toMatchObject({ tier: 0, currentValue: 5, maxValue: 20, maxed: false, nextCost: 50 })
+      const recruits = result.upgrades.find((u) => u.id === RECRUITS)
+      expect(recruits).toMatchObject({
+        tier: 0,
+        currentValue: 5,
+        maxValue: 20,
+        maxed: false,
+        nextCost: 50,
+      })
     })
 
     test('reflects an owned tier in currentValue and nextCost', async () => {
@@ -82,7 +102,7 @@ describe('SelfService', () => {
 
       const result = await SelfService.getUpgradeCatalog(client, 1)
 
-      const recruits = result.upgrades.find(u => u.id === RECRUITS)
+      const recruits = result.upgrades.find((u) => u.id === RECRUITS)
       expect(recruits).toMatchObject({ tier: 3, currentValue: 8, nextCost: 100 }) // costs[3] = 100
     })
 
@@ -91,8 +111,14 @@ describe('SelfService', () => {
 
       const result = await SelfService.getUpgradeCatalog(client, 1)
 
-      const dockedShips = result.upgrades.find(u => u.id === DOCKED_SHIPS)
-      expect(dockedShips).toMatchObject({ tier: 5, currentValue: 10, maxValue: 10, maxed: true, nextCost: null })
+      const dockedShips = result.upgrades.find((u) => u.id === DOCKED_SHIPS)
+      expect(dockedShips).toMatchObject({
+        tier: 5,
+        currentValue: 10,
+        maxValue: 10,
+        maxed: true,
+        nextCost: null,
+      })
     })
 
     test('marks a time-based upgrade maxed once its floor is reached', async () => {
@@ -100,8 +126,13 @@ describe('SelfService', () => {
 
       const result = await SelfService.getUpgradeCatalog(client, 1)
 
-      const upgrade = result.upgrades.find(u => u.id === SHOP_REFRESH_SPEED)
-      expect(upgrade).toMatchObject({ currentValue: 600000, maxValue: 600000, maxed: true, nextCost: null })
+      const upgrade = result.upgrades.find((u) => u.id === SHOP_REFRESH_SPEED)
+      expect(upgrade).toMatchObject({
+        currentValue: 600000,
+        maxValue: 600000,
+        maxed: true,
+        nextCost: null,
+      })
     })
 
     test('a time-based upgrade below its floor is not maxed and reports the decremented value', async () => {
@@ -109,7 +140,7 @@ describe('SelfService', () => {
 
       const result = await SelfService.getUpgradeCatalog(client, 1)
 
-      const upgrade = result.upgrades.find(u => u.id === MISSION_REFRESH_SPEED)
+      const upgrade = result.upgrades.find((u) => u.id === MISSION_REFRESH_SPEED)
       expect(upgrade).toMatchObject({ currentValue: 840000, maxed: false, nextCost: 125 }) // 900000 - 2*30000, costs[2]
     })
 
@@ -118,8 +149,13 @@ describe('SelfService', () => {
 
       const result = await SelfService.getUpgradeCatalog(client, 1)
 
-      const upgrade = result.upgrades.find(u => u.id === HP_REGEN_SPEED)
-      expect(upgrade).toMatchObject({ currentValue: 60000, maxValue: 10000, maxed: false, nextCost: 80 })
+      const upgrade = result.upgrades.find((u) => u.id === HP_REGEN_SPEED)
+      expect(upgrade).toMatchObject({
+        currentValue: 60000,
+        maxValue: 10000,
+        maxed: false,
+        nextCost: 80,
+      })
     })
 
     test('uses the live shop_items count as the dynamic ceiling for shopItems', async () => {
@@ -127,7 +163,7 @@ describe('SelfService', () => {
 
       const result = await SelfService.getUpgradeCatalog(client, 1)
 
-      const shopItems = result.upgrades.find(u => u.id === SHOP_ITEMS)
+      const shopItems = result.upgrades.find((u) => u.id === SHOP_ITEMS)
       expect(shopItems).toMatchObject({ maxValue: 16, maxed: false })
     })
 
@@ -136,7 +172,7 @@ describe('SelfService', () => {
 
       const result = await SelfService.getUpgradeCatalog(client, 1)
 
-      const inventorySpace = result.upgrades.find(u => u.id === INVENTORY_SPACE)
+      const inventorySpace = result.upgrades.find((u) => u.id === INVENTORY_SPACE)
       expect(inventorySpace).toMatchObject({ maxValue: 13, maxed: false })
     })
 
@@ -145,8 +181,13 @@ describe('SelfService', () => {
 
       const result = await SelfService.getUpgradeCatalog(client, 1)
 
-      const shopItems = result.upgrades.find(u => u.id === SHOP_ITEMS)
-      expect(shopItems).toMatchObject({ currentValue: 16, maxValue: 16, maxed: true, nextCost: null })
+      const shopItems = result.upgrades.find((u) => u.id === SHOP_ITEMS)
+      expect(shopItems).toMatchObject({
+        currentValue: 16,
+        maxValue: 16,
+        maxed: true,
+        nextCost: null,
+      })
     })
   })
 
@@ -186,7 +227,11 @@ describe('SelfService', () => {
     })
 
     test('rejects a purchase of a dynamic-ceiling upgrade once maxed against the live catalog count', async () => {
-      const { client } = createFakeClient({ tokens: 99999, tiers: { [SHOP_ITEMS]: 11 }, shopCatalogCount: 16 })
+      const { client } = createFakeClient({
+        tokens: 99999,
+        tiers: { [SHOP_ITEMS]: 11 },
+        shopCatalogCount: 16,
+      })
 
       const result = await SelfService.buyUpgrade(client, 1, SHOP_ITEMS)
 
@@ -238,7 +283,10 @@ describe('SelfService', () => {
     })
 
     test('applies the shopRefreshSpeed effect to players.shop_refresh_interval_ms, decremented and floored', async () => {
-      const { client, state } = createFakeClient({ tokens: 1000, tiers: { [SHOP_REFRESH_SPEED]: 9 } }) // one tier from the floor
+      const { client, state } = createFakeClient({
+        tokens: 1000,
+        tiers: { [SHOP_REFRESH_SPEED]: 9 },
+      }) // one tier from the floor
       await SelfService.buyUpgrade(client, 1, SHOP_REFRESH_SPEED)
       expect(state.columnUpdates.shop_refresh_interval_ms).toBe(600000) // floored, not 900000 - 10*30000 = 600000 exactly at floor
     })

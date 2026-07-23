@@ -10,15 +10,32 @@
     <form class="create-form" (ngSubmit)="createGraph()">
       <label>
         Title
-        <input type="text" [ngModel]="newTitle()" (ngModelChange)="onTitleInput($event)" name="title" required />
+        <input
+          type="text"
+          [ngModel]="newTitle()"
+          (ngModelChange)="onTitleInput($event)"
+          name="title"
+          required
+        />
       </label>
       <label>
         Id (slug)
-        <input type="text" [ngModel]="newId()" (ngModelChange)="newId.set($event)" name="id" required />
+        <input
+          type="text"
+          [ngModel]="newId()"
+          (ngModelChange)="newId.set($event)"
+          name="id"
+          required
+        />
       </label>
       <label>
         Description
-        <input type="text" [ngModel]="newDescription()" (ngModelChange)="newDescription.set($event)" name="description" />
+        <input
+          type="text"
+          [ngModel]="newDescription()"
+          (ngModelChange)="newDescription.set($event)"
+          name="description"
+        />
       </label>
       @if (createError()) {
         <p class="error">{{ createError() }}</p>
@@ -52,7 +69,9 @@
             <td class="muted">{{ g.description }}</td>
             <td class="muted">{{ g.updatedAt | date: 'short' }}</td>
             <td>
-              <button type="button" class="danger" (click)="deleteGraph(g.id, $event)">Delete</button>
+              <button type="button" class="danger" (click)="deleteGraph(g.id, $event)">
+                Delete
+              </button>
             </td>
           </tr>
         }

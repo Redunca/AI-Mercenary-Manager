@@ -1,9 +1,17 @@
-<div *ngIf="node.type === 'leaf'" class="leaf" style="width: 100%;">
-  <app-terminal-panel [panel]="layout.panels[node.panelId]" [isActive]="layout.activePanelId === node.panelId" class="panelContent"></app-terminal-panel>
+<div *ngIf="node.type === 'leaf'" class="leaf" style="width: 100%">
+  <app-terminal-panel
+    [panel]="layout.panels[node.panelId]"
+    [isActive]="layout.activePanelId === node.panelId"
+    class="panelContent"
+  ></app-terminal-panel>
 </div>
 
-<div *ngIf="node.type === 'split'" class="split" [class.row]="node.direction === 'row'"
-  [class.column]="node.direction === 'column'">
+<div
+  *ngIf="node.type === 'split'"
+  class="split"
+  [class.row]="node.direction === 'row'"
+  [class.column]="node.direction === 'column'"
+>
   <app-layout-node [node]="node.children[0]"></app-layout-node>
   <app-layout-node [node]="node.children[1]"></app-layout-node>
 </div>

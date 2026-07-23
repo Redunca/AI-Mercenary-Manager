@@ -1,6 +1,6 @@
-'use strict';
+'use strict'
 
-const { pickOne } = require('../utils/random');
+const { pickOne } = require('../utils/random')
 
 /**
  * Picks a name from entityNames.categories[category], preferring entries
@@ -9,17 +9,15 @@ const { pickOne } = require('../utils/random');
  * generation entirely.
  */
 function pickName(entityNames, category, preferredTags = [], exclude = []) {
-  const pool = entityNames.categories[category];
+  const pool = entityNames.categories[category]
   if (!pool || pool.length === 0) {
-    throw new Error(`No entity-names pool found for category "${category}"`);
+    throw new Error(`No entity-names pool found for category "${category}"`)
   }
 
-  let candidates = pool;
+  let candidates = pool
   if (preferredTags.length > 0) {
-    const filtered = pool.filter((entry) =>
-      entry.tags.some((t) => preferredTags.includes(t))
-    );
-    if (filtered.length > 0) candidates = filtered;
+    const filtered = pool.filter((entry) => entry.tags.some((t) => preferredTags.includes(t)))
+    if (filtered.length > 0) candidates = filtered
   }
 
   // Avoid handing back a name already used elsewhere in this mission
@@ -27,11 +25,11 @@ function pickName(entityNames, category, preferredTags = [], exclude = []) {
   // coincidentally resolve to the same individual), unless doing so
   // would leave no candidates at all.
   if (exclude.length > 0) {
-    const unused = candidates.filter((entry) => !exclude.includes(entry.value));
-    if (unused.length > 0) candidates = unused;
+    const unused = candidates.filter((entry) => !exclude.includes(entry.value))
+    if (unused.length > 0) candidates = unused
   }
 
-  return pickOne(candidates).value;
+  return pickOne(candidates).value
 }
 
 /**
@@ -41,11 +39,11 @@ function pickName(entityNames, category, preferredTags = [], exclude = []) {
  *  - { category, tags? } which triggers a pickName() lookup.
  */
 function resolveProvideValue(entityNames, spec, exclude = []) {
-  if (typeof spec === 'string') return spec;
+  if (typeof spec === 'string') return spec
   if (spec && typeof spec === 'object' && spec.category) {
-    return pickName(entityNames, spec.category, spec.tags || [], exclude);
+    return pickName(entityNames, spec.category, spec.tags || [], exclude)
   }
-  throw new Error(`Invalid "provides" spec: ${JSON.stringify(spec)}`);
+  throw new Error(`Invalid "provides" spec: ${JSON.stringify(spec)}`)
 }
 
-module.exports = { pickName, resolveProvideValue };
+module.exports = { pickName, resolveProvideValue }

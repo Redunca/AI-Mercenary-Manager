@@ -1,36 +1,44 @@
-const { currentIntervalBoundary, isRefreshDue } = require('../src/utils/refreshWindow');
+const { currentIntervalBoundary, isRefreshDue } = require('../src/utils/refreshWindow')
 
-const FIFTEEN_MIN = 15 * 60 * 1000;
+const FIFTEEN_MIN = 15 * 60 * 1000
 
 describe('currentIntervalBoundary', () => {
   test('floors to the most recent 15-minute wall-clock boundary', () => {
     // 2026-01-01T10:07:33Z -> floors to 10:00:00Z
-    const now = new Date('2026-01-01T10:07:33Z');
-    expect(new Date(currentIntervalBoundary(now, FIFTEEN_MIN)).toISOString()).toBe('2026-01-01T10:00:00.000Z');
-  });
+    const now = new Date('2026-01-01T10:07:33Z')
+    expect(new Date(currentIntervalBoundary(now, FIFTEEN_MIN)).toISOString()).toBe(
+      '2026-01-01T10:00:00.000Z',
+    )
+  })
 
   test('floors 10:14:59.999Z down to 10:00:00Z (still the same window)', () => {
-    const now = new Date('2026-01-01T10:14:59.999Z');
-    expect(new Date(currentIntervalBoundary(now, FIFTEEN_MIN)).toISOString()).toBe('2026-01-01T10:00:00.000Z');
-  });
+    const now = new Date('2026-01-01T10:14:59.999Z')
+    expect(new Date(currentIntervalBoundary(now, FIFTEEN_MIN)).toISOString()).toBe(
+      '2026-01-01T10:00:00.000Z',
+    )
+  })
 
   test('10:15:00.000Z is exactly the next boundary', () => {
-    const now = new Date('2026-01-01T10:15:00.000Z');
-    expect(new Date(currentIntervalBoundary(now, FIFTEEN_MIN)).toISOString()).toBe('2026-01-01T10:15:00.000Z');
-  });
+    const now = new Date('2026-01-01T10:15:00.000Z')
+    expect(new Date(currentIntervalBoundary(now, FIFTEEN_MIN)).toISOString()).toBe(
+      '2026-01-01T10:15:00.000Z',
+    )
+  })
 
   test('accepts a raw ms timestamp as well as a Date', () => {
-    const now = new Date('2026-01-01T10:37:00Z');
-    expect(currentIntervalBoundary(now.getTime(), FIFTEEN_MIN)).toBe(currentIntervalBoundary(now, FIFTEEN_MIN));
-  });
-});
+    const now = new Date('2026-01-01T10:37:00Z')
+    expect(currentIntervalBoundary(now.getTime(), FIFTEEN_MIN)).toBe(
+      currentIntervalBoundary(now, FIFTEEN_MIN),
+    )
+  })
+})
 
 describe('isRefreshDue', () => {
   test('is due when nothing has ever been refreshed (null or undefined)', () => {
-    const now = new Date('2026-01-01T10:07:00Z');
-    expect(isRefreshDue(null, now, FIFTEEN_MIN)).toBe(true);
-    expect(isRefreshDue(undefined, now, FIFTEEN_MIN)).toBe(true);
-  });
+    const now = new Date('2026-01-01T10:07:00Z')
+    expect(isRefreshDue(null, now, FIFTEEN_MIN)).toBe(true)
+    expect(isRefreshDue(undefined, now, FIFTEEN_MIN)).toBe(true)
+  })
 
   test('is not due when the last refresh happened in the same 15-minute window', () => {
     const lastRefresh = new Date('2026-01-01T10:00:00Z')

@@ -58,7 +58,7 @@ function resolveAttack({ attackerScore, advantage = 0, defenderGuard, rollAction
  * @param {(activeCrew: Array) => object} [pickTarget] - defaults to uniform random pick
  */
 function runAutoBattle({ crew, enemy, rollAction, healCharges = 0, pickTarget }) {
-  const state = crew.map(c => ({
+  const state = crew.map((c) => ({
     id: c.id,
     name: c.name,
     attributes: c.attributes,
@@ -75,24 +75,26 @@ function runAutoBattle({ crew, enemy, rollAction, healCharges = 0, pickTarget })
   const rounds = []
   const enemyStat = bestCombatStat({ might: enemy.might, agility: enemy.agility })
 
-  const activeCrew = () => state.filter(c => c.status === 'active')
-  const choose = pickTarget || (targets => targets[Math.floor(Math.random() * targets.length)])
+  const activeCrew = () => state.filter((c) => c.status === 'active')
+  const choose = pickTarget || ((targets) => targets[Math.floor(Math.random() * targets.length)])
 
   let round = 0
   let stalemate = false
   while (enemyHp > 0 && activeCrew().length > 0) {
-    if (round >= MAX_ROUNDS) { stalemate = true; break }
+    if (round >= MAX_ROUNDS) {
+      stalemate = true
+      break
+    }
     round += 1
     const entries = []
 
-    const order = [
-      ...activeCrew().map(ref => ({ type: 'crew', ref })),
-      { type: 'enemy' },
-    ].sort((a, b) => {
-      const aAg = a.type === 'crew' ? (a.ref.attributes.agility || 0) : enemy.agility
-      const bAg = b.type === 'crew' ? (b.ref.attributes.agility || 0) : enemy.agility
-      return bAg - aAg
-    })
+    const order = [...activeCrew().map((ref) => ({ type: 'crew', ref })), { type: 'enemy' }].sort(
+      (a, b) => {
+        const aAg = a.type === 'crew' ? a.ref.attributes.agility || 0 : enemy.agility
+        const bAg = b.type === 'crew' ? b.ref.attributes.agility || 0 : enemy.agility
+        return bAg - aAg
+      },
+    )
 
     for (const combatant of order) {
       if (enemyHp <= 0 || activeCrew().length === 0) break
@@ -102,24 +104,43 @@ function runAutoBattle({ crew, enemy, rollAction, healCharges = 0, pickTarget })
         if (attacker.status !== 'active') continue
         const { attribute, score } = bestCombatStat(attacker.attributes)
         const { roll, hit, damage } = resolveAttack({
-          attackerScore: score, defenderGuard: enemy.guard, rollAction,
+          attackerScore: score,
+          defenderGuard: enemy.guard,
+          rollAction,
         })
         enemyHp = Math.max(0, enemyHp - damage)
         entries.push({
-          actor: 'crew', actorId: attacker.id, actorName: attacker.name,
-          attribute, roll, hit, damage, enemyHpAfter: enemyHp,
+          actor: 'crew',
+          actorId: attacker.id,
+          actorName: attacker.name,
+          attribute,
+          roll,
+          hit,
+          damage,
+          enemyHpAfter: enemyHp,
         })
       } else {
         const targets = activeCrew()
         if (targets.length === 0) continue
         const target = choose(targets)
-        const targetGuard = computeGuard(target.attributes, computeArmorGuardBonus(target.attributes, target.equippedArmor))
+        const targetGuard = computeGuard(
+          target.attributes,
+          computeArmorGuardBonus(target.attributes, target.equippedArmor),
+        )
         const { roll, hit, damage } = resolveAttack({
-          attackerScore: enemyStat.score, advantage: enemy.bossEdge, defenderGuard: targetGuard, rollAction,
+          attackerScore: enemyStat.score,
+          advantage: enemy.bossEdge,
+          defenderGuard: targetGuard,
+          rollAction,
         })
         const entry = {
-          actor: 'enemy', targetId: target.id, targetName: target.name,
-          attribute: enemyStat.attribute, roll, hit, damage,
+          actor: 'enemy',
+          targetId: target.id,
+          targetName: target.name,
+          attribute: enemyStat.attribute,
+          roll,
+          hit,
+          damage,
         }
         if (hit) {
           target.hp = Math.max(0, target.hp - damage)
@@ -166,8 +187,12 @@ function runAutoBattle({ crew, enemy, rollAction, healCharges = 0, pickTarget })
     stalemate,
     enemyFinalHp: enemyHp,
     healsUsed: healCharges - heals,
-    crewResults: state.map(c => ({
-      id: c.id, hp: c.hp, maxHp: c.maxHp, status: c.status, revived: c.revived,
+    crewResults: state.map((c) => ({
+      id: c.id,
+      hp: c.hp,
+      maxHp: c.maxHp,
+      status: c.status,
+      revived: c.revived,
     })),
   }
 }

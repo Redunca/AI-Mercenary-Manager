@@ -10,7 +10,7 @@ import { OperaSummary } from '../../models/opera';
   standalone: true,
   imports: [CommonModule, NgFor],
   templateUrl: './opera-list.component.html',
-  styleUrl: './opera-list.component.scss'
+  styleUrl: './opera-list.component.scss',
 })
 export class OperaListComponent {
   operaService = inject(OperaService);
@@ -21,12 +21,12 @@ export class OperaListComponent {
   }
 
   doneTaskCount(opera: OperaSummary): number {
-    return opera.tasks.filter(t => t.status === 'done').length;
+    return opera.tasks.filter((t) => t.status === 'done').length;
   }
 
   registerCommands() {
     return {
-      'detail': (id: string) => {
+      detail: (id: string) => {
         if (!id) {
           console.warn('Usage: detail <id>');
           return;

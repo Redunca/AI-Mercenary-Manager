@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 import { Equipment, EquipmentState } from '../models/equipment';
 
 export { Equipment, EquipmentState };
@@ -17,10 +17,10 @@ export class EquipmentService {
   }
 
   equip(equipmentId: number, recruitId: number): Promise<any> {
-    return this.http.post(`/api/equipment/${equipmentId}/equip`, { recruitId }).toPromise();
+    return firstValueFrom(this.http.post(`/api/equipment/${equipmentId}/equip`, { recruitId }));
   }
 
   unequip(equipmentId: number): Promise<any> {
-    return this.http.post(`/api/equipment/${equipmentId}/unequip`, {}).toPromise();
+    return firstValueFrom(this.http.post(`/api/equipment/${equipmentId}/unequip`, {}));
   }
 }

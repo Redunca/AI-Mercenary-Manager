@@ -33,6 +33,8 @@ export class GraphApiService {
   }
 
   generate(id: string, initialState: MockState, seed: string): Promise<GenerationResult> {
-    return firstValueFrom(this.http.post<GenerationResult>(`${this.base}/${id}/generate`, { initialState, seed }));
+    return firstValueFrom(
+      this.http.post<GenerationResult>(`${this.base}/${id}/generate`, { initialState, seed }),
+    );
   }
 }

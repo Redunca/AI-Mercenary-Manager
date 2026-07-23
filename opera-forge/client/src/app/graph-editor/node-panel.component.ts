@@ -3,13 +3,29 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GraphService } from '../core/graph.service';
 import {
-  ATTRIBUTES, ChoiceOption, EFFECT_TYPES, Effect, EffectType, GraphNode, MISSION_DIFFICULTIES, MissionDetails,
-  MissionDifficulty, OUTCOMES, Outcome, Seed, SEED_TARGETS, SeedTarget, defaultParamsFor,
+  ATTRIBUTES,
+  ChoiceOption,
+  EFFECT_TYPES,
+  Effect,
+  EffectType,
+  GraphNode,
+  MISSION_DIFFICULTIES,
+  MissionDetails,
+  MissionDifficulty,
+  OUTCOMES,
+  Outcome,
+  Seed,
+  SEED_TARGETS,
+  SeedTarget,
+  defaultParamsFor,
 } from '../models/graph';
 import { TagTextFieldComponent } from './tag-text-field.component';
 
 function parseTagList(text: string): string[] {
-  return text.split(',').map(s => s.trim()).filter(Boolean);
+  return text
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
 }
 
 @Component({
@@ -44,7 +60,9 @@ export class NodePanelComponent {
 
   setMission(patch: Partial<MissionDetails>): void {
     const node = this.node();
-    this.graphService.updateNode(node.id, { mission: { ...node.mission, title: node.mission?.title ?? '', ...patch } });
+    this.graphService.updateNode(node.id, {
+      mission: { ...node.mission, title: node.mission?.title ?? '', ...patch },
+    });
   }
 
   setMissionDifficulty(value: string): void {
@@ -90,7 +108,9 @@ export class NodePanelComponent {
   setRollParam(key: string, value: unknown): void {
     const node = this.node();
     if (!node.roll) return;
-    this.graphService.updateNode(node.id, { roll: { ...node.roll, params: { ...node.roll.params, [key]: value } } });
+    this.graphService.updateNode(node.id, {
+      roll: { ...node.roll, params: { ...node.roll.params, [key]: value } },
+    });
   }
 
   addEffect(): void {

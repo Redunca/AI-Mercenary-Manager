@@ -15,8 +15,7 @@ describe('MissionListComponent', () => {
     await TestBed.configureTestingModule({
       imports: [MissionListComponent],
       providers: [provideHttpClient(), provideHttpClientTesting()],
-    })
-    .compileComponents();
+    }).compileComponents();
 
     fixture = TestBed.createComponent(MissionListComponent);
     component = fixture.componentInstance;
@@ -65,7 +64,9 @@ describe('MissionListComponent', () => {
   });
 
   it('surfaces an error and keeps historyLoading falsy if the history fetch fails', async () => {
-    spyOn(missionService, 'getMissionHistory').and.returnValue(Promise.reject(new Error('network down')));
+    spyOn(missionService, 'getMissionHistory').and.returnValue(
+      Promise.reject(new Error('network down')),
+    );
 
     fixture.componentRef.setInput('completed', true);
     fixture.detectChanges();

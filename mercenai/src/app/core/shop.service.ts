@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 
 export interface ShopItem {
   id: number;
@@ -43,19 +43,19 @@ export class ShopService {
     return this.http.get<ShopItem>(`/api/shop/items/${id}`);
   }
 
-  buyItem(itemId: number, quantity: number = 1): Promise<any> {
-    return this.http.post(`/api/shop/buy/${itemId}`, { quantity }).toPromise() as Promise<any>;
+  buyItem(itemId: number, quantity = 1): Promise<any> {
+    return firstValueFrom(this.http.post(`/api/shop/buy/${itemId}`, { quantity }));
   }
 
   buyShip(itemId: number): Promise<any> {
-    return this.http.post(`/api/shop/buy/ship/${itemId}`, {}).toPromise() as Promise<any>;
+    return firstValueFrom(this.http.post(`/api/shop/buy/ship/${itemId}`, {}));
   }
 
-  buyConsumable(itemId: number, quantity: number = 1): Promise<any> {
-    return this.http.post(`/api/shop/buy/consumable/${itemId}`, { quantity }).toPromise() as Promise<any>;
+  buyConsumable(itemId: number, quantity = 1): Promise<any> {
+    return firstValueFrom(this.http.post(`/api/shop/buy/consumable/${itemId}`, { quantity }));
   }
 
   buyArmor(itemId: number): Promise<any> {
-    return this.http.post(`/api/shop/buy/armor/${itemId}`, {}).toPromise() as Promise<any>;
+    return firstValueFrom(this.http.post(`/api/shop/buy/armor/${itemId}`, {}));
   }
 }

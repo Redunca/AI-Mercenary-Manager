@@ -11,7 +11,7 @@
 }
 
 .terminal-panel.active {
-  border-color: #13A10E;
+  border-color: #13a10e;
 }
 
 .panel-content {
@@ -54,7 +54,7 @@
   font-size: 1rem;
   line-height: 1.2rem;
   word-wrap: break-word;
-  white-space: pre-wrap
+  white-space: pre-wrap;
 }
 
 .prompt {
@@ -67,4 +67,3 @@
 .command-input:focus {
   outline: none;
 }
-

@@ -2,24 +2,22 @@ import { Injectable } from '@angular/core';
 import { Panel, PanelModule } from '../models/panel';
 import { Subject } from 'rxjs';
 
-
 export type LayoutNode =
   | {
-    type: 'leaf';
-    panelId: number;
-  }
+      type: 'leaf';
+      panelId: number;
+    }
   | {
-    type: 'split';
-    direction: 'row' | 'column';
-    panelId: number;
-    children: [LayoutNode, LayoutNode];
-  };
+      type: 'split';
+      direction: 'row' | 'column';
+      panelId: number;
+      children: [LayoutNode, LayoutNode];
+    };
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class LayoutService {
-
   private nextId = 1;
   root: LayoutNode | null = null;
   panels: Record<number, Panel> = {};
@@ -27,7 +25,7 @@ export class LayoutService {
   activePanelChanged = new Subject<number>();
 
   addPanel(module: PanelModule, data?: any) {
-    console.log("Trying to add panel ", module, " with ", data);
+    console.log('Trying to add panel ', module, ' with ', data);
     const id = this.nextId++;
 
     this.panels[id] = { id, module, data };
@@ -37,8 +35,8 @@ export class LayoutService {
     }
 
     this.activePanelId = id;
-    console.log("Existing tree :", this.root);
-    console.log("Existing panels :", this.panels);
+    console.log('Existing tree :', this.root);
+    console.log('Existing panels :', this.panels);
     return id;
   }
 
@@ -56,25 +54,24 @@ export class LayoutService {
   }
 
   setActivePanel(id: number) {
-  if (this.panels[id]) {
-    this.activePanelId = id;
-    this.activePanelChanged.next(id);
+    if (this.panels[id]) {
+      this.activePanelId = id;
+      this.activePanelChanged.next(id);
+    }
   }
-}
 
   private collectPanelIds(node: LayoutNode | null, set: Set<number>) {
-  if (!node) return;
+    if (!node) return;
 
-  if (node.type === 'leaf') {
-    set.add(node.panelId);
-    return;
+    if (node.type === 'leaf') {
+      set.add(node.panelId);
+      return;
+    }
+
+    // split node
+    this.collectPanelIds(node.children[0], set);
+    this.collectPanelIds(node.children[1], set);
   }
-
-  // split node
-  this.collectPanelIds(node.children[0], set);
-  this.collectPanelIds(node.children[1], set);
-}
-
 
   clearInactivePanels() {
     const activeIds = new Set<number>();
@@ -93,7 +90,6 @@ export class LayoutService {
     }
   }
 
-
   setPanelModule(panelId: number, module: PanelModule, data?: any) {
     const panel = this.panels[panelId];
     if (!panel) return;
@@ -104,7 +100,6 @@ export class LayoutService {
     this.activePanelChanged.next(this.activePanelId ?? 0);
   }
 
-
   split(panelId: number, direction: 'row' | 'column') {
     const newPanelId = this.addPanel(PanelModule.None);
     if (this.root && panelId) {
@@ -114,8 +109,8 @@ export class LayoutService {
         panelId: -1,
         children: [
           { type: 'leaf', panelId },
-          { type: 'leaf', panelId: newPanelId }
-        ]
+          { type: 'leaf', panelId: newPanelId },
+        ],
       });
     }
     this.clearInactivePanels();
@@ -143,7 +138,7 @@ export class LayoutService {
     }
     this.clearInactivePanels();
     //Dans ce cas on vient de fermer le seul panel ouvert, on en ouvre un nouveau
-    if(Object.keys(this.panels).length == 0){
+    if (Object.keys(this.panels).length == 0) {
       this.addPanel(PanelModule.None);
     }
     this.activePanelChanged.next(this.activePanelId ?? 0);
@@ -158,72 +153,77 @@ export class LayoutService {
       ...node,
       children: [
         this.replaceLeaf(node.children[0], targetId, replacement),
-        this.replaceLeaf(node.children[1], targetId, replacement)
-      ]
+        this.replaceLeaf(node.children[1], targetId, replacement),
+      ],
     };
   }
 
-findPath(node: LayoutNode | null, targetId: number, path: LayoutNode[] = []): LayoutNode[] | null {
-  if (!node) return null;
+  findPath(
+    node: LayoutNode | null,
+    targetId: number,
+    path: LayoutNode[] = [],
+  ): LayoutNode[] | null {
+    if (!node) return null;
 
-  if (node.type === 'leaf') {
-    return node.panelId === targetId ? [...path, node] : null;
+    if (node.type === 'leaf') {
+      return node.panelId === targetId ? [...path, node] : null;
+    }
+
+    const left = this.findPath(node.children[0], targetId, [...path, node]);
+    if (left) return left;
+
+    const right = this.findPath(node.children[1], targetId, [...path, node]);
+    if (right) return right;
+
+    return null;
+  }
+  getSibling(
+    node: LayoutNode,
+    parent: LayoutNode,
+    direction: 'left' | 'right' | 'up' | 'down',
+  ): LayoutNode | null {
+    if (parent.type !== 'split') return null;
+
+    const [a, b] = parent.children;
+
+    if (parent.direction === 'row') {
+      if (direction === 'left' && b === node) return a;
+      if (direction === 'right' && a === node) return b;
+    }
+
+    if (parent.direction === 'column') {
+      if (direction === 'up' && b === node) return a;
+      if (direction === 'down' && a === node) return b;
+    }
+
+    return null;
   }
 
-  const left = this.findPath(node.children[0], targetId, [...path, node]);
-  if (left) return left;
-
-  const right = this.findPath(node.children[1], targetId, [...path, node]);
-  if (right) return right;
-
-  return null;
-}
-getSibling(node: LayoutNode, parent: LayoutNode, direction: 'left' | 'right' | 'up' | 'down'): LayoutNode | null {
-  if (parent.type !== 'split') return null;
-
-  const [a, b] = parent.children;
-
-  if (parent.direction === 'row') {
-    if (direction === 'left' && b === node) return a;
-    if (direction === 'right' && a === node) return b;
+  findLeaf(node: LayoutNode): number {
+    if (node.type === 'leaf') return node.panelId;
+    return this.findLeaf(node.children[0]);
   }
 
-  if (parent.direction === 'column') {
-    if (direction === 'up' && b === node) return a;
-    if (direction === 'down' && a === node) return b;
-  }
+  focus(direction: 'left' | 'right' | 'up' | 'down') {
+    if (!this.activePanelId || !this.root) return;
 
-  return null;
-}
+    const path = this.findPath(this.root, this.activePanelId);
+    if (!path) return;
 
-findLeaf(node: LayoutNode): number {
-  if (node.type === 'leaf') return node.panelId;
-  return this.findLeaf(node.children[0]);
-}
+    // the active leaf is the last element
+    const leaf = path[path.length - 1];
 
+    // walk back up the tree
+    for (let i = path.length - 2; i >= 0; i--) {
+      const parent = path[i];
+      const sibling = this.getSibling(leaf, parent, direction);
 
-focus(direction: 'left' | 'right' | 'up' | 'down') {
-  if (!this.activePanelId || !this.root) return;
-
-  const path = this.findPath(this.root, this.activePanelId);
-  if (!path) return;
-
-  // the active leaf is the last element
-  const leaf = path[path.length - 1];
-
-  // walk back up the tree
-  for (let i = path.length - 2; i >= 0; i--) {
-    const parent = path[i];
-    const sibling = this.getSibling(leaf, parent, direction);
-
-    if (sibling) {
-      const newId = this.findLeaf(sibling);
-      this.activePanelId = newId;
-      this.activePanelChanged.next(this.activePanelId);
-      return;
+      if (sibling) {
+        const newId = this.findLeaf(sibling);
+        this.activePanelId = newId;
+        this.activePanelChanged.next(this.activePanelId);
+        return;
+      }
     }
   }
-}
-
-
 }

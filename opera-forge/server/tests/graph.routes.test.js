@@ -28,8 +28,8 @@ describe('graph routes', () => {
     const res = await request(app).post('/api/graphs').send({ id: 'my-opera', title: 'My Opera' })
     expect(res.status).toBe(201)
     expect(res.body.id).toBe('my-opera')
-    expect(res.body.nodes.some(n => n.type === 'start')).toBe(true)
-    expect(res.body.nodes.some(n => n.type === 'end')).toBe(true)
+    expect(res.body.nodes.some((n) => n.type === 'start')).toBe(true)
+    expect(res.body.nodes.some((n) => n.type === 'end')).toBe(true)
   })
 
   test('POST / rejects a duplicate id', async () => {
@@ -62,7 +62,9 @@ describe('graph routes', () => {
   })
 
   test('PUT /:id rejects an invalid graph', async () => {
-    const res = await request(app).put('/api/graphs/my-opera').send({ id: 'my-opera', title: 'Bad', nodes: [], links: [] })
+    const res = await request(app)
+      .put('/api/graphs/my-opera')
+      .send({ id: 'my-opera', title: 'Bad', nodes: [], links: [] })
     expect(res.status).toBe(400)
   })
 

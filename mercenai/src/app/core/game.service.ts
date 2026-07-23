@@ -14,17 +14,15 @@ export class GameService {
   recruitHired$ = new Subject<Recruit>();
   recruits: Recruit[] = [];
   player$ = new BehaviorSubject<Player>({
-      credits: 0,
-      tokens: 0,
-      dockingStations: [],
-      maxAvailableMissions: 5,
-      maxNumberOfRecruits: 5,
-      missionRefreshIntervalMs: 900000,
-      shopRefreshIntervalMs: 900000,
-      candidateRefreshIntervalMs: 300000,
-    });
-
-
+    credits: 0,
+    tokens: 0,
+    dockingStations: [],
+    maxAvailableMissions: 5,
+    maxNumberOfRecruits: 5,
+    missionRefreshIntervalMs: 900000,
+    shopRefreshIntervalMs: 900000,
+    candidateRefreshIntervalMs: 300000,
+  });
 
   applyState(state: GameSnapshot): void {
     this.recruits = state.recruits;
@@ -41,7 +39,7 @@ export class GameService {
   }
 
   getRecruit(id: string): Recruit | null {
-    return this.recruits.find(r => r.id === id) ?? null;
+    return this.recruits.find((r) => r.id === id) ?? null;
   }
 
   async renameRecruit(id: string, newName: string): Promise<void> {

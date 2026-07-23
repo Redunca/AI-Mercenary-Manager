@@ -3,20 +3,38 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GraphApiService } from '../core/graph-api.service';
 import {
-  ACTION_MATCH_FIELDS, ACTION_TYPES, ATTRIBUTES, OUTCOMES, ActionType, Attribute, GenerationResult, MockState, Outcome,
-  ScriptedAction, defaultActionMatch,
+  ACTION_MATCH_FIELDS,
+  ACTION_TYPES,
+  ATTRIBUTES,
+  OUTCOMES,
+  ActionType,
+  Attribute,
+  GenerationResult,
+  MockState,
+  Outcome,
+  ScriptedAction,
+  defaultActionMatch,
 } from '../models/graph';
 import { TAG_CATALOG, exampleTagValues } from '../models/tags';
 
 function parseList(text: string): string[] {
-  return text.split(',').map(s => s.trim()).filter(Boolean);
+  return text
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
 }
 
 // Same match-shape convention as action_performed conditions on links (see
 // LinkPanelComponent) -- 'any' means {scope: "any"}, execute_command uses
 // {command, args?}, everything else is a single specific-target key.
 type MatchKind = 'any' | 'itemName' | 'recruitId' | 'shipId' | 'templateId' | 'seedId';
-const MATCH_KEYS: Exclude<MatchKind, 'any'>[] = ['itemName', 'recruitId', 'shipId', 'templateId', 'seedId'];
+const MATCH_KEYS: Exclude<MatchKind, 'any'>[] = [
+  'itemName',
+  'recruitId',
+  'shipId',
+  'templateId',
+  'seedId',
+];
 
 @Component({
   selector: 'app-quick-generation',
@@ -52,7 +70,7 @@ export class QuickGenerationComponent {
   readonly result = signal<GenerationResult | null>(null);
 
   setAttribute(attr: Attribute, value: number): void {
-    this.attributeValues.update(v => ({ ...v, [attr]: value }));
+    this.attributeValues.update((v) => ({ ...v, [attr]: value }));
   }
 
   asNumber(value: unknown): number {
@@ -64,7 +82,7 @@ export class QuickGenerationComponent {
   }
 
   setTagValue(name: string, value: string): void {
-    this.tagValues.update(v => ({ ...v, [name]: value }));
+    this.tagValues.update((v) => ({ ...v, [name]: value }));
   }
 
   fillExampleTags(): void {
@@ -80,11 +98,11 @@ export class QuickGenerationComponent {
   }
 
   addMissionOutcome(): void {
-    this.missionOutcomes.update(outcomes => [...outcomes, 'success']);
+    this.missionOutcomes.update((outcomes) => [...outcomes, 'success']);
   }
 
   setMissionOutcome(index: number, outcome: Outcome): void {
-    this.missionOutcomes.update(outcomes => {
+    this.missionOutcomes.update((outcomes) => {
       const next = [...outcomes];
       next[index] = outcome;
       return next;
@@ -92,15 +110,15 @@ export class QuickGenerationComponent {
   }
 
   removeMissionOutcome(index: number): void {
-    this.missionOutcomes.update(outcomes => outcomes.filter((_, i) => i !== index));
+    this.missionOutcomes.update((outcomes) => outcomes.filter((_, i) => i !== index));
   }
 
   addChoiceMade(): void {
-    this.choicesMade.update(choices => [...choices, '']);
+    this.choicesMade.update((choices) => [...choices, '']);
   }
 
   setChoiceMade(index: number, optionId: string): void {
-    this.choicesMade.update(choices => {
+    this.choicesMade.update((choices) => {
       const next = [...choices];
       next[index] = optionId;
       return next;
@@ -108,11 +126,14 @@ export class QuickGenerationComponent {
   }
 
   removeChoiceMade(index: number): void {
-    this.choicesMade.update(choices => choices.filter((_, i) => i !== index));
+    this.choicesMade.update((choices) => choices.filter((_, i) => i !== index));
   }
 
   addAction(): void {
-    this.actionsPerformed.update(actions => [...actions, { actionType: 'execute_command', payload: { command: '' } }]);
+    this.actionsPerformed.update((actions) => [
+      ...actions,
+      { actionType: 'execute_command', payload: { command: '' } },
+    ]);
   }
 
   setActionType(index: number, actionType: ActionType): void {
@@ -124,11 +145,11 @@ export class QuickGenerationComponent {
   }
 
   removeAction(index: number): void {
-    this.actionsPerformed.update(actions => actions.filter((_, i) => i !== index));
+    this.actionsPerformed.update((actions) => actions.filter((_, i) => i !== index));
   }
 
   private setAction(index: number, action: ScriptedAction): void {
-    this.actionsPerformed.update(actions => {
+    this.actionsPerformed.update((actions) => {
       const next = [...actions];
       next[index] = action;
       return next;
@@ -173,7 +194,7 @@ export class QuickGenerationComponent {
 
   setArgsText(index: number, text: string): void {
     const payload = this.actionsPerformed()[index].payload ?? {};
-    const args = text.trim() ? text.split(',').map(s => s.trim()) : undefined;
+    const args = text.trim() ? text.split(',').map((s) => s.trim()) : undefined;
     const { args: _drop, ...rest } = payload;
     this.setPayload(index, args ? { ...rest, args } : rest);
   }

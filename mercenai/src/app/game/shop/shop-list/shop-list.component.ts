@@ -1,6 +1,11 @@
 import { Component, NgZone, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ShopService, ShopItem, SHOP_ITEMS_REFRESH_INTERVAL_MS, isSoldOut } from '../../../core/shop.service';
+import {
+  ShopService,
+  ShopItem,
+  SHOP_ITEMS_REFRESH_INTERVAL_MS,
+  isSoldOut,
+} from '../../../core/shop.service';
 import { LayoutService } from '../../../core/layout.service';
 import { GameSyncService } from '../../../core/game-sync.service';
 import { GameService } from '../../../core/game.service';
@@ -12,7 +17,7 @@ import { msUntilNextRefresh, formatCountdown } from '../../../core/refresh-count
   standalone: true,
   imports: [CommonModule],
   templateUrl: './shop-list.component.html',
-  styleUrl: './shop-list.component.scss'
+  styleUrl: './shop-list.component.scss',
 })
 export class ShopListComponent implements OnInit, OnDestroy {
   private shopService = inject(ShopService);
@@ -60,7 +65,9 @@ export class ShopListComponent implements OnInit, OnDestroy {
   }
 
   private refreshItems(): void {
-    this.shopService.getShopItems().subscribe(items => { this.items = items; });
+    this.shopService.getShopItems().subscribe((items) => {
+      this.items = items;
+    });
   }
 
   private tickCountdown(): void {
@@ -72,21 +79,27 @@ export class ShopListComponent implements OnInit, OnDestroy {
 
   registerCommands() {
     return {
-      'detail': (id: string) => {
-        if (!id) { console.warn('Usage: detail <id>'); return; }
+      detail: (id: string) => {
+        if (!id) {
+          console.warn('Usage: detail <id>');
+          return;
+        }
         this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShopDetail, { id });
       },
-      'buy': (id: string, qtyStr?: string) => {
-        if (!id) { console.warn('Usage: buy <id> [quantity]'); return; }
+      buy: (id: string, qtyStr?: string) => {
+        if (!id) {
+          console.warn('Usage: buy <id> [quantity]');
+          return;
+        }
 
-        const item = this.items.find(i => i.id === Number(id));
+        const item = this.items.find((i) => i.id === Number(id));
         if (item && isSoldOut(item)) {
           console.warn('Purchase failed: item is sold out');
           return;
         }
 
         const qty = qtyStr ? Number(qtyStr) : 1;
-        void this.shopService.buyItem(Number(id), qty).then(result => {
+        void this.shopService.buyItem(Number(id), qty).then((result) => {
           if (result?.error) {
             // Race condition: item sold out (e.g. by a rotation refresh)
             // between load and this attempt. Refresh so the list reflects

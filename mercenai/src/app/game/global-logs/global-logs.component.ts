@@ -8,14 +8,18 @@ import { isBanterTag } from '../../models/log';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './global-logs.component.html',
-  styleUrl: './global-logs.component.scss'
+  styleUrl: './global-logs.component.scss',
 })
 export class GlobalLogsComponent {
   logService = inject(LogService);
 
   readonly isBanterTag = isBanterTag;
 
-  get logs() { return this.logService.globalLogs; }
+  get logs() {
+    return this.logService.globalLogs;
+  }
 
-  registerCommands() { return {}; }
+  registerCommands() {
+    return {};
+  }
 }

@@ -1,6 +1,6 @@
 module.exports = function (config) {
   config.set({
-    frameworks: ['jasmine'],   // or whatever you use
+    frameworks: ['jasmine'], // or whatever you use
     files: [
       // your test files here
     ],
@@ -12,13 +12,13 @@ module.exports = function (config) {
           '--no-sandbox',
           '--disable-gpu',
           '--disable-dev-shm-usage',
-          '--disable-setuid-sandbox'
-        ]
-      }
+          '--disable-setuid-sandbox',
+        ],
+      },
     },
 
     browsers: ['ChromeHeadlessWSL'],
 
-    singleRun: true
+    singleRun: true,
   });
 };

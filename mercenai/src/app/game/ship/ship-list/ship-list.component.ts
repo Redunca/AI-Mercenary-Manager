@@ -9,7 +9,7 @@ import { PanelModule } from '../../../models/panel';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './ship-list.component.html',
-  styleUrl: './ship-list.component.scss'
+  styleUrl: './ship-list.component.scss',
 })
 export class ShipListComponent implements OnInit {
   private shipService = inject(ShipService);
@@ -17,17 +17,20 @@ export class ShipListComponent implements OnInit {
   ships: Ship[] = [];
 
   ngOnInit() {
-    this.shipService.ships$.subscribe(ships => {
+    this.shipService.ships$.subscribe((ships) => {
       this.ships = ships;
     });
   }
 
   registerCommands() {
     return {
-      'detail': (id: string) => {
-        if (!id) { console.warn('Usage: detail <id>'); return; }
+      detail: (id: string) => {
+        if (!id) {
+          console.warn('Usage: detail <id>');
+          return;
+        }
         this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShipDetail, { id });
-      }
+      },
     };
   }
 }

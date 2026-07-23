@@ -29,7 +29,10 @@ describe('validateGraphDefinition', () => {
   })
 
   test('requires exactly one start node', () => {
-    const def = makeDef({ nodes: [{ id: 'end', type: 'end', outcome: 'success', text: 'Done.' }], links: [] })
+    const def = makeDef({
+      nodes: [{ id: 'end', type: 'end', outcome: 'success', text: 'Done.' }],
+      links: [],
+    })
     expect(() => validateGraphDefinition(def)).toThrow(/exactly one start node/)
   })
 
@@ -60,8 +63,15 @@ describe('validateGraphDefinition', () => {
       links: [
         { id: 'start--beat', from: 'start', to: 'beat', conditions: [] },
         {
-          id: 'beat--end', from: 'beat', to: 'end',
-          conditions: [{ type: 'action_performed', params: { actionType: 'fire_recruit', match: { scope: 'any' } } }],
+          id: 'beat--end',
+          from: 'beat',
+          to: 'end',
+          conditions: [
+            {
+              type: 'action_performed',
+              params: { actionType: 'fire_recruit', match: { scope: 'any' } },
+            },
+          ],
         },
       ],
     })
@@ -101,42 +111,60 @@ describe('validateGraphDefinition', () => {
 
 describe('matchesAction', () => {
   test('{"scope":"any"} matches any payload for that action type', () => {
-    expect(matchesAction({ actionType: 'hire_recruit', match: { scope: 'any' } }, 'hire_recruit', {})).toBe(true)
+    expect(
+      matchesAction({ actionType: 'hire_recruit', match: { scope: 'any' } }, 'hire_recruit', {}),
+    ).toBe(true)
   })
 
   test('does not match a different action type', () => {
-    expect(matchesAction({ actionType: 'hire_recruit', match: { scope: 'any' } }, 'purchase_item', {})).toBe(false)
+    expect(
+      matchesAction({ actionType: 'hire_recruit', match: { scope: 'any' } }, 'purchase_item', {}),
+    ).toBe(false)
   })
 
   test('specific itemName match requires an exact match', () => {
     const params = { actionType: 'purchase_quest_item', match: { itemName: 'Encrypted Data Chip' } }
-    expect(matchesAction(params, 'purchase_quest_item', { itemName: 'Encrypted Data Chip' })).toBe(true)
-    expect(matchesAction(params, 'purchase_quest_item', { itemName: 'Recruit Training Vest' })).toBe(false)
+    expect(matchesAction(params, 'purchase_quest_item', { itemName: 'Encrypted Data Chip' })).toBe(
+      true,
+    )
+    expect(
+      matchesAction(params, 'purchase_quest_item', { itemName: 'Recruit Training Vest' }),
+    ).toBe(false)
   })
 
   test('execute_command matches on command only when args is absent from match', () => {
     const params = { actionType: 'execute_command', match: { command: 'split-v' } }
-    expect(matchesAction(params, 'execute_command', { command: 'split-v', args: ['whatever'] })).toBe(true)
+    expect(
+      matchesAction(params, 'execute_command', { command: 'split-v', args: ['whatever'] }),
+    ).toBe(true)
   })
 
   test('execute_command with args requires an exact args match', () => {
     const params = { actionType: 'execute_command', match: { command: 'ship', args: ['load'] } }
     expect(matchesAction(params, 'execute_command', { command: 'ship', args: ['load'] })).toBe(true)
-    expect(matchesAction(params, 'execute_command', { command: 'ship', args: ['assign'] })).toBe(false)
+    expect(matchesAction(params, 'execute_command', { command: 'ship', args: ['assign'] })).toBe(
+      false,
+    )
   })
 
   test('seedId match compares against a payload.seedId field directly', () => {
     const params = { actionType: 'hire_recruit', match: { seedId: 'cult-defector' } }
-    expect(matchesAction(params, 'hire_recruit', { recruitId: 5, seedId: 'cult-defector' })).toBe(true)
+    expect(matchesAction(params, 'hire_recruit', { recruitId: 5, seedId: 'cult-defector' })).toBe(
+      true,
+    )
     expect(matchesAction(params, 'hire_recruit', { recruitId: 5 })).toBe(false)
   })
 })
 
 describe('compare', () => {
   test.each([
-    ['>', 5, 3, true], ['>', 3, 5, false],
-    ['>=', 5, 5, true], ['<', 3, 5, true],
-    ['<=', 5, 5, true], ['==', 5, 5, true], ['==', 5, 4, false],
+    ['>', 5, 3, true],
+    ['>', 3, 5, false],
+    ['>=', 5, 5, true],
+    ['<', 3, 5, true],
+    ['<=', 5, 5, true],
+    ['==', 5, 5, true],
+    ['==', 5, 4, false],
   ])('%s %s %s -> %s', (operator, a, b, expected) => {
     expect(compare(a, operator, b)).toBe(expected)
   })
@@ -144,7 +172,10 @@ describe('compare', () => {
 
 describe('render', () => {
   test('substitutes every known tag', () => {
-    const result = render('Contact from {faction} on {planetName}.', { faction: 'the Polar Guard', planetName: 'K857130-7' })
+    const result = render('Contact from {faction} on {planetName}.', {
+      faction: 'the Polar Guard',
+      planetName: 'K857130-7',
+    })
     expect(result.text).toBe('Contact from the Polar Guard on K857130-7.')
     expect(result.missing).toEqual([])
   })

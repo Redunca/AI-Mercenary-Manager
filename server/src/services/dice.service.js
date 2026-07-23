@@ -1,14 +1,14 @@
 const DICE_TABLE = {
-  0:  { count: 0, sides: 0 },
-  1:  { count: 1, sides: 4 },
-  2:  { count: 1, sides: 6 },
-  3:  { count: 1, sides: 8 },
-  4:  { count: 1, sides: 10 },
-  5:  { count: 2, sides: 6 },
-  6:  { count: 2, sides: 8 },
-  7:  { count: 2, sides: 10 },
-  8:  { count: 3, sides: 8 },
-  9:  { count: 3, sides: 10 },
+  0: { count: 0, sides: 0 },
+  1: { count: 1, sides: 4 },
+  2: { count: 1, sides: 6 },
+  3: { count: 1, sides: 8 },
+  4: { count: 1, sides: 10 },
+  5: { count: 2, sides: 6 },
+  6: { count: 2, sides: 8 },
+  7: { count: 2, sides: 10 },
+  8: { count: 3, sides: 8 },
+  9: { count: 3, sides: 10 },
   10: { count: 4, sides: 8 },
 }
 
@@ -33,9 +33,10 @@ function rollDice(score, advantage = 0) {
   rolls.sort((a, b) => a - b)
   const kept = rolls.slice(advantage)
   const sum = kept.reduce((total, roll) => total + roll, 0)
-  const notation = advantage > 0
-    ? `${rollCount}d${entry.sides} drop lowest ${advantage}`
-    : `${entry.count}d${entry.sides}`
+  const notation =
+    advantage > 0
+      ? `${rollCount}d${entry.sides} drop lowest ${advantage}`
+      : `${entry.count}d${entry.sides}`
   return { sum, notation }
 }
 

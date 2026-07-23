@@ -61,8 +61,8 @@ describe('MissionLogsComponent', () => {
     fixture.detectChanges();
     const tagEls = fixture.nativeElement.querySelectorAll('.tag') as NodeListOf<HTMLElement>;
 
-    const banterEl = Array.from(tagEls).find(el => el.textContent?.includes('→'));
-    const nonBanterEls = Array.from(tagEls).filter(el => !el.textContent?.includes('→'));
+    const banterEl = Array.from(tagEls).find((el) => el.textContent?.includes('→'));
+    const nonBanterEls = Array.from(tagEls).filter((el) => !el.textContent?.includes('→'));
 
     expect(banterEl).toBeTruthy();
     expect(banterEl?.classList.contains('tag-banter')).toBe(true);

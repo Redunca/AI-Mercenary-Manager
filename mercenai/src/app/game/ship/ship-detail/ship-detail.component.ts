@@ -11,7 +11,7 @@ import { Recruit } from '../../../models/recruit';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './ship-detail.component.html',
-  styleUrl: './ship-detail.component.scss'
+  styleUrl: './ship-detail.component.scss',
 })
 export class ShipDetailComponent implements OnInit {
   @Input() id?: string;
@@ -28,47 +28,72 @@ export class ShipDetailComponent implements OnInit {
   availableCargo: Consumable[] = [];
 
   ngOnInit() {
-    this.shipService.ships$.subscribe(ships => {
-      this.ship = ships.find(s => s.id === Number(this.id)) ?? null;
+    this.shipService.ships$.subscribe((ships) => {
+      this.ship = ships.find((s) => s.id === Number(this.id)) ?? null;
     });
     this.refreshInventory();
   }
 
   getRecruit(recruitId: number): Recruit | undefined {
-    return this.gameService.recruits.find(r => Number(r.id) === recruitId);
+    return this.gameService.recruits.find((r) => Number(r.id) === recruitId);
   }
 
   private refreshInventory(): void {
-    if (this.ship) this.shipService.getShipInventory(this.ship.id).subscribe(items => this.loadedInventory = items);
-    this.consumableService.getConsumables(true).subscribe(items => this.availableCargo = items);
+    if (this.ship)
+      this.shipService
+        .getShipInventory(this.ship.id)
+        .subscribe((items) => (this.loadedInventory = items));
+    this.consumableService.getConsumables(true).subscribe((items) => (this.availableCargo = items));
   }
 
   registerCommands() {
     return {
-      'assign': (recruitId: string) => {
-        if (!this.ship || !recruitId) { console.warn('Usage: assign <recruitId>'); return; }
-        void this.shipService.assignCrewToShip(this.ship.id, [Number(recruitId)])
+      assign: (recruitId: string) => {
+        if (!this.ship || !recruitId) {
+          console.warn('Usage: assign <recruitId>');
+          return;
+        }
+        void this.shipService
+          .assignCrewToShip(this.ship.id, [Number(recruitId)])
           .then(() => this.gameSync.sync())
-          .catch(err => console.error('[ship assign]', err?.error?.error ?? err?.message ?? err));
+          .catch((err) => console.error('[ship assign]', err?.error?.error ?? err?.message ?? err));
       },
-      'unassign': (recruitId: string) => {
-        if (!this.ship || !recruitId) { console.warn('Usage: unassign <recruitId>'); return; }
-        void this.shipService.unassignCrewFromShip(this.ship.id, Number(recruitId))
+      unassign: (recruitId: string) => {
+        if (!this.ship || !recruitId) {
+          console.warn('Usage: unassign <recruitId>');
+          return;
+        }
+        void this.shipService
+          .unassignCrewFromShip(this.ship.id, Number(recruitId))
           .then(() => this.gameSync.sync())
-          .catch(err => console.error('[ship unassign]', err?.error?.error ?? err?.message ?? err));
+          .catch((err) =>
+            console.error('[ship unassign]', err?.error?.error ?? err?.message ?? err),
+          );
       },
-      'rename': (...nameParts: string[]) => {
-        if (!this.ship || nameParts.length === 0) { console.warn('Usage: rename <newName>'); return; }
-        void this.shipService.renameShip(this.ship.id, nameParts.join(' '))
+      rename: (...nameParts: string[]) => {
+        if (!this.ship || nameParts.length === 0) {
+          console.warn('Usage: rename <newName>');
+          return;
+        }
+        void this.shipService
+          .renameShip(this.ship.id, nameParts.join(' '))
           .then(() => this.gameSync.sync())
-          .catch(err => console.error('[ship rename]', err?.error?.error ?? err?.message ?? err));
+          .catch((err) => console.error('[ship rename]', err?.error?.error ?? err?.message ?? err));
       },
-      'load': (consumableId: string, quantity?: string) => {
-        if (!this.ship || !consumableId) { console.warn('Usage: load <consumableId> [quantity]'); return; }
-        void this.shipService.loadConsumableOntoShip(this.ship.id, Number(consumableId), quantity ? Number(quantity) : 1)
+      load: (consumableId: string, quantity?: string) => {
+        if (!this.ship || !consumableId) {
+          console.warn('Usage: load <consumableId> [quantity]');
+          return;
+        }
+        void this.shipService
+          .loadConsumableOntoShip(
+            this.ship.id,
+            Number(consumableId),
+            quantity ? Number(quantity) : 1,
+          )
           .then(() => this.gameSync.sync())
           .then(() => this.refreshInventory())
-          .catch(err => console.error('[ship load]', err?.error?.error ?? err?.message ?? err));
+          .catch((err) => console.error('[ship load]', err?.error?.error ?? err?.message ?? err));
       },
     };
   }

@@ -51,12 +51,17 @@ async function getInstanceById(client, playerId, instanceId) {
 }
 
 async function persist(client, instance, state) {
-  await client.query('UPDATE opera_instances SET state = $1 WHERE id = $2', [JSON.stringify(state), instance.id])
+  await client.query('UPDATE opera_instances SET state = $1 WHERE id = $2', [
+    JSON.stringify(state),
+    instance.id,
+  ])
 }
 
 async function log(client, playerId, instance, message) {
   if (!message || !message.trim()) return
-  await insertLogEntries(client, playerId, [{ tag: OPERA_LOG_TAG, message, operaId: String(instance.id) }])
+  await insertLogEntries(client, playerId, [
+    { tag: OPERA_LOG_TAG, message, operaId: String(instance.id) },
+  ])
 }
 
 // --- tag resolution ----------------------------------------------------
@@ -75,7 +80,10 @@ function resolveTags() {
 
 function resolveSeedKey(state, actionType, match) {
   if (!match) return match
-  if ((actionType === 'complete_quest' || actionType === 'send_recruit_to_quest') && match.templateId != null) {
+  if (
+    (actionType === 'complete_quest' || actionType === 'send_recruit_to_quest') &&
+    match.templateId != null
+  ) {
     const real = state.seedKeys?.mission?.[match.templateId]
     if (real != null) return { ...match, templateId: real }
   }
@@ -97,7 +105,11 @@ function conditionMatchesAction(state, condition, actionType, payload) {
 function bindRecruit(state, payload) {
   if (!state.boundRecruitId && payload?.recruitId != null) {
     state.boundRecruitId = payload.recruitId
-  } else if (!state.boundRecruitId && Array.isArray(payload?.recruitIds) && payload.recruitIds.length > 0) {
+  } else if (
+    !state.boundRecruitId &&
+    Array.isArray(payload?.recruitIds) &&
+    payload.recruitIds.length > 0
+  ) {
     state.boundRecruitId = payload.recruitIds[0]
   }
 }
@@ -152,9 +164,16 @@ async function evaluateCondition(client, playerId, state, condition, ctx, action
     case 'previous_outcome':
       return ctx.lastOutcome === p.equals
     case 'crew_threshold':
-      return OperaGraph.compare(await boundShipCrewCount(client, playerId, state), p.operator, p.value)
+      return OperaGraph.compare(
+        await boundShipCrewCount(client, playerId, state),
+        p.operator,
+        p.value,
+      )
     case 'action_performed':
-      return action != null && conditionMatchesAction(state, condition, action.actionType, action.payload)
+      return (
+        action != null &&
+        conditionMatchesAction(state, condition, action.actionType, action.payload)
+      )
     case 'choice_made':
       return ctx.lastChoice === p.optionId
     default:
@@ -179,17 +198,26 @@ async function applyEffect(client, playerId, state, effect) {
       return
     case 'apply_perk': {
       const recruitId = await resolveEffectRecruitId(client, playerId, state)
-      if (recruitId != null) await getRecruitService().applyPerk(client, playerId, recruitId, p.perkName)
+      if (recruitId != null)
+        await getRecruitService().applyPerk(client, playerId, recruitId, p.perkName)
       return
     }
     case 'apply_flaw': {
       const recruitId = await resolveEffectRecruitId(client, playerId, state)
-      if (recruitId != null) await getRecruitService().applyFlaw(client, playerId, recruitId, p.flawName)
+      if (recruitId != null)
+        await getRecruitService().applyFlaw(client, playerId, recruitId, p.flawName)
       return
     }
     case 'adjust_stat': {
       const recruitId = await resolveEffectRecruitId(client, playerId, state)
-      if (recruitId != null) await getRecruitService().adjustAttribute(client, playerId, recruitId, p.attribute, p.amount)
+      if (recruitId != null)
+        await getRecruitService().adjustAttribute(
+          client,
+          playerId,
+          recruitId,
+          p.attribute,
+          p.amount,
+        )
       return
     }
   }
@@ -210,17 +238,31 @@ async function insertOperaMission(client, playerId, instanceId, missionSpec, tag
     planetTags: missionSpec.tags ?? [],
   })
   const name = missionSpec.title ? OperaGraph.render(missionSpec.title, tags).text : generated.name
-  const description = missionSpec.description ? OperaGraph.render(missionSpec.description, tags).text : generated.description
+  const description = missionSpec.description
+    ? OperaGraph.render(missionSpec.description, tags).text
+    : generated.description
 
-  const player = (await client.query('SELECT next_template_id FROM players WHERE id = $1 FOR UPDATE', [playerId])).rows[0]
+  const player = (
+    await client.query('SELECT next_template_id FROM players WHERE id = $1 FOR UPDATE', [playerId])
+  ).rows[0]
   const templateId = player.next_template_id
 
   await client.query(
     `INSERT INTO mission_templates (id, name, description, difficulty, events, planet, opera_instance_id)
      VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-    [templateId, name, description, generated.difficulty, JSON.stringify(generated.events), JSON.stringify(generated.planet), instanceId],
+    [
+      templateId,
+      name,
+      description,
+      generated.difficulty,
+      JSON.stringify(generated.events),
+      JSON.stringify(generated.planet),
+      instanceId,
+    ],
   )
-  await client.query('UPDATE players SET next_template_id = next_template_id + 1 WHERE id = $1', [playerId])
+  await client.query('UPDATE players SET next_template_id = next_template_id + 1 WHERE id = $1', [
+    playerId,
+  ])
   return templateId
 }
 
@@ -233,12 +275,23 @@ async function fireSeeds(client, playerId, instance, state, seeds) {
       // for is_quest_item rows, see shop.service.js's drawShopRotation),
       // never invent a new one. Nothing to do here but let purchase_quest_item
       // gates match by name, same as they always have.
-      const exists = (await client.query('SELECT 1 FROM shop_items WHERE name = $1', [seed.params.itemName])).rows.length > 0
-      if (!exists) console.warn(`[opera] seed shop item "${seed.params.itemName}" not found in shop_items catalog`)
+      const exists =
+        (await client.query('SELECT 1 FROM shop_items WHERE name = $1', [seed.params.itemName]))
+          .rows.length > 0
+      if (!exists)
+        console.warn(
+          `[opera] seed shop item "${seed.params.itemName}" not found in shop_items catalog`,
+        )
     } else if (seed.target === 'mission') {
-      const templateId = await insertOperaMission(client, playerId, instance.id, {
-        title: seed.note,
-      }, state.tags)
+      const templateId = await insertOperaMission(
+        client,
+        playerId,
+        instance.id,
+        {
+          title: seed.note,
+        },
+        state.tags,
+      )
       state.seedKeys = state.seedKeys ?? {}
       state.seedKeys.mission = state.seedKeys.mission ?? {}
       state.seedKeys.mission[seed.params.templateId] = templateId
@@ -251,13 +304,14 @@ async function fireSeeds(client, playerId, instance, state, seeds) {
 // --- the walk --------------------------------------------------------------
 
 function indexLinks(def) {
-  const nodesById = new Map(def.nodes.map(n => [n.id, n]))
+  const nodesById = new Map(def.nodes.map((n) => [n.id, n]))
   const linksByFrom = new Map()
   for (const link of def.links) {
     if (!linksByFrom.has(link.from)) linksByFrom.set(link.from, [])
     linksByFrom.get(link.from).push(link)
   }
-  for (const links of linksByFrom.values()) links.sort((a, b) => (a.priority ?? 0) - (b.priority ?? 0))
+  for (const links of linksByFrom.values())
+    links.sort((a, b) => (a.priority ?? 0) - (b.priority ?? 0))
   return { nodesById, linksByFrom }
 }
 
@@ -282,8 +336,10 @@ const SEED_TARGET_DRY_TEXT = {
 }
 
 function drySeedLog(seeds) {
-  const targets = [...new Set((seeds ?? []).map(seed => seed.target))]
-  return targets.map(target => SEED_TARGET_DRY_TEXT[target] ?? 'New opportunity available.').join(' ')
+  const targets = [...new Set((seeds ?? []).map((seed) => seed.target))]
+  return targets
+    .map((target) => SEED_TARGET_DRY_TEXT[target] ?? 'New opportunity available.')
+    .join(' ')
 }
 
 function dryEndLog(outcome) {
@@ -314,9 +370,15 @@ async function finish(client, playerId, instance, state, outcome) {
 // *become* the current task), or a node whose only viable outgoing link is
 // still waiting on an action_performed condition nothing has satisfied yet.
 async function advanceInstance(client, playerId, instance, def, action = null) {
-  const state = instance.state && Object.keys(instance.state).length > 0
-    ? instance.state
-    : { currentNodeId: def.nodes.find(n => n.type === 'start').id, tags: resolveTags(), log: [], awaiting: null }
+  const state =
+    instance.state && Object.keys(instance.state).length > 0
+      ? instance.state
+      : {
+          currentNodeId: def.nodes.find((n) => n.type === 'start').id,
+          tags: resolveTags(),
+          log: [],
+          awaiting: null,
+        }
 
   const { nodesById, linksByFrom } = indexLinks(def)
   const ctx = { lastOutcome: null, lastChoice: null }
@@ -327,7 +389,10 @@ async function advanceInstance(client, playerId, instance, def, action = null) {
     if (!current) break
 
     if (state.awaiting === 'mission') {
-      if (action?.actionType === 'complete_quest' && Number(action.payload.templateId) === state.pendingMissionTemplateId) {
+      if (
+        action?.actionType === 'complete_quest' &&
+        Number(action.payload.templateId) === state.pendingMissionTemplateId
+      ) {
         bindRecruit(state, action.payload)
         ctx.lastOutcome = action.payload.outcome
         state.awaiting = 'link'
@@ -349,16 +414,19 @@ async function advanceInstance(client, playerId, instance, def, action = null) {
       }
     } else if (state.awaiting === null || state.awaiting === undefined) {
       if (current.type === 'start') {
-        if (current.text) await log(client, playerId, instance, OperaGraph.render(current.text, state.tags).text)
+        if (current.text)
+          await log(client, playerId, instance, OperaGraph.render(current.text, state.tags).text)
         state.awaiting = 'link'
       } else if (current.type === 'story') {
-        for (const effect of current.effects ?? []) await applyEffect(client, playerId, state, effect)
+        for (const effect of current.effects ?? [])
+          await applyEffect(client, playerId, state, effect)
         const rendered = OperaGraph.render(current.text, state.tags)
         pushTask(state, { nodeId: current.id, type: 'story', text: rendered.text })
         await log(client, playerId, instance, 'Story continues.')
         state.awaiting = 'link'
       } else if (current.type === 'check') {
-        ctx.lastOutcome = Math.random() * 100 < (current.roll?.params?.percentage ?? 0) ? 'success' : 'failure'
+        ctx.lastOutcome =
+          Math.random() * 100 < (current.roll?.params?.percentage ?? 0) ? 'success' : 'failure'
         state.awaiting = 'link'
       } else if (current.type === 'seed') {
         await fireSeeds(client, playerId, instance, state, current.seeds)
@@ -370,34 +438,60 @@ async function advanceInstance(client, playerId, instance, def, action = null) {
         // pushed task here, that stop is invisible: no log line, no "current
         // task" for summarizeInstance to mark, and the player has no way to
         // know the opera is waiting on them at all.
-        const notes = (current.seeds ?? []).map(seed => seed.note).filter(Boolean)
+        const notes = (current.seeds ?? []).map((seed) => seed.note).filter(Boolean)
         if (notes.length > 0) {
-          const rendered = notes.map(note => OperaGraph.render(note, state.tags).text).join(' ')
+          const rendered = notes.map((note) => OperaGraph.render(note, state.tags).text).join(' ')
           pushTask(state, { nodeId: current.id, type: 'seed', text: rendered })
           await log(client, playerId, instance, drySeedLog(current.seeds))
         }
         state.awaiting = 'link'
       } else if (current.type === 'mission') {
-        const templateId = await insertOperaMission(client, playerId, instance.id, current.mission, state.tags)
+        const templateId = await insertOperaMission(
+          client,
+          playerId,
+          instance.id,
+          current.mission,
+          state.tags,
+        )
         state.pendingMissionTemplateId = templateId
         state.awaiting = 'mission'
         const rendered = OperaGraph.render(current.mission.title, state.tags)
-        pushTask(state, { nodeId: current.id, type: 'mission', text: rendered.text, templateId, status: 'current' })
+        pushTask(state, {
+          nodeId: current.id,
+          type: 'mission',
+          text: rendered.text,
+          templateId,
+          status: 'current',
+        })
         await log(client, playerId, instance, 'Complete Mission')
         await persist(client, instance, state)
         return
       } else if (current.type === 'choice') {
         const rendered = OperaGraph.render(current.text, state.tags)
-        const options = (current.choiceOptions ?? []).map(o => ({ id: o.id, label: OperaGraph.render(o.label, state.tags).text }))
+        const options = (current.choiceOptions ?? []).map((o) => ({
+          id: o.id,
+          label: OperaGraph.render(o.label, state.tags).text,
+        }))
         state.pendingChoice = { nodeId: current.id, text: rendered.text, options }
         state.awaiting = 'choice'
-        pushTask(state, { nodeId: current.id, type: 'choice', text: rendered.text, options, status: 'current' })
+        pushTask(state, {
+          nodeId: current.id,
+          type: 'choice',
+          text: rendered.text,
+          options,
+          status: 'current',
+        })
         await log(client, playerId, instance, 'Decision required.')
         await persist(client, instance, state)
         return
       } else if (current.type === 'end') {
         const rendered = OperaGraph.render(current.text, state.tags)
-        pushTask(state, { nodeId: current.id, type: 'end', text: rendered.text, outcome: current.outcome })
+        pushTask(state, {
+          nodeId: current.id,
+          type: 'end',
+          text: rendered.text,
+          outcome: current.outcome,
+        })
         await log(client, playerId, instance, dryEndLog(current.outcome))
         await finish(client, playerId, instance, state, current.outcome)
         return
@@ -420,12 +514,17 @@ async function advanceInstance(client, playerId, instance, def, action = null) {
       return
     }
 
-    if (chosen.conditions?.some(c => c.type === 'action_performed') && action) {
+    if (chosen.conditions?.some((c) => c.type === 'action_performed') && action) {
       bindRecruit(state, action.payload)
     }
 
     if (current.completionText) {
-      await log(client, playerId, instance, OperaGraph.render(current.completionText, state.tags).text)
+      await log(
+        client,
+        playerId,
+        instance,
+        OperaGraph.render(current.completionText, state.tags).text,
+      )
     }
     state.currentNodeId = chosen.to
     state.awaiting = null
@@ -459,7 +558,7 @@ async function resolveChoice(client, playerId, instanceId, optionId) {
   const instance = await getInstanceById(client, playerId, instanceId)
   if (!instance || instance.status !== 'in_progress') return { error: 'Opera not found' }
   if (instance.state?.awaiting !== 'choice') return { error: 'No pending choice' }
-  const validOption = instance.state.pendingChoice?.options?.some(o => o.id === optionId)
+  const validOption = instance.state.pendingChoice?.options?.some((o) => o.id === optionId)
   if (!validOption) return { error: 'Invalid option' }
 
   const def = getOperaDefinition(instance.template_id)
@@ -523,29 +622,35 @@ async function maintainOperaSlots(client, playerId) {
 }
 
 async function maintainOperaSlotsInner(client, playerId) {
-  const tutorial = (await client.query(
-    `SELECT status FROM opera_instances WHERE player_id = $1 AND template_id = $2`,
-    [playerId, TUTORIAL_TEMPLATE_ID],
-  )).rows[0]
+  const tutorial = (
+    await client.query(
+      `SELECT status FROM opera_instances WHERE player_id = $1 AND template_id = $2`,
+      [playerId, TUTORIAL_TEMPLATE_ID],
+    )
+  ).rows[0]
   if (!tutorial || tutorial.status !== 'completed') return
 
-  const player = (await client.query('SELECT opera_slot_capacity FROM players WHERE id = $1', [playerId])).rows[0]
+  const player = (
+    await client.query('SELECT opera_slot_capacity FROM players WHERE id = $1', [playerId])
+  ).rows[0]
   const capacity = player.opera_slot_capacity
 
-  const active = (await client.query(
-    `SELECT slot_index, template_id FROM opera_instances
+  const active = (
+    await client.query(
+      `SELECT slot_index, template_id FROM opera_instances
      WHERE player_id = $1 AND status = 'in_progress' AND slot_index IS NOT NULL`,
-    [playerId],
-  )).rows
-  const occupiedSlots = new Set(active.map(r => r.slot_index))
-  const activeTemplateIds = new Set(active.map(r => r.template_id))
+      [playerId],
+    )
+  ).rows
+  const occupiedSlots = new Set(active.map((r) => r.slot_index))
+  const activeTemplateIds = new Set(active.map((r) => r.template_id))
 
   const pool = getGenerationPoolDefinitions()
   if (pool.length === 0) return
 
   for (let slot = 0; slot < capacity; slot++) {
     if (occupiedSlots.has(slot)) continue
-    const fresh = pool.filter(def => !activeTemplateIds.has(def.id))
+    const fresh = pool.filter((def) => !activeTemplateIds.has(def.id))
     const choice = pickOne(fresh.length > 0 ? fresh : pool)
     await createInstance(client, playerId, choice.id, slot)
     activeTemplateIds.add(choice.id)
@@ -556,7 +661,7 @@ async function maintainOperaSlotsInner(client, playerId) {
 
 function summarizeInstance(instance, def) {
   const state = instance.state ?? {}
-  const tasks = (state.log ?? []).map(entry => ({ ...entry, status: 'done' }))
+  const tasks = (state.log ?? []).map((entry) => ({ ...entry, status: 'done' }))
   // 'link' covers a plain action_performed-gated task (e.g. "type split-v")
   // just as much as a pending mission/choice does -- in all three cases the
   // walk is stopped at the last-pushed task, waiting on the player.
@@ -580,13 +685,17 @@ function summarizeInstance(instance, def) {
 // completed pooled operas drop off the list once maintainOperaSlots
 // replaces them, rather than accumulating forever.
 async function getOperaState(client, playerId) {
-  const instances = (await client.query(
-    `SELECT * FROM opera_instances
+  const instances = (
+    await client.query(
+      `SELECT * FROM opera_instances
      WHERE player_id = $1 AND (status = 'in_progress' OR template_id = $2)
      ORDER BY id`,
-    [playerId, TUTORIAL_TEMPLATE_ID],
-  )).rows
-  return instances.map(instance => summarizeInstance(instance, getOperaDefinition(instance.template_id)))
+      [playerId, TUTORIAL_TEMPLATE_ID],
+    )
+  ).rows
+  return instances.map((instance) =>
+    summarizeInstance(instance, getOperaDefinition(instance.template_id)),
+  )
 }
 
 async function getOperaLogs(client, playerId) {
