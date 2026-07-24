@@ -17,8 +17,8 @@ export class MissionService {
     this.missionStates = state.missionStates;
   }
 
-  async startMission(missionId: number, shipId: number): Promise<string | null> {
-    const result = await this.api.startMission(missionId, shipId);
+  async startMission(missionId: number, shipId: number, dev = false): Promise<string | null> {
+    const result = await this.api.startMission(missionId, shipId, dev);
     if (result.error) {
       // A failed start commonly means the client's mission list is stale
       // (the board rotated since the last sync, discarding the id the

@@ -108,8 +108,7 @@ The in-game `dev reboot confirm` command (typed into the terminal like any
 other command) wipes every player-scoped table and rebootstraps a fresh
 player -- it's the intended reset path, not gated behind any env check
 (single-player local game, see `game.service.js`'s own comment on this).
-`shop_items` (the master catalog) is deliberately left untouched by it, so
-stale catalog data (see Known quirks below) survives a reboot.
+`shop_items` (the master catalog) is deliberately left untouched by it.
 
 ## One representative walkthrough: tutorial + first Opera
 
@@ -133,9 +132,17 @@ This proves the whole stack end-to-end, not just that a page loads.
    run it like any other mission.
 
 **Missions run on real wall-clock timers** (roughly 2-5 minutes end to end
-for early-game difficulty: EN_ROUTE → EVENT → RETURN → COMPLETED) -- there
-is no dev/admin command to fast-forward one. Never busy-wait on this
-inline. Use the bundled poller in the background and let its completion
+for early-game difficulty: EN_ROUTE → EVENT → RETURN → COMPLETED). Two dev
+commands can skip the wait, typed into the terminal like any other command:
+`mission start <templateId> <shipId> --dev` backdates a mission's
+`started_at` at creation time so it resolves to COMPLETED before the
+command even returns; `dev finish-mission <templateId>` does the same to a
+mission that's already running (e.g. one started without `--dev`, or one
+you're mid-playthrough on). Both just fast-forward the same wall-clock
+elapsed-time resolution a real playthrough would hit anyway -- no separate
+resolution path, so outcomes (success/failure, events, rewards) are exactly
+as real. Never busy-wait inline even when you forget to use these --
+fall back to the bundled poller in the background and let its completion
 notification bring you back:
 
 ```bash
@@ -152,35 +159,16 @@ directly via `podman exec ai-mercenary-manager_postgres_1 psql -U mercenai
 
 ## Known quirks (don't re-diagnose these as your own bug)
 
-- **Stale French shop data.** Two ships ("Corsaire", "Frégate") carry French
-  descriptions in the running DB, left over from before the project's
-  English-only source-code migration. `seedShopItems()` in
-  `shop.service.js` now has English text, but it seeds with `ON CONFLICT DO
-  NOTHING`, so a DB seeded under the old data keeps the French rows
-  forever -- `dev reboot` doesn't touch `shop_items`. Not something a
-  playtest session should try to fix live; flag it, don't chase it.
-- **Most non-tutorial Operas' seeded shop items don't exist in the
-  catalog.** Only the tutorial's two quest items ("Recruit Training Vest",
-  "Encrypted Data Chip") were ever actually inserted into `shop_items` (via
-  `server/src/db/migrations/V017__add_opera.sql`). Every other Opera graph
-  under `server/data/opera-graphs/*.json` that has a `seed` node targeting
-  `shop` (e.g. "Tribute Cache", "Old Debt Note", "Coded Data Chip", "Coded
-  Debt Ledger", "Forged Identity Papers", "Cult Origin Data-Shard",
-  "Cult-Grade Decryption Rig", "Cognition Killswitch", "Faded Bounty
-  Flyer") references an item name with no matching catalog row -- that
-  branch is a genuine dead end, not a UI bug. If an Opera you're driving
-  seems stuck right after "New item available in the shop.", check
-  `shop_items` directly for that name before assuming you did something
-  wrong:
-  ```bash
-  podman exec ai-mercenary-manager_postgres_1 psql -U mercenai -d mercenai -c "SELECT name FROM shop_items WHERE name ILIKE '%<word>%';"
-  ```
-  If it's empty, pick a different pooled Opera instead (`opera list` shows
-  2-3 running in parallel) rather than trying to force that one through.
-- **`{securityGroupName}` tag never renders** in `two-gangs-one-contract.json`
-  (shows up literally in a choice option label and log text), while the
-  sibling tag `{enemyGroupName}` in the same graph renders fine. Cosmetic,
-  reproducible, not fixed as of this writing.
+None currently known. Three were found and fixed during the 2026-07-23
+tutorial + Opera playtest (stale French shop rows surviving `ON CONFLICT DO
+NOTHING` reseeds, fixed by `V022__fix_french_shop_items.sql`; 9 Opera-seeded
+shop items missing from the catalog entirely, fixed by
+`V023__seed_missing_opera_shop_items.sql`; and `resolveTags()` in
+`opera.service.js` only publishing one random mission type's tags instead
+of the full set any template might reference, which is why
+`{securityGroupName}` used to render literally in
+`two-gangs-one-contract.json` about 5 times out of 6) -- if you hit a new
+one, add it here.
 
 ## Verification checklist
 

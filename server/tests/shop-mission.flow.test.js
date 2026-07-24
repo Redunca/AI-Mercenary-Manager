@@ -415,7 +415,8 @@ function createFakeClient() {
       }
     }
     if (s.includes('INSERT INTO mission_instances')) {
-      const [player_id, template_id, ship_id, travel_segment_ms, events_segment_ms] = params
+      const [player_id, template_id, ship_id, started_at, travel_segment_ms, events_segment_ms] =
+        params
       const instance = {
         id: nextInstanceId++,
         player_id,
@@ -424,7 +425,7 @@ function createFakeClient() {
         status: 'in_progress',
         phase: 'EN_ROUTE',
         progress: 0,
-        started_at: new Date(),
+        started_at,
         failed: false,
         reward_forfeited: false,
         current_event_index: 0,

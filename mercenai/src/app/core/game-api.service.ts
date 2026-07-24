@@ -58,10 +58,10 @@ export class GameApiService {
     );
   }
 
-  startMission(templateId: number, shipId: number): Promise<StateResponse> {
+  startMission(templateId: number, shipId: number, dev = false): Promise<StateResponse> {
     return firstValueFrom(
       this.http
-        .post<StateResponse>(`${this.base}/missions/${templateId}/start`, { shipId })
+        .post<StateResponse>(`${this.base}/missions/${templateId}/start`, { shipId, dev })
         .pipe(catchError((err) => of(this.onError(err)))),
     );
   }
@@ -150,6 +150,14 @@ export class GameApiService {
     return firstValueFrom(
       this.http
         .post<{ error?: string }>(`${this.base}/dev/reboot`, {})
+        .pipe(catchError((err) => of(this.onError(err)))),
+    );
+  }
+
+  devFinishMission(templateId: number): Promise<{ error?: string }> {
+    return firstValueFrom(
+      this.http
+        .post<{ error?: string }>(`${this.base}/dev/missions/${templateId}/finish`, {})
         .pipe(catchError((err) => of(this.onError(err)))),
     );
   }

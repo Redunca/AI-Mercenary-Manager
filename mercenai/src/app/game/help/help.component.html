@@ -217,6 +217,12 @@
   ><span class="desc">Starts a mission with a ship</span>
 </div>
 <div class="row">
+  <span class="cmd">mission start &lt;missionId&gt; &lt;shipId&gt; --dev</span
+  ><span class="desc"
+    >Starts a mission already backdated to resolve instantly on the next sync (testing only)</span
+  >
+</div>
+<div class="row">
   <span class="cmd">mission stop &lt;missionId&gt;</span
   ><span class="desc">Cancels a mission and frees up the crew</span>
 </div>
@@ -280,6 +286,10 @@
 <div class="row">
   <span class="cmd">dev reboot confirm</span
   ><span class="desc">Wipes the database and starts a brand new game</span>
+</div>
+<div class="row">
+  <span class="cmd">dev finish-mission &lt;id&gt;</span
+  ><span class="desc">Backdates an in-progress mission so it resolves on the next sync</span>
 </div>
 
 <div>&nbsp;</div>

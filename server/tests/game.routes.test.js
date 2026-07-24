@@ -123,7 +123,7 @@ describe('Game Routes', () => {
       const res = await request(app).post('/api/game/missions/1/start').send({ shipId: 1 })
 
       expect(res.status).toBe(200)
-      expect(GameService.startMission).toHaveBeenCalledWith(1, 1)
+      expect(GameService.startMission).toHaveBeenCalledWith(1, 1, undefined, false)
     })
 
     test('converts templateId and shipId to numbers', async () => {
@@ -131,7 +131,7 @@ describe('Game Routes', () => {
 
       await request(app).post('/api/game/missions/7/start').send({ shipId: '3' })
 
-      expect(GameService.startMission).toHaveBeenCalledWith(7, 3)
+      expect(GameService.startMission).toHaveBeenCalledWith(7, 3, undefined, false)
     })
 
     test('returns 400 when the service reports an error', async () => {
@@ -141,6 +141,14 @@ describe('Game Routes', () => {
 
       expect(res.status).toBe(400)
       expect(res.body.error).toBe('Mission not found')
+    })
+
+    test('passes dev: true through as the devInstant flag', async () => {
+      GameService.startMission.mockResolvedValue({ state: {} })
+
+      await request(app).post('/api/game/missions/1/start').send({ shipId: 1, dev: true })
+
+      expect(GameService.startMission).toHaveBeenCalledWith(1, 1, undefined, true)
     })
   })
 
@@ -265,6 +273,26 @@ describe('Game Routes', () => {
       expect(res.status).toBe(200)
       expect(GameService.devReboot).toHaveBeenCalledTimes(1)
       expect(res.body.state).toEqual({ recruits: [] })
+    })
+  })
+
+  describe('POST /api/game/dev/missions/:templateId/finish', () => {
+    test('backdates the mission and returns the updated state', async () => {
+      GameService.devFinishMission.mockResolvedValue({ state: {} })
+
+      const res = await request(app).post('/api/game/dev/missions/1/finish')
+
+      expect(res.status).toBe(200)
+      expect(GameService.devFinishMission).toHaveBeenCalledWith(1)
+    })
+
+    test('returns 400 if no active mission matches', async () => {
+      GameService.devFinishMission.mockResolvedValue({ error: 'No active mission' })
+
+      const res = await request(app).post('/api/game/dev/missions/99/finish')
+
+      expect(res.status).toBe(400)
+      expect(res.body.error).toBe('No active mission')
     })
   })
 })

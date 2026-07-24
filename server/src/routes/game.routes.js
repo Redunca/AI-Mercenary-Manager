@@ -72,13 +72,15 @@ router.post(
   '/missions/:templateId/start',
   asyncRoute(async (req, res) => {
     const shipId = Number(req.body.shipId)
+    const devInstant = req.body.dev === true
     const result = req.body.speedConsumableId
       ? await game.startMission(
           Number(req.params.templateId),
           shipId,
           Number(req.body.speedConsumableId),
+          devInstant,
         )
-      : await game.startMission(Number(req.params.templateId), shipId)
+      : await game.startMission(Number(req.params.templateId), shipId, undefined, devInstant)
     if (result.error) {
       res.status(400).json(result)
       return
@@ -161,6 +163,18 @@ router.post(
   '/dev/reboot',
   asyncRoute(async (_req, res) => {
     const result = await game.devReboot()
+    res.json(result)
+  }),
+)
+
+router.post(
+  '/dev/missions/:templateId/finish',
+  asyncRoute(async (req, res) => {
+    const result = await game.devFinishMission(Number(req.params.templateId))
+    if (result.error) {
+      res.status(400).json(result)
+      return
+    }
     res.json(result)
   }),
 )

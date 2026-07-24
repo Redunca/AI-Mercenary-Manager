@@ -215,17 +215,22 @@ export class CommandService {
         });
         break;
 
-      case 'start':
-        void this.missionService.startMission(Number(args[0]), Number(args[1])).then((err) => {
-          if (err) {
-            console.error(`[mission start] ${err}`);
-            return;
-          }
-          this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.MissionDetail, {
-            id: Number(args[0]),
+      case 'start': {
+        const dev = args.includes('--dev');
+        const positional = args.filter((a) => a !== '--dev');
+        void this.missionService
+          .startMission(Number(positional[0]), Number(positional[1]), dev)
+          .then((err) => {
+            if (err) {
+              console.error(`[mission start] ${err}`);
+              return;
+            }
+            this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.MissionDetail, {
+              id: Number(positional[0]),
+            });
           });
-        });
         break;
+      }
 
       case 'stop':
         void this.missionService.stopMission(Number(args[0])).then((err) => {
@@ -255,7 +260,7 @@ export class CommandService {
 
       default:
         console.warn(
-          'Usage: mission list [--completed|-c] | mission start <shipId> <missionId> | mission stop <id> | mission detail <id> | mission logs <id>',
+          'Usage: mission list [--completed|-c] | mission start <shipId> <missionId> [--dev] | mission stop <id> | mission detail <id> | mission logs <id>',
         );
     }
   }
@@ -532,9 +537,26 @@ export class CommandService {
         });
         break;
 
+      case 'finish-mission':
+      case 'finish': {
+        const missionId = Number(args[0]);
+        if (isNaN(missionId)) {
+          console.warn('Usage: dev finish-mission <id>');
+          break;
+        }
+        void this.gameApi.devFinishMission(missionId).then((result) => {
+          if (result?.error) {
+            console.warn('[dev finish-mission]', result.error);
+            return;
+          }
+          void this.gameSync.sync();
+        });
+        break;
+      }
+
       default:
         console.warn(
-          'Usage: dev refresh | dev credit <amount> | dev token <amount> | dev reboot confirm',
+          'Usage: dev refresh | dev credit <amount> | dev token <amount> | dev reboot confirm | dev finish-mission <id>',
         );
     }
   }

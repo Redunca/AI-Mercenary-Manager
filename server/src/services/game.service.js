@@ -1094,7 +1094,14 @@ async function hireCandidate(client, playerId, candidateId) {
   return getRecruit(client, playerId, recruitId)
 }
 
-async function startMission(client, playerId, templateId, shipId, speedConsumableId = null) {
+async function startMission(
+  client,
+  playerId,
+  templateId,
+  shipId,
+  speedConsumableId = null,
+  devInstant = false,
+) {
   const templateResult = await client.query('SELECT * FROM mission_templates WHERE id = $1', [
     templateId,
   ])
@@ -1169,12 +1176,20 @@ async function startMission(client, playerId, templateId, shipId, speedConsumabl
   const effectiveSpeed = (ship.stats?.speed ?? 100) * speedMultiplier
   const travelMs = travelSegmentMs(template.difficulty, effectiveSpeed)
   const eventsMs = eventsSegmentMs(template.difficulty, eventCount)
+  // devInstant backdates started_at past the mission's own total duration,
+  // so the very next syncMissions() tick (the exported startMission wrapper
+  // calls one right after this) resolves it straight to COMPLETED through
+  // the normal advanceMission() elapsed-time path -- same resolution code a
+  // real playthrough hits after being left running unattended, just
+  // triggered on demand for testing instead of waiting out real wall-clock
+  // time. See devFinishMission for the equivalent for an already-running mission.
+  const startedAt = devInstant ? new Date(Date.now() - (travelMs * 2 + eventsMs + 1000)) : new Date()
   const inserted = await client.query(
     `INSERT INTO mission_instances
       (player_id, template_id, ship_id, status, phase, progress, started_at, travel_segment_ms, events_segment_ms)
-     VALUES ($1, $2, $3, 'in_progress', 'EN_ROUTE', 0, NOW(), $4, $5)
+     VALUES ($1, $2, $3, 'in_progress', 'EN_ROUTE', 0, $4, $5, $6)
      RETURNING *`,
-    [playerId, templateId, shipId, travelMs, eventsMs],
+    [playerId, templateId, shipId, startedAt, travelMs, eventsMs],
   )
 
   const crewMembers = await Promise.all(ship.crew.map((id) => getRecruit(client, playerId, id)))
@@ -1282,6 +1297,35 @@ async function devSetCredits(client, playerId, amount) {
 
 async function devSetTokens(client, playerId, amount) {
   await client.query('UPDATE players SET tokens = $1 WHERE id = $2', [amount, playerId])
+}
+
+// Backdates an already-running mission's started_at past its own total
+// duration, the same trick startMission's devInstant flag uses at creation
+// time -- the next syncMissions() tick resolves it straight to COMPLETED
+// through the normal advanceMission() elapsed-time path, rather than
+// waiting out the real wall-clock travel/event time. Clears any in-flight
+// forced return first: advanceMission branches on forced_return before
+// falling back to the elapsed-time calculation, so a mission mid
+// force-return would otherwise keep resolving off return_started_at
+// instead of the backdated started_at.
+async function devFinishMission(client, playerId, templateId) {
+  const instanceResult = await client.query(
+    'SELECT * FROM mission_instances WHERE player_id = $1 AND template_id = $2',
+    [playerId, templateId],
+  )
+  if (instanceResult.rows.length === 0) return { error: 'No active mission' }
+
+  const instance = instanceResult.rows[0]
+  if (instance.status !== 'in_progress') return { error: 'Mission already completed' }
+
+  const totalMs = instance.travel_segment_ms * 2 + instance.events_segment_ms
+  await client.query(
+    `UPDATE mission_instances SET started_at = $1, forced_return = FALSE, return_started_at = NULL
+     WHERE id = $2`,
+    [new Date(Date.now() - totalMs - 1000), instance.id],
+  )
+
+  return { ok: true }
 }
 
 // Wipes every player-scoped row — players cascades to recruits, candidates,
@@ -1546,7 +1590,7 @@ module.exports = {
     await syncMissions(client, DEFAULT_PLAYER_ID)
     return { recruit }
   }),
-  startMission: withPlayerAction(async (client, templateId, shipId, speedConsumableId) => {
+  startMission: withPlayerAction(async (client, templateId, shipId, speedConsumableId, devInstant) => {
     await bootstrapPlayer(client)
     const result = await startMission(
       client,
@@ -1554,6 +1598,7 @@ module.exports = {
       templateId,
       shipId,
       speedConsumableId,
+      devInstant,
     )
     if (result.error) return result
     await syncMissions(client, DEFAULT_PLAYER_ID)
@@ -1588,6 +1633,12 @@ module.exports = {
   }),
   devReboot: withPlayerAction(async (client) => {
     await devReboot(client)
+    return {}
+  }),
+  devFinishMission: withPlayerAction(async (client, templateId) => {
+    const result = await devFinishMission(client, DEFAULT_PLAYER_ID, templateId)
+    if (result.error) return result
+    await syncMissions(client, DEFAULT_PLAYER_ID)
     return {}
   }),
   renameRecruit: withPlayerAction(async (client, recruitId, newName) => {

@@ -406,7 +406,8 @@ function createFakeClient() {
       }
     }
     if (s.includes('INSERT INTO mission_instances')) {
-      const [player_id, template_id, ship_id, travel_segment_ms, events_segment_ms] = params
+      const [player_id, template_id, ship_id, started_at, travel_segment_ms, events_segment_ms] =
+        params
       const instance = {
         id: nextInstanceId++,
         player_id,
@@ -415,7 +416,7 @@ function createFakeClient() {
         status: 'in_progress',
         phase: 'EN_ROUTE',
         progress: 0,
-        started_at: new Date(),
+        started_at,
         failed: false,
         reward_forfeited: false,
         current_event_index: 0,
@@ -513,6 +514,16 @@ function createFakeClient() {
     }
     if (s === 'SELECT * FROM mission_instances WHERE player_id = $1') {
       return { rows: state.missionInstances.filter((i) => i.player_id === params[0]) }
+    }
+    if (
+      s.includes(
+        'UPDATE mission_instances SET started_at = $1, forced_return = FALSE, return_started_at = NULL',
+      )
+    ) {
+      const [startedAt, id] = params
+      const i = state.missionInstances.find((i) => i.id === id)
+      Object.assign(i, { started_at: startedAt, forced_return: false, return_started_at: null })
+      return { rows: [] }
     }
 
     // ships (only the raw read used by buildGameState — the rest goes through ShipService, mocked)
@@ -1074,6 +1085,35 @@ describe('GameService', () => {
       expect(state.missionInstances[0].travel_segment_ms).toBe(
         travelSegmentMs(template.difficulty, 100),
       )
+    })
+
+    // devInstant is the --dev flag on the terminal's "mission start" command
+    // (for scripted/repeatable test setups) -- it backdates started_at at
+    // creation time instead of using NOW(), past the mission's own total
+    // duration, so the syncMissions() the startMission wrapper runs right
+    // after insertion resolves it to COMPLETED immediately instead of
+    // leaving it EN_ROUTE. See devFinishMission for the equivalent on a
+    // mission that's already running.
+    test('devInstant backdates started_at so the mission resolves to COMPLETED before startMission even returns', async () => {
+      await bootstrapWithDockedShip()
+      state.recruits[0].id = 1
+      rollAction.mockReturnValue({ d20: 20, bonus: 0, diceNotation: '—', total: 9999 }) // trivially wins every event
+
+      const result = await GameService.startMission(1, 1, undefined, true)
+
+      expect(result.error).toBeUndefined()
+      expect(state.missionInstances[0].phase).toBe('COMPLETED')
+      expect(state.missionInstances[0].status).toBe('success')
+    })
+
+    test('without --dev (devInstant false/omitted), started_at is "now" and the mission stays EN_ROUTE', async () => {
+      await bootstrapWithDockedShip()
+      state.recruits[0].id = 1
+
+      await GameService.startMission(1, 1)
+
+      expect(state.missionInstances[0].phase).toBe('EN_ROUTE')
+      expect(state.missionInstances[0].status).toBe('in_progress')
     })
   })
 
@@ -2137,6 +2177,53 @@ describe('GameService', () => {
 
       expect(state.players[0].tokens).toBe(777)
       expect(result.state.player.tokens).toBe(777)
+    })
+  })
+
+  describe('devFinishMission', () => {
+    test('backdates an in-progress mission so the next sync resolves it to COMPLETED', async () => {
+      await GameService.initGame()
+      state.recruits[0].id = 1
+      ShipService.getShip.mockResolvedValue({
+        id: 1,
+        player_id: 1,
+        crew: [1],
+        status: 'docked',
+        deleted_at: null,
+      })
+      await GameService.startMission(1, 1)
+      expect(state.missionInstances[0].phase).toBe('EN_ROUTE') // elapsed 0 -- still fresh
+      rollAction.mockReturnValue({ d20: 20, bonus: 0, diceNotation: '—', total: 9999 }) // trivially wins every event
+
+      const result = await GameService.devFinishMission(1)
+
+      expect(result.error).toBeUndefined()
+      expect(state.missionInstances[0].phase).toBe('COMPLETED')
+      expect(state.missionInstances[0].status).toBe('success')
+    })
+
+    test('refuses if no active mission matches', async () => {
+      await GameService.initGame()
+      const result = await GameService.devFinishMission(1)
+      expect(result.error).toBe('No active mission')
+    })
+
+    test('refuses a mission that has already completed', async () => {
+      await GameService.initGame()
+      state.recruits[0].id = 1
+      ShipService.getShip.mockResolvedValue({
+        id: 1,
+        player_id: 1,
+        crew: [1],
+        status: 'docked',
+        deleted_at: null,
+      })
+      await GameService.startMission(1, 1)
+      rollAction.mockReturnValue({ d20: 20, bonus: 0, diceNotation: '—', total: 9999 })
+      await GameService.devFinishMission(1)
+
+      const result = await GameService.devFinishMission(1)
+      expect(result.error).toBe('Mission already completed')
     })
   })
 
