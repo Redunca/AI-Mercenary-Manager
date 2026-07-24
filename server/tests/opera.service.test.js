@@ -654,3 +654,28 @@ describe('dry [SYS] log text vs. lore-heavy tasks', () => {
     expect(endLog.message).toBe('Opera failed.')
   })
 })
+
+describe('resolveTags', () => {
+  // Exercises the real dataLoader/missionGenerator pipeline (not mocked --
+  // operaLoader is the only thing this file mocks, and resolveTags never
+  // touches it), against the game's actual mission-types.json. Regression
+  // test for the bug where a template's tag only rendered if the one
+  // randomly-drawn mission type happened to publish it (e.g. only HEIST
+  // out of 6 types published securityGroupName, so a template using it
+  // rendered literally ~5 times out of 6). Run repeatedly since the primary
+  // draw is random -- every run must independently show full coverage, not
+  // just "eventually" across runs.
+  const missionTypes = require('../data/mission-types.json')
+  const allProvidedKeys = [
+    ...new Set(missionTypes.flatMap((mt) => Object.keys(mt.provides))),
+  ]
+
+  test('every tag key any mission type can provide is resolved on every run', () => {
+    for (let i = 0; i < 20; i++) {
+      const tags = OperaService.resolveTags()
+      for (const key of allProvidedKeys) {
+        expect(tags[key]).toBeTruthy()
+      }
+    }
+  })
+})

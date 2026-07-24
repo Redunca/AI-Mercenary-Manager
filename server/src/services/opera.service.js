@@ -71,9 +71,30 @@ async function log(client, playerId, instance, message) {
 // tag output (climate/faction/clientName/etc. -- see
 // opera-forge/server/src/domain/tags.js's TAG_CATALOG) rather than
 // generating a throwaway mission_templates row.
+//
+// The primary draw's mission type only publishes its own `provides` keys
+// (see mission-types.json), so a single draw is not enough: e.g. 5 of the
+// 6 mission types publish enemyGroupName but only HEIST publishes
+// securityGroupName, so a template using {securityGroupName} rendered
+// literally ~5 times out of 6 for that instance's entire playthrough. To
+// guarantee coverage, fall back to one extra draw per mission type that
+// still has an unpublished `provides` key, forced via options.missionType
+// so it publishes that key deterministically -- merging in only the keys
+// still missing (never overwriting the primary draw's identity, e.g. its
+// planet/faction/clientName) so an opera's stable cast doesn't shift mid
+// template just because a gap-filling draw happened to run.
 function resolveTags() {
-  const mission = generateMission(loadData(), {})
-  return mission.tags
+  const data = loadData()
+  const tags = { ...generateMission(data, {}).tags }
+
+  for (const missionType of data.missionTypes) {
+    const missingKeys = Object.keys(missionType.provides).filter((key) => !(key in tags))
+    if (missingKeys.length === 0) continue
+    const extra = generateMission(data, { missionType: missionType.type })
+    for (const key of missingKeys) tags[key] = extra.tags[key]
+  }
+
+  return tags
 }
 
 // --- seed-key / recruit-binding helpers ---------------------------------
@@ -728,4 +749,5 @@ module.exports = {
   resolveChoice,
   getOperaState,
   getOperaLogs,
+  resolveTags,
 }
