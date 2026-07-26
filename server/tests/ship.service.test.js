@@ -199,13 +199,27 @@ describe('Ship Service', () => {
   })
 
   test('appendCrewMember adds a recruit to the crew array', async () => {
-    mockClient.query.mockResolvedValue({ rows: [{ id: 1, crew: [1] }] })
+    mockClient.query
+      .mockResolvedValueOnce({ rows: [{ status: 'available' }] }) // status guard
+      .mockResolvedValueOnce({ rows: [{ id: 1, crew: [1] }] })
 
     await ShipService.appendCrewMember(mockClient, 1, 1, 1)
 
     expect(mockClient.query).toHaveBeenCalledWith(
       expect.stringContaining('array_append(crew, $3)'),
       [1, 1, 1],
+    )
+  })
+
+  test('appendCrewMember refuses a hospitalized recruit', async () => {
+    mockClient.query.mockResolvedValueOnce({ rows: [{ status: 'hospitalized' }] })
+
+    const result = await ShipService.appendCrewMember(mockClient, 1, 1, 1)
+
+    expect(result).toBeUndefined()
+    expect(mockClient.query).not.toHaveBeenCalledWith(
+      expect.stringContaining('array_append(crew, $3)'),
+      expect.anything(),
     )
   })
 

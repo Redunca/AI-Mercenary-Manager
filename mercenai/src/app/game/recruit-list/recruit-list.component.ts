@@ -25,6 +25,8 @@ export class RecruitListComponent {
   statusLabel(r: Recruit): string {
     if (r.status === 'dead') return 'DEAD';
     if (r.status === 'in_mission') return 'In Mission';
+    if (r.status === 'returning') return 'Returning';
+    if (r.status === 'hospitalized') return 'Hospitalized';
     return 'Available';
   }
 

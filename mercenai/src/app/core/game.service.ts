@@ -22,6 +22,8 @@ export class GameService {
     missionRefreshIntervalMs: 900000,
     shopRefreshIntervalMs: 900000,
     candidateRefreshIntervalMs: 300000,
+    hospitalSlots: 1,
+    hospitalHealIntervalMs: 60000,
   });
 
   applyState(state: GameSnapshot): void {
@@ -35,6 +37,8 @@ export class GameService {
       missionRefreshIntervalMs: state.player.missionRefreshIntervalMs,
       shopRefreshIntervalMs: state.player.shopRefreshIntervalMs,
       candidateRefreshIntervalMs: state.player.candidateRefreshIntervalMs,
+      hospitalSlots: state.player.hospitalSlots,
+      hospitalHealIntervalMs: state.player.hospitalHealIntervalMs,
     });
   }
 

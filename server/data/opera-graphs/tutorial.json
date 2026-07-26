@@ -1,22 +1,25 @@
 {
   "id": "tutorial",
   "title": "Basic Operations",
-  "description": "A guided walkthrough of the terminal and the core loop: crew, missions, gear, and the shop.",
+  "description": "A guided walkthrough of the terminal and the core loop: crew, missions, injury, and the shop.",
   "nodes": [
     { "id": "start", "type": "start", "text": "Welcome aboard, Commander. This log will walk you through the basics.", "position": { "x": 0, "y": 0 } },
     { "id": "learn-split-v", "type": "story", "text": "This terminal is made of panels. Try splitting this one vertically: type split-v.", "completionText": "Panel split vertically.", "position": { "x": 300, "y": 0 } },
     { "id": "learn-split-h", "type": "story", "text": "Now try splitting a panel horizontally: type split-h.", "completionText": "Panel split horizontally.", "position": { "x": 600, "y": 0 } },
     { "id": "learn-help", "type": "story", "text": "If you ever forget a command, type help.", "completionText": "Help panel opened. It's always there if you need it.", "position": { "x": 900, "y": 0 } },
-    { "id": "hire-a-recruit", "type": "story", "text": "Time to build your crew. Open a candidate and type hire, or use recruit hire <id>.", "completionText": "New recruit hired.", "position": { "x": 1200, "y": 0 } },
-    { "id": "assign-recruit-to-ship", "type": "story", "text": "A recruit isn't much use standing around the hangar. Assign them to a ship: ship assign <shipId> <recruitId>.", "completionText": "Recruit assigned to ship.", "position": { "x": 1500, "y": 0 } },
-    { "id": "complete-a-mission", "type": "story", "text": "Send that crewed ship on a mission: mission start <templateId> <shipId>.", "completionText": "First mission complete.", "position": { "x": 1800, "y": 0 } },
-    { "id": "buy-seeded-equipment", "type": "story", "text": "The shop always stocks a Recruit Training Vest. Buy one: shop buy <itemId>.", "completionText": "Recruit Training Vest purchased.", "position": { "x": 2100, "y": 0 } },
-    { "id": "equip-vest-to-recruit", "type": "story", "text": "Gear doesn't help anyone in the stash. Equip it from a recruit's detail panel: equip <equipmentId>.", "completionText": "Vest equipped.", "position": { "x": 2400, "y": 0 } },
-    { "id": "buy-seeded-item", "type": "story", "text": "The shop also always stocks an Encrypted Data Chip. Buy one: shop buy <itemId>.", "completionText": "Encrypted Data Chip purchased.", "position": { "x": 2700, "y": 0 } },
-    { "id": "load-item-onto-ship", "type": "story", "text": "Items in the stash do nothing. Load it onto a ship: ship load <shipId> <consumableId>.", "completionText": "Item loaded onto ship.", "position": { "x": 3000, "y": 0 } },
-    { "id": "complete-another-mission", "type": "story", "text": "Send your crew out again: mission start <templateId> <shipId>.", "completionText": "Second mission complete.", "position": { "x": 3300, "y": 0 } },
-    { "id": "open-self", "type": "story", "text": "One more thing: type self to see your own upgrades.", "completionText": "Self panel opened.", "position": { "x": 3600, "y": 0 } },
-    { "id": "end-success", "type": "end", "outcome": "success", "text": "Basic training complete. You're on your own from here, Commander.", "position": { "x": 3900, "y": 0 } }
+    { "id": "buy-a-ship", "type": "story", "text": "You can't run missions without a ship. The shop always has one in stock: shop buy <shipId>.", "completionText": "Ship purchased.", "position": { "x": 1200, "y": 0 } },
+    { "id": "assign-default-recruit", "type": "story", "text": "You've already got a recruit waiting in the hangar. Assign them to your new ship: ship assign <shipId> <recruitId>.", "completionText": "Recruit assigned to ship.", "position": { "x": 1500, "y": 0 } },
+    { "id": "prep-for-combat-mission", "type": "story", "text": "Time to see them in action. Once a mission opens up below, run it: mission start <templateId> <shipId>.", "position": { "x": 1800, "y": 0 } },
+    { "id": "guaranteed-combat-mission", "type": "mission", "mission": { "title": "Clear the Approach", "description": "A hostile patrol is blocking the route out. Break through.", "difficulty": "STANDARD", "missionType": "EXTRACTION_OP" }, "position": { "x": 2100, "y": 0 } },
+    { "id": "send-recruit-to-hospital", "type": "story", "text": "That fight left someone hurt, and recruits only heal in the hospital now. Admit them: hospital admit <recruitId>.", "completionText": "Recruit admitted to the hospital.", "position": { "x": 2400, "y": 0 } },
+    { "id": "hire-a-candidate", "type": "story", "text": "With one recruit laid up, you need another set of hands. Open a candidate and type hire, or use recruit hire <id>.", "completionText": "New recruit hired.", "position": { "x": 2700, "y": 0 } },
+    { "id": "buy-seeded-equipment", "type": "story", "text": "The shop always stocks a Recruit Training Vest. Buy one: shop buy <itemId>.", "completionText": "Recruit Training Vest purchased.", "position": { "x": 3000, "y": 0 } },
+    { "id": "equip-vest-to-recruit", "type": "story", "text": "Gear doesn't help anyone in the stash. Equip it from a recruit's detail panel: equip <equipmentId>.", "completionText": "Vest equipped.", "position": { "x": 3300, "y": 0 } },
+    { "id": "buy-seeded-item", "type": "story", "text": "The shop also always stocks an Encrypted Data Chip. Buy one: shop buy <itemId>.", "completionText": "Encrypted Data Chip purchased.", "position": { "x": 3600, "y": 0 } },
+    { "id": "load-item-onto-ship", "type": "story", "text": "Items in the stash do nothing. Load it onto a ship: ship load <shipId> <consumableId>.", "completionText": "Item loaded onto ship.", "position": { "x": 3900, "y": 0 } },
+    { "id": "complete-another-mission", "type": "story", "text": "Send your new recruit out: mission start <templateId> <shipId>.", "completionText": "Second mission complete.", "position": { "x": 4200, "y": 0 } },
+    { "id": "open-self", "type": "story", "text": "One more thing: type self to see your own upgrades.", "completionText": "Self panel opened.", "position": { "x": 4500, "y": 0 } },
+    { "id": "end-success", "type": "end", "outcome": "success", "text": "Basic training complete. You're on your own from here, Commander.", "position": { "x": 4800, "y": 0 } }
   ],
   "links": [
     { "id": "start--learn-split-v", "from": "start", "to": "learn-split-v", "priority": 0, "conditions": [] },
@@ -26,17 +29,22 @@
     { "id": "learn-split-h--learn-help", "from": "learn-split-h", "to": "learn-help", "priority": 0, "conditions": [
       { "type": "action_performed", "params": { "actionType": "execute_command", "match": { "command": "split-h" } } }
     ] },
-    { "id": "learn-help--hire-a-recruit", "from": "learn-help", "to": "hire-a-recruit", "priority": 0, "conditions": [
+    { "id": "learn-help--buy-a-ship", "from": "learn-help", "to": "buy-a-ship", "priority": 0, "conditions": [
       { "type": "action_performed", "params": { "actionType": "execute_command", "match": { "command": "help" } } }
     ] },
-    { "id": "hire-a-recruit--assign-recruit-to-ship", "from": "hire-a-recruit", "to": "assign-recruit-to-ship", "priority": 0, "conditions": [
-      { "type": "action_performed", "params": { "actionType": "hire_recruit", "match": { "scope": "any" } } }
+    { "id": "buy-a-ship--assign-default-recruit", "from": "buy-a-ship", "to": "assign-default-recruit", "priority": 0, "conditions": [
+      { "type": "action_performed", "params": { "actionType": "purchase_item", "match": { "itemType": "ship" } } }
     ] },
-    { "id": "assign-recruit-to-ship--complete-a-mission", "from": "assign-recruit-to-ship", "to": "complete-a-mission", "priority": 0, "conditions": [
+    { "id": "assign-default-recruit--prep-for-combat-mission", "from": "assign-default-recruit", "to": "prep-for-combat-mission", "priority": 0, "conditions": [
       { "type": "action_performed", "params": { "actionType": "assign_crew_to_ship", "match": { "scope": "any" } } }
     ] },
-    { "id": "complete-a-mission--buy-seeded-equipment", "from": "complete-a-mission", "to": "buy-seeded-equipment", "priority": 0, "conditions": [
-      { "type": "action_performed", "params": { "actionType": "complete_quest", "match": { "scope": "any" } } }
+    { "id": "prep-for-combat-mission--guaranteed-combat-mission", "from": "prep-for-combat-mission", "to": "guaranteed-combat-mission", "priority": 0, "conditions": [] },
+    { "id": "guaranteed-combat-mission--send-recruit-to-hospital", "from": "guaranteed-combat-mission", "to": "send-recruit-to-hospital", "priority": 0, "conditions": [] },
+    { "id": "send-recruit-to-hospital--hire-a-candidate", "from": "send-recruit-to-hospital", "to": "hire-a-candidate", "priority": 0, "conditions": [
+      { "type": "action_performed", "params": { "actionType": "assign_recruit_to_hospital", "match": { "scope": "any" } } }
+    ] },
+    { "id": "hire-a-candidate--buy-seeded-equipment", "from": "hire-a-candidate", "to": "buy-seeded-equipment", "priority": 0, "conditions": [
+      { "type": "action_performed", "params": { "actionType": "hire_recruit", "match": { "scope": "any" } } }
     ] },
     { "id": "buy-seeded-equipment--equip-vest-to-recruit", "from": "buy-seeded-equipment", "to": "equip-vest-to-recruit", "priority": 0, "conditions": [
       { "type": "action_performed", "params": { "actionType": "purchase_quest_item", "match": { "itemName": "Recruit Training Vest" } } }

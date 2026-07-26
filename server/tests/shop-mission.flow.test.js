@@ -299,6 +299,10 @@ function createFakeClient() {
         rows: state.recruits.filter((r) => r.player_id === params[0] && sameId(r.id, params[1])),
       }
     }
+    if (s === 'SELECT status FROM recruits WHERE player_id = $1 AND id = $2') {
+      const r = state.recruits.find((r) => r.player_id === params[0] && sameId(r.id, params[1]))
+      return { rows: r ? [{ status: r.status }] : [] }
+    }
     if (s.includes('UPDATE recruits SET hp = $1, status = $2')) {
       const [hp, status, playerId, id] = params
       const r = state.recruits.find((r) => r.player_id === playerId && sameId(r.id, id))

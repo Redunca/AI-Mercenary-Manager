@@ -107,6 +107,40 @@ describe('validateGraphDefinition', () => {
     })
     expect(() => validateGraphDefinition(def)).toThrow(/requires a non-empty title/)
   })
+
+  test('accepts a mission node with a missionType', () => {
+    const def = makeDef({
+      nodes: [
+        { id: 'start', type: 'start' },
+        {
+          id: 'mission',
+          type: 'mission',
+          mission: { title: 'Raid', difficulty: 'ROUTINE', missionType: 'EXTRACTION_OP' },
+        },
+        { id: 'end', type: 'end', outcome: 'success', text: 'Done.' },
+      ],
+      links: [
+        { id: 'start--mission', from: 'start', to: 'mission', conditions: [] },
+        { id: 'mission--end', from: 'mission', to: 'end', conditions: [] },
+      ],
+    })
+    expect(() => validateGraphDefinition(def)).not.toThrow()
+  })
+
+  test('rejects a mission node with a non-string missionType', () => {
+    const def = makeDef({
+      nodes: [
+        { id: 'start', type: 'start' },
+        { id: 'mission', type: 'mission', mission: { title: 'Raid', missionType: 42 } },
+        { id: 'end', type: 'end', outcome: 'success', text: 'Done.' },
+      ],
+      links: [
+        { id: 'start--mission', from: 'start', to: 'mission', conditions: [] },
+        { id: 'mission--end', from: 'mission', to: 'end', conditions: [] },
+      ],
+    })
+    expect(() => validateGraphDefinition(def)).toThrow(/missionType must be a non-empty string/)
+  })
 })
 
 describe('matchesAction', () => {

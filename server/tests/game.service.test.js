@@ -78,16 +78,17 @@ function createFakeClient() {
         candidate_refresh_interval_ms: 300000,
         shop_rotation_size: 5,
         inventory_capacity: 5,
-        hp_regen_interval_ms: 60000,
+        hospital_heal_interval_ms: 60000,
+        hospital_slots: 1,
       }
       state.players.push(player)
       return { rows: [player] }
     }
-    if (s === 'SELECT hp_regen_interval_ms FROM players WHERE id = $1') {
+    if (s === 'SELECT hospital_heal_interval_ms FROM players WHERE id = $1') {
       return {
         rows: state.players
           .filter((p) => p.id === params[0])
-          .map((p) => ({ hp_regen_interval_ms: p.hp_regen_interval_ms })),
+          .map((p) => ({ hospital_heal_interval_ms: p.hospital_heal_interval_ms })),
       }
     }
     if (s.includes('SELECT max_recruits, max_available_missions, wallet, tokens,')) {
@@ -103,6 +104,8 @@ function createFakeClient() {
                 mission_refresh_interval_ms: p.mission_refresh_interval_ms,
                 shop_refresh_interval_ms: p.shop_refresh_interval_ms,
                 candidate_refresh_interval_ms: p.candidate_refresh_interval_ms,
+                hospital_slots: p.hospital_slots,
+                hospital_heal_interval_ms: p.hospital_heal_interval_ms,
               },
             ]
           : [],
@@ -255,29 +258,26 @@ function createFakeClient() {
     if (s.includes('UPDATE recruits SET status = $1') && s.includes("status != 'dead'")) {
       const [status, playerId, id] = params
       const r = state.recruits.find((r) => r.player_id === playerId && sameId(r.id, id))
-      if (r && r.status !== 'dead') Object.assign(r, { status, last_hp_regen_at: new Date() })
+      if (r && r.status !== 'dead') Object.assign(r, { status })
       return { rows: [] }
     }
     if (
       s ===
-      "SELECT * FROM recruits WHERE player_id = $1 AND status NOT IN ('in_mission', 'dead') AND hp < max_hp"
+      "SELECT * FROM recruits WHERE player_id = $1 AND status = 'hospitalized' AND hp < max_hp"
     ) {
       return {
         rows: state.recruits.filter(
-          (r) =>
-            r.player_id === params[0] &&
-            r.status !== 'in_mission' &&
-            r.status !== 'dead' &&
-            r.hp < r.max_hp,
+          (r) => r.player_id === params[0] && r.status === 'hospitalized' && r.hp < r.max_hp,
         ),
       }
     }
     if (
-      s === 'UPDATE recruits SET hp = $1, last_hp_regen_at = $2 WHERE player_id = $3 AND id = $4'
+      s ===
+      'UPDATE recruits SET hp = $1, last_hospital_heal_at = $2, status = $3 WHERE player_id = $4 AND id = $5'
     ) {
-      const [hp, last_hp_regen_at, playerId, id] = params
+      const [hp, last_hospital_heal_at, status, playerId, id] = params
       const r = state.recruits.find((r) => r.player_id === playerId && sameId(r.id, id))
-      if (r) Object.assign(r, { hp, last_hp_regen_at })
+      if (r) Object.assign(r, { hp, last_hospital_heal_at, status })
       return { rows: [] }
     }
     if (s === 'SELECT name FROM recruits WHERE player_id = $1 AND id = $2') {
@@ -323,7 +323,7 @@ function createFakeClient() {
         perks: JSON.parse(perks),
         flaws: JSON.parse(flaws),
         personality,
-        last_hp_regen_at: new Date(),
+        last_hospital_heal_at: new Date(),
       })
       return { rows: [] }
     }
@@ -636,17 +636,13 @@ describe('GameService', () => {
   })
 
   describe('initGame / bootstrapPlayer', () => {
-    test('creates a player, docks a starter ship, generates 5 candidates then recruits one', async () => {
+    test('creates a player with a hangar and docking station, generates 5 candidates then recruits one, but starts with no ship', async () => {
       await GameService.initGame()
 
       expect(state.players).toHaveLength(1)
       expect(ShipService.createHangar).toHaveBeenCalledWith(expect.anything(), 1)
       expect(ShipService.createDockingStation).toHaveBeenCalledWith(expect.anything(), 1, 5)
-      expect(ShipService.createShip).toHaveBeenCalledWith(
-        expect.anything(),
-        1,
-        expect.objectContaining({ rarity: 'common' }),
-      )
+      expect(ShipService.createShip).not.toHaveBeenCalled() // no free starter ship -- buying one is the tutorial's first step
       expect(state.candidates).toHaveLength(4)
       expect(state.recruits).toHaveLength(1)
       expect(state.recruits[0].status).toBe('available')
@@ -902,6 +898,8 @@ describe('GameService', () => {
         missionRefreshIntervalMs: 900000,
         shopRefreshIntervalMs: 900000,
         candidateRefreshIntervalMs: 300000,
+        hospitalSlots: 1,
+        hospitalHealIntervalMs: 60000,
       })
       expect(result.recruits).toHaveLength(1)
       expect(result.candidates).toHaveLength(4)
@@ -1644,7 +1642,7 @@ describe('GameService', () => {
       expect(updated.current_event_index).toBe(2) // stops after the 2nd event (RECON success, then COMBAT loss)
       expect(updated.event_results.at(-1).consequence).toBe('FORCED_DEPARTURE')
       expect(recruit.max_hp).toBe(25) // 26 -> 25, permanently, from the single knockout suffered
-      expect(recruit.hp).toBe(25) // patched back up to the new max once the fight ends
+      expect(recruit.hp).toBe(0) // no longer patched up -- stays at 0 until admitted to the hospital
       expect(recruit.status).not.toBe('dead')
       expect(updated.event_results.at(-1).recruitsDowned).toEqual(['1']) // survived the knockout, but it's tracked for the completion summary
     })
@@ -1937,30 +1935,44 @@ describe('GameService', () => {
     })
   })
 
-  describe('passive HP regen (via syncGame)', () => {
-    test('regenerates 1 HP per elapsed interval for a recruit not on a mission, at the default 1/minute rate', async () => {
+  describe('hospital HP regen (via syncGame)', () => {
+    test('regenerates 1 HP per elapsed interval for a hospitalized recruit, at the default 1/minute rate', async () => {
       await GameService.initGame()
       const recruit = state.recruits[0]
       recruit.hp = recruit.max_hp - 5
-      recruit.status = 'available'
-      recruit.last_hp_regen_at = new Date(Date.now() - 3.5 * 60000) // 3.5 minutes ago
+      recruit.status = 'hospitalized'
+      recruit.last_hospital_heal_at = new Date(Date.now() - 3.5 * 60000) // 3.5 minutes ago
 
       const result = await GameService.syncGame()
 
       expect(state.recruits[0].hp).toBe(recruit.max_hp - 5 + 3) // floor(3.5) = 3 ticks
+      expect(state.recruits[0].status).toBe('hospitalized') // not yet fully healed
       expect(result.recruits[0].hp).toBe(recruit.max_hp - 5 + 3)
     })
 
-    test('caps regen at max_hp even if more ticks elapsed than HP missing', async () => {
+    test('caps regen at max_hp and auto-discharges once fully healed', async () => {
       await GameService.initGame()
       const recruit = state.recruits[0]
       recruit.hp = recruit.max_hp - 1
-      recruit.status = 'available'
-      recruit.last_hp_regen_at = new Date(Date.now() - 10 * 60000)
+      recruit.status = 'hospitalized'
+      recruit.last_hospital_heal_at = new Date(Date.now() - 10 * 60000)
 
       await GameService.syncGame()
 
       expect(state.recruits[0].hp).toBe(recruit.max_hp)
+      expect(state.recruits[0].status).toBe('available') // slot freed automatically
+    })
+
+    test('does not regenerate a recruit who is not hospitalized', async () => {
+      await GameService.initGame()
+      const recruit = state.recruits[0]
+      recruit.hp = recruit.max_hp - 5
+      recruit.status = 'available'
+      recruit.last_hospital_heal_at = new Date(Date.now() - 10 * 60000)
+
+      await GameService.syncGame()
+
+      expect(state.recruits[0].hp).toBe(recruit.max_hp - 5)
     })
 
     test('does not regenerate a recruit currently on a mission', async () => {
@@ -1968,7 +1980,7 @@ describe('GameService', () => {
       const recruit = state.recruits[0]
       recruit.hp = recruit.max_hp - 5
       recruit.status = 'in_mission'
-      recruit.last_hp_regen_at = new Date(Date.now() - 10 * 60000)
+      recruit.last_hospital_heal_at = new Date(Date.now() - 10 * 60000)
 
       await GameService.syncGame()
 
@@ -1980,65 +1992,27 @@ describe('GameService', () => {
       const recruit = state.recruits[0]
       recruit.hp = 0
       recruit.status = 'dead'
-      recruit.last_hp_regen_at = new Date(Date.now() - 10 * 60000)
+      recruit.last_hospital_heal_at = new Date(Date.now() - 10 * 60000)
 
       await GameService.syncGame()
 
       expect(state.recruits[0].hp).toBe(0)
     })
 
-    test('advances last_hp_regen_at by whole ticks, keeping the fractional remainder for next time', async () => {
+    test('advances last_hospital_heal_at by whole ticks, keeping the fractional remainder for next time', async () => {
       await GameService.initGame()
       const recruit = state.recruits[0]
       recruit.hp = recruit.max_hp - 5
-      recruit.status = 'available'
+      recruit.status = 'hospitalized'
       const startedAt = new Date(Date.now() - 3.5 * 60000)
-      recruit.last_hp_regen_at = startedAt
+      recruit.last_hospital_heal_at = startedAt
 
       await GameService.syncGame()
 
-      const expectedNewRegenAt = new Date(startedAt.getTime() + 3 * 60000)
-      expect(new Date(state.recruits[0].last_hp_regen_at).getTime()).toBe(
-        expectedNewRegenAt.getTime(),
+      const expectedNewHealAt = new Date(startedAt.getTime() + 3 * 60000)
+      expect(new Date(state.recruits[0].last_hospital_heal_at).getTime()).toBe(
+        expectedNewHealAt.getTime(),
       )
-    })
-
-    test('resets the regen clock to NOW() when a recruit returns from a mission, instead of crediting the whole mission duration', async () => {
-      await GameService.initGame()
-      seedTemplate(state, {
-        id: 201,
-        difficulty: 'ROUTINE',
-        events: [
-          buildEvent({
-            id: 'e1',
-            type: 'RECON',
-            attribute: 'perception',
-            dc: 10,
-            failureConsequence: 'HP_LOSS',
-          }),
-        ],
-      })
-      state.recruits[0].id = 1
-      state.recruits[0].last_hp_regen_at = new Date(Date.now() - 60 * 60000) // stale, from long before the mission
-      ShipService.getShip.mockResolvedValue({
-        id: 1,
-        player_id: 1,
-        crew: [1],
-        status: 'docked',
-        deleted_at: null,
-      })
-      await GameService.startMission(201, 1)
-      rollAction.mockReturnValue({ d20: 20, bonus: 0, diceNotation: '—', total: 20 })
-      state.missionInstances[0].started_at = new Date(Date.now() - 60 * 60 * 1000) // well past the mission's duration
-
-      await GameService.syncGame()
-
-      expect(state.recruits[0].status).toBe('available')
-      // If the stale last_hp_regen_at (60 min ago) had been honored, this
-      // recruit would have instantly regenerated far more than its missing
-      // HP the moment it returned. Assert the clock was reset instead: it's
-      // recent (within the last few seconds), not ~60 minutes old.
-      expect(Date.now() - new Date(state.recruits[0].last_hp_regen_at).getTime()).toBeLessThan(5000)
     })
   })
 

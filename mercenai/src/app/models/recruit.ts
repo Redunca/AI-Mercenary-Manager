@@ -1,4 +1,4 @@
-export type RecruitStatus = 'available' | 'in_mission' | 'dead';
+export type RecruitStatus = 'available' | 'in_mission' | 'returning' | 'hospitalized' | 'dead';
 
 export type AttributeKey =
   | 'agility'
@@ -38,6 +38,7 @@ export interface Recruit {
   attributes: RecruitAttributes;
   hp: number;
   maxHp: number;
+  originalMaxHp: number;
   status: RecruitStatus;
   perks?: { name: string; description: string }[];
   flaws?: { name: string; description: string }[];

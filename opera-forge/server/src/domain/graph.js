@@ -79,6 +79,7 @@ const ACTION_TYPES = [
   'hire_recruit',
   'fire_recruit',
   'assign_crew_to_ship',
+  'assign_recruit_to_hospital',
   'complete_quest',
   'purchase_item',
   'purchase_quest_item',
@@ -164,7 +165,7 @@ function validateActionMatch(p, where) {
     // recruitId/shipId/templateId as "some recognizable specific-target key",
     // not a replacement for them (e.g. a hire_recruit gated on a specific
     // *unseeded* recruit still uses recruitId).
-    const hasSpecificKey = ['recruitId', 'shipId', 'templateId', 'seedId'].some(
+    const hasSpecificKey = ['recruitId', 'shipId', 'templateId', 'seedId', 'itemType'].some(
       (key) => key in p.match,
     )
     if (!hasSpecificKey) {
@@ -334,6 +335,9 @@ function validateMissionParams(mission, where) {
     if (!Array.isArray(mission.tags) || !mission.tags.every(isNonEmptyString)) {
       throw new Error(`${where}: mission tags must be an array of non-empty strings`)
     }
+  }
+  if (mission.missionType !== undefined && !isNonEmptyString(mission.missionType)) {
+    throw new Error(`${where}: mission missionType must be a non-empty string when present`)
   }
 }
 

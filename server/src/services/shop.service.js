@@ -4,7 +4,7 @@ const ConsumableService = require('./consumable.service')
 const EquipmentService = require('./equipment.service')
 const OperaService = require('./opera.service')
 const { ATTRIBUTE_KEYS } = require('../domain/recruit')
-const { sampleWithCoverage, pickOne } = require('../utils/random')
+const { sampleWithCoverage } = require('../utils/random')
 const { isRefreshDue, currentIntervalBoundary } = require('../utils/refreshWindow')
 
 // The shop only has ever had one player (see V012's comment on
@@ -30,13 +30,21 @@ const SHOP_REFRESH_INTERVAL_MS = 15 * 60 * 1000
  * uniform-random from the rest of the pool - to fill out the rotation.
  * Capped at the pool size so small pools (e.g. in tests) don't blow up.
  *
+ * The guaranteed ship is always the cheapest one in the pool, not a random
+ * pick: a player who owns zero ships (starting out, or after losing their
+ * last one) must always be able to afford *some* way back into the game --
+ * a uniform-random guarantee could still land on a ship priced above what a
+ * new player's starting wallet can cover. Pricier ships still show up on
+ * their own as random filler below.
+ *
  * Pure function of the pool passed in; exported for direct unit testing.
  */
 function drawShopRotation(masterPool, rotationSize = SHOP_ROTATION_SIZE) {
   if (!masterPool || masterPool.length === 0) return []
 
   const ships = masterPool.filter((item) => item.type === 'ship')
-  const guaranteedShip = ships.length > 0 ? pickOne(ships) : null
+  const guaranteedShip =
+    ships.length > 0 ? ships.reduce((cheapest, s) => (s.price < cheapest.price ? s : cheapest)) : null
 
   const guaranteedQuestItems = masterPool.filter(
     (item) => item.is_quest_item && (!guaranteedShip || item.id !== guaranteedShip.id),

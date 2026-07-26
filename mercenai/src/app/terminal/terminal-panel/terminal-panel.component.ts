@@ -33,6 +33,7 @@ import { SelfComponent } from '../../game/self/self.component';
 import { OperaListComponent } from '../../game/opera-list/opera-list.component';
 import { OperaDetailComponent } from '../../game/opera-detail/opera-detail.component';
 import { ItemsComponent } from '../../game/items/items.component';
+import { HospitalComponent } from '../../game/hospital/hospital.component';
 
 @Component({
   selector: 'app-terminal-panel',
@@ -58,6 +59,7 @@ import { ItemsComponent } from '../../game/items/items.component';
     OperaListComponent,
     OperaDetailComponent,
     ItemsComponent,
+    HospitalComponent,
   ],
   templateUrl: './terminal-panel.component.html',
   styleUrl: './terminal-panel.component.scss',
@@ -194,6 +196,8 @@ export class TerminalPanelComponent implements OnInit, AfterViewChecked, AfterVi
         return OperaDetailComponent;
       case PanelModule.Items:
         return ItemsComponent;
+      case PanelModule.Hospital:
+        return HospitalComponent;
       default:
         return DashboardComponent;
     }

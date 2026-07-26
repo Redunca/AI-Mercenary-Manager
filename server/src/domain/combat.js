@@ -171,11 +171,13 @@ function runAutoBattle({ crew, enemy, rollAction, healCharges = 0, pickTarget })
   const enemyDefeated = enemyHp <= 0
   const crewDefeated = !enemyDefeated && (activeCrew().length === 0 || stalemate)
 
-  // Crew members knocked out but still alive patch up to their (possibly
-  // reduced) max HP once the fight is over, per the "healing after combat" rule.
+  // Crew members knocked out but still alive are no longer patched up to
+  // full HP once the fight is over -- they come home hurt (possibly at 0 HP)
+  // and only recover once admitted to the hospital (see hospital.service.js).
+  // 'downed' itself must not leak out as a persisted status, so it still
+  // reverts to 'active' here.
   for (const c of state) {
     if (c.status === 'downed') {
-      c.hp = c.maxHp
       c.status = 'active'
     }
   }

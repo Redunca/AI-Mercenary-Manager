@@ -1,0 +1,18 @@
+<div>
+  TASK: [<span class="task-title">Hospital</span>] ******************************************
+</div>
+<div>ok ==> {{ '{' }}</div>
+<div class="indent-one">"slots" ({{ hospitalizedRecruits.length }}/{{ slots }}) : [</div>
+<ng-container *ngFor="let r of hospitalizedRecruits">
+  <div class="indent-two patient">
+    [{{ r.id }}] {{ r.name }} — {{ r.hp }}/{{ r.maxHp }} hp
+  </div>
+</ng-container>
+<div *ngIf="hospitalizedRecruits.length === 0" class="indent-two muted">— no one admitted —</div>
+<div class="indent-one">],</div>
+<div class="indent-one">"healIntervalMs" : {{ healIntervalMs }}</div>
+<div>{{ '}' }}</div>
+<div class="hint">
+  [ hospital admit &lt;recruitId&gt; ] [ hospital discharge &lt;recruitId&gt; ] — admitting pulls a
+  recruit off their ship; they're auto-discharged once fully healed
+</div>

@@ -6,6 +6,7 @@ import { CandidateService } from './candidate.service';
 import { ShipService } from './ship.service';
 import { ShopService } from './shop.service';
 import { SelfService } from './self.service';
+import { HospitalService } from './hospital.service';
 import { GameSyncService } from './game-sync.service';
 import { GameService } from './game.service';
 import { GameApiService } from './game-api.service';
@@ -25,6 +26,7 @@ export class CommandService {
     this.registerGlobalCommands('shop', this.handleShop.bind(this));
     this.registerGlobalCommands('wallet', this.handleWallet.bind(this));
     this.registerGlobalCommands('self', this.handleSelf.bind(this));
+    this.registerGlobalCommands('hospital', this.handleHospital.bind(this));
     this.registerGlobalCommands('opera', this.handleOpera.bind(this));
     this.registerGlobalCommands('items', this.handleItems.bind(this));
     this.registerGlobalCommands('dev', this.handleDev.bind(this));
@@ -36,6 +38,7 @@ export class CommandService {
   shipService = inject(ShipService);
   shopService = inject(ShopService);
   selfService = inject(SelfService);
+  hospitalService = inject(HospitalService);
   operaService = inject(OperaService);
   private gameSync = inject(GameSyncService);
   private game = inject(GameService);
@@ -444,6 +447,41 @@ export class CommandService {
     }
 
     console.warn('Usage: self | self buy <id>');
+  }
+
+  private handleHospital(action?: string, ...args: string[]) {
+    if (!action) {
+      this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.Hospital);
+      return;
+    }
+
+    if (action === 'admit' && args[0]) {
+      void this.hospitalService.admitRecruit(Number(args[0])).then((result) => {
+        if (result?.error) {
+          console.warn('Admit failed:', result.error);
+          return;
+        }
+        void this.gameSync.sync().then(() => {
+          this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.Hospital);
+        });
+      });
+      return;
+    }
+
+    if (action === 'discharge' && args[0]) {
+      void this.hospitalService.dischargeRecruit(Number(args[0])).then((result) => {
+        if (result?.error) {
+          console.warn('Discharge failed:', result.error);
+          return;
+        }
+        void this.gameSync.sync().then(() => {
+          this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.Hospital);
+        });
+      });
+      return;
+    }
+
+    console.warn('Usage: hospital | hospital admit <recruitId> | hospital discharge <recruitId>');
   }
 
   private handleOpera(action: string, ...args: string[]) {

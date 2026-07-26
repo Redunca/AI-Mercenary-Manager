@@ -148,7 +148,7 @@ describe('combat domain — runAutoBattle', () => {
     expect(result.enemyDefeated).toBe(false)
     expect(result.crewDefeated).toBe(true)
     expect(result.crewResults[0].maxHp).toBe(2) // 3 -> 2
-    expect(result.crewResults[0].hp).toBe(2) // patched back up to the new max after the fight
+    expect(result.crewResults[0].hp).toBe(0) // no longer patched up -- stays at 0, only the hospital heals this now
     expect(result.crewResults[0].status).toBe('active') // downed, but not dead: original max HP was 3, not halved from a much bigger number
   })
 
@@ -175,13 +175,13 @@ describe('combat domain — runAutoBattle', () => {
     // the crew (miss on every roll here) can't fight back, so with a single
     // HEAL charge: round 1 the KO is intercepted (revived to full), round 2
     // it isn't (charge spent) and the recruit is properly downed instead —
-    // permanently losing 1 max HP, then patched back up to that new max.
+    // permanently losing 1 max HP, left at 0 HP for the hospital to heal.
     const result = runAutoBattle({ crew, enemy, rollAction, healCharges: 1 })
 
     expect(result.healsUsed).toBe(1)
     const finalRecruit = result.crewResults[0]
     expect(finalRecruit.maxHp).toBe(25)
-    expect(finalRecruit.hp).toBe(25)
+    expect(finalRecruit.hp).toBe(0)
     expect(finalRecruit.status).toBe('active')
     expect(finalRecruit.revived).toBe(1)
   })

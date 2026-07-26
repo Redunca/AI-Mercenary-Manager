@@ -19,9 +19,9 @@ describe('Shop Service', () => {
   })
 
   describe('drawShopRotation', () => {
-    const ship1 = { id: 1, type: 'ship', name: 'Corsair' }
-    const ship2 = { id: 2, type: 'ship', name: 'Frigate' }
-    const ship3 = { id: 3, type: 'ship', name: 'Cruiser' }
+    const ship1 = { id: 1, type: 'ship', name: 'Corsair', price: 5000 }
+    const ship2 = { id: 2, type: 'ship', name: 'Frigate', price: 12000 }
+    const ship3 = { id: 3, type: 'ship', name: 'Cruiser', price: 25000 }
     const consumables = Array.from({ length: 13 }, (_, i) => ({
       id: 10 + i,
       type: 'consumable',
@@ -43,6 +43,18 @@ describe('Shop Service', () => {
         const rotation = shop.drawShopRotation(fullPool)
         const shipCount = rotation.filter((item) => item.type === 'ship').length
         expect(shipCount).toBeGreaterThanOrEqual(1)
+      }
+    })
+
+    test('the guaranteed ship is always the cheapest one, regardless of seed', () => {
+      // A player who owns zero ships must always be able to afford *some*
+      // way back in -- guaranteeing a random ship (rather than the cheapest)
+      // could land on one priced above what a fresh wallet can cover.
+      for (let seed = 1; seed < 50; seed++) {
+        setSeed(seed)
+        const rotation = shop.drawShopRotation(fullPool)
+        const guaranteedShip = rotation.find((item) => item.id === ship1.id)
+        expect(guaranteedShip).toBeDefined() // ship1 (Corsair, cheapest) is always present
       }
     })
 

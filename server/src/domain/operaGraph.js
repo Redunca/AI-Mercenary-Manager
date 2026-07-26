@@ -44,6 +44,7 @@ const ACTION_TYPES = [
   'hire_recruit',
   'fire_recruit',
   'assign_crew_to_ship',
+  'assign_recruit_to_hospital',
   'complete_quest',
   'purchase_item',
   'purchase_quest_item',
@@ -120,7 +121,7 @@ function validateActionMatch(p, where) {
     return
   }
   if (p.match.scope !== 'any' && !('itemName' in p.match)) {
-    const hasSpecificKey = ['recruitId', 'shipId', 'templateId', 'seedId'].some(
+    const hasSpecificKey = ['recruitId', 'shipId', 'templateId', 'seedId', 'itemType'].some(
       (key) => key in p.match,
     )
     if (!hasSpecificKey) {
@@ -200,6 +201,15 @@ function validateMissionParams(mission, where) {
     if (!Array.isArray(mission.tags) || !mission.tags.every(isNonEmptyString)) {
       throw new Error(`${where}: mission tags must be an array of non-empty strings`)
     }
+  }
+  // Restricts generateMission()'s procedural event pool to a specific
+  // mission type (see missionGenerator.js's options.missionType) instead of
+  // picking one at random. Lets a mission node guarantee its event content
+  // rather than just its board presence -- e.g. "EXTRACTION_OP" always rolls
+  // at least one COMBAT event, since 2 of its 3 archetypes are COMBAT-typed
+  // and sampleWithCoverage always covers the full pool before repeating.
+  if (mission.missionType !== undefined && !isNonEmptyString(mission.missionType)) {
+    throw new Error(`${where}: mission missionType must be a non-empty string when present`)
   }
 }
 

@@ -13,6 +13,8 @@ export interface PlayerSnapshot {
   missionRefreshIntervalMs: number;
   shopRefreshIntervalMs: number;
   candidateRefreshIntervalMs: number;
+  hospitalSlots: number;
+  hospitalHealIntervalMs: number;
 }
 
 export interface GameSnapshot {

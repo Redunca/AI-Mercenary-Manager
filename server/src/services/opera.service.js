@@ -246,17 +246,20 @@ async function applyEffect(client, playerId, state, effect) {
 
 // Generates a mission via the same procedural pipeline the real mission
 // board uses. A blocking 'mission' node's authored {title, description,
-// difficulty, tags} (see validateMissionParams) overwrites the procedural
-// name/description; a 'seed' node's mission target only ever validates a
-// templateId (see validateSeedParams -- it has no title/description field
-// at all), so its own optional `note` is used as flavor if present,
-// otherwise the procedural name/description stand as-is. Tagged with
-// opera_instance_id so generateMissionBatch()'s unstarted-template sweep
-// (game.service.js) never discards it mid-opera.
+// difficulty, tags, missionType} (see validateMissionParams) overwrites the
+// procedural name/description and, if missionType is set, restricts which
+// mission type's event pool gets sampled (e.g. "EXTRACTION_OP" to guarantee
+// a COMBAT event -- see validateMissionParams' comment); a 'seed' node's
+// mission target only ever validates a templateId (see validateSeedParams --
+// it has no title/description field at all), so its own optional `note` is
+// used as flavor if present, otherwise the procedural name/description stand
+// as-is. Tagged with opera_instance_id so generateMissionBatch()'s
+// unstarted-template sweep (game.service.js) never discards it mid-opera.
 async function insertOperaMission(client, playerId, instanceId, missionSpec, tags) {
   const generated = generateMission(loadData(), {
     difficulty: missionSpec.difficulty,
     planetTags: missionSpec.tags ?? [],
+    missionType: missionSpec.missionType,
   })
   const name = missionSpec.title ? OperaGraph.render(missionSpec.title, tags).text : generated.name
   const description = missionSpec.description

@@ -137,7 +137,18 @@ async function createDockingStation(client, playerId, capacity = 5) {
   return result.rows[0]
 }
 
+// A hospitalized recruit can't be crewed -- they were pulled off their ship
+// specifically to recover (see hospital.service.js's admitRecruit) and stay
+// off until discharged.
 async function appendCrewMember(client, playerId, shipId, recruitId) {
+  const recruit = (
+    await client.query('SELECT status FROM recruits WHERE player_id = $1 AND id = $2', [
+      playerId,
+      recruitId,
+    ])
+  ).rows[0]
+  if (recruit?.status === 'hospitalized') return undefined
+
   const result = await client.query(
     `UPDATE ships
      SET crew = array_append(crew, $3)

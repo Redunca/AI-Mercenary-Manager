@@ -12,6 +12,7 @@ const consumableRoutes = require('./src/routes/consumable.routes')
 const equipmentRoutes = require('./src/routes/equipment.routes')
 const selfRoutes = require('./src/routes/self.routes')
 const operaRoutes = require('./src/routes/opera.routes')
+const hospitalRoutes = require('./src/routes/hospital.routes')
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -30,6 +31,7 @@ app.use('/api/consumables', consumableRoutes)
 app.use('/api/equipment', equipmentRoutes)
 app.use('/api/self', selfRoutes)
 app.use('/api/opera', operaRoutes)
+app.use('/api/hospital', hospitalRoutes)
 
 app.use((err, _req, res, _next) => {
   console.error(err)

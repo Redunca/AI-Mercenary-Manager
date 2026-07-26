@@ -12,4 +12,6 @@ export interface Player {
   missionRefreshIntervalMs: number;
   shopRefreshIntervalMs: number;
   candidateRefreshIntervalMs: number;
+  hospitalSlots: number;
+  hospitalHealIntervalMs: number;
 }
