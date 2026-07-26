@@ -23,12 +23,20 @@ const SHOP_ROTATION_SIZE = 5
 const SHOP_REFRESH_INTERVAL_MS = 15 * 60 * 1000
 
 /**
- * Draws the next live rotation from the master catalog: exactly one ship
- * (uniform-random among ships in the pool, if any exist), every item
- * flagged is_quest_item (so an Opera step targeting one by name is never
- * stuck waiting on rotation luck), plus enough additional items -
- * uniform-random from the rest of the pool - to fill out the rotation.
- * Capped at the pool size so small pools (e.g. in tests) don't blow up.
+ * Draws the next live "random" rotation from the master catalog: exactly
+ * one ship (the cheapest, guaranteed -- see below) plus enough additional
+ * items, uniform-random from the rest of the pool, to fill out the
+ * rotation. Capped at the pool size so small pools (e.g. in tests) don't
+ * blow up.
+ *
+ * is_quest_item rows are excluded from this pool entirely -- they're a
+ * separate bucket (see reconcileQuestRotation below) scoped to whatever the
+ * player's in-progress operas actually need right now, added on top of
+ * rather than competing with rotationSize. Guaranteeing every is_quest_item
+ * row that exists anywhere in the catalog used to live here, unconditional
+ * on any player actually needing it; with the real catalog that alone
+ * already exceeds the default rotationSize (5), which left zero room for
+ * any random filler at all.
  *
  * The guaranteed ship is always the cheapest one in the pool, not a random
  * pick: a player who owns zero ships (starting out, or after losing their
@@ -42,25 +50,81 @@ const SHOP_REFRESH_INTERVAL_MS = 15 * 60 * 1000
 function drawShopRotation(masterPool, rotationSize = SHOP_ROTATION_SIZE) {
   if (!masterPool || masterPool.length === 0) return []
 
-  const ships = masterPool.filter((item) => item.type === 'ship')
+  const pool = masterPool.filter((item) => !item.is_quest_item)
+
+  const ships = pool.filter((item) => item.type === 'ship')
   const guaranteedShip =
     ships.length > 0 ? ships.reduce((cheapest, s) => (s.price < cheapest.price ? s : cheapest)) : null
 
-  const guaranteedQuestItems = masterPool.filter(
-    (item) => item.is_quest_item && (!guaranteedShip || item.id !== guaranteedShip.id),
-  )
-
-  const guaranteed = guaranteedShip
-    ? [guaranteedShip, ...guaranteedQuestItems]
-    : guaranteedQuestItems
+  const guaranteed = guaranteedShip ? [guaranteedShip] : []
   const guaranteedIds = new Set(guaranteed.map((item) => item.id))
 
   const remainingSlots = rotationSize - guaranteed.length
-  const rest = masterPool.filter((item) => !guaranteedIds.has(item.id))
+  const rest = pool.filter((item) => !guaranteedIds.has(item.id))
 
   const fillers = sampleWithCoverage(rest, Math.min(Math.max(remainingSlots, 0), rest.length))
 
   return [...guaranteed, ...fillers]
+}
+
+// The quest-item counterpart to drawShopRotation: items/ships flagged
+// is_quest_item are shown only while some in-progress opera actually needs
+// them right now (OperaService.getPendingPurchaseNeeds), added to the
+// player's shop_rotation on top of the random draw above rather than
+// competing with it for rotationSize slots. Reconciled on every
+// ensureShopRotation() call (not gated by the wall-clock refresh timer that
+// governs the random bucket) so a newly-reachable step's item shows up
+// immediately rather than waiting up to shop_refresh_interval_ms.
+//
+// Wrapped defensively: an opera-engine hiccup must never break an ordinary
+// shop read, matching the same isolation principle already applied to
+// recordOperaAction/ensureOperasForPlayer/buildGameState's own opera calls.
+async function reconcileQuestRotation(client, playerId) {
+  let neededNames
+  try {
+    neededNames = await OperaService.getPendingPurchaseNeeds(client, playerId)
+  } catch (err) {
+    console.error('[shop] getPendingPurchaseNeeds failed', err)
+    neededNames = new Set()
+  }
+
+  const currentQuestRows = (
+    await client.query(
+      `SELECT si.id, si.name FROM shop_items si
+       JOIN shop_rotation sr ON sr.shop_item_id = si.id
+       WHERE sr.player_id = $1 AND si.is_quest_item = true`,
+      [playerId],
+    )
+  ).rows
+
+  const noLongerNeeded = currentQuestRows.filter((row) => !neededNames.has(row.name))
+  for (const row of noLongerNeeded) {
+    await client.query('DELETE FROM shop_rotation WHERE player_id = $1 AND shop_item_id = $2', [
+      playerId,
+      row.id,
+    ])
+  }
+
+  if (neededNames.size === 0) return
+
+  const currentNames = new Set(currentQuestRows.map((row) => row.name))
+  const stillNeeded = [...neededNames].filter((name) => !currentNames.has(name))
+  if (stillNeeded.length === 0) return
+
+  const toAdd = (
+    await client.query('SELECT * FROM shop_items WHERE is_quest_item = true AND name = ANY($1)', [
+      stillNeeded,
+    ])
+  ).rows
+
+  for (const item of toAdd) {
+    await client.query(
+      `INSERT INTO shop_rotation (player_id, shop_item_id, remaining_stock)
+       VALUES ($1, $2, $3)
+       ON CONFLICT (player_id, shop_item_id) DO NOTHING`,
+      [playerId, item.id, item.max_stock],
+    )
+  }
 }
 
 // Discards this player's current 5 live listings and draws a fresh set from
@@ -99,7 +163,13 @@ async function refreshShopRotation(client, playerId, now) {
 // Computed lazily, at state read/purchase time: no background scheduler. If
 // the wall-clock boundary (at the player's current shop_refresh_interval_ms)
 // has moved on since the last recorded refresh (or nothing has been drawn
-// yet), draw a new rotation.
+// yet), draw a new rotation. The quest-item bucket is reconciled
+// unconditionally afterward, every call, regardless of whether a refresh
+// just happened -- refreshShopRotation() wipes and redraws shop_rotation
+// from a pool that (as of drawShopRotation's is_quest_item filter) never
+// contains quest items itself, so this is also what restores them
+// immediately after a wall-clock refresh rather than leaving them missing
+// until the next unrelated read.
 async function ensureShopRotation(client, playerId, now = new Date()) {
   const result = await client.query(
     'SELECT shop_refresh_at, shop_refresh_interval_ms FROM players WHERE id = $1',
@@ -109,6 +179,7 @@ async function ensureShopRotation(client, playerId, now = new Date()) {
   if (isRefreshDue(row?.shop_refresh_at, now, row?.shop_refresh_interval_ms)) {
     await refreshShopRotation(client, playerId, now)
   }
+  await reconcileQuestRotation(client, playerId)
 }
 
 async function getShopItems(client, playerId = DEFAULT_PLAYER_ID, now = new Date()) {
@@ -529,6 +600,7 @@ module.exports = {
   buyArmor,
   seedShopItems,
   drawShopRotation,
+  reconcileQuestRotation,
   ensureShopRotation,
   refreshShopRotation,
   SHOP_ROTATION_SIZE,

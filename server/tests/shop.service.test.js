@@ -1,11 +1,13 @@
 const shop = require('../src/services/shop.service')
 const ShipService = require('../src/services/ship.service')
 const ConsumableService = require('../src/services/consumable.service')
+const { getOperaDefinition } = require('../src/operaLoader')
 const { setSeed, resetSeed } = require('../src/utils/random')
 
 jest.mock('../src/db/pool')
 jest.mock('../src/services/ship.service')
 jest.mock('../src/services/consumable.service')
+jest.mock('../src/operaLoader')
 
 const NOT_DUE = new Date('2026-01-01T10:05:00.000Z') // mid-window, so shop_refresh_at at :00 isn't due
 const SAME_WINDOW_REFRESH_AT = new Date('2026-01-01T10:00:00.000Z')
@@ -101,19 +103,136 @@ describe('Shop Service', () => {
       expect(rotation).toHaveLength(5)
       expect(rotation.every((item) => item.type === 'consumable')).toBe(true)
     })
+
+    test('excludes is_quest_item rows entirely -- they never compete with the random draw', () => {
+      // Regression coverage for the real bug: with the actual catalog (11
+      // is_quest_item rows against a rotationSize of 5), guaranteeing every
+      // one of them here left zero room for any random filler at all.
+      const questItems = Array.from({ length: 11 }, (_, i) => ({
+        id: 100 + i,
+        type: 'consumable',
+        name: `Quest Item ${i}`,
+        is_quest_item: true,
+      }))
+      setSeed(1)
+      for (let i = 0; i < 20; i++) {
+        const rotation = shop.drawShopRotation([...fullPool, ...questItems])
+        expect(rotation).toHaveLength(5)
+        expect(rotation.some((item) => item.is_quest_item)).toBe(false)
+      }
+    })
+  })
+
+  describe('reconcileQuestRotation', () => {
+    const questItem = { id: 99, name: 'Encrypted Data Chip', is_quest_item: true, max_stock: 5 }
+
+    // A minimal opera definition + in-progress instance whose current node's
+    // outgoing link is gated on buying `itemName` -- exercises
+    // OperaService.getPendingPurchaseNeeds' real logic end-to-end (only
+    // getOperaDefinition's disk read is mocked, via jest.mock('../src/operaLoader')).
+    function instanceNeeding(itemName) {
+      getOperaDefinition.mockReturnValue({
+        id: 'test-opera',
+        nodes: [
+          { id: 'buy-it', type: 'story', text: 'Buy it.' },
+          { id: 'next', type: 'end', outcome: 'success', text: 'Done.' },
+        ],
+        links: [
+          {
+            id: 'buy-it--next',
+            from: 'buy-it',
+            to: 'next',
+            conditions: [
+              {
+                type: 'action_performed',
+                params: { actionType: 'purchase_quest_item', match: { itemName } },
+              },
+            ],
+          },
+        ],
+      })
+      return { id: 1, template_id: 'test-opera', state: { currentNodeId: 'buy-it' } }
+    }
+
+    test('inserts a needed quest item not yet in the rotation', async () => {
+      mockClient.query
+        .mockResolvedValueOnce({ rows: [instanceNeeding('Encrypted Data Chip')] }) // opera_instances
+        .mockResolvedValueOnce({ rows: [] }) // current quest rows in rotation (none yet)
+        .mockResolvedValueOnce({ rows: [questItem] }) // SELECT * FROM shop_items WHERE is_quest_item...
+        .mockResolvedValueOnce({ rows: [] }) // INSERT
+
+      await shop.reconcileQuestRotation(mockClient, 1)
+
+      expect(mockClient.query).toHaveBeenCalledWith(
+        expect.stringContaining('INSERT INTO shop_rotation'),
+        [1, 99, 5],
+      )
+    })
+
+    test('inserts with ON CONFLICT DO NOTHING, guarding a concurrent reconciliation race', async () => {
+      mockClient.query
+        .mockResolvedValueOnce({ rows: [instanceNeeding('Encrypted Data Chip')] })
+        .mockResolvedValueOnce({ rows: [] })
+        .mockResolvedValueOnce({ rows: [questItem] })
+        .mockResolvedValueOnce({ rows: [] })
+
+      await shop.reconcileQuestRotation(mockClient, 1)
+
+      expect(mockClient.query).toHaveBeenCalledWith(
+        expect.stringContaining('ON CONFLICT (player_id, shop_item_id) DO NOTHING'),
+        [1, 99, 5],
+      )
+    })
+
+    test('removes a quest rotation row that is no longer needed', async () => {
+      mockClient.query
+        .mockResolvedValueOnce({ rows: [] }) // no in-progress instances -> nothing needed
+        .mockResolvedValueOnce({ rows: [{ id: 99, name: 'Encrypted Data Chip' }] }) // still in rotation from a past need
+
+      await shop.reconcileQuestRotation(mockClient, 1)
+
+      expect(mockClient.query).toHaveBeenCalledWith(
+        'DELETE FROM shop_rotation WHERE player_id = $1 AND shop_item_id = $2',
+        [1, 99],
+      )
+    })
+
+    test('does nothing further once an item is already present and still needed', async () => {
+      mockClient.query
+        .mockResolvedValueOnce({ rows: [instanceNeeding('Encrypted Data Chip')] })
+        .mockResolvedValueOnce({ rows: [{ id: 99, name: 'Encrypted Data Chip' }] }) // already in rotation
+
+      await shop.reconcileQuestRotation(mockClient, 1)
+
+      expect(mockClient.query).toHaveBeenCalledTimes(2) // no delete, no re-select/re-insert
+    })
+
+    test('falls back to an empty need set if the opera engine call fails, without throwing', async () => {
+      mockClient.query
+        .mockRejectedValueOnce(new Error('boom')) // opera_instances lookup throws
+        .mockResolvedValueOnce({ rows: [] }) // current quest rows -- reconciliation still runs the delete-scan
+
+      await expect(shop.reconcileQuestRotation(mockClient, 1)).resolves.toBeUndefined()
+    })
   })
 
   describe('ensureShopRotation / refreshShopRotation', () => {
     test('does nothing if the refresh is not due yet', async () => {
-      mockClient.query.mockResolvedValueOnce({
-        rows: [
-          { shop_refresh_at: SAME_WINDOW_REFRESH_AT, shop_refresh_interval_ms: 15 * 60 * 1000 },
-        ],
-      })
+      mockClient.query
+        .mockResolvedValueOnce({
+          rows: [
+            { shop_refresh_at: SAME_WINDOW_REFRESH_AT, shop_refresh_interval_ms: 15 * 60 * 1000 },
+          ],
+        })
+        .mockResolvedValueOnce({ rows: [] }) // getPendingPurchaseNeeds' opera_instances lookup
+        .mockResolvedValueOnce({ rows: [] }) // reconcileQuestRotation's current-quest-rows lookup
 
       await shop.ensureShopRotation(mockClient, 1, NOT_DUE)
 
-      expect(mockClient.query).toHaveBeenCalledTimes(1) // only the shop_refresh_at/interval lookup
+      // shop_refresh_at/interval lookup, then reconcileQuestRotation's two
+      // reads -- no needed names and no existing quest rows, so nothing
+      // beyond that.
+      expect(mockClient.query).toHaveBeenCalledTimes(3)
     })
 
     test('draws a fresh rotation if nothing has ever been refreshed', async () => {
@@ -225,6 +344,8 @@ describe('Shop Service', () => {
             { shop_refresh_at: SAME_WINDOW_REFRESH_AT, shop_refresh_interval_ms: 15 * 60 * 1000 },
           ],
         }) // ensureShopRotation lookup (not due)
+        .mockResolvedValueOnce({ rows: [] }) // getPendingPurchaseNeeds' opera_instances lookup
+        .mockResolvedValueOnce({ rows: [] }) // reconcileQuestRotation's current-quest-rows lookup
         .mockResolvedValueOnce({ rows: [{ id: 1, name: 'Corsair' }] }) // join query
 
       const result = await shop.getShopItems(mockClient, 1, NOT_DUE)
@@ -245,6 +366,8 @@ describe('Shop Service', () => {
             { shop_refresh_at: SAME_WINDOW_REFRESH_AT, shop_refresh_interval_ms: 15 * 60 * 1000 },
           ],
         })
+        .mockResolvedValueOnce({ rows: [] }) // getPendingPurchaseNeeds' opera_instances lookup
+        .mockResolvedValueOnce({ rows: [] }) // reconcileQuestRotation's current-quest-rows lookup
         .mockResolvedValueOnce({ rows: [] })
 
       const result = await shop.getShopItem(mockClient, 999, 1, NOT_DUE)
@@ -259,6 +382,8 @@ describe('Shop Service', () => {
             { shop_refresh_at: SAME_WINDOW_REFRESH_AT, shop_refresh_interval_ms: 15 * 60 * 1000 },
           ],
         })
+        .mockResolvedValueOnce({ rows: [] }) // getPendingPurchaseNeeds' opera_instances lookup
+        .mockResolvedValueOnce({ rows: [] }) // reconcileQuestRotation's current-quest-rows lookup
         .mockResolvedValueOnce({ rows: [item] })
 
       const result = await shop.getShopItem(mockClient, 1, 1, NOT_DUE)

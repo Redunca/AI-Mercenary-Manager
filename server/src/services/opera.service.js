@@ -246,15 +246,19 @@ async function applyEffect(client, playerId, state, effect) {
 
 // Generates a mission via the same procedural pipeline the real mission
 // board uses. A blocking 'mission' node's authored {title, description,
-// difficulty, tags, missionType} (see validateMissionParams) overwrites the
-// procedural name/description and, if missionType is set, restricts which
-// mission type's event pool gets sampled (e.g. "EXTRACTION_OP" to guarantee
-// a COMBAT event -- see validateMissionParams' comment); a 'seed' node's
+// difficulty, tags, missionType, consumesItemName} (see
+// validateMissionParams) overwrites the procedural name/description and, if
+// missionType is set, restricts which mission type's event pool gets
+// sampled (e.g. "EXTRACTION_OP" to guarantee a COMBAT event -- see
+// validateMissionParams' comment); consumesItemName is stored as-is and
+// spent from the mission's ship inventory once it ends (see
+// completeMission()/stopMission() in game.service.js). A 'seed' node's
 // mission target only ever validates a templateId (see validateSeedParams --
-// it has no title/description field at all), so its own optional `note` is
-// used as flavor if present, otherwise the procedural name/description stand
-// as-is. Tagged with opera_instance_id so generateMissionBatch()'s
-// unstarted-template sweep (game.service.js) never discards it mid-opera.
+// it has no title/description/consumesItemName field at all), so its own
+// optional `note` is used as flavor if present, otherwise the procedural
+// name/description stand as-is. Tagged with opera_instance_id so
+// generateMissionBatch()'s unstarted-template sweep (game.service.js) never
+// discards it mid-opera.
 async function insertOperaMission(client, playerId, instanceId, missionSpec, tags) {
   const generated = generateMission(loadData(), {
     difficulty: missionSpec.difficulty,
@@ -272,8 +276,8 @@ async function insertOperaMission(client, playerId, instanceId, missionSpec, tag
   const templateId = player.next_template_id
 
   await client.query(
-    `INSERT INTO mission_templates (id, name, description, difficulty, events, planet, opera_instance_id)
-     VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+    `INSERT INTO mission_templates (id, name, description, difficulty, events, planet, opera_instance_id, consumes_item_name)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
     [
       templateId,
       name,
@@ -282,6 +286,7 @@ async function insertOperaMission(client, playerId, instanceId, missionSpec, tag
       JSON.stringify(generated.events),
       JSON.stringify(generated.planet),
       instanceId,
+      missionSpec.consumesItemName ?? null,
     ],
   )
   await client.query('UPDATE players SET next_template_id = next_template_id + 1 WHERE id = $1', [
@@ -722,6 +727,42 @@ async function getOperaState(client, playerId) {
   )
 }
 
+// Item names the player needs to buy right now to keep any in-progress
+// opera moving -- used by shop.service.js to scope its quest-item bucket to
+// actual current need instead of guaranteeing every quest item that exists
+// anywhere in the catalog. state.currentNodeId always points at the first
+// node whose outgoing link isn't yet satisfiable (advanceInstance() only
+// ever stops there), so a single-hop look at that node's own outgoing links
+// is enough -- no need to walk further ahead.
+async function getPendingPurchaseNeeds(client, playerId) {
+  const instances = await getInProgressInstances(client, playerId)
+  const names = new Set()
+
+  for (const instance of instances) {
+    const def = getOperaDefinition(instance.template_id)
+    if (!def) continue
+
+    const state = instance.state ?? {}
+    const { linksByFrom } = indexLinks(def)
+    const links = linksByFrom.get(state.currentNodeId) ?? []
+
+    for (const link of links) {
+      for (const condition of link.conditions ?? []) {
+        if (condition.type !== 'action_performed') continue
+        const { actionType, match } = condition.params ?? {}
+        if (
+          (actionType === 'purchase_item' || actionType === 'purchase_quest_item') &&
+          match?.itemName
+        ) {
+          names.add(match.itemName)
+        }
+      }
+    }
+  }
+
+  return names
+}
+
 async function getOperaLogs(client, playerId) {
   const result = await client.query(
     `SELECT tag, message, opera_id AS "operaId" FROM log_entries
@@ -752,5 +793,6 @@ module.exports = {
   resolveChoice,
   getOperaState,
   getOperaLogs,
+  getPendingPurchaseNeeds,
   resolveTags,
 }

@@ -256,6 +256,26 @@ function createFakeClient(catalog, wallet = 100000) {
       return { rows: [] }
     }
 
+    // reconcileQuestRotation's inputs (shop.service.js): no opera state is
+    // modeled in this file's fixtures, so nothing is ever "needed" -- these
+    // two just need to resolve, not do anything interesting.
+    if (
+      s === "SELECT * FROM opera_instances WHERE player_id = $1 AND status = 'in_progress'"
+    ) {
+      return { rows: [] }
+    }
+    if (
+      s ===
+      'SELECT si.id, si.name FROM shop_items si JOIN shop_rotation sr ON sr.shop_item_id = si.id WHERE sr.player_id = $1 AND si.is_quest_item = true'
+    ) {
+      const rows = state.shopRotation
+        .filter((r) => r.player_id === params[0])
+        .map((r) => state.shopItems.find((i) => i.id === r.shop_item_id))
+        .filter((item) => item?.is_quest_item)
+        .map((item) => ({ id: item.id, name: item.name }))
+      return { rows }
+    }
+
     throw new Error(`Query not handled by the fake test client: ${s}`)
   })
 

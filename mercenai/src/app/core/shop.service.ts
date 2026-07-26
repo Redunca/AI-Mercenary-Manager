@@ -20,6 +20,10 @@ export interface ShopItem {
   // intentionally not modeled here — remaining_stock is the source of truth.
   remaining_stock: number;
   max_stock: number;
+  // Shown only while some in-progress opera currently needs it -- see
+  // reconcileQuestRotation() server-side. Never competes with the random
+  // rotation's slot budget.
+  is_quest_item: boolean;
 }
 
 // Items rotate out entirely (or restock) on a 15-minute wall-clock server

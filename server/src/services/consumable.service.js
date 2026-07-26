@@ -168,6 +168,17 @@ async function countShipInventoryEffect(client, shipId, effect) {
   return result.rows[0]?.total ?? 0
 }
 
+// Shared by consumeFromShipInventory/consumeNamedFromShipInventory: spend
+// one unit of an already-found consumable row (delete it outright at
+// quantity 1, otherwise decrement).
+async function spendConsumableRow(client, row) {
+  if (row.quantity <= 1) {
+    await client.query('DELETE FROM consumables WHERE id = $1', [row.id])
+  } else {
+    await client.query('UPDATE consumables SET quantity = quantity - 1 WHERE id = $1', [row.id])
+  }
+}
+
 // Looks up and spends one matching consumable from a ship's own inventory.
 // Used for effects that trigger automatically during a mission (attribute
 // advantage, auto-heal, auto-repair) rather than being explicitly "used" by
@@ -182,11 +193,27 @@ async function consumeFromShipInventory(client, shipId, effect, matchEffectData)
     : result.rows[0]
   if (!match) return null
 
-  if (match.quantity <= 1) {
-    await client.query('DELETE FROM consumables WHERE id = $1', [match.id])
-  } else {
-    await client.query('UPDATE consumables SET quantity = quantity - 1 WHERE id = $1', [match.id])
-  }
+  await spendConsumableRow(client, match)
+  return match
+}
+
+// Looks up and spends one matching consumable from a ship's inventory by
+// name rather than effect -- quest items all share effect='NONE', so name is
+// the only thing that distinguishes one from another. Used to spend a
+// mission's declared consumesItemName once it ends (see
+// completeMission()/stopMission() in game.service.js). Returns null (a
+// harmless no-op) if nothing matches, whether because the player never
+// loaded it or because the name belongs to an armor-type item that was
+// never in this table to begin with.
+async function consumeNamedFromShipInventory(client, shipId, name) {
+  const result = await client.query(
+    'SELECT * FROM consumables WHERE assigned_to_ship = $1 AND name = $2 ORDER BY id LIMIT 1',
+    [shipId, name],
+  )
+  const match = result.rows[0]
+  if (!match) return null
+
+  await spendConsumableRow(client, match)
   return match
 }
 
@@ -199,5 +226,6 @@ module.exports = {
   assignToShip,
   unassignFromShip,
   consumeFromShipInventory,
+  consumeNamedFromShipInventory,
   countShipInventoryEffect,
 }

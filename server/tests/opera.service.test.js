@@ -409,6 +409,143 @@ describe('resolveChoice', () => {
   })
 })
 
+describe('getPendingPurchaseNeeds', () => {
+  // Two links out of the same node -- a branch, not a single linear gate --
+  // so a test can assert both itemNames surface at once.
+  function purchaseGatedGraph() {
+    return {
+      id: 'shopping-quest',
+      title: 'Shopping Quest',
+      nodes: [
+        { id: 'start', type: 'start' },
+        { id: 'buy', type: 'story', text: 'Buy something.' },
+        { id: 'end', type: 'end', outcome: 'success', text: 'Done.' },
+      ],
+      links: [
+        { id: 'start--buy', from: 'start', to: 'buy', conditions: [] },
+        {
+          id: 'buy--end-a',
+          from: 'buy',
+          to: 'end',
+          conditions: [
+            {
+              type: 'action_performed',
+              params: { actionType: 'purchase_quest_item', match: { itemName: 'Data Chip' } },
+            },
+          ],
+        },
+        {
+          id: 'buy--end-b',
+          from: 'buy',
+          to: 'end',
+          conditions: [
+            {
+              type: 'action_performed',
+              params: { actionType: 'purchase_item', match: { itemName: 'Old Ship' } },
+            },
+          ],
+        },
+      ],
+    }
+  }
+
+  test('returns the itemName pending at an instance\'s current node', async () => {
+    getOperaDefinition.mockReturnValue(purchaseGatedGraph())
+    const client = createFakeClient({
+      instances: [
+        {
+          id: 10,
+          player_id: PLAYER_ID,
+          template_id: 'shopping-quest',
+          slot_index: 0,
+          status: 'in_progress',
+          state: { currentNodeId: 'buy' },
+        },
+      ],
+    })
+
+    const needs = await OperaService.getPendingPurchaseNeeds(client, PLAYER_ID)
+
+    expect(needs).toEqual(new Set(['Data Chip', 'Old Ship']))
+  })
+
+  test('collects needs across multiple in-progress instances', async () => {
+    getOperaDefinition.mockReturnValue(purchaseGatedGraph())
+    const client = createFakeClient({
+      instances: [
+        {
+          id: 10,
+          player_id: PLAYER_ID,
+          template_id: 'shopping-quest',
+          slot_index: 0,
+          status: 'in_progress',
+          state: { currentNodeId: 'buy' },
+        },
+        {
+          id: 11,
+          player_id: PLAYER_ID,
+          template_id: 'shopping-quest',
+          slot_index: 1,
+          status: 'in_progress',
+          state: { currentNodeId: 'buy' },
+        },
+      ],
+    })
+
+    const needs = await OperaService.getPendingPurchaseNeeds(client, PLAYER_ID)
+
+    expect(needs).toEqual(new Set(['Data Chip', 'Old Ship']))
+  })
+
+  test('ignores a node whose gate is not a purchase action', async () => {
+    getOperaDefinition.mockReturnValue(gatedGraph()) // gated on execute_command, not a purchase
+    const client = createFakeClient({
+      instances: [
+        {
+          id: 10,
+          player_id: PLAYER_ID,
+          template_id: 'side-quest',
+          slot_index: 0,
+          status: 'in_progress',
+          state: { currentNodeId: 'ask' },
+        },
+      ],
+    })
+
+    const needs = await OperaService.getPendingPurchaseNeeds(client, PLAYER_ID)
+
+    expect(needs).toEqual(new Set())
+  })
+
+  test('returns an empty set when there are no in-progress instances', async () => {
+    const client = createFakeClient({ instances: [] })
+
+    const needs = await OperaService.getPendingPurchaseNeeds(client, PLAYER_ID)
+
+    expect(needs).toEqual(new Set())
+  })
+
+  test('skips an instance whose template can no longer be loaded', async () => {
+    getOperaDefinition.mockReturnValue(null)
+    const client = createFakeClient({
+      instances: [
+        {
+          id: 10,
+          player_id: PLAYER_ID,
+          template_id: 'gone',
+          slot_index: 0,
+          status: 'in_progress',
+          state: { currentNodeId: 'buy' },
+        },
+      ],
+    })
+
+    const needs = await OperaService.getPendingPurchaseNeeds(client, PLAYER_ID)
+
+    expect(needs).toEqual(new Set())
+  })
+})
+
 describe('maintainOperaSlots', () => {
   test('does nothing until the tutorial instance is completed', async () => {
     getGenerationPoolDefinitions.mockReturnValue([instantGraph('template-a')])

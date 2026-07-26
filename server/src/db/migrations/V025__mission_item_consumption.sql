@@ -1,0 +1,13 @@
+-- A 'mission' opera node can declare it consumes a specific named item from
+-- its ship's inventory once the mission ends (success or failure) -- see
+-- completeMission()/stopMission() in game.service.js. Only ever set by
+-- insertOperaMission() (opera.service.js) for opera-seeded 'mission' nodes;
+-- regular procedurally rolled missions never populate this.
+--
+-- Restricted in practice to consumable-type quest items: the consumption
+-- lookup only ever queries the consumables table (assigned_to_ship), never
+-- equipment (assigned_to_recruit_id). An armor-type quest item's name here
+-- would simply never match anything and no-op harmlessly -- equipping-then-
+-- losing gear has different semantics than "used up an item on a mission",
+-- so this is a deliberate scope limit, not an oversight.
+ALTER TABLE mission_templates ADD COLUMN IF NOT EXISTS consumes_item_name TEXT;

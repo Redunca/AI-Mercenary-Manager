@@ -306,4 +306,67 @@ describe('Consumable Service', () => {
       expect(result.id).toBe(2)
     })
   })
+
+  describe('consumeNamedFromShipInventory', () => {
+    test('returns null when nothing matches', async () => {
+      mockClient.query.mockResolvedValueOnce({ rows: [] })
+
+      const result = await ConsumableService.consumeNamedFromShipInventory(
+        mockClient,
+        9,
+        'Encrypted Data Chip',
+      )
+
+      expect(result).toBeNull()
+    })
+
+    test('decrements quantity when more than one remains', async () => {
+      mockClient.query
+        .mockResolvedValueOnce({
+          rows: [{ id: 1, name: 'Encrypted Data Chip', quantity: 2 }],
+        })
+        .mockResolvedValueOnce({ rows: [] })
+
+      const result = await ConsumableService.consumeNamedFromShipInventory(
+        mockClient,
+        9,
+        'Encrypted Data Chip',
+      )
+
+      expect(mockClient.query).toHaveBeenLastCalledWith(
+        expect.stringContaining('SET quantity = quantity - 1'),
+        [1],
+      )
+      expect(result.id).toBe(1)
+    })
+
+    test('deletes the row once the last unit is consumed', async () => {
+      mockClient.query
+        .mockResolvedValueOnce({
+          rows: [{ id: 1, name: 'Encrypted Data Chip', quantity: 1 }],
+        })
+        .mockResolvedValueOnce({ rows: [] })
+
+      await ConsumableService.consumeNamedFromShipInventory(mockClient, 9, 'Encrypted Data Chip')
+
+      expect(mockClient.query).toHaveBeenLastCalledWith(
+        expect.stringContaining('DELETE FROM consumables'),
+        [1],
+      )
+    })
+
+    test('matches by name, not effect -- distinguishes between two effect=NONE items', async () => {
+      mockClient.query.mockResolvedValueOnce({
+        rows: [{ id: 1, name: 'Encrypted Data Chip', quantity: 1 }],
+      })
+      mockClient.query.mockResolvedValueOnce({ rows: [] })
+
+      await ConsumableService.consumeNamedFromShipInventory(mockClient, 9, 'Encrypted Data Chip')
+
+      expect(mockClient.query).toHaveBeenCalledWith(
+        expect.stringContaining('WHERE assigned_to_ship = $1 AND name = $2'),
+        [9, 'Encrypted Data Chip'],
+      )
+    })
+  })
 })

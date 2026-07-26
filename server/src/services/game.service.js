@@ -699,6 +699,18 @@ async function resolveEvents(client, playerId, instance, template, crewMembers, 
 async function completeMission(client, playerId, instance, template, failed, shipDestroyed) {
   const status = failed ? 'failed' : 'success'
 
+  // A mission's declared quest item (if any) is spent here regardless of
+  // outcome -- "used up on the attempt," not "only if you won," so a player
+  // can't dodge consumption by deliberately failing. No-ops if the player
+  // never actually loaded it.
+  if (template.consumes_item_name) {
+    await ConsumableService.consumeNamedFromShipInventory(
+      client,
+      instance.ship_id,
+      template.consumes_item_name,
+    )
+  }
+
   if (shipDestroyed) {
     // Return crew via shuttle
     const ship = await ShipService.getShip(client, playerId, instance.ship_id)
@@ -1169,6 +1181,14 @@ async function startMission(
   return { instance: inserted.rows[0] }
 }
 
+// Manually aborting a mission still counts as it "ending" -- same two
+// closing hooks completeMission() has (spend the mission's declared quest
+// item if any, tell the opera engine it's over as a failure) run here too,
+// before the instance row is deleted. Without these, a player could dodge
+// quest-item consumption by stopping instead of letting a mission resolve,
+// and any opera-seeded mission stopped this way would otherwise leave that
+// opera's walk permanently stuck waiting on a 'complete_quest' that will
+// never come.
 async function stopMission(client, playerId, templateId) {
   const instance = await client.query(
     'SELECT * FROM mission_instances WHERE player_id = $1 AND template_id = $2',
@@ -1177,6 +1197,9 @@ async function stopMission(client, playerId, templateId) {
   if (instance.rows.length === 0) return { error: 'No active mission' }
 
   const row = instance.rows[0]
+  const template = (
+    await client.query('SELECT * FROM mission_templates WHERE id = $1', [row.template_id])
+  ).rows[0]
   const ship = await ShipService.getShip(client, playerId, row.ship_id)
 
   if (ship && ship.crew) {
@@ -1186,6 +1209,19 @@ async function stopMission(client, playerId, templateId) {
   }
 
   await ShipService.updateShipStatus(client, playerId, row.ship_id, 'docked')
+
+  if (template?.consumes_item_name) {
+    await ConsumableService.consumeNamedFromShipInventory(
+      client,
+      row.ship_id,
+      template.consumes_item_name,
+    )
+  }
+  await OperaService.recordOperaAction(client, playerId, 'complete_quest', {
+    templateId: row.template_id,
+    outcome: 'failure',
+  })
+
   await client.query('DELETE FROM mission_instances WHERE id = $1', [row.id])
   return { ok: true }
 }

@@ -9,6 +9,7 @@
     <span class="muted">{{
       item.type === 'ship' ? 'SHIP' : item.type === 'armor' ? 'ARMOR' : 'CONSUMABLE'
     }}</span>
+    <span *ngIf="item.is_quest_item" class="quest-tag">[QUEST]</span>
     <span [class]="'rarity-' + item.rarity">({{ item.rarity }})</span> — {{ item.price }} ¥
     <span class="stock" [class.stock-sold]="isSoldOut(item)">{{
       isSoldOut(item) ? 'SOLD' : item.remaining_stock + '/' + item.max_stock

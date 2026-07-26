@@ -339,6 +339,12 @@ function validateMissionParams(mission, where) {
   if (mission.missionType !== undefined && !isNonEmptyString(mission.missionType)) {
     throw new Error(`${where}: mission missionType must be a non-empty string when present`)
   }
+  // Names a consumable (by shop_items.name) the live engine spends from this
+  // mission's ship inventory once the mission ends -- see the mirrored
+  // comment in server/src/domain/operaGraph.js for the live implementation.
+  if (mission.consumesItemName !== undefined && !isNonEmptyString(mission.consumesItemName)) {
+    throw new Error(`${where}: mission consumesItemName must be a non-empty string when present`)
+  }
 }
 
 // A 'choice' node presents the player a decision (node.text is the prompt)

@@ -211,6 +211,14 @@ function validateMissionParams(mission, where) {
   if (mission.missionType !== undefined && !isNonEmptyString(mission.missionType)) {
     throw new Error(`${where}: mission missionType must be a non-empty string when present`)
   }
+  // Names a consumable (by shop_items.name) to spend from this mission's
+  // ship inventory once the mission ends, win or lose -- see
+  // completeMission()/stopMission() in game.service.js. Restricted in
+  // practice to consumable-type items; an armor-type name here just never
+  // matches anything and no-ops.
+  if (mission.consumesItemName !== undefined && !isNonEmptyString(mission.consumesItemName)) {
+    throw new Error(`${where}: mission consumesItemName must be a non-empty string when present`)
+  }
 }
 
 function validateChoiceOptions(options, where) {

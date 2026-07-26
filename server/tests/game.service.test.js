@@ -584,9 +584,18 @@ function seedTemplate(
     name = 'Test Mission',
     description = 'A test mission.',
     planet = null,
+    consumesItemName = null,
   },
 ) {
-  const template = { id, name, description, difficulty, events, planet }
+  const template = {
+    id,
+    name,
+    description,
+    difficulty,
+    events,
+    planet,
+    consumes_item_name: consumesItemName,
+  }
   const existing = state.missionTemplates.find((t) => t.id === id)
   if (existing) Object.assign(existing, template)
   else state.missionTemplates.push(template)
@@ -1130,6 +1139,65 @@ describe('GameService', () => {
       await GameService.startMission(templateDef.id, 1)
       return state.missionInstances[0]
     }
+
+    test('completeMission consumes the mission\'s declared quest item from the ship on success', async () => {
+      const CONSUME_SUCCESS_TEMPLATE_ID = 108
+      const instance = await launchSeededMission({
+        id: CONSUME_SUCCESS_TEMPLATE_ID,
+        difficulty: 'ROUTINE',
+        consumesItemName: 'Encrypted Data Chip',
+        events: [
+          buildEvent({
+            id: 'e1',
+            type: 'RECON',
+            attribute: 'perception',
+            dc: 10,
+            failureConsequence: 'NO_REWARD',
+          }),
+        ],
+      })
+      instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
+      rollAction.mockReturnValue({ d20: 20, bonus: 0, diceNotation: '—', total: 20 }) // clears dc 10
+
+      await GameService.syncGame()
+
+      expect(state.missionInstances[0].status).toBe('success')
+      expect(ConsumableService.consumeNamedFromShipInventory).toHaveBeenCalledWith(
+        expect.anything(),
+        1,
+        'Encrypted Data Chip',
+      )
+    })
+
+    test('completeMission consumes the mission\'s declared quest item from the ship on failure too', async () => {
+      const CONSUME_FAILURE_TEMPLATE_ID = 109
+      const instance = await launchSeededMission({
+        id: CONSUME_FAILURE_TEMPLATE_ID,
+        difficulty: 'ROUTINE',
+        consumesItemName: 'Encrypted Data Chip',
+        events: [
+          buildEvent({
+            id: 'e1',
+            type: 'RECON',
+            attribute: 'perception',
+            dc: 20,
+            failureConsequence: 'FORCED_DEPARTURE',
+          }),
+        ],
+      })
+      instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
+      rollAction.mockReturnValue({ d20: 1, bonus: 0, diceNotation: '—', total: 1 }) // fails dc 20
+
+      await GameService.syncGame() // switches to RETURN
+      await GameService.syncGame() // the return trip has already elapsed too
+
+      expect(state.missionInstances[0].failed).toBe(true)
+      expect(ConsumableService.consumeNamedFromShipInventory).toHaveBeenCalledWith(
+        expect.anything(),
+        1,
+        'Encrypted Data Chip',
+      )
+    })
 
     // Custom template ids (100+) so they never collide with the natural
     // weighted-random batch, which only ever occupies ids 1-5 — see the
@@ -2035,6 +2103,35 @@ describe('GameService', () => {
       expect(state.missionInstances).toHaveLength(0)
       expect(state.recruits.find((r) => r.id === 1).status).toBe('available')
       expect(ShipService.updateShipStatus).toHaveBeenCalledWith(expect.anything(), 1, 1, 'docked')
+    })
+
+    test('consumes the mission\'s declared quest item and notifies the opera engine as a failure', async () => {
+      const STOP_TEMPLATE_ID = 110
+      await GameService.initGame()
+      seedTemplate(state, {
+        id: STOP_TEMPLATE_ID,
+        difficulty: 'ROUTINE',
+        consumesItemName: 'Encrypted Data Chip',
+        events: [buildEvent({ id: 'e1', type: 'RECON', attribute: 'perception', dc: 10 })],
+      })
+      state.recruits[0].id = 1
+      ShipService.getShip.mockResolvedValue({
+        id: 1,
+        player_id: 1,
+        crew: [1],
+        status: 'docked',
+        deleted_at: null,
+      })
+      await GameService.startMission(STOP_TEMPLATE_ID, 1)
+
+      const result = await GameService.stopMission(STOP_TEMPLATE_ID)
+
+      expect(result.error).toBeUndefined()
+      expect(ConsumableService.consumeNamedFromShipInventory).toHaveBeenCalledWith(
+        expect.anything(),
+        1,
+        'Encrypted Data Chip',
+      )
     })
 
     test('reports an error when no active mission matches', async () => {

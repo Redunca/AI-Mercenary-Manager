@@ -12,6 +12,7 @@
     "rarity" : <span [class]="'rarity-' + item.rarity">"{{ item.rarity }}"</span>,
   </div>
   <div class="indent-one">"price" : {{ item.price }},</div>
+  <div class="indent-one" *ngIf="item.is_quest_item">"quest" : true,</div>
   <div class="indent-one">
     "stock" :
     <span [class.stock-sold]="isSoldOut(item)">{{

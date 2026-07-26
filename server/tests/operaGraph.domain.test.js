@@ -141,6 +141,42 @@ describe('validateGraphDefinition', () => {
     })
     expect(() => validateGraphDefinition(def)).toThrow(/missionType must be a non-empty string/)
   })
+
+  test('accepts a mission node with a consumesItemName', () => {
+    const def = makeDef({
+      nodes: [
+        { id: 'start', type: 'start' },
+        {
+          id: 'mission',
+          type: 'mission',
+          mission: { title: 'Raid', consumesItemName: 'Encrypted Data Chip' },
+        },
+        { id: 'end', type: 'end', outcome: 'success', text: 'Done.' },
+      ],
+      links: [
+        { id: 'start--mission', from: 'start', to: 'mission', conditions: [] },
+        { id: 'mission--end', from: 'mission', to: 'end', conditions: [] },
+      ],
+    })
+    expect(() => validateGraphDefinition(def)).not.toThrow()
+  })
+
+  test('rejects a mission node with a non-string consumesItemName', () => {
+    const def = makeDef({
+      nodes: [
+        { id: 'start', type: 'start' },
+        { id: 'mission', type: 'mission', mission: { title: 'Raid', consumesItemName: 42 } },
+        { id: 'end', type: 'end', outcome: 'success', text: 'Done.' },
+      ],
+      links: [
+        { id: 'start--mission', from: 'start', to: 'mission', conditions: [] },
+        { id: 'mission--end', from: 'mission', to: 'end', conditions: [] },
+      ],
+    })
+    expect(() => validateGraphDefinition(def)).toThrow(
+      /consumesItemName must be a non-empty string/,
+    )
+  })
 })
 
 describe('matchesAction', () => {

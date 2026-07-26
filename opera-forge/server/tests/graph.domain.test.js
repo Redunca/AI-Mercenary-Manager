@@ -209,6 +209,42 @@ describe('validateGraphDefinition', () => {
     expect(() => validateGraphDefinition(def)).toThrow(/seed target "candidate" requires a seedId/)
   })
 
+  test('accepts a mission node with a consumesItemName', () => {
+    const def = makeDef({
+      nodes: [
+        { id: 'start', type: 'start' },
+        {
+          id: 'mission',
+          type: 'mission',
+          mission: { title: 'Raid', consumesItemName: 'Encrypted Data Chip' },
+        },
+        { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
+      ],
+      links: [
+        { id: 'l1', from: 'start', to: 'mission', priority: 0, conditions: [] },
+        { id: 'l2', from: 'mission', to: 'end-1', priority: 0, conditions: [] },
+      ],
+    })
+    expect(() => validateGraphDefinition(def)).not.toThrow()
+  })
+
+  test('rejects a mission node with a non-string consumesItemName', () => {
+    const def = makeDef({
+      nodes: [
+        { id: 'start', type: 'start' },
+        { id: 'mission', type: 'mission', mission: { title: 'Raid', consumesItemName: 42 } },
+        { id: 'end-1', type: 'end', outcome: 'neutral', text: 'end' },
+      ],
+      links: [
+        { id: 'l1', from: 'start', to: 'mission', priority: 0, conditions: [] },
+        { id: 'l2', from: 'mission', to: 'end-1', priority: 0, conditions: [] },
+      ],
+    })
+    expect(() => validateGraphDefinition(def)).toThrow(
+      /consumesItemName must be a non-empty string/,
+    )
+  })
+
   test('rejects a link referencing an unknown node', () => {
     const def = makeDef({ links: [{ id: 'l1', from: 'start', to: 'nowhere' }] })
     expect(() => validateGraphDefinition(def)).toThrow(/unknown "to" node/)
