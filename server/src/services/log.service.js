@@ -1,6 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const { orderPair, TIERS } = require('../domain/relationship')
+const { missionOutcome } = require('../domain/mission')
 const RelationshipService = require('./relationship.service')
 
 const DATA_DIR = path.join(__dirname, '../../data')
@@ -41,7 +42,7 @@ function pickEventRecruitQuote({ eventType, success, perks, flaws, personality }
 }
 
 /**
- * Picks a planet-tag-flavored [SYS]/[IA] line from the union of every matching
+ * Picks a planet-tag-flavored [SYS]/[AI] line from the union of every matching
  * tag's phrases. Returns null (meaning: fall back to the generic pool) when the
  * planet is missing, has no tags, none of its tags have flavor content, or
  * planet-tags.json itself can't be read/parsed.
@@ -72,7 +73,7 @@ const POOL = {
       'All systems nominal for departure.',
       'Course locked in.',
     ],
-    ia: [
+    ai: [
       'No anomalies detected.',
       'Trajectory nominal. Monitoring active.',
       'Fuel consumption within projected range.',
@@ -93,7 +94,7 @@ const POOL = {
       'First signs of the objective spotted.',
       "Proximity alert: something's here.",
     ],
-    ia: [
+    ai: [
       'Situation analysis in progress.',
       'Environmental variables unstable.',
       'Readings inconclusive so far.',
@@ -113,7 +114,7 @@ const POOL = {
       'Objective cleared. Heading home.',
       'Return trajectory locked in.',
     ],
-    ia: [
+    ai: [
       'Unit en route home. Nominal outcome.',
       'Efficiency: acceptable.',
       'Fuel reserves sufficient for the return leg.',
@@ -134,7 +135,7 @@ const POOL = {
       'Unit docked. Standing down.',
       'Debrief pending.',
     ],
-    ia: [
+    ai: [
       'Operation concluded.',
       'Performance within acceptable parameters.',
       'Systems powering down to standby.',
@@ -158,7 +159,7 @@ const POOL_FAILED = {
       'Mission scrubbed. Falling back to base.',
       'Withdrawal underway, objective unmet.',
     ],
-    ia: [
+    ai: [
       'Extraction protocol activated.',
       'Operational failure. Root cause analysis in progress.',
       'Casualty and damage report compiling.',
@@ -172,7 +173,7 @@ const POOL_FAILED = {
       'Contract unfulfilled. Standing down.',
       'Objective lost. Unit recalled.',
     ],
-    ia: [
+    ai: [
       'Negative outcome. No objective achieved.',
       'Failure debrief scheduled.',
       'Post-mortem scheduled for this operation.',
@@ -182,18 +183,18 @@ const POOL_FAILED = {
 }
 
 const EVENT_PHRASES = {
-  success_ia: [
+  success_ai: [
     'Intermediate objective validated.',
     'Result matches projections.',
     'Nominal execution.',
   ],
   success_recruit: ['Too easy.', "I knew I'd pull it off.", 'Shall we continue?'],
-  hp_loss_ia: [
+  hp_loss_ai: [
     'Damage recorded. Recruit still operational.',
     'Non-critical injury. Mission continues.',
   ],
   hp_loss_recruit: ["That hurt but I'm holding up.", 'That one stung.', 'Just a scratch.'],
-  abort_ia: [
+  abort_ai: [
     'Extraction protocol activated. Mission aborted.',
     'Situation uncontrollable. Immediate withdrawal.',
   ],
@@ -202,7 +203,7 @@ const EVENT_PHRASES = {
     "Too hot, we're bailing.",
     "I didn't sign up for this.",
   ],
-  no_reward_ia: [
+  no_reward_ai: [
     'Objective not achieved. No payment issued.',
     'Contract not honored. Mission closed without payment.',
   ],
@@ -211,7 +212,7 @@ const EVENT_PHRASES = {
     'I did my best.',
     "No credits, but we're all in one piece.",
   ],
-  death_ia: ['Vital signs lost. Recruit neutralized.', 'Loss confirmed. Filing the record.'],
+  death_ai: ['Vital signs lost. Recruit neutralized.', 'Loss confirmed. Filing the record.'],
   last_words: [
     'Give my regards to no one in particular.',
     'I should have asked for a bigger bonus.',
@@ -219,7 +220,7 @@ const EVENT_PHRASES = {
     'I knew it would end like this.',
     'Take care of the rest of the team.',
   ],
-  revived_ia: [
+  revived_ai: [
     'Flatline reversed. Nanite injection successful.',
     'Vital signs restored. Recruit stabilized.',
   ],
@@ -227,9 +228,9 @@ const EVENT_PHRASES = {
     'I was gone for a second there.',
     'Remind me to thank whoever packed the medkit.',
   ],
-  ship_damage_ia: ['Hull integrity compromised.', 'Structural damage sustained.'],
+  ship_damage_ai: ['Hull integrity compromised.', 'Structural damage sustained.'],
   ship_damage_recruit: ["That's coming out of the bonus.", "We're not landing softly after that."],
-  ship_broken_ia: [
+  ship_broken_ai: [
     'Hull integrity critical. Vessel disabled.',
     'Ship inoperable. Grounding on return.',
   ],
@@ -237,18 +238,23 @@ const EVENT_PHRASES = {
     "We're not flying this thing again anytime soon.",
     "That's it, she's done.",
   ],
-  ship_repaired_ia: [
+  ship_repaired_ai: [
     'Auto-patch engaged. Hull integrity restored.',
     'Repair systems compensated for the damage.',
   ],
   ship_repaired_recruit: ['Patched up and still flying.', 'Good thing we packed spares.'],
-  combat_won_ia: ['Hostile threat neutralized.', 'Engagement resolved in our favor.'],
+  combat_won_ai: ['Hostile threat neutralized.', 'Engagement resolved in our favor.'],
   combat_won_recruit: ["Didn't even break a sweat.", "That's one less problem."],
-  combat_lost_ia: [
+  combat_lost_ai: [
     'Engagement untenable. Withdrawal required.',
     'Hostile force too strong. Pulling back.',
   ],
   combat_lost_recruit: ['We need to fall back, now!', "This fight's not winnable."],
+  combat_start_ai: [
+    'Hostile signature detected. Engagement imminent.',
+    'Contact confirmed. Hostiles closing in.',
+    'Weapons free. Engaging Hostiles.',
+  ],
 }
 
 /**
@@ -302,7 +308,7 @@ async function insertLogEntries(client, playerId, entries) {
  * @property {string} missionName
  * @property {string|undefined} missionDifficulty
  * @property {{id: string|number, name: string, tags: string[]}|null} planet
- *   Used by pickPlanetTagQuote() to prefer environment-flavored [SYS]/[IA] lines over the generic pool.
+ *   Used by pickPlanetTagQuote() to prefer environment-flavored [SYS]/[AI] lines over the generic pool.
  * @property {{id: string|number, name: string, perks: any[], flaws: any[], personality: string}|null} actingRecruit
  *   The single recruit driving this log entry, if any (e.g. the recruit who rolled for an event). Null for
  *   phase logs, which speak for the whole crew rather than one actor.
@@ -318,6 +324,7 @@ function buildPhaseLogs({
   phase,
   failed,
   rewardForfeited,
+  anyDeath = false,
   recruitName,
   injuredCount = 0,
   avoid = [],
@@ -335,12 +342,12 @@ function buildPhaseLogs({
   const sysLine = failedPool
     ? pick(failedPool.sys, avoid)
     : (pickPlanetTagQuote({ tags: planet?.tags, channel: 'sys', avoid }) ?? pick(pool.sys, avoid))
-  const iaLine = failedPool
-    ? pick(failedPool.ia, avoid)
-    : (pickPlanetTagQuote({ tags: planet?.tags, channel: 'ia', avoid }) ?? pick(pool.ia, avoid))
+  const aiLine = failedPool
+    ? pick(failedPool.ai, avoid)
+    : (pickPlanetTagQuote({ tags: planet?.tags, channel: 'ai', avoid }) ?? pick(pool.ai, avoid))
   const entries = [
     { tag: '[SYS]', message: `${prefix}${sysLine}`, missionId },
-    { tag: '[IA]', message: iaLine, missionId },
+    { tag: '[AI]', message: aiLine, missionId },
   ]
 
   if (phase === 'EN_ROUTE' || phase === 'EVENT') {
@@ -359,7 +366,7 @@ function buildPhaseLogs({
     })
   }
   if (phase === 'COMPLETED') {
-    const outcome = failed ? 'FAILURE' : rewardForfeited ? 'NO REWARD' : 'SUCCESS'
+    const outcome = missionOutcome({ failed, rewardForfeited, anyDeath })
     const injurySuffix = injuredCount > 0 ? ` — ${injuredCount} crew hospitalized` : ''
     global.push({
       tag: '[SYS]',
@@ -394,9 +401,9 @@ function buildEventResultLogs({ context, eventResult }) {
   }
 
   // The [SYS] line here carries the dice roll and outcome — mechanical information, not flavor —
-  // so unlike buildPhaseLogs, planet-tag content only ever replaces the [IA] line, never [SYS].
-  function iaLine(defaultPool) {
-    return pickPlanetTagQuote({ tags: planet?.tags, channel: 'ia' }) ?? pick(defaultPool)
+  // so unlike buildPhaseLogs, planet-tag content only ever replaces the [AI] line, never [SYS].
+  function aiLine(defaultPool) {
+    return pickPlanetTagQuote({ tags: planet?.tags, channel: 'ai' }) ?? pick(defaultPool)
   }
 
   if (r.recruitDied) {
@@ -405,7 +412,7 @@ function buildEventResultLogs({ context, eventResult }) {
       message: `${r.type}${r.attribute ? ` [${r.attribute}]` : ''} — ${rollStr} → KILLED IN ACTION`,
       missionId,
     })
-    entries.push({ tag: '[IA]', message: iaLine(EVENT_PHRASES.death_ia), missionId })
+    entries.push({ tag: '[AI]', message: aiLine(EVENT_PHRASES.death_ai), missionId })
     entries.push({ tag, message: `"${pick(EVENT_PHRASES.last_words)}"`, missionId })
     return {
       mission: entries,
@@ -420,7 +427,7 @@ function buildEventResultLogs({ context, eventResult }) {
       message: `${typeLabel} — ${rollStr} → FAILURE — -${r.hpLost} HP → REVIVED`,
       missionId,
     })
-    entries.push({ tag: '[IA]', message: pick(EVENT_PHRASES.revived_ia), missionId })
+    entries.push({ tag: '[AI]', message: pick(EVENT_PHRASES.revived_ai), missionId })
     entries.push({ tag, message: recruitQuote(EVENT_PHRASES.revived_recruit), missionId })
   } else if (!r.success && r.consequence === 'FORCED_DEPARTURE') {
     entries.push({
@@ -428,7 +435,7 @@ function buildEventResultLogs({ context, eventResult }) {
       message: `${typeLabel} — ${rollStr} → FAILURE — Forced extraction`,
       missionId,
     })
-    entries.push({ tag: '[IA]', message: iaLine(EVENT_PHRASES.abort_ia), missionId })
+    entries.push({ tag: '[AI]', message: aiLine(EVENT_PHRASES.abort_ai), missionId })
     entries.push({ tag, message: recruitQuote(EVENT_PHRASES.abort_recruit), missionId })
   } else if (!r.success && r.consequence === 'NO_REWARD') {
     entries.push({
@@ -436,7 +443,7 @@ function buildEventResultLogs({ context, eventResult }) {
       message: `${typeLabel} — ${rollStr} → FAILURE — no reward`,
       missionId,
     })
-    entries.push({ tag: '[IA]', message: iaLine(EVENT_PHRASES.no_reward_ia), missionId })
+    entries.push({ tag: '[AI]', message: aiLine(EVENT_PHRASES.no_reward_ai), missionId })
     entries.push({ tag, message: recruitQuote(EVENT_PHRASES.no_reward_recruit), missionId })
   } else if (!r.success && r.consequence === 'HP_LOSS') {
     entries.push({
@@ -444,7 +451,7 @@ function buildEventResultLogs({ context, eventResult }) {
       message: `${typeLabel} — ${rollStr} → FAILURE — -${r.hpLost} HP`,
       missionId,
     })
-    entries.push({ tag: '[IA]', message: iaLine(EVENT_PHRASES.hp_loss_ia), missionId })
+    entries.push({ tag: '[AI]', message: aiLine(EVENT_PHRASES.hp_loss_ai), missionId })
     entries.push({ tag, message: recruitQuote(EVENT_PHRASES.hp_loss_recruit), missionId })
   } else if (!r.success && r.consequence === 'SHIP_DAMAGE' && r.shipBroken) {
     entries.push({
@@ -452,7 +459,7 @@ function buildEventResultLogs({ context, eventResult }) {
       message: `${typeLabel} — ${rollStr} → FAILURE — ship disabled, forced extraction`,
       missionId,
     })
-    entries.push({ tag: '[IA]', message: pick(EVENT_PHRASES.ship_broken_ia), missionId })
+    entries.push({ tag: '[AI]', message: pick(EVENT_PHRASES.ship_broken_ai), missionId })
     entries.push({ tag, message: recruitQuote(EVENT_PHRASES.ship_broken_recruit), missionId })
   } else if (!r.success && r.consequence === 'SHIP_DAMAGE' && r.shipAutoRepaired) {
     entries.push({
@@ -460,7 +467,7 @@ function buildEventResultLogs({ context, eventResult }) {
       message: `${typeLabel} — ${rollStr} → FAILURE — ship damaged, auto-repaired`,
       missionId,
     })
-    entries.push({ tag: '[IA]', message: pick(EVENT_PHRASES.ship_repaired_ia), missionId })
+    entries.push({ tag: '[AI]', message: pick(EVENT_PHRASES.ship_repaired_ai), missionId })
     entries.push({ tag, message: recruitQuote(EVENT_PHRASES.ship_repaired_recruit), missionId })
   } else if (!r.success && r.consequence === 'SHIP_DAMAGE') {
     entries.push({
@@ -468,7 +475,7 @@ function buildEventResultLogs({ context, eventResult }) {
       message: `${typeLabel} — ${rollStr} → FAILURE — ship damaged, no reward`,
       missionId,
     })
-    entries.push({ tag: '[IA]', message: pick(EVENT_PHRASES.ship_damage_ia), missionId })
+    entries.push({ tag: '[AI]', message: pick(EVENT_PHRASES.ship_damage_ai), missionId })
     entries.push({ tag, message: recruitQuote(EVENT_PHRASES.ship_damage_recruit), missionId })
   } else {
     const rewardStr = r.rewardEarned ? ` [+${r.rewardEarned.amount} ${r.rewardEarned.type}]` : ''
@@ -477,7 +484,7 @@ function buildEventResultLogs({ context, eventResult }) {
       message: `${typeLabel} — ${rollStr} → SUCCESS${rewardStr}`,
       missionId,
     })
-    entries.push({ tag: '[IA]', message: iaLine(EVENT_PHRASES.success_ia), missionId })
+    entries.push({ tag: '[AI]', message: aiLine(EVENT_PHRASES.success_ai), missionId })
     entries.push({ tag, message: recruitQuote(EVENT_PHRASES.success_recruit), missionId })
   }
 
@@ -488,7 +495,7 @@ function buildEventResultLogs({ context, eventResult }) {
 
 // Summarizes one attack within a combat round into a short clause. Combat
 // rounds only ever produce [SYS] log lines (see buildCombatRoundLog), so this
-// intentionally carries no [IA]/recruit flavor of its own.
+// intentionally carries no [AI]/recruit flavor of its own.
 function summarizeCombatEntry(entry) {
   if (entry.actor === 'crew') {
     return entry.hit
@@ -504,14 +511,25 @@ function summarizeCombatEntry(entry) {
   return `Hostiles hit ${entry.targetName} for ${entry.damage} (${entry.targetHpAfter} HP left)`
 }
 
+// Fired once, right before a COMBAT event's auto-battle is simulated, so the
+// player sees a warning that combat is starting before the (already-resolved)
+// round-by-round logs land -- see resolveEvents' COMBAT branch in
+// game.service.js. "Hostiles" is the only opponent name the engine has today
+// (see summarizeCombatEntry/buildCombatEventLogs below, and buildEnemy's
+// hardcoded default in domain/combat.js) -- there's no per-mission enemy
+// flavor data to draw on yet.
+function buildCombatStartLog({ missionId }) {
+  return { mission: [{ tag: '[AI]', message: pick(EVENT_PHRASES.combat_start_ai), missionId }] }
+}
+
 // One [SYS]-only log line per combat round (a round is ~6s of game time),
-// deliberately throttled — no [IA]/recruit banter mid-fight.
+// deliberately throttled — no [AI]/recruit banter mid-fight.
 function buildCombatRoundLog({ round, missionId }) {
   const summary = round.entries.map(summarizeCombatEntry).join(' · ')
   return { tag: '[SYS]', message: `Round ${round.round} — ${summary}`, missionId }
 }
 
-// The final [SYS]/[IA]/[RECRUIT] summary once a COMBAT event's auto-battle
+// The final [SYS]/[AI]/[RECRUIT] summary once a COMBAT event's auto-battle
 // concludes, mirroring the shape of buildEventResultLogs for every other
 // event type.
 function buildCombatEventLogs({ context, event, combatResult }) {
@@ -528,8 +546,8 @@ function buildCombatEventLogs({ context, event, combatResult }) {
       missionId,
     },
     {
-      tag: '[IA]',
-      message: pick(won ? EVENT_PHRASES.combat_won_ia : EVENT_PHRASES.combat_lost_ia),
+      tag: '[AI]',
+      message: pick(won ? EVENT_PHRASES.combat_won_ai : EVENT_PHRASES.combat_lost_ai),
       missionId,
     },
   ]
@@ -670,7 +688,7 @@ function allCrewPairs(crew) {
 
 /**
  * Reads the most recent banter log entry for this mission (identified by its tag containing
- * the banter arrow '→', which never appears in [SYS]/[IA]/[NAME] tags) and returns the unordered
+ * the banter arrow '→', which never appears in [SYS]/[AI]/[NAME] tags) and returns the unordered
  * pair of names involved, or null if there's no prior banter for this mission. Cooldown mechanism:
  * no schema change — derived entirely from what's already persisted in log_entries.
  */
@@ -817,16 +835,58 @@ const RELATIONSHIP_REROLL_LINES = {
 
 // A short flavor line for the automatic once-per-mission reroll a BONDED
 // friend grants on a failed test, or a RIVAL forces on a successful one
-// (see resolveEvents in game.service.js). No missionId is attached here --
-// callers insert it alongside the event-result log, which already carries
-// mission scoping.
-function buildRelationshipRerollLog({ actingRecruit, partnerRecruit, tier }) {
+// (see resolveEvents in game.service.js).
+function buildRelationshipRerollLog({ actingRecruit, partnerRecruit, tier, missionId }) {
   const message = pick(RELATIONSHIP_REROLL_LINES[tier])
     .replace(/\{A\}/g, actingRecruit.name)
     .replace(/\{B\}/g, partnerRecruit.name)
   return {
-    mission: [{ tag: `[${actingRecruit.name.toUpperCase()}]`, message }],
+    mission: [{ tag: `[${actingRecruit.name.toUpperCase()}]`, message, missionId }],
   }
+}
+
+function loadDeathReactions() {
+  try {
+    return require(path.join(DATA_DIR, 'banter', 'death-reactions.json'))
+  } catch {
+    return {}
+  }
+}
+
+// Unlike casual banter (which only fires for extreme-tier or trait/
+// personality-matched pairs), a death should always draw *some* reaction
+// from someone nearby -- so every tier, including NEUTRAL, has a pool. Picks
+// the single survivor whose relationship with the deceased is most
+// reaction-worthy (BONDED/RIVAL, the extremes, over FRIENDLY/TENSE, over
+// NEUTRAL) rather than firing once per survivor, mirroring how regular
+// banter surfaces one exchange per trigger, not one per crew member.
+function buildDeathReactionLog({ deceased, survivors, relationships, missionId }) {
+  if (!Array.isArray(survivors) || survivors.length === 0) return null
+
+  const TIER_PRIORITY = { BONDED: 0, RIVAL: 0, FRIENDLY: 1, TENSE: 1, NEUTRAL: 2 }
+  let reactor = survivors[0]
+  let reactorTier = RelationshipService.lookupCrewRelationship(
+    relationships,
+    deceased.id,
+    reactor.id,
+  ).tier
+  for (const survivor of survivors.slice(1)) {
+    const tier = RelationshipService.lookupCrewRelationship(
+      relationships,
+      deceased.id,
+      survivor.id,
+    ).tier
+    if (TIER_PRIORITY[tier] < TIER_PRIORITY[reactorTier]) {
+      reactor = survivor
+      reactorTier = tier
+    }
+  }
+
+  const pool = loadDeathReactions()[reactorTier.toLowerCase()]
+  if (!pool || !Array.isArray(pool.lines) || pool.lines.length === 0) return null
+
+  const message = pick(pool.lines).replace(/\{A\}/g, reactor.name).replace(/\{B\}/g, deceased.name)
+  return { mission: [{ tag: `[${reactor.name.toUpperCase()}]`, message, missionId }] }
 }
 
 module.exports = {
@@ -835,6 +895,7 @@ module.exports = {
   buildEventResultLogs,
   pickPlanetTagQuote,
   buildBanterLog,
+  buildCombatStartLog,
   buildCombatRoundLog,
   buildCombatEventLogs,
   getRecentMissionMessages,
@@ -842,4 +903,5 @@ module.exports = {
   hasTraitFriction,
   buildRelationshipShiftLog,
   buildRelationshipRerollLog,
+  buildDeathReactionLog,
 }

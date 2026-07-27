@@ -7,7 +7,7 @@ import { LogEntry } from '../../models/log';
 const MOCK_LOGS: Record<number, LogEntry[]> = {
   1: [
     { tag: '[SYS]', message: 'Departure confirmed.', missionId: 1 },
-    { tag: '[IA]', message: 'No anomaly detected.', missionId: 1 },
+    { tag: '[AI]', message: 'No anomaly detected.', missionId: 1 },
     { tag: '[KADE]', message: '"Let\'s go."', missionId: 1 },
     { tag: '[VEX→KADE]', message: 'Vex rolls their eyes.', missionId: 1 },
   ],
@@ -51,9 +51,9 @@ describe('MissionLogsComponent', () => {
     expect(component.isBanterTag('[VEX→KADE]')).toBe(true);
   });
 
-  it('does not treat SYS/IA/monologue tags as banter', () => {
+  it('does not treat SYS/AI/monologue tags as banter', () => {
     expect(component.isBanterTag('[SYS]')).toBe(false);
-    expect(component.isBanterTag('[IA]')).toBe(false);
+    expect(component.isBanterTag('[AI]')).toBe(false);
     expect(component.isBanterTag('[KADE]')).toBe(false);
   });
 

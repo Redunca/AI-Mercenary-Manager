@@ -4,6 +4,7 @@ const {
   buildEventResultLogs,
   pickPlanetTagQuote,
   buildBanterLog,
+  buildCombatStartLog,
   buildCombatRoundLog,
   buildCombatEventLogs,
   getRecentMissionMessages,
@@ -11,18 +12,20 @@ const {
   hasTraitFriction,
   buildRelationshipShiftLog,
   buildRelationshipRerollLog,
+  buildDeathReactionLog,
 } = require('../src/services/log.service')
 const planetTags = require('../data/planet-tags.json')
 const banterPairs = require('../data/banter/pairs.json')
 const personalityPairs = require('../data/banter/personality-pairs.json')
 const relationshipPairs = require('../data/banter/relationship-pairs.json')
+const deathReactions = require('../data/banter/death-reactions.json')
 
 describe('insertLogEntries', () => {
   test('inserts one row per entry, defaulting missionId to null', async () => {
     const client = { query: jest.fn().mockResolvedValue({ rows: [] }) }
     const entries = [
       { tag: '[SYS]', message: 'A message', missionId: 5 },
-      { tag: '[IA]', message: 'Another message' },
+      { tag: '[AI]', message: 'Another message' },
     ]
 
     await insertLogEntries(client, 1, entries)
@@ -36,7 +39,7 @@ describe('insertLogEntries', () => {
     expect(client.query).toHaveBeenNthCalledWith(
       2,
       expect.stringContaining('INSERT INTO log_entries'),
-      [1, '[IA]', 'Another message', null, null],
+      [1, '[AI]', 'Another message', null, null],
     )
   })
 })
@@ -72,9 +75,9 @@ describe('pickPlanetTagQuote', () => {
   })
 
   test('multiple tag matches pick from the union of both pools', () => {
-    const union = [...planetTags.arid.ia, ...planetTags.hot.ia]
+    const union = [...planetTags.arid.ai, ...planetTags.hot.ai]
     for (let i = 0; i < 20; i++) {
-      const result = pickPlanetTagQuote({ tags: ['arid', 'hot'], channel: 'ia' })
+      const result = pickPlanetTagQuote({ tags: ['arid', 'hot'], channel: 'ai' })
       expect(union).toContain(result)
     }
   })
@@ -91,8 +94,8 @@ describe('pickPlanetTagQuote', () => {
 
   test('an unrecognized tag mixed with a valid one does not crash and resolves via the valid one', () => {
     for (let i = 0; i < 10; i++) {
-      const result = pickPlanetTagQuote({ tags: ['not-a-real-tag', 'isolated'], channel: 'ia' })
-      expect(planetTags.isolated.ia).toContain(result)
+      const result = pickPlanetTagQuote({ tags: ['not-a-real-tag', 'isolated'], channel: 'ai' })
+      expect(planetTags.isolated.ai).toContain(result)
     }
   })
 
@@ -135,7 +138,7 @@ describe('buildPhaseLogs', () => {
     expect(mission).toHaveLength(3)
     expect(mission[0].tag).toBe('[SYS]')
     expect(mission[0].message).toContain('[Corridor Patrol · ROUTINE]')
-    expect(mission[1].tag).toBe('[IA]')
+    expect(mission[1].tag).toBe('[AI]')
     expect(mission[2].tag).toBe('[KADE]')
     expect(mission[2].message).toMatch(/^".*"$/)
     expect(mission.every((e) => e.missionId === 1)).toBe(true)
@@ -261,10 +264,16 @@ describe('buildPhaseLogs', () => {
     expect(global[0].message).toContain('Kade')
   })
 
-  test('COMPLETED reports NO REWARD when reward was forfeited without failure', () => {
+  test('COMPLETED reports PARTIAL SUCCESS when reward was forfeited without failure', () => {
     const { global } = buildPhaseLogs({ ...base, phase: 'COMPLETED', rewardForfeited: true })
 
-    expect(global[0].message).toContain('[NO REWARD]')
+    expect(global[0].message).toContain('[PARTIAL SUCCESS]')
+  })
+
+  test('COMPLETED reports PARTIAL SUCCESS when a crew death occurred, even with reward intact and not failed', () => {
+    const { global } = buildPhaseLogs({ ...base, phase: 'COMPLETED', anyDeath: true })
+
+    expect(global[0].message).toContain('[PARTIAL SUCCESS]')
   })
 
   test('COMPLETED reports FAILURE when the mission failed', () => {
@@ -312,7 +321,7 @@ describe('buildPhaseLogs', () => {
 
     const sysText = mission[0].message.replace('[Corridor Patrol · ROUTINE] ', '')
     expect(planetTags.isolated.sys).toContain(sysText)
-    expect(planetTags.isolated.ia).toContain(mission[1].message)
+    expect(planetTags.isolated.ai).toContain(mission[1].message)
   })
 
   test("falls back to the generic pool when none of the planet's tags have flavor content", () => {
@@ -374,7 +383,7 @@ describe('buildEventResultLogs', () => {
     expect(mission).toHaveLength(3)
     expect(mission[0].message).toContain('KILLED IN ACTION')
     expect(mission[0].message).toContain('RECON [perception]')
-    expect(mission[1].tag).toBe('[IA]')
+    expect(mission[1].tag).toBe('[AI]')
     expect(mission[2].tag).toBe('[KADE]')
     expect(global).toEqual([
       { tag: '[SYS]', message: 'Kade died during mission "Corridor Patrol".' },
@@ -465,7 +474,7 @@ describe('buildEventResultLogs', () => {
     expect(mission[2].tag).toBe('[KADE]')
   })
 
-  test('prefers a planet-tag-matched [IA] line but leaves the mechanical [SYS] line untouched', () => {
+  test('prefers a planet-tag-matched [AI] line but leaves the mechanical [SYS] line untouched', () => {
     const result = eventResult({ success: true })
     const { mission } = buildEventResultLogs({
       ...baseArgs,
@@ -473,12 +482,12 @@ describe('buildEventResultLogs', () => {
       context: { ...baseArgs.context, planet: { id: 'p1', name: 'Kessarine', tags: ['isolated'] } },
     })
 
-    expect(planetTags.isolated.ia).toContain(mission[1].message)
+    expect(planetTags.isolated.ai).toContain(mission[1].message)
     expect(mission[0].message).toContain('1d20(15) + 1d4(3) = 18 vs DC 10')
     expect(mission[0].message).toContain('SUCCESS')
   })
 
-  test('falls back to the generic [IA] pool when the planet has no matching tag content', () => {
+  test('falls back to the generic [AI] pool when the planet has no matching tag content', () => {
     const result = eventResult({ success: true })
     const { mission } = buildEventResultLogs({
       ...baseArgs,
@@ -582,7 +591,7 @@ describe('buildCombatEventLogs', () => {
     crew: [{ id: 1, name: 'Vex', perks: [], flaws: [], personality: 'Explorer' }],
   }
 
-  test('victory: [SYS] + [IA] + a survivor line, reward mentioned, no global casualty log', () => {
+  test('victory: [SYS] + [AI] + a survivor line, reward mentioned, no global casualty log', () => {
     const combatResult = {
       enemyDefeated: true,
       rounds: [{ round: 1, entries: [] }],
@@ -595,7 +604,7 @@ describe('buildCombatEventLogs', () => {
     expect(mission[0].tag).toBe('[SYS]')
     expect(mission[0].message).toContain('VICTORY')
     expect(mission[0].message).toContain('250')
-    expect(mission[1].tag).toBe('[IA]')
+    expect(mission[1].tag).toBe('[AI]')
     expect(mission[2].tag).toBe('[VEX]')
     expect(global).toEqual([])
   })
@@ -1038,15 +1047,17 @@ describe('buildRelationshipShiftLog', () => {
 })
 
 describe('buildRelationshipRerollLog', () => {
-  test('friend reroll flavor text mentions both names', () => {
+  test('friend reroll flavor text mentions both names and carries the missionId', () => {
     const result = buildRelationshipRerollLog({
       actingRecruit: { name: 'Kade' },
       partnerRecruit: { name: 'Vex' },
       tier: 'friend',
+      missionId: 9,
     })
     expect(result.mission[0].tag).toBe('[KADE]')
     expect(result.mission[0].message).toContain('Kade')
     expect(result.mission[0].message).toContain('Vex')
+    expect(result.mission[0].missionId).toBe(9)
   })
 
   test('rival reroll flavor text mentions both names', () => {
@@ -1054,10 +1065,80 @@ describe('buildRelationshipRerollLog', () => {
       actingRecruit: { name: 'Kade' },
       partnerRecruit: { name: 'Vex' },
       tier: 'rival',
+      missionId: 9,
     })
     expect(result.mission[0].tag).toBe('[KADE]')
     expect(result.mission[0].message).toContain('Kade')
     expect(result.mission[0].message).toContain('Vex')
+  })
+})
+
+describe('buildCombatStartLog', () => {
+  test('returns a single [AI] mission entry drawn from the combat_start pool', () => {
+    for (let i = 0; i < 20; i++) {
+      const result = buildCombatStartLog({ missionId: 7 })
+      expect(result.mission).toHaveLength(1)
+      expect(result.mission[0].tag).toBe('[AI]')
+      expect(result.mission[0].missionId).toBe(7)
+      expect(typeof result.mission[0].message).toBe('string')
+      expect(result.mission[0].message.length).toBeGreaterThan(0)
+    }
+  })
+})
+
+describe('buildDeathReactionLog', () => {
+  const deceased = { id: 1, name: 'Kade' }
+
+  function relationshipMap(entries) {
+    return new Map(entries)
+  }
+
+  test('returns null when there are no survivors', () => {
+    expect(buildDeathReactionLog({ deceased, survivors: [], relationships: new Map() })).toBeNull()
+    expect(
+      buildDeathReactionLog({ deceased, survivors: undefined, relationships: new Map() }),
+    ).toBeNull()
+  })
+
+  test('falls back to the neutral pool when no relationship data exists for any survivor, and carries the missionId', () => {
+    const vex = { id: 2, name: 'Vex' }
+    const result = buildDeathReactionLog({
+      deceased,
+      survivors: [vex],
+      relationships: new Map(),
+      missionId: 9,
+    })
+
+    expect(result.mission[0].tag).toBe('[VEX]')
+    expect(deathReactions.neutral.lines.map((l) => l.replace(/\{A\}/g, 'Vex').replace(/\{B\}/g, 'Kade'))).toContain(
+      result.mission[0].message,
+    )
+    expect(result.mission[0].missionId).toBe(9)
+  })
+
+  test('prefers a BONDED survivor over a NEUTRAL one as the reactor', () => {
+    const vex = { id: 2, name: 'Vex' } // NEUTRAL with the deceased (no entry)
+    const rosa = { id: 3, name: 'Rosa' } // BONDED with the deceased
+    const relationships = relationshipMap([['1:3', { score: 80, tier: 'BONDED' }]])
+
+    const result = buildDeathReactionLog({ deceased, survivors: [vex, rosa], relationships })
+
+    expect(result.mission[0].tag).toBe('[ROSA]')
+    expect(
+      deathReactions.bonded.lines.map((l) => l.replace(/\{A\}/g, 'Rosa').replace(/\{B\}/g, 'Kade')),
+    ).toContain(result.mission[0].message)
+  })
+
+  test('a RIVAL survivor is just as reaction-worthy a reactor as a BONDED one', () => {
+    const vex = { id: 2, name: 'Vex' } // RIVAL with the deceased
+    const relationships = relationshipMap([['1:2', { score: -80, tier: 'RIVAL' }]])
+
+    const result = buildDeathReactionLog({ deceased, survivors: [vex], relationships })
+
+    expect(result.mission[0].tag).toBe('[VEX]')
+    expect(
+      deathReactions.rival.lines.map((l) => l.replace(/\{A\}/g, 'Vex').replace(/\{B\}/g, 'Kade')),
+    ).toContain(result.mission[0].message)
   })
 })
 

@@ -21,6 +21,7 @@ export enum PanelModule {
   OperaDetail = 'opera-detail',
   Items = 'items',
   Hospital = 'hospital',
+  Cemetery = 'cemetery',
 }
 
 export interface Panel {

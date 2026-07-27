@@ -58,10 +58,25 @@ function phaseAndProgressFromElapsed(elapsedMs, travelMs, eventsMs) {
   return { phase: 'RETURN', progress: 66 + Math.round((returnElapsed / travelMs) * 34) }
 }
 
+// Single source of truth for a completed mission's 3-way verdict, shared by
+// the completion summary and the final capstone log line (see completeMission
+// and buildPhaseLogs in game.service.js/log.service.js) so they never
+// disagree. PARTIAL SUCCESS covers both "the reward got forfeited along the
+// way" (the only case this used to track, as "NO REWARD") and "a crew member
+// died," even if the mission otherwise fully succeeded (e.g. won a COMBAT
+// event but lost someone in the fight) -- death is worth flagging in the
+// mission's own verdict, not just in banter/logs elsewhere.
+function missionOutcome({ failed, rewardForfeited, anyDeath }) {
+  if (failed) return 'FAILURE'
+  if (rewardForfeited || anyDeath) return 'PARTIAL SUCCESS'
+  return 'SUCCESS'
+}
+
 module.exports = {
   DIFFICULTY_VALUES,
   travelSegmentMs,
   eventsSegmentMs,
   dueEventCount,
   phaseAndProgressFromElapsed,
+  missionOutcome,
 }

@@ -7,7 +7,7 @@
       "Fine grit accumulating in exposed joints.",
       "Wind gusts kicking up loose sediment."
     ],
-    "ia": [
+    "ai": [
       "High atmospheric dust. Sensor reliability reduced by 12%.",
       "Thermal signature blurred by ground heat.",
       "Arid environment confirmed. Equipment overheating risk.",
@@ -23,7 +23,7 @@
       "Heat shimmer distorting long-range optics.",
       "External plating temperature climbing steadily."
     ],
-    "ia": [
+    "ai": [
       "Thermal noise interfering with infrared sensors.",
       "Ambient temperature outside nominal parameters.",
       "Equipment overheating risk: moderate.",
@@ -39,7 +39,7 @@
       "Ice forming along exposed joints.",
       "Wind chill exceeding equipment tolerance."
     ],
-    "ia": [
+    "ai": [
       "Energy efficiency reduced by ambient cold.",
       "Frost condensation on external optics.",
       "Estimated battery life revised downward.",
@@ -55,7 +55,7 @@
       "Footing recalibration in progress on the ice sheet.",
       "Sub-surface cracking detected underfoot."
     ],
-    "ia": [
+    "ai": [
       "Excessive glacial brightness. Artificial vision recalibrated.",
       "Icy surface: traction loss risk flagged.",
       "Unusual radio silence in this frozen zone.",
@@ -71,7 +71,7 @@
       "Wildlife movement flagged at the perimeter.",
       "Canopy blocking direct satellite uplink."
     ],
-    "ia": [
+    "ai": [
       "Electromagnetic interference linked to vegetation density.",
       "High humidity level. Minor corrosion risk to monitor.",
       "Intense biological background noise on audio sensors.",
@@ -87,7 +87,7 @@
       "Ambient heat spike from a nearby vent.",
       "Ashfall accumulating on external sensors."
     ],
-    "ia": [
+    "ai": [
       "Corrosive atmospheric composition. Enhanced monitoring recommended.",
       "Regular telluric vibrations. Origin: local volcanic activity.",
       "Air quality below standard comfort norms.",
@@ -103,7 +103,7 @@
       "Wave action buffeting the approach route.",
       "Condensation forming on internal optics."
     ],
-    "ia": [
+    "ai": [
       "Salt-saturated air. Medium-term corrosion risk.",
       "Acoustic propagation altered by the aquatic environment.",
       "Ambient humidity outside standard parameters.",
@@ -119,7 +119,7 @@
       "Pedestrian traffic pattern logged nearby.",
       "Local network chatter flagged as background noise."
     ],
-    "ia": [
+    "ai": [
       "High population density. Discretion recommended.",
       "Urban surveillance networks detected on the periphery.",
       "Ambient urban noise filtered from communications.",
@@ -135,7 +135,7 @@
       "Stacked traffic lanes detected overhead.",
       "Building-to-building signal bounce distorting positioning."
     ],
-    "ia": [
+    "ai": [
       "Extreme urban density. High exposure risk.",
       "Omnipresent camera network detected.",
       "Ambient data volume saturating analysis channels.",
@@ -151,7 +151,7 @@
       "Branded checkpoint drones logged nearby.",
       "Restricted-access signage detected along the route."
     ],
-    "ia": [
+    "ai": [
       "Private security presence. Increased discretion recommended.",
       "Non-governmental surveillance systems active.",
       "Corporate security protocols detected on local frequencies.",
@@ -167,7 +167,7 @@
       "Heavy machinery detected operating nearby.",
       "Loose scree shifting underfoot."
     ],
-    "ia": [
+    "ai": [
       "Intense mining activity in the immediate vicinity.",
       "Particle concentration above comfort norms.",
       "Mechanical, non-seismic vibrations confirmed.",
@@ -183,7 +183,7 @@
       "Unmapped terrain features detected ahead.",
       "Supply cache markers absent from this sector."
     ],
-    "ia": [
+    "ai": [
       "Limited network coverage. Transmission delays expected.",
       "Zone on the margin of standard infrastructure.",
       "Local logistical support deemed insufficient.",
@@ -199,7 +199,7 @@
       "Signal repeater absent from expected range.",
       "Last known contact point far behind."
     ],
-    "ia": [
+    "ai": [
       "Isolation confirmed. No external assistance readily available.",
       "Total radio silence outside the unit.",
       "Zone outside any known network coverage.",
@@ -215,7 +215,7 @@
       "No jurisdictional beacon broadcasting nearby.",
       "Local customs data unavailable."
     ],
-    "ia": [
+    "ai": [
       "No controlling authority detected locally.",
       "Autonomous administrative zone confirmed.",
       "No official protocol applicable here.",
@@ -231,7 +231,7 @@
       "Municipal grid signal detected nearby.",
       "Local traffic control pinged the unit."
     ],
-    "ia": [
+    "ai": [
       "Established infrastructure. Stable communications expected.",
       "Local administrative presence confirmed.",
       "Zone properly mapped by colonial authorities.",
@@ -247,7 +247,7 @@
       "Fresh construction detected along the route.",
       "Provisional signage still being installed."
     ],
-    "ia": [
+    "ai": [
       "Young infrastructure. Local system reliability uncertain.",
       "Zone under active development. Partial data only.",
       "Colonial network still unstable, delays possible.",

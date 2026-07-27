@@ -14,12 +14,14 @@ const {
   eventsSegmentMs,
   dueEventCount,
   phaseAndProgressFromElapsed,
+  missionOutcome,
 } = require('../domain/mission')
 const {
   insertLogEntries,
   buildPhaseLogs,
   buildEventResultLogs,
   buildBanterLog,
+  buildCombatStartLog,
   buildCombatRoundLog,
   buildCombatEventLogs,
   getRecentMissionMessages,
@@ -27,6 +29,7 @@ const {
   hasTraitFriction,
   buildRelationshipShiftLog,
   buildRelationshipRerollLog,
+  buildDeathReactionLog,
 } = require('./log.service')
 const { validateCrewAssignment } = require('../domain/ship')
 const { computeMissionDelta } = require('../domain/relationship')
@@ -489,6 +492,8 @@ async function resolveEvents(client, playerId, instance, template, crewMembers, 
     // roll to gate it, and no random failureConsequence pick.
     if (event.type === 'COMBAT') {
       const enemy = buildEnemy(template.difficulty, rollInRange)
+      const combatStartLog = buildCombatStartLog({ missionId })
+      await insertLogEntries(client, playerId, combatStartLog.mission)
       const healCharges = await ConsumableService.countShipInventoryEffect(client, shipId, 'HEAL')
       const armorByRecruit = await EquipmentService.getEquippedByRecruitIds(
         client,
@@ -509,6 +514,10 @@ async function resolveEvents(client, playerId, instance, template, crewMembers, 
         await ConsumableService.consumeFromShipInventory(client, shipId, 'HEAL')
       }
 
+      // Collected, not inserted immediately -- fired after combatLogs below
+      // so a survivor's reaction reads after the "DEFEAT/VICTORY" summary,
+      // not interleaved before it.
+      const deathReactionLogs = []
       for (const outcome of combatResult.crewResults) {
         const updated = await applyCombatResult(client, playerId, outcome.id, {
           hp: outcome.hp,
@@ -522,6 +531,24 @@ async function resolveEvents(client, playerId, instance, template, crewMembers, 
           local.hp = updated.hp
           local.maxHp = updated.maxHp
           local.status = updated.status
+        }
+
+        // Every crewResults entry started this combat alive (it's built from
+        // armedCrew, itself filtered to activeCrew), so a 'dead' status here
+        // is always a fresh death this fight -- fire the crew's reaction if
+        // anyone survived to witness it.
+        if (outcome.status === 'dead' && local) {
+          const survivors = combatResult.crewResults
+            .filter((c) => c.status !== 'dead')
+            .map((c) => crewMembers.find((r) => String(r.id) === String(c.id)))
+            .filter(Boolean)
+          const reactionLog = buildDeathReactionLog({
+            deceased: local,
+            survivors,
+            relationships,
+            missionId,
+          })
+          if (reactionLog) deathReactionLogs.push(...reactionLog.mission)
         }
       }
 
@@ -559,6 +586,7 @@ async function resolveEvents(client, playerId, instance, template, crewMembers, 
         combatResult,
       })
       await insertLogEntries(client, playerId, [...combatLogs.mission, ...combatLogs.global])
+      if (deathReactionLogs.length > 0) await insertLogEntries(client, playerId, deathReactionLogs)
 
       currentEventIndex = i + 1
       eventResults.push(result)
@@ -607,6 +635,10 @@ async function resolveEvents(client, playerId, instance, template, crewMembers, 
     // is enough -- mirrors getLastBanterPairNames' banter-cooldown
     // derivation from what's already persisted.
     let relationshipReroll = null
+    // Set below when a death occurs, but inserted only after the main
+    // event-result log (built at the bottom of this loop) so a survivor's
+    // reaction reads after the "KILLED IN ACTION" line, not before it.
+    let deathReactionLog = null
     const rerollTier = success ? 'RIVAL' : 'BONDED'
     const rerollKind = success ? 'rival' : 'friend'
     const rerollAlreadyUsed = eventResults.some((r) => r.relationshipReroll === rerollKind)
@@ -629,6 +661,7 @@ async function resolveEvents(client, playerId, instance, template, crewMembers, 
           actingRecruit: bestRecruit,
           partnerRecruit: partner,
           tier: rerollKind,
+          missionId,
         })
         await insertLogEntries(client, playerId, rerollLog.mission)
       }
@@ -664,6 +697,13 @@ async function resolveEvents(client, playerId, instance, template, crewMembers, 
         } else if (!updated || updated.status === 'dead') {
           result.recruitDied = true
           crewDead.push(bestRecruit.id)
+          const survivors = activeCrew.filter((r) => r.id !== bestRecruit.id)
+          deathReactionLog = buildDeathReactionLog({
+            deceased: bestRecruit,
+            survivors,
+            relationships,
+            missionId,
+          })
           if (crewMembers.filter((r) => r.status !== 'dead').length === 1) {
             return finalizeTerminalEvent(client, playerId, {
               template,
@@ -733,6 +773,7 @@ async function resolveEvents(client, playerId, instance, template, crewMembers, 
       context: buildLogContext({ template, crewMembers, actingRecruit: bestRecruit }),
     })
     await insertLogEntries(client, playerId, [...eventLogs.mission, ...eventLogs.global])
+    if (deathReactionLog) await insertLogEntries(client, playerId, deathReactionLog.mission)
   }
 
   return {
@@ -821,6 +862,22 @@ async function completeMission(client, playerId, instance, template, failed, shi
       ? crewMembers.map((r) => r?.name || `Recruit ${r?.id}`).join(', ')
       : 'No crew'
 
+  // A dead crew member's id otherwise lingers in ships.crew forever (nothing
+  // else clears it -- setRecruitStatus's `status != 'dead'` guard just
+  // silently skips them above), permanently occupying a docking-station crew
+  // slot. Mirrors fireRecruit's (recruit.service.js) and admitRecruit's
+  // (hospital.service.js) identical array_remove pattern. Done here, once the
+  // mission is over, rather than at the moment of death, so the fallen
+  // recruit is still "crew" for this mission's own relationship-drift pass
+  // below.
+  for (const dead of crewMembers.filter((r) => r?.status === 'dead')) {
+    await client.query(
+      `UPDATE ships SET crew = array_remove(crew, $2)
+       WHERE player_id = $1 AND deleted_at IS NULL AND $2 = ANY(crew)`,
+      [playerId, dead.id],
+    )
+  }
+
   // Distinct recruits who took a lasting (max-HP-reducing) injury at some point
   // this mission, across every combat event -- surfaced in the completion
   // summary so a rough mission doesn't read as a clean success/failure with no
@@ -829,16 +886,34 @@ async function completeMission(client, playerId, instance, template, failed, shi
     (instance.event_results ?? []).flatMap((r) => r.recruitsDowned ?? []),
   ).size
 
+  // Whether anyone died this mission, regardless of whether the mission
+  // itself ultimately succeeded (e.g. a won COMBAT event can still cost a
+  // life) -- feeds missionOutcome's PARTIAL SUCCESS bucket alongside
+  // reward_forfeited. recruitDied (HP_LOSS path) and recruitsDied (COMBAT
+  // path) already exist on every event result; no new tracking needed.
+  const anyDeath = (instance.event_results ?? []).some(
+    (r) => r.recruitDied || (r.recruitsDied && r.recruitsDied.length > 0),
+  )
+  const outcome = missionOutcome({ failed, rewardForfeited: instance.reward_forfeited, anyDeath })
+
   const completedLogs = buildPhaseLogs({
     phase: 'COMPLETED',
     failed,
     rewardForfeited: instance.reward_forfeited,
+    anyDeath,
     recruitName: crewNames,
     injuredCount,
     context: buildLogContext({ template, crewMembers }),
     avoid: await getRecentMissionMessages(client, playerId, template.id),
   })
   await insertLogEntries(client, playerId, [...completedLogs.mission, ...completedLogs.global])
+  // A short, terminal-style capstone line as the very last thing in the
+  // mission log -- mission-scoped only (the fuller sentence above already
+  // covers the global feed), sharing missionOutcome's computation so the two
+  // never disagree.
+  await insertLogEntries(client, playerId, [
+    { tag: '[SYS]', message: `[${outcome}]`, missionId: template.id },
+  ])
 
   // Every crew pair that shared this mission drifts a little: toward each
   // other on success, apart on failure, nudged further by personality

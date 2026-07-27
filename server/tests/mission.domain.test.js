@@ -4,6 +4,7 @@ const {
   eventsSegmentMs,
   dueEventCount,
   phaseAndProgressFromElapsed,
+  missionOutcome,
 } = require('../src/domain/mission')
 
 const MINUTE_MS = 60_000
@@ -120,5 +121,32 @@ describe('phaseAndProgressFromElapsed', () => {
       eventsMs,
     )
     expect(justBeforeEventsEnd.phase).toBe('EVENT')
+  })
+})
+
+describe('missionOutcome', () => {
+  test('FAILURE when failed, regardless of the other flags', () => {
+    expect(missionOutcome({ failed: true, rewardForfeited: false, anyDeath: false })).toBe(
+      'FAILURE',
+    )
+    expect(missionOutcome({ failed: true, rewardForfeited: true, anyDeath: true })).toBe('FAILURE')
+  })
+
+  test('SUCCESS when not failed, reward intact, and no deaths', () => {
+    expect(missionOutcome({ failed: false, rewardForfeited: false, anyDeath: false })).toBe(
+      'SUCCESS',
+    )
+  })
+
+  test('PARTIAL SUCCESS when not failed but the reward was forfeited', () => {
+    expect(missionOutcome({ failed: false, rewardForfeited: true, anyDeath: false })).toBe(
+      'PARTIAL SUCCESS',
+    )
+  })
+
+  test('PARTIAL SUCCESS when not failed and reward intact, but a crew death occurred', () => {
+    expect(missionOutcome({ failed: false, rewardForfeited: false, anyDeath: true })).toBe(
+      'PARTIAL SUCCESS',
+    )
   })
 })

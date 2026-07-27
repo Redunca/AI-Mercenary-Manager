@@ -1,0 +1,21 @@
+<div>
+  TASK: [<span class="task-title">Cemetery</span>] ******************************************
+</div>
+<div>ok ==> {{ '{' }}</div>
+<div class="indent-one">"fallen" ({{ deceasedRecruits.length }}) : [</div>
+<ng-container *ngFor="let r of deceasedRecruits">
+  <div class="indent-two entry">
+    [{{ r.id }}] {{ r.name }}<span *ngIf="r.jobTitle"> — {{ r.jobTitle }}</span
+    ><span *ngIf="r.personality"> ({{ r.personality }})</span>
+  </div>
+  <ng-container *ngFor="let p of r.perks">
+    <div class="indent-two perk">&nbsp;&nbsp;{{ p.name }} — {{ p.description }}</div>
+  </ng-container>
+  <ng-container *ngFor="let f of r.flaws">
+    <div class="indent-two flaw">&nbsp;&nbsp;{{ f.name }} — {{ f.description }}</div>
+  </ng-container>
+</ng-container>
+<div *ngIf="deceasedRecruits.length === 0" class="indent-two muted">— no losses yet —</div>
+<div class="indent-one">]</div>
+<div>{{ '}' }}</div>
+<div class="hint">[ recruit detail &lt;id&gt; ] — view a fallen recruit's full record</div>

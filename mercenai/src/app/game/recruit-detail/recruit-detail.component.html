@@ -69,6 +69,7 @@
   <ng-container *ngFor="let r of relationships">
     <div class="indent-two relationship-{{ r.tier | lowercase }}">
       {{ r.recruit?.name }} — {{ r.tier | lowercase }} ({{ r.score }})
+      <span *ngIf="r.recruit?.status === 'dead'" class="deceased-tag">DECEASED</span>
     </div>
   </ng-container>
   <div *ngIf="!relationships.length" class="indent-two muted">—</div>

@@ -46,6 +46,7 @@ function createFakeClient() {
     ships: [],
     logEntries: [],
     recruitRelationships: [],
+    shipCrewRemovals: [],
   }
   let nextInstanceId = 1000
   // Postgres implicitly casts text parameters to the column type (int);
@@ -532,6 +533,24 @@ function createFakeClient() {
     if (s === 'SELECT * FROM ships WHERE player_id = $1 AND deleted_at IS NULL ORDER BY id') {
       return { rows: state.ships.filter((sh) => sh.player_id === params[0]) }
     }
+    // completeMission's dead-crew cleanup (game.service.js) -- raw query, same
+    // shape as fireRecruit/admitRecruit's array_remove. ShipService itself is
+    // mocked in this suite (so state.ships is never actually populated by
+    // real ship logic), so this records the removal for tests to assert on
+    // directly, and best-effort keeps state.ships in sync too.
+    if (s.includes('UPDATE ships SET crew = array_remove(crew, $2)')) {
+      // recruit.id is a string (rowToRecruit), same as real callers here --
+      // Postgres infers $2's type from array_remove's INT[] context and
+      // casts it, so coerce here too to match what actually ends up stored.
+      const [playerId, recruitId] = [params[0], Number(params[1])]
+      state.shipCrewRemovals.push({ player_id: playerId, recruit_id: recruitId })
+      for (const ship of state.ships) {
+        if (ship.player_id === playerId && ship.crew?.includes(recruitId)) {
+          ship.crew = ship.crew.filter((id) => id !== recruitId)
+        }
+      }
+      return { rows: [] }
+    }
 
     // log_entries (writes go through log.service, mocked; only the read is direct)
     if (s.includes('SELECT tag, message, mission_id AS "missionId" FROM log_entries')) {
@@ -666,6 +685,8 @@ describe('GameService', () => {
       missionId: undefined,
     })
     LogService.buildCombatEventLogs.mockReturnValue({ mission: [], global: [] })
+    LogService.buildCombatStartLog.mockReturnValue({ mission: [] })
+    LogService.buildDeathReactionLog.mockReturnValue(null)
     LogService.insertLogEntries.mockResolvedValue(undefined)
     // Real pairing logic (not the trigger-content lookups) so completeMission's
     // relationship-delta loop iterates real crew pairs; hasTraitFriction/the
@@ -1914,6 +1935,159 @@ describe('GameService', () => {
       expect(recruit.max_hp).toBe(3) // 4 -> 3, still recorded even though the recruit died
       expect(updated.failed).toBe(true)
       expect(updated.event_results.at(-1).recruitsDied).toEqual(['1'])
+    })
+  })
+
+  describe('syncGame — recruit death handling', () => {
+    const DEATH_TEMPLATE_ID = 120
+
+    async function launchTwoRecruitMission(templateDef) {
+      await GameService.initGame()
+      seedTemplate(state, templateDef)
+      state.recruits[0].id = 1
+      state.recruits.push({ ...state.recruits[0], id: 2, name: 'Second' })
+      ShipService.getShip.mockResolvedValue({
+        id: 1,
+        player_id: 1,
+        crew: [1, 2],
+        status: 'docked',
+        deleted_at: null,
+      })
+      await GameService.startMission(templateDef.id, 1)
+      return state.missionInstances[0]
+    }
+
+    test('completeMission removes the dead crew member from the ship, but leaves the survivor', async () => {
+      const instance = await launchTwoRecruitMission({
+        id: DEATH_TEMPLATE_ID,
+        difficulty: 'ROUTINE',
+        events: [
+          buildEvent({
+            id: 'e1',
+            type: 'RECON',
+            attribute: 'perception',
+            dc: 20,
+            failureConsequence: 'HP_LOSS',
+          }),
+        ],
+      })
+      instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
+      state.recruits[0].hp = 3 // rollDie is mocked to 3 (see beforeEach) -> exactly lethal
+      rollAction.mockReturnValue({ d20: 1, bonus: 0, diceNotation: '—', total: 1 }) // fails dc 20
+
+      await GameService.syncGame()
+
+      expect(state.recruits.find((r) => r.id === 1).status).toBe('dead')
+      expect(state.shipCrewRemovals).toContainEqual({ player_id: 1, recruit_id: 1 })
+      expect(state.shipCrewRemovals.some((r) => r.recruit_id === 2)).toBe(false)
+    })
+
+    test('fires a death-reaction banter naming the survivor when another crew member witnesses an HP_LOSS death', async () => {
+      const instance = await launchTwoRecruitMission({
+        id: DEATH_TEMPLATE_ID + 1,
+        difficulty: 'ROUTINE',
+        events: [
+          buildEvent({
+            id: 'e1',
+            type: 'RECON',
+            attribute: 'perception',
+            dc: 20,
+            failureConsequence: 'HP_LOSS',
+          }),
+        ],
+      })
+      instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
+      state.recruits[0].hp = 3
+      rollAction.mockReturnValue({ d20: 1, bonus: 0, diceNotation: '—', total: 1 })
+
+      await GameService.syncGame()
+
+      expect(LogService.buildDeathReactionLog).toHaveBeenCalled()
+      const call = LogService.buildDeathReactionLog.mock.calls[0][0]
+      expect(String(call.deceased.id)).toBe('1')
+      expect(call.survivors.map((s) => String(s.id))).toEqual(['2'])
+    })
+
+    test('fires a death-reaction banter naming the survivor when another crew member witnesses a COMBAT death', async () => {
+      const instance = await launchTwoRecruitMission({
+        id: DEATH_TEMPLATE_ID + 2,
+        difficulty: 'STANDARD',
+        events: [buildEvent({ id: 'e1', type: 'COMBAT' })],
+      })
+      instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
+      const dying = state.recruits.find((r) => r.id === 1)
+      dying.max_hp = 4
+      dying.hp = 3
+      rollAction.mockReturnValue({ d20: 17, bonus: 0, diceNotation: '—', total: 17 })
+      rollInRange.mockReturnValue(25)
+      ConsumableService.countShipInventoryEffect.mockResolvedValue(0)
+
+      await GameService.syncGame()
+
+      expect(dying.status).toBe('dead')
+      expect(LogService.buildDeathReactionLog).toHaveBeenCalled()
+      const call = LogService.buildDeathReactionLog.mock.calls[0][0]
+      expect(String(call.deceased.id)).toBe('1')
+      expect(call.survivors.map((s) => String(s.id))).toEqual(['2'])
+    })
+
+    test('reports no survivors (so no reaction line is inserted) when no one else is on the mission', async () => {
+      await GameService.initGame()
+      seedTemplate(state, {
+        id: DEATH_TEMPLATE_ID + 3,
+        difficulty: 'ROUTINE',
+        events: [
+          buildEvent({
+            id: 'e1',
+            type: 'RECON',
+            attribute: 'perception',
+            dc: 20,
+            failureConsequence: 'HP_LOSS',
+          }),
+        ],
+      })
+      state.recruits[0].id = 1
+      state.recruits[0].hp = 3
+      ShipService.getShip.mockResolvedValue({
+        id: 1,
+        player_id: 1,
+        crew: [1],
+        status: 'docked',
+        deleted_at: null,
+      })
+      await GameService.startMission(DEATH_TEMPLATE_ID + 3, 1)
+      state.missionInstances[0].started_at = new Date(Date.now() - 60 * 60 * 1000)
+      rollAction.mockReturnValue({ d20: 1, bonus: 0, diceNotation: '—', total: 1 })
+
+      await GameService.syncGame()
+
+      // buildDeathReactionLog itself is what decides "no survivors -> no
+      // reaction" (see log.service.test.js) -- the caller always calls it
+      // and just skips inserting when it comes back null (the mocked
+      // default), so what the caller must get right is passing an empty
+      // survivors list, not calling insertLogEntries with anything for it.
+      expect(LogService.buildDeathReactionLog).toHaveBeenCalled()
+      const call = LogService.buildDeathReactionLog.mock.calls[0][0]
+      expect(call.survivors).toEqual([])
+    })
+
+    test('the combat-start log fires before the round-by-round combat logs', async () => {
+      const instance = await launchTwoRecruitMission({
+        id: DEATH_TEMPLATE_ID + 4,
+        difficulty: 'STANDARD',
+        events: [buildEvent({ id: 'e1', type: 'COMBAT' })],
+      })
+      instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
+      rollAction.mockReturnValue({ d20: 20, bonus: 0, diceNotation: '—', total: 60 })
+      rollInRange.mockReturnValue(0)
+
+      await GameService.syncGame()
+
+      expect(LogService.buildCombatStartLog).toHaveBeenCalled()
+      expect(LogService.buildCombatRoundLog).toHaveBeenCalled()
+      const startOrder = LogService.buildCombatStartLog.mock.invocationCallOrder[0]
+      const roundOrder = LogService.buildCombatRoundLog.mock.invocationCallOrder[0]
+      expect(startOrder).toBeLessThan(roundOrder)
     })
   })
 

@@ -1,0 +1,47 @@
+{
+  "bonded": {
+    "lines": [
+      "{A} does not move for a long moment. Then: \"No. Not {B}. Not like this.\"",
+      "{A} is still holding onto {B} when the others pull them back.",
+      "{A}'s voice breaks. \"I had their back. I had their back the whole time.\"",
+      "{A} goes quiet in a way that is worse than shouting. {B} was supposed to make it home.",
+      "{A} stares at the spot where {B} fell, like staring hard enough could undo it."
+    ]
+  },
+  "friendly": {
+    "lines": [
+      "{A} exhales hard. \"Damn it. Damn it, {B}.\"",
+      "{A} didn't see that coming. Nobody did.",
+      "{A} keeps glancing back at where {B} went down, like they might just get up.",
+      "{A} says {B}'s name once, quietly, like it needs saying out loud.",
+      "{A} grips their weapon tighter. It doesn't help. It's just something to do with their hands."
+    ]
+  },
+  "neutral": {
+    "lines": [
+      "{A} logs the loss without much expression. {B} is gone. The mission isn't.",
+      "{A} takes a breath, files it away, and keeps moving.",
+      "\"Another one down,\" {A} says, to no one in particular.",
+      "{A} doesn't know {B} well enough to grieve properly. That doesn't make it easy to watch.",
+      "{A} marks the loss and keeps their eyes on the perimeter. Someone has to."
+    ]
+  },
+  "tense": {
+    "lines": [
+      "{A} looks away. Whatever was unresolved between them just became permanent.",
+      "{A} doesn't know what to feel, which is its own kind of bad.",
+      "\"We never got that sorted out,\" {A} mutters, mostly to themselves.",
+      "{A} stands over where {B} fell longer than they'd like anyone to notice.",
+      "{A} feels something they didn't expect to feel about {B} dying. They don't examine it too closely."
+    ]
+  },
+  "rival": {
+    "lines": [
+      "{A} doesn't say anything. The silence is its own kind of statement.",
+      "\"Guess that's settled, then,\" {A} says, and immediately hates how it sounded out loud.",
+      "{A} expected to feel something closer to relief. They don't.",
+      "{A} looks at where {B} fell and finds, against every instinct, that they wish they hadn't.",
+      "{A} keeps their face flat. Whatever this was between them, it didn't deserve to end like this."
+    ]
+  }
+}

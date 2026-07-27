@@ -27,6 +27,7 @@ export class CommandService {
     this.registerGlobalCommands('wallet', this.handleWallet.bind(this));
     this.registerGlobalCommands('self', this.handleSelf.bind(this));
     this.registerGlobalCommands('hospital', this.handleHospital.bind(this));
+    this.registerGlobalCommands('cemetery', this.handleCemetery.bind(this));
     this.registerGlobalCommands('opera', this.handleOpera.bind(this));
     this.registerGlobalCommands('items', this.handleItems.bind(this));
     this.registerGlobalCommands('dev', this.handleDev.bind(this));
@@ -482,6 +483,15 @@ export class CommandService {
     }
 
     console.warn('Usage: hospital | hospital admit <recruitId> | hospital discharge <recruitId>');
+  }
+
+  private handleCemetery(action?: string) {
+    if (!action) {
+      this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.Cemetery);
+      return;
+    }
+
+    console.warn('Usage: cemetery');
   }
 
   private handleOpera(action: string, ...args: string[]) {
