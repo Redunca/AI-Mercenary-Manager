@@ -15,6 +15,7 @@ import { GameSyncService } from '../../core/game-sync.service';
 import { GameService } from '../../core/game.service';
 import { PanelModule } from '../../models/panel';
 import { Mission } from '../../models/mission';
+import { FACTION_REWARD_MULTIPLIER } from '../../models/faction';
 import { msUntilNextRefresh, formatCountdown } from '../../core/refresh-countdown';
 
 @Component({
@@ -77,6 +78,28 @@ export class MissionListComponent implements OnInit, OnChanges, OnDestroy {
 
   get missions(): Mission[] {
     return this.completed ? this.completedMissions : this.missionService.missions;
+  }
+
+  // A mission's host and antagonist are frequently both present (e.g. a
+  // DIPLOMACY mission is "for" the planet's controlling org and "against" a
+  // rival faction at once) -- show both rather than only the first that's set.
+  orgLabel(m: Mission): string {
+    const parts: string[] = [];
+    if (m.forFaction) parts.push(`for ${m.forFaction}`);
+    if (m.againstFaction) parts.push(`against ${m.againstFaction}`);
+    return parts.length > 0 ? parts.join(' / ') : '—';
+  }
+
+  // The live reward multiplier a "for" mission's credits will be scaled by,
+  // based on current standing (see domain/faction.js's REWARD_MULTIPLIER on
+  // the server) -- shown so the player can see the incentive before
+  // accepting. Blank for NEUTRAL/no stake, rather than a noisy "+0%".
+  rewardMultiplierLabel(m: Mission): string {
+    if (!m.forFaction) return '';
+    const tier = this.game.getFactionReputation(m.forFaction).tier;
+    const pct = Math.round(FACTION_REWARD_MULTIPLIER[tier] * 100);
+    if (pct === 0) return '';
+    return pct > 0 ? `+${pct}%` : `${pct}%`;
   }
 
   private tickCountdown(): void {

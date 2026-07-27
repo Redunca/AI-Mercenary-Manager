@@ -12,8 +12,9 @@
 
 const { getOperaDefinition, getGenerationPoolDefinitions } = require('../operaLoader')
 const OperaGraph = require('../domain/operaGraph')
-const { insertLogEntries } = require('./log.service')
+const { insertLogEntries, buildFactionShiftLog } = require('./log.service')
 const RelationshipService = require('./relationship.service')
+const FactionService = require('./faction.service')
 const { pickOne } = require('../utils/random')
 const { generateMission } = require('../engine/missionGenerator')
 const { loadData } = require('../dataLoader')
@@ -274,6 +275,22 @@ async function applyEffect(client, playerId, state, effect) {
       await RelationshipService.adjustRelationship(client, playerId, recruitAId, recruitBId, p.amount)
       return
     }
+    case 'adjust_faction_reputation': {
+      // factionName may be a literal org name or a "{faction}"-style
+      // placeholder into this instance's resolved tags (see resolveTags),
+      // same rendering convention as node text/labels.
+      const factionName = OperaGraph.render(p.factionName, state.tags).text
+      const shift = await FactionService.adjustReputation(client, playerId, factionName, p.amount)
+      if (shift.previousTier !== shift.newTier) {
+        const shiftLogs = buildFactionShiftLog({
+          factionName,
+          previousTier: shift.previousTier,
+          newTier: shift.newTier,
+        })
+        await insertLogEntries(client, playerId, shiftLogs.global)
+      }
+      return
+    }
   }
 }
 
@@ -309,8 +326,9 @@ async function insertOperaMission(client, playerId, instanceId, missionSpec, tag
   const templateId = player.next_template_id
 
   await client.query(
-    `INSERT INTO mission_templates (id, name, description, difficulty, events, planet, opera_instance_id, consumes_item_name)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+    `INSERT INTO mission_templates
+       (id, name, description, difficulty, events, planet, opera_instance_id, consumes_item_name, for_faction, against_faction)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
     [
       templateId,
       name,
@@ -320,6 +338,8 @@ async function insertOperaMission(client, playerId, instanceId, missionSpec, tag
       JSON.stringify(generated.planet),
       instanceId,
       missionSpec.consumesItemName ?? null,
+      generated.forFaction,
+      generated.againstFaction,
     ],
   )
   await client.query('UPDATE players SET next_template_id = next_template_id + 1 WHERE id = $1', [

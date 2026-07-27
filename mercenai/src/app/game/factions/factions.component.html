@@ -1,0 +1,14 @@
+<div>
+  TASK: [<span class="task-title">Factions</span>] ******************************************
+</div>
+<div>ok ==> {{ '{' }}</div>
+<div class="indent-one">"standing" ({{ factions.length }}) : [</div>
+<ng-container *ngFor="let f of factions">
+  <div class="indent-two entry faction-{{ f.tier | lowercase }}">
+    {{ f.name }} — {{ f.tier }} ({{ f.score }})
+  </div>
+</ng-container>
+<div *ngIf="factions.length === 0" class="indent-two muted">— no known factions —</div>
+<div class="indent-one">]</div>
+<div>{{ '}' }}</div>
+<div class="hint">standing shifts with missions done for/against an org, and with certain Opera outcomes</div>

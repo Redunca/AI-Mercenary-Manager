@@ -11,11 +11,27 @@ const { pickWeightedDifficulty } = require('../utils/missionDifficulty')
 const DIFFICULTIES = ['ROUTINE', 'STANDARD', 'HARD', 'PERILOUS', 'EPIC']
 const BEAT_ORDER = { INFILTRATION: 1, EXECUTION: 2, EXTRACTION: 3 }
 
+// Entity-names categories that hold player reputation (see domain/faction.js)
+// -- "gang" antagonists don't.
+const ORG_CATEGORIES = ['faction', 'corporation']
+
 /** Picks a template entry, preferring ones tagged for the current difficulty. */
 function pickFlavorTemplate(pool, difficulty) {
   const tagged = pool.filter((entry) => entry.tags.includes(difficulty))
   const candidates = tagged.length > 0 ? tagged : pool.filter((e) => e.tags.length === 0)
   return pickOne(candidates.length > 0 ? candidates : pool)
+}
+
+// The org (if any) this mission is fought against, resolved from whichever
+// "provides" entry is category "faction"/"corporation" -- today only
+// DIPLOMACY/SABOTAGE's enemyGroupName and HEIST's targetCorpName qualify;
+// every other mission type's antagonist is a "gang", which holds no
+// reputation. Assumes at most one org-category entry per mission type.
+function resolveAgainstFaction(missionType, context) {
+  const orgEntry = Object.entries(missionType.provides).find(
+    ([, spec]) => spec && typeof spec === 'object' && ORG_CATEGORIES.includes(spec.category),
+  )
+  return orgEntry ? context.get(orgEntry[0]) : null
 }
 
 /**
@@ -74,6 +90,15 @@ function generateMission(data, options = {}) {
     context.set(key, value)
     usedNames.push(value)
   }
+
+  // --- Reputation: which org (if any) this mission is done for/against.
+  // "for" is the planet's controlling org (Stage 1) -- operating in their
+  // territory without incident reads as a favor -- unless that same org is
+  // also the explicit antagonist resolved above, in which case only
+  // "against" applies.
+  const againstFaction = resolveAgainstFaction(missionType, context)
+  const planetFaction = context.has('faction') ? context.get('faction') : null
+  const forFaction = planetFaction && planetFaction !== againstFaction ? planetFaction : null
 
   // --- Stage 3: events, sampled from the mission type's archetype pool.
   // sampleWithCoverage guarantees every beat (Infiltration/Execution/
@@ -134,6 +159,8 @@ function generateMission(data, options = {}) {
     tags: context.getAll(),
     beats,
     events: generatedEvents,
+    forFaction,
+    againstFaction,
   }
 }
 

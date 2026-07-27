@@ -1,4 +1,5 @@
 import { Candidate } from './candidate';
+import { FactionReputation } from './faction';
 import { LogEntry } from './log';
 import { Mission, MissionState } from './mission';
 import { OperaSummary } from './opera';
@@ -22,6 +23,7 @@ export interface GameSnapshot {
   player: PlayerSnapshot;
   recruits: Recruit[];
   relationships: Relationship[];
+  factionReputations: FactionReputation[];
   candidates: Candidate[];
   ships: Ship[];
   missions: Mission[];

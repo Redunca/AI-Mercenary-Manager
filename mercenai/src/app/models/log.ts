@@ -17,3 +17,10 @@ export function isBanterTag(tag: string): boolean {
 export function isRelationshipShiftTag(tag: string): boolean {
   return tag.includes('⇄');
 }
+
+// Faction-reputation-shift tags use '[STANDING:ORG NAME]' (see server's
+// log.service.js buildFactionShiftLog) — player-vs-org, not two named
+// entities, so no arrow separator is needed.
+export function isFactionShiftTag(tag: string): boolean {
+  return tag.startsWith('[STANDING:');
+}

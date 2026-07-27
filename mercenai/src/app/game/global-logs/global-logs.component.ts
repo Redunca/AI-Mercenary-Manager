@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LogService } from '../../core/log.service';
-import { isBanterTag } from '../../models/log';
+import { isBanterTag, isFactionShiftTag } from '../../models/log';
 
 @Component({
   selector: 'app-global-logs',
@@ -14,6 +14,7 @@ export class GlobalLogsComponent {
   logService = inject(LogService);
 
   readonly isBanterTag = isBanterTag;
+  readonly isFactionShiftTag = isFactionShiftTag;
 
   get logs() {
     return this.logService.globalLogs;

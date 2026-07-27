@@ -65,6 +65,12 @@ export interface Mission {
   events: MissionEvent[];
   assignedShipId: number | null;
   status: MissionStatus;
+  // The org (if any) this mission is done for/against — see
+  // server/src/engine/missionGenerator.js's resolveAgainstFaction.
+  // forFaction's current standing scales the credit reward (see
+  // domain/faction.js's REWARD_MULTIPLIER).
+  forFaction?: string;
+  againstFaction?: string;
 }
 
 export interface MissionState {

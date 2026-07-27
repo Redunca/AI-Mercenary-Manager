@@ -30,9 +30,11 @@ const {
   buildRelationshipShiftLog,
   buildRelationshipRerollLog,
   buildDeathReactionLog,
+  buildFactionShiftLog,
 } = require('./log.service')
 const { validateCrewAssignment } = require('../domain/ship')
 const { computeMissionDelta } = require('../domain/relationship')
+const { computeMissionRepDelta, rewardMultiplier } = require('../domain/faction')
 const ShipService = require('./ship.service')
 const ConsumableService = require('./consumable.service')
 const EquipmentService = require('./equipment.service')
@@ -41,6 +43,7 @@ const ShopService = require('./shop.service')
 const RecruitService = require('./recruit.service')
 const HospitalService = require('./hospital.service')
 const RelationshipService = require('./relationship.service')
+const FactionService = require('./faction.service')
 
 const { loadData } = require('../dataLoader')
 const { generateMission } = require('../engine/missionGenerator')
@@ -142,8 +145,8 @@ async function generateMissionBatch(client, player, now) {
   for (let i = 0; i < batchSize; i++) {
     const mission = generateMission(data, {})
     await client.query(
-      `INSERT INTO mission_templates (id, name, description, difficulty, events, planet)
-       VALUES ($1, $2, $3, $4, $5, $6)`,
+      `INSERT INTO mission_templates (id, name, description, difficulty, events, planet, for_faction, against_faction)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
       [
         nextId,
         mission.name,
@@ -151,6 +154,8 @@ async function generateMissionBatch(client, player, now) {
         mission.difficulty,
         JSON.stringify(mission.events),
         JSON.stringify(mission.planet),
+        mission.forFaction,
+        mission.againstFaction,
       ],
     )
     nextId++
@@ -834,11 +839,20 @@ async function completeMission(client, playerId, instance, template, failed, shi
     const tokenBase = loadJson('difficulty-tables.json')[template.difficulty]?.tokenBase ?? 0
     const tokensWon = calculateTokenReward(tokenBase, instance.event_results, totalEvents)
 
-    const creditsWon = instance.reward_forfeited
+    let creditsWon = instance.reward_forfeited
       ? 0
       : instance.event_results
           .filter((r) => r.rewardEarned?.type === 'CREDITS')
           .reduce((sum, r) => sum + r.rewardEarned.amount, 0)
+
+    // A mission done "for" an org pays better or worse depending on
+    // standing with them -- see domain/faction.js's REWARD_MULTIPLIER.
+    // Tokens are a difficulty-based resource, not pay from the org, so
+    // they're left unscaled.
+    if (creditsWon > 0 && template.for_faction) {
+      const { score } = await FactionService.getReputation(client, playerId, template.for_faction)
+      creditsWon = Math.round(creditsWon * (1 + rewardMultiplier(score)))
+    }
 
     if (creditsWon > 0 || tokensWon > 0) {
       const player = await client.query(
@@ -937,6 +951,27 @@ async function completeMission(client, playerId, instance, template, failed, shi
         missionId: template.id,
       })
       await insertLogEntries(client, playerId, shiftLogs.mission)
+    }
+  }
+
+  // The org this mission was done for/against (if any) drifts too --
+  // "for" nudges either way with the outcome, "against" only ever costs
+  // standing (see domain/faction.js's asymmetric deltas).
+  for (const [factionName, role] of [
+    [template.for_faction, 'for'],
+    [template.against_faction, 'against'],
+  ]) {
+    if (!factionName) continue
+    const delta = computeMissionRepDelta({ role, success: !failed })
+    const shift = await FactionService.adjustReputation(client, playerId, factionName, delta)
+    if (shift.previousTier !== shift.newTier) {
+      const shiftLogs = buildFactionShiftLog({
+        factionName,
+        previousTier: shift.previousTier,
+        newTier: shift.newTier,
+        missionId: template.id,
+      })
+      await insertLogEntries(client, playerId, [...shiftLogs.mission, ...shiftLogs.global])
     }
   }
 
@@ -1504,6 +1539,7 @@ async function buildGameState(client, playerId) {
     [playerId],
   )
   const relationships = await RelationshipService.getRelationships(client, playerId)
+  const factionReputations = await FactionService.getReputations(client, playerId)
   const candidatesResult = await client.query(
     'SELECT * FROM candidates WHERE player_id = $1 ORDER BY id',
     [playerId],
@@ -1543,6 +1579,8 @@ async function buildGameState(client, playerId) {
       assignedShipId,
       status,
       isOperaMission: t.opera_instance_id != null,
+      forFaction: t.for_faction ?? undefined,
+      againstFaction: t.against_faction ?? undefined,
     }
   })
 
@@ -1614,6 +1652,7 @@ async function buildGameState(client, playerId) {
     },
     recruits: recruitsResult.rows.map(rowToRecruit),
     relationships,
+    factionReputations,
     candidates: candidatesResult.rows.map(rowToCandidate),
     ships: shipsResult.rows,
     missions: visibleMissions,
@@ -1654,6 +1693,8 @@ async function getMissionHistory(client, playerId) {
         events: t.events,
         assignedShipId: instance.ship_id,
         status: instance.status === 'in_progress' ? 'in_progress' : instance.status,
+        forFaction: t.for_faction ?? undefined,
+        againstFaction: t.against_faction ?? undefined,
       }
     })
     .filter(Boolean)

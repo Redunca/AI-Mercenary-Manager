@@ -22,6 +22,7 @@ export enum PanelModule {
   Items = 'items',
   Hospital = 'hospital',
   Cemetery = 'cemetery',
+  Factions = 'factions',
 }
 
 export interface Panel {

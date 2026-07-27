@@ -30,6 +30,7 @@ function createFakeClient() {
     purchaseHistory: [],
     logEntries: [],
     recruitRelationships: [],
+    factionReputation: [],
   }
   let nextInstanceId = 1000
   let nextShopItemId = 1
@@ -373,8 +374,16 @@ function createFakeClient() {
       return { rows: [{ count: state.missionTemplates.length }] }
     }
     if (s.includes('INSERT INTO mission_templates')) {
-      const [id, name, description, difficulty, events] = params
-      const tpl = { id, name, description, difficulty, events: JSON.parse(events) }
+      const [id, name, description, difficulty, events, , for_faction, against_faction] = params
+      const tpl = {
+        id,
+        name,
+        description,
+        difficulty,
+        events: JSON.parse(events),
+        for_faction: for_faction ?? null,
+        against_faction: against_faction ?? null,
+      }
       const existing = state.missionTemplates.find((t) => t.id === id)
       if (existing) Object.assign(existing, tpl)
       else state.missionTemplates.push(tpl)
@@ -838,6 +847,27 @@ function createFakeClient() {
       )
       if (existing) existing.score = score
       else state.recruitRelationships.push({ player_id: playerId, recruit_a_id: a, recruit_b_id: b, score })
+      return { rows: [] }
+    }
+
+    // faction_reputation (faction.service.js is real, not mocked here)
+    if (s === 'SELECT score FROM faction_reputation WHERE player_id = $1 AND faction_name = $2') {
+      const [playerId, factionName] = params
+      const row = state.factionReputation.find(
+        (r) => r.player_id === playerId && r.faction_name === factionName,
+      )
+      return { rows: row ? [{ score: row.score }] : [] }
+    }
+    if (s === 'SELECT faction_name, score FROM faction_reputation WHERE player_id = $1') {
+      return { rows: state.factionReputation.filter((r) => r.player_id === params[0]) }
+    }
+    if (s.includes('INSERT INTO faction_reputation')) {
+      const [playerId, factionName, score] = params
+      const existing = state.factionReputation.find(
+        (r) => r.player_id === playerId && r.faction_name === factionName,
+      )
+      if (existing) existing.score = score
+      else state.factionReputation.push({ player_id: playerId, faction_name: factionName, score })
       return { rows: [] }
     }
 

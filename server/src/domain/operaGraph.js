@@ -17,7 +17,14 @@ const CONDITION_TYPES = [
   'action_performed',
   'choice_made',
 ]
-const EFFECT_TYPES = ['give_item', 'apply_perk', 'apply_flaw', 'adjust_stat', 'adjust_relationship']
+const EFFECT_TYPES = [
+  'give_item',
+  'apply_perk',
+  'apply_flaw',
+  'adjust_stat',
+  'adjust_relationship',
+  'adjust_faction_reputation',
+]
 const ROLL_TYPES = ['chance']
 const OUTCOMES = ['success', 'failure', 'neutral']
 const SEED_TARGETS = ['shop', 'mission', 'candidate']
@@ -156,6 +163,12 @@ function validateEffectParams(type, params, where) {
     case 'adjust_relationship':
       if (!isFiniteNumber(p.amount))
         throw new Error(`${where}: effect "adjust_relationship" requires a numeric amount`)
+      return
+    case 'adjust_faction_reputation':
+      if (!isNonEmptyString(p.factionName))
+        throw new Error(`${where}: effect "adjust_faction_reputation" requires a factionName string`)
+      if (!isFiniteNumber(p.amount))
+        throw new Error(`${where}: effect "adjust_faction_reputation" requires a numeric amount`)
       return
     default:
       throw new Error(`${where}: unknown effect type "${type}"`)

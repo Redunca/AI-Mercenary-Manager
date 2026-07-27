@@ -234,6 +234,13 @@
           "params": {
             "perkName": "Diplomatic Standing"
           }
+        },
+        {
+          "type": "adjust_faction_reputation",
+          "params": {
+            "factionName": "{faction}",
+            "amount": 30
+          }
         }
       ],
       "position": {
@@ -284,6 +291,13 @@
           "params": {
             "flawName": "Marked Rival"
           }
+        },
+        {
+          "type": "adjust_faction_reputation",
+          "params": {
+            "factionName": "{faction}",
+            "amount": -25
+          }
         }
       ],
       "position": {
@@ -310,6 +324,13 @@
           "type": "apply_flaw",
           "params": {
             "flawName": "Marked Enemy"
+          }
+        },
+        {
+          "type": "adjust_faction_reputation",
+          "params": {
+            "factionName": "{faction}",
+            "amount": -40
           }
         }
       ],

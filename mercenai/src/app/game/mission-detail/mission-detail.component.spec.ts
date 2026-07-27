@@ -3,6 +3,7 @@ import { MissionDetailComponent } from './mission-detail.component';
 import { MissionService } from '../../core/mission.service';
 import { ShipService } from '../../core/ship.service';
 import { GameSyncService } from '../../core/game-sync.service';
+import { GameService } from '../../core/game.service';
 import { Mission } from '../../models/mission';
 import { of } from 'rxjs';
 
@@ -55,6 +56,12 @@ describe('MissionDetailComponent', () => {
           useValue: {
             watchMissionProgress: () => {},
             unwatchMissionProgress: () => {},
+          },
+        },
+        {
+          provide: GameService,
+          useValue: {
+            getFactionReputation: (name: string) => ({ name, score: 0, tier: 'NEUTRAL' }),
           },
         },
       ],

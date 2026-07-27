@@ -28,6 +28,7 @@ export class CommandService {
     this.registerGlobalCommands('self', this.handleSelf.bind(this));
     this.registerGlobalCommands('hospital', this.handleHospital.bind(this));
     this.registerGlobalCommands('cemetery', this.handleCemetery.bind(this));
+    this.registerGlobalCommands('factions', this.handleFactions.bind(this));
     this.registerGlobalCommands('opera', this.handleOpera.bind(this));
     this.registerGlobalCommands('items', this.handleItems.bind(this));
     this.registerGlobalCommands('dev', this.handleDev.bind(this));
@@ -492,6 +493,15 @@ export class CommandService {
     }
 
     console.warn('Usage: cemetery');
+  }
+
+  private handleFactions(action?: string) {
+    if (!action) {
+      this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.Factions);
+      return;
+    }
+
+    console.warn('Usage: factions');
   }
 
   private handleOpera(action: string, ...args: string[]) {

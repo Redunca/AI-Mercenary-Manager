@@ -35,6 +35,7 @@ import { OperaDetailComponent } from '../../game/opera-detail/opera-detail.compo
 import { ItemsComponent } from '../../game/items/items.component';
 import { HospitalComponent } from '../../game/hospital/hospital.component';
 import { CemeteryComponent } from '../../game/cemetery/cemetery.component';
+import { FactionsComponent } from '../../game/factions/factions.component';
 
 @Component({
   selector: 'app-terminal-panel',
@@ -62,6 +63,7 @@ import { CemeteryComponent } from '../../game/cemetery/cemetery.component';
     ItemsComponent,
     HospitalComponent,
     CemeteryComponent,
+    FactionsComponent,
   ],
   templateUrl: './terminal-panel.component.html',
   styleUrl: './terminal-panel.component.scss',
@@ -202,6 +204,8 @@ export class TerminalPanelComponent implements OnInit, AfterViewChecked, AfterVi
         return HospitalComponent;
       case PanelModule.Cemetery:
         return CemeteryComponent;
+      case PanelModule.Factions:
+        return FactionsComponent;
       default:
         return DashboardComponent;
     }

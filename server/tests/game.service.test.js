@@ -46,6 +46,7 @@ function createFakeClient() {
     ships: [],
     logEntries: [],
     recruitRelationships: [],
+    factionReputation: [],
     shipCrewRemovals: [],
   }
   let nextInstanceId = 1000
@@ -173,6 +174,7 @@ function createFakeClient() {
       state.missionInstances = []
       state.logEntries = []
       state.recruitRelationships = []
+      state.factionReputation = []
       return { rows: [] }
     }
     if (s === 'DELETE FROM mission_templates') {
@@ -347,7 +349,8 @@ function createFakeClient() {
       return { rows: [{ count: state.missionTemplates.length }] }
     }
     if (s.includes('INSERT INTO mission_templates')) {
-      const [id, name, description, difficulty, events, planet] = params
+      const [id, name, description, difficulty, events, planet, for_faction, against_faction] =
+        params
       const tpl = {
         id,
         name,
@@ -355,6 +358,8 @@ function createFakeClient() {
         difficulty,
         events: JSON.parse(events),
         planet: planet ? JSON.parse(planet) : null,
+        for_faction: for_faction ?? null,
+        against_faction: against_faction ?? null,
       }
       const existing = state.missionTemplates.find((t) => t.id === id)
       if (existing) Object.assign(existing, tpl)
@@ -590,6 +595,27 @@ function createFakeClient() {
       return { rows: [] }
     }
 
+    // faction_reputation (faction.service.js is real, not mocked -- see FactionService)
+    if (s === 'SELECT score FROM faction_reputation WHERE player_id = $1 AND faction_name = $2') {
+      const [playerId, factionName] = params
+      const row = state.factionReputation.find(
+        (r) => r.player_id === playerId && r.faction_name === factionName,
+      )
+      return { rows: row ? [{ score: row.score }] : [] }
+    }
+    if (s === 'SELECT faction_name, score FROM faction_reputation WHERE player_id = $1') {
+      return { rows: state.factionReputation.filter((r) => r.player_id === params[0]) }
+    }
+    if (s.includes('INSERT INTO faction_reputation')) {
+      const [playerId, factionName, score] = params
+      const existing = state.factionReputation.find(
+        (r) => r.player_id === playerId && r.faction_name === factionName,
+      )
+      if (existing) existing.score = score
+      else state.factionReputation.push({ player_id: playerId, faction_name: factionName, score })
+      return { rows: [] }
+    }
+
     throw new Error(`Query not handled by the fake test client: ${s}`)
   })
 
@@ -702,6 +728,7 @@ describe('GameService', () => {
     LogService.hasTraitFriction.mockReturnValue(false)
     LogService.buildRelationshipShiftLog.mockReturnValue({ mission: [] })
     LogService.buildRelationshipRerollLog.mockReturnValue({ mission: [] })
+    LogService.buildFactionShiftLog.mockReturnValue({ mission: [], global: [] })
 
     ShipService.getHangar.mockResolvedValue(null)
     ShipService.createHangar.mockResolvedValue({})

@@ -6,6 +6,7 @@ import { GameApiService } from './game-api.service';
 import { GameSyncService } from './game-sync.service';
 import { Player } from '../models/player';
 import { Relationship, RelationshipTier } from '../models/relationship';
+import { FactionReputation } from '../models/faction';
 
 @Injectable({ providedIn: 'root' })
 export class GameService {
@@ -15,6 +16,7 @@ export class GameService {
   recruitHired$ = new Subject<Recruit>();
   recruits: Recruit[] = [];
   relationships: Relationship[] = [];
+  factionReputations: FactionReputation[] = [];
   player$ = new BehaviorSubject<Player>({
     credits: 0,
     tokens: 0,
@@ -31,6 +33,7 @@ export class GameService {
   applyState(state: GameSnapshot): void {
     this.recruits = state.recruits;
     this.relationships = state.relationships;
+    this.factionReputations = state.factionReputations;
     this.player$.next({
       credits: state.player.credits,
       tokens: state.player.tokens,
@@ -47,6 +50,16 @@ export class GameService {
 
   getRecruit(id: string): Recruit | null {
     return this.recruits.find((r) => r.id === id) ?? null;
+  }
+
+  // NEUTRAL/0 default so an org the player hasn't crossed paths with yet
+  // still renders sensibly (matches the server default in faction.service.js).
+  getFactionReputation(name: string): FactionReputation {
+    return this.factionReputations.find((f) => f.name === name) ?? {
+      name,
+      score: 0,
+      tier: 'NEUTRAL',
+    };
   }
 
   // The other side of every relationship pair involving `recruitId`, for

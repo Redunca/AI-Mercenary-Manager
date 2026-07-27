@@ -5,6 +5,9 @@
 <div class="indent-one">"id" : {{ mission?.id }},</div>
 <div class="indent-one">"name" : "{{ mission?.name }}",</div>
 <div class="indent-one">"description" : "{{ mission?.description }}",</div>
+<div class="indent-one">
+  "org" : "{{ orgLabel }}"<span *ngIf="rewardMultiplierLabel"> ({{ rewardMultiplierLabel }})</span>,
+</div>
 
 <ng-container *ngIf="state; else available">
   <div class="indent-one">"ship" : "{{ shipName }}",</div>

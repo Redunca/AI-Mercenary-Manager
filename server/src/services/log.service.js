@@ -1,6 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const { orderPair, TIERS } = require('../domain/relationship')
+const { TIERS: FACTION_TIERS } = require('../domain/faction')
 const { missionOutcome } = require('../domain/mission')
 const RelationshipService = require('./relationship.service')
 
@@ -889,6 +890,35 @@ function buildDeathReactionLog({ deceased, survivors, relationships, missionId }
   return { mission: [{ tag: `[${reactor.name.toUpperCase()}]`, message, missionId }] }
 }
 
+// --- Faction reputation shift flavor logs ---------------------------------
+
+const FACTION_SHIFT_LINES = {
+  up: [
+    'Standing with {ORG} is improving.',
+    "Word of the crew's reliability is reaching {ORG}.",
+    '{ORG} is starting to see the crew as more than just hired guns.',
+  ],
+  down: [
+    'Standing with {ORG} is souring.',
+    '{ORG} is starting to see the crew as a liability.',
+    "Word of the crew's conduct has reached {ORG}, and it hasn't helped.",
+  ],
+}
+
+// Fires only on an actual tier boundary crossing, same convention as
+// buildRelationshipShiftLog -- but logged to both the mission and global
+// feeds, since standing is player-wide rather than crew-internal flavor.
+function buildFactionShiftLog({ factionName, previousTier, newTier, missionId }) {
+  const direction =
+    FACTION_TIERS.indexOf(newTier) > FACTION_TIERS.indexOf(previousTier) ? 'up' : 'down'
+  const message = pick(FACTION_SHIFT_LINES[direction]).replace(/\{ORG\}/g, factionName)
+  const tag = `[STANDING:${factionName.toUpperCase()}]`
+  return {
+    mission: [{ tag, message, missionId }],
+    global: [{ tag, message: `${message} (now ${newTier})` }],
+  }
+}
+
 module.exports = {
   insertLogEntries,
   buildPhaseLogs,
@@ -904,4 +934,5 @@ module.exports = {
   buildRelationshipShiftLog,
   buildRelationshipRerollLog,
   buildDeathReactionLog,
+  buildFactionShiftLog,
 }
