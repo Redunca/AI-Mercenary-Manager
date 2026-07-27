@@ -76,6 +76,14 @@
                 (ngModelChange)="setEffectParam($index, 'amount', asNumber($event))"
               />
             }
+            @case ('adjust_relationship') {
+              <input
+                type="number"
+                placeholder="Amount (bound recruit and a shipmate)"
+                [ngModel]="effect.params['amount']"
+                (ngModelChange)="setEffectParam($index, 'amount', asNumber($event))"
+              />
+            }
           }
 
           <button type="button" class="danger" (click)="removeEffect($index)">&times;</button>

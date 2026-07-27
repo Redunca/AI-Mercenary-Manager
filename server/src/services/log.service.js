@@ -1,5 +1,7 @@
 const fs = require('fs')
 const path = require('path')
+const { orderPair, TIERS } = require('../domain/relationship')
+const RelationshipService = require('./relationship.service')
 
 const DATA_DIR = path.join(__dirname, '../../data')
 
@@ -605,6 +607,42 @@ function collectTraitMatches(crewPairs) {
   return matches
 }
 
+// Thin wrapper reusing collectTraitMatches' trigger-parsing logic for a
+// single pair -- lets completeMission's relationship-delta calculation
+// (game.service.js) treat "these two clash" as one boolean, without
+// re-deriving pairs.json's trigger format in domain/relationship.js.
+function hasTraitFriction(recruitA, recruitB) {
+  return collectTraitMatches([[recruitA, recruitB]]).length > 0
+}
+
+function loadRelationshipPairs() {
+  try {
+    return require(path.join(DATA_DIR, 'banter', 'relationship-pairs.json'))
+  } catch {
+    return {}
+  }
+}
+
+// Unlike trait/personality matches, a relationship match is generic (not
+// keyed by trait/personality content) -- any BONDED pair gets the "friend"
+// entry, any RIVAL pair gets "rival", regardless of who they are. `relationships`
+// is the Map returned by RelationshipService.getCrewRelationships, keyed "a:b"
+// by normalized numeric id.
+function collectRelationshipMatches(crewPairs, relationships) {
+  if (!relationships || relationships.size === 0) return []
+  const relationshipPairs = loadRelationshipPairs()
+  const matches = []
+  for (const [m1, m2] of crewPairs) {
+    const [a, b] = orderPair(m1.id, m2.id)
+    const tier = relationships.get(`${a}:${b}`)?.tier
+    const key = tier === 'BONDED' ? 'friend' : tier === 'RIVAL' ? 'rival' : null
+    if (key && relationshipPairs[key]) {
+      matches.push({ A: m1, B: m2, entry: relationshipPairs[key] })
+    }
+  }
+  return matches
+}
+
 function collectPersonalityMatches(crewPairs) {
   const personalityPairs = loadPersonalityPairs()
   const matches = []
@@ -693,15 +731,28 @@ async function buildBanterLog(client, playerId, context) {
 
   if (eligiblePairs.length === 0) return null
 
-  const traitMatches = collectTraitMatches(eligiblePairs)
+  // Relationship match takes priority over trait/personality -- it's the
+  // most specific/personal signal available for a given pair -- then falls
+  // back to the existing trait -> personality chain.
+  const relationships = await RelationshipService.getCrewRelationships(
+    client,
+    playerId,
+    crew.map((r) => r.id),
+  )
+  const relationshipMatches = collectRelationshipMatches(eligiblePairs, relationships)
   const chosen =
-    traitMatches.length > 0
-      ? traitMatches[Math.floor(Math.random() * traitMatches.length)]
+    relationshipMatches.length > 0
+      ? relationshipMatches[Math.floor(Math.random() * relationshipMatches.length)]
       : (() => {
-          const personalityMatches = collectPersonalityMatches(eligiblePairs)
-          return personalityMatches.length > 0
-            ? personalityMatches[Math.floor(Math.random() * personalityMatches.length)]
-            : null
+          const traitMatches = collectTraitMatches(eligiblePairs)
+          return traitMatches.length > 0
+            ? traitMatches[Math.floor(Math.random() * traitMatches.length)]
+            : (() => {
+                const personalityMatches = collectPersonalityMatches(eligiblePairs)
+                return personalityMatches.length > 0
+                  ? personalityMatches[Math.floor(Math.random() * personalityMatches.length)]
+                  : null
+              })()
         })()
 
   if (!chosen) return null
@@ -719,6 +770,65 @@ async function buildBanterLog(client, playerId, context) {
   }
 }
 
+// --- Relationship shift / reroll flavor logs (task 6/7) -------------------
+
+const RELATIONSHIP_SHIFT_LINES = {
+  closer: [
+    '{A} and {B} are growing closer.',
+    'Something shifted between {A} and {B} out there, for the better.',
+    '{A} and {B} seem to trust each other a little more now.',
+  ],
+  distant: [
+    '{A} and {B} are growing more distant.',
+    'Something shifted between {A} and {B} out there, and not for the better.',
+    'There is a new coldness between {A} and {B}.',
+  ],
+}
+
+// Fires only on an actual tier boundary crossing (e.g. NEUTRAL -> FRIENDLY),
+// not on every point tick, to avoid log spam -- see completeMission's use
+// of RelationshipService.adjustRelationship's previousTier/newTier return.
+// Uses '⇄' rather than banter's '→' so it never matches
+// getLastBanterPairNames' `tag LIKE '%→%'` cooldown query.
+function buildRelationshipShiftLog({ recruitA, recruitB, previousTier, newTier, missionId }) {
+  const direction = TIERS.indexOf(newTier) > TIERS.indexOf(previousTier) ? 'closer' : 'distant'
+  const message = pick(RELATIONSHIP_SHIFT_LINES[direction])
+    .replace(/\{A\}/g, recruitA.name)
+    .replace(/\{B\}/g, recruitB.name)
+  return {
+    mission: [
+      { tag: `[${recruitA.name.toUpperCase()}⇄${recruitB.name.toUpperCase()}]`, message, missionId },
+    ],
+  }
+}
+
+const RELATIONSHIP_REROLL_LINES = {
+  friend: [
+    "{B} steps in before {A} can blow it: \"let me help with that.\"",
+    '{A} falters, but {B} is already lending a hand.',
+    "{B} catches {A}'s mistake and quietly fixes it.",
+  ],
+  rival: [
+    "{B} \"helps\", and {A}'s clean shot suddenly is not so clean.",
+    "{B} cannot resist getting in {A}'s way, right when it counts.",
+    '{A} had it handled, until {B} decided otherwise.',
+  ],
+}
+
+// A short flavor line for the automatic once-per-mission reroll a BONDED
+// friend grants on a failed test, or a RIVAL forces on a successful one
+// (see resolveEvents in game.service.js). No missionId is attached here --
+// callers insert it alongside the event-result log, which already carries
+// mission scoping.
+function buildRelationshipRerollLog({ actingRecruit, partnerRecruit, tier }) {
+  const message = pick(RELATIONSHIP_REROLL_LINES[tier])
+    .replace(/\{A\}/g, actingRecruit.name)
+    .replace(/\{B\}/g, partnerRecruit.name)
+  return {
+    mission: [{ tag: `[${actingRecruit.name.toUpperCase()}]`, message }],
+  }
+}
+
 module.exports = {
   insertLogEntries,
   buildPhaseLogs,
@@ -728,4 +838,8 @@ module.exports = {
   buildCombatRoundLog,
   buildCombatEventLogs,
   getRecentMissionMessages,
+  allCrewPairs,
+  hasTraitFriction,
+  buildRelationshipShiftLog,
+  buildRelationshipRerollLog,
 }

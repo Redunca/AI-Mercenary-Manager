@@ -23,8 +23,13 @@ const {
   buildCombatRoundLog,
   buildCombatEventLogs,
   getRecentMissionMessages,
+  allCrewPairs,
+  hasTraitFriction,
+  buildRelationshipShiftLog,
+  buildRelationshipRerollLog,
 } = require('./log.service')
 const { validateCrewAssignment } = require('../domain/ship')
+const { computeMissionDelta } = require('../domain/relationship')
 const ShipService = require('./ship.service')
 const ConsumableService = require('./consumable.service')
 const EquipmentService = require('./equipment.service')
@@ -32,6 +37,7 @@ const OperaService = require('./opera.service')
 const ShopService = require('./shop.service')
 const RecruitService = require('./recruit.service')
 const HospitalService = require('./hospital.service')
+const RelationshipService = require('./relationship.service')
 
 const { loadData } = require('../dataLoader')
 const { generateMission } = require('../engine/missionGenerator')
@@ -454,6 +460,13 @@ async function resolveEvents(client, playerId, instance, template, crewMembers, 
   const missionId = template.id
   const shipId = instance.ship_id
   let crewDead = []
+  // Fetched once per call (not per-event) for the friend/rival reroll check
+  // below -- see resolveEvents' skill-check branch.
+  const relationships = await RelationshipService.getCrewRelationships(
+    client,
+    playerId,
+    crewMembers.map((r) => r.id),
+  )
 
   // Only resolves events due by targetEventIndex, not every remaining one --
   // see advanceMission's dueEventCount() call for why. Every early-exit path
@@ -583,7 +596,43 @@ async function resolveEvents(client, playerId, instance, template, crewMembers, 
     const advantage = boost ? (boost.effect_data?.advantage ?? 1) : 0
 
     const roll = rollAction(bestRecruit.attributes[event.attribute], advantage)
-    const success = roll.total >= event.dc
+    let success = roll.total >= event.dc
+
+    // A BONDED friend, once per mission, rerolls a failed test in the acting
+    // recruit's favor; a RIVAL forces a reroll of a successful one, once per
+    // mission too. "Once per mission" persists with no schema change --
+    // eventResults is the full accumulated history across every
+    // resolveEvents() call for this mission instance (advanceMission only
+    // passes newly-due events each time), so scanning it for a prior marker
+    // is enough -- mirrors getLastBanterPairNames' banter-cooldown
+    // derivation from what's already persisted.
+    let relationshipReroll = null
+    const rerollTier = success ? 'RIVAL' : 'BONDED'
+    const rerollKind = success ? 'rival' : 'friend'
+    const rerollAlreadyUsed = eventResults.some((r) => r.relationshipReroll === rerollKind)
+    if (!rerollAlreadyUsed) {
+      const partner = activeCrew.find(
+        (r) =>
+          r.id !== bestRecruit.id &&
+          RelationshipService.lookupCrewRelationship(relationships, bestRecruit.id, r.id).tier ===
+            rerollTier,
+      )
+      if (partner) {
+        relationshipReroll = { tier: rerollKind, partner }
+        const reroll = rollAction(bestRecruit.attributes[event.attribute], advantage)
+        roll.d20 = reroll.d20
+        roll.bonus = reroll.bonus
+        roll.diceNotation = reroll.diceNotation
+        roll.total = reroll.total
+        success = reroll.total >= event.dc
+        const rerollLog = buildRelationshipRerollLog({
+          actingRecruit: bestRecruit,
+          partnerRecruit: partner,
+          tier: rerollKind,
+        })
+        await insertLogEntries(client, playerId, rerollLog.mission)
+      }
+    }
 
     const result = {
       eventIndex: i,
@@ -599,6 +648,7 @@ async function resolveEvents(client, playerId, instance, template, crewMembers, 
       success,
     }
     if (advantage > 0) result.advantageUsed = advantage
+    if (relationshipReroll) result.relationshipReroll = relationshipReroll.tier
 
     if (success) {
       result.rewardEarned = event.reward
@@ -789,6 +839,31 @@ async function completeMission(client, playerId, instance, template, failed, shi
     avoid: await getRecentMissionMessages(client, playerId, template.id),
   })
   await insertLogEntries(client, playerId, [...completedLogs.mission, ...completedLogs.global])
+
+  // Every crew pair that shared this mission drifts a little: toward each
+  // other on success, apart on failure, nudged further by personality
+  // compatibility and any trait-clash banter trigger between them (reusing
+  // the same trigger data banter already uses -- see hasTraitFriction).
+  // Fires once per completed mission per pair, not per event.
+  for (const [a, b] of allCrewPairs(crewMembers.filter(Boolean))) {
+    const delta = computeMissionDelta({
+      success: !failed,
+      personalityA: a.personality,
+      personalityB: b.personality,
+      traitFriction: hasTraitFriction(a, b),
+    })
+    const shift = await RelationshipService.adjustRelationship(client, playerId, a.id, b.id, delta)
+    if (shift.previousTier !== shift.newTier) {
+      const shiftLogs = buildRelationshipShiftLog({
+        recruitA: a,
+        recruitB: b,
+        previousTier: shift.previousTier,
+        newTier: shift.newTier,
+        missionId: template.id,
+      })
+      await insertLogEntries(client, playerId, shiftLogs.mission)
+    }
+  }
 
   // Fires on both success and failure -- a 'mission' opera node branches on
   // previous_outcome exactly like a 'check' node's roll, so it needs to
@@ -1353,6 +1428,7 @@ async function buildGameState(client, playerId) {
     'SELECT * FROM recruits WHERE player_id = $1 AND deleted_at IS NULL ORDER BY id',
     [playerId],
   )
+  const relationships = await RelationshipService.getRelationships(client, playerId)
   const candidatesResult = await client.query(
     'SELECT * FROM candidates WHERE player_id = $1 ORDER BY id',
     [playerId],
@@ -1462,6 +1538,7 @@ async function buildGameState(client, playerId) {
       hospitalHealIntervalMs: player.hospital_heal_interval_ms,
     },
     recruits: recruitsResult.rows.map(rowToRecruit),
+    relationships,
     candidates: candidatesResult.rows.map(rowToCandidate),
     ships: shipsResult.rows,
     missions: visibleMissions,

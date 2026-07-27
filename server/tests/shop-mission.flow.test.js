@@ -29,6 +29,7 @@ function createFakeClient() {
     consumables: [],
     purchaseHistory: [],
     logEntries: [],
+    recruitRelationships: [],
   }
   let nextInstanceId = 1000
   let nextShopItemId = 1
@@ -805,6 +806,39 @@ function createFakeClient() {
           .reverse()
           .map((l) => ({ message: l.message })),
       }
+    }
+
+    // recruit_relationships (relationship.service.js is real, not mocked here)
+    if (
+      s === 'SELECT score FROM recruit_relationships WHERE player_id = $1 AND recruit_a_id = $2 AND recruit_b_id = $3'
+    ) {
+      const [playerId, a, b] = params
+      const row = state.recruitRelationships.find(
+        (r) => r.player_id === playerId && r.recruit_a_id === a && r.recruit_b_id === b,
+      )
+      return { rows: row ? [{ score: row.score }] : [] }
+    }
+    if (s.includes('FROM recruit_relationships') && s.includes('recruit_a_id = ANY($2::int[])')) {
+      const [playerId, ids] = params
+      const idSet = new Set(ids)
+      return {
+        rows: state.recruitRelationships.filter(
+          (r) =>
+            r.player_id === playerId && idSet.has(r.recruit_a_id) && idSet.has(r.recruit_b_id),
+        ),
+      }
+    }
+    if (s === 'SELECT recruit_a_id, recruit_b_id, score FROM recruit_relationships WHERE player_id = $1') {
+      return { rows: state.recruitRelationships.filter((r) => r.player_id === params[0]) }
+    }
+    if (s.includes('INSERT INTO recruit_relationships')) {
+      const [playerId, a, b, score] = params
+      const existing = state.recruitRelationships.find(
+        (r) => r.player_id === playerId && r.recruit_a_id === a && r.recruit_b_id === b,
+      )
+      if (existing) existing.score = score
+      else state.recruitRelationships.push({ player_id: playerId, recruit_a_id: a, recruit_b_id: b, score })
+      return { rows: [] }
     }
 
     throw new Error(`Query not handled by the fake test client: ${s}`)

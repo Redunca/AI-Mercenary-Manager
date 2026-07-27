@@ -25,6 +25,10 @@ export class RecruitDetailComponent implements OnInit {
     return this.game.getRecruit(this.id);
   }
 
+  get relationships() {
+    return this.game.getRelationshipsFor(this.id).filter((r) => r.recruit);
+  }
+
   ngOnInit() {
     this.refreshEquipment();
   }

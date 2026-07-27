@@ -84,7 +84,13 @@ export const ACTION_MATCH_FIELDS: Partial<Record<ActionType, ActionMatchKey>> = 
   send_recruit_to_quest: 'templateId',
 };
 
-export const EFFECT_TYPES = ['give_item', 'apply_perk', 'apply_flaw', 'adjust_stat'] as const;
+export const EFFECT_TYPES = [
+  'give_item',
+  'apply_perk',
+  'apply_flaw',
+  'adjust_stat',
+  'adjust_relationship',
+] as const;
 export type EffectType = (typeof EFFECT_TYPES)[number];
 
 export const ROLL_TYPES = ['chance'] as const;
@@ -358,6 +364,8 @@ export function defaultParamsFor(
       return { operator: '>=', value: 1 };
     case 'adjust_stat':
       return { attribute: 'agility', amount: 1 };
+    case 'adjust_relationship':
+      return { amount: 20 };
     case 'action_performed':
       return { actionType: 'execute_command', match: { command: '' } };
     case 'choice_made':

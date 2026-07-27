@@ -13,6 +13,7 @@
 const { getOperaDefinition, getGenerationPoolDefinitions } = require('../operaLoader')
 const OperaGraph = require('../domain/operaGraph')
 const { insertLogEntries } = require('./log.service')
+const RelationshipService = require('./relationship.service')
 const { pickOne } = require('../utils/random')
 const { generateMission } = require('../engine/missionGenerator')
 const { loadData } = require('../dataLoader')
@@ -171,6 +172,27 @@ async function boundShipCrewCount(client, playerId, state) {
   return result.rows[0]?.crew?.length ?? 0
 }
 
+// adjust_relationship needs a second recruit, and Opera has no concept of
+// referencing a specific second recruit slot (personal arcs are generic/
+// archetypal -- see bindRecruit's comment: a template fires for whichever
+// recruit triggers it, never a scripted specific one). The closest generic
+// anchor is "a shipmate of the bound recruit" -- same ship lookup as
+// boundShipCrewCount, but needs the crew array itself, not just its length.
+// Returns null (a no-op for the caller) if the bound recruit has no ship or
+// no other crewmate.
+async function resolveSecondRecruitId(client, playerId, state) {
+  if (state.boundRecruitId == null) return null
+  const result = await client.query(
+    'SELECT crew FROM ships WHERE player_id = $1 AND deleted_at IS NULL AND $2 = ANY(crew)',
+    [playerId, state.boundRecruitId],
+  )
+  const crew = (result.rows[0]?.crew ?? []).filter(
+    (id) => String(id) !== String(state.boundRecruitId),
+  )
+  if (crew.length === 0) return null
+  return crew[Math.floor(Math.random() * crew.length)]
+}
+
 // `action` is {actionType, payload} for the one incoming event this pass is
 // reacting to (or null during a plain auto-advance) -- an action_performed
 // condition can only ever be satisfied when it matches that single event,
@@ -239,6 +261,17 @@ async function applyEffect(client, playerId, state, effect) {
           p.attribute,
           p.amount,
         )
+      return
+    }
+    case 'adjust_relationship': {
+      // No log entry here -- every other effect case is silent too; the
+      // node's own authored text carries the narration (see pushTask/log
+      // firing once per node, not once per effect).
+      const recruitAId = await resolveEffectRecruitId(client, playerId, state)
+      if (recruitAId == null) return
+      const recruitBId = await resolveSecondRecruitId(client, playerId, state)
+      if (recruitBId == null) return
+      await RelationshipService.adjustRelationship(client, playerId, recruitAId, recruitBId, p.amount)
       return
     }
   }

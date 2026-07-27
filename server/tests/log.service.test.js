@@ -7,10 +7,15 @@ const {
   buildCombatRoundLog,
   buildCombatEventLogs,
   getRecentMissionMessages,
+  allCrewPairs,
+  hasTraitFriction,
+  buildRelationshipShiftLog,
+  buildRelationshipRerollLog,
 } = require('../src/services/log.service')
 const planetTags = require('../data/planet-tags.json')
 const banterPairs = require('../data/banter/pairs.json')
 const personalityPairs = require('../data/banter/personality-pairs.json')
+const relationshipPairs = require('../data/banter/relationship-pairs.json')
 
 describe('insertLogEntries', () => {
   test('inserts one row per entry, defaulting missionId to null', async () => {
@@ -912,6 +917,147 @@ describe('buildBanterLog', () => {
     expect(result.mission[1].tag).toBe('[KADE→KADE]')
     expect(typeof result.mission[0].message).toBe('string')
     expect(result.mission[0].message.length).toBeGreaterThan(0)
+  })
+
+  function fakeClientWithRelationship(rows) {
+    return {
+      query: async (sql) => {
+        if (sql.includes('log_entries')) return { rows: [] }
+        if (sql.includes('recruit_relationships')) return { rows }
+        return { rows: [] }
+      },
+    }
+  }
+
+  test('a BONDED relationship match takes priority over a matching trait-pair trigger', async () => {
+    const crew = [
+      recruit(1, 'Kade', 'Explorer', { flaws: [{ name: 'Bloodlust' }] }),
+      recruit(2, 'Vex', 'Sentinel', { flaws: [{ name: 'Pacifist' }] }),
+    ]
+    const client = fakeClientWithRelationship([
+      { recruit_a_id: 1, recruit_b_id: 2, score: 80 }, // BONDED
+    ])
+    const result = await buildBanterLog(client, 1, { missionId: 1, crew })
+
+    expect(result).not.toBeNull()
+    const lines = relationshipPairs.friend.lines.map((l) =>
+      l.replace(/\{A\}/g, 'Kade').replace(/\{B\}/g, 'Vex'),
+    )
+    expect(lines).toContain(result.mission[0].message)
+  })
+
+  test('a RIVAL relationship match takes priority over the personality-pair fallback', async () => {
+    const crew = [recruit(1, 'Kade', 'Explorer'), recruit(2, 'Vex', 'Sentinel')]
+    const client = fakeClientWithRelationship([
+      { recruit_a_id: 1, recruit_b_id: 2, score: -80 }, // RIVAL
+    ])
+    const result = await buildBanterLog(client, 1, { missionId: 1, crew })
+
+    expect(result).not.toBeNull()
+    const lines = relationshipPairs.rival.lines.map((l) =>
+      l.replace(/\{A\}/g, 'Kade').replace(/\{B\}/g, 'Vex'),
+    )
+    expect(lines).toContain(result.mission[0].message)
+  })
+
+  test('a NEUTRAL relationship does not override the trait-pair match', async () => {
+    const crew = [
+      recruit(1, 'Kade', 'Explorer', { flaws: [{ name: 'Bloodlust' }] }),
+      recruit(2, 'Vex', 'Sentinel', { flaws: [{ name: 'Pacifist' }] }),
+    ]
+    const client = fakeClientWithRelationship([{ recruit_a_id: 1, recruit_b_id: 2, score: 0 }])
+    const result = await buildBanterLog(client, 1, { missionId: 1, crew })
+
+    expect(result).not.toBeNull()
+    const entry = banterPairs.find((p) => p.trigger === 'flaw:bloodlust+flaw:pacifist')
+    expect(entry.lines.map((l) => l.replace(/\{A\}/g, 'Kade').replace(/\{B\}/g, 'Vex'))).toContain(
+      result.mission[0].message,
+    )
+  })
+})
+
+describe('allCrewPairs', () => {
+  test('returns every unordered pair exactly once', () => {
+    const crew = ['a', 'b', 'c']
+    expect(allCrewPairs(crew)).toEqual([
+      ['a', 'b'],
+      ['a', 'c'],
+      ['b', 'c'],
+    ])
+  })
+
+  test('returns an empty array for fewer than 2 members', () => {
+    expect(allCrewPairs(['a'])).toEqual([])
+    expect(allCrewPairs([])).toEqual([])
+  })
+})
+
+describe('hasTraitFriction', () => {
+  test('true when the pair matches a pairs.json trigger, in either order', () => {
+    const a = { id: 1, name: 'Kade', flaws: [{ name: 'Bloodlust' }] }
+    const b = { id: 2, name: 'Vex', flaws: [{ name: 'Pacifist' }] }
+    expect(hasTraitFriction(a, b)).toBe(true)
+    expect(hasTraitFriction(b, a)).toBe(true)
+  })
+
+  test('false when no trigger matches', () => {
+    const a = { id: 1, name: 'Kade', flaws: [] }
+    const b = { id: 2, name: 'Vex', flaws: [] }
+    expect(hasTraitFriction(a, b)).toBe(false)
+  })
+})
+
+describe('buildRelationshipShiftLog', () => {
+  const recruitA = { id: 1, name: 'Kade' }
+  const recruitB = { id: 2, name: 'Vex' }
+
+  test('reads "closer" when the new tier is higher than the previous one', () => {
+    const result = buildRelationshipShiftLog({
+      recruitA,
+      recruitB,
+      previousTier: 'NEUTRAL',
+      newTier: 'FRIENDLY',
+      missionId: 42,
+    })
+    expect(result.mission).toHaveLength(1)
+    expect(result.mission[0].tag).toBe('[KADE⇄VEX]')
+    expect(result.mission[0].missionId).toBe(42)
+    expect(result.mission[0].message).toMatch(/closer|trust|shifted/i)
+  })
+
+  test('reads "distant" when the new tier is lower than the previous one', () => {
+    const result = buildRelationshipShiftLog({
+      recruitA,
+      recruitB,
+      previousTier: 'TENSE',
+      newTier: 'RIVAL',
+      missionId: 42,
+    })
+    expect(result.mission[0].message).toMatch(/distant|coldness|shifted/i)
+  })
+})
+
+describe('buildRelationshipRerollLog', () => {
+  test('friend reroll flavor text mentions both names', () => {
+    const result = buildRelationshipRerollLog({
+      actingRecruit: { name: 'Kade' },
+      partnerRecruit: { name: 'Vex' },
+      tier: 'friend',
+    })
+    expect(result.mission[0].tag).toBe('[KADE]')
+    expect(result.mission[0].message).toContain('Kade')
+    expect(result.mission[0].message).toContain('Vex')
+  })
+
+  test('rival reroll flavor text mentions both names', () => {
+    const result = buildRelationshipRerollLog({
+      actingRecruit: { name: 'Kade' },
+      partnerRecruit: { name: 'Vex' },
+      tier: 'rival',
+    })
+    expect(result.mission[0].tag).toBe('[KADE]')
+    expect(result.mission[0].message).toContain('Kade')
+    expect(result.mission[0].message).toContain('Vex')
   })
 })
 

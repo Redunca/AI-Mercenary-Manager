@@ -24,7 +24,7 @@ const CONDITION_TYPES = [
   'action_performed',
   'choice_made',
 ]
-const EFFECT_TYPES = ['give_item', 'apply_perk', 'apply_flaw', 'adjust_stat']
+const EFFECT_TYPES = ['give_item', 'apply_perk', 'apply_flaw', 'adjust_stat', 'adjust_relationship']
 const ROLL_TYPES = ['chance']
 const OUTCOMES = ['success', 'failure', 'neutral']
 // What a 'seed' node can pre-declare for a not-yet-built opera engine to
@@ -196,6 +196,10 @@ function validateEffectParams(type, params, where) {
         throw new Error(`${where}: effect "adjust_stat" requires a known attribute`)
       if (!isFiniteNumber(p.amount))
         throw new Error(`${where}: effect "adjust_stat" requires a numeric amount`)
+      return
+    case 'adjust_relationship':
+      if (!isFiniteNumber(p.amount))
+        throw new Error(`${where}: effect "adjust_relationship" requires a numeric amount`)
       return
     default:
       throw new Error(`${where}: unknown effect type "${type}"`)
@@ -606,6 +610,11 @@ function applyEffect(effect, mockState) {
       return
     case 'adjust_stat':
       mockState.attributes[p.attribute] = (mockState.attributes[p.attribute] ?? 0) + p.amount
+      return
+    case 'adjust_relationship':
+      // No mockState field tracks relationships, and no condition type reads
+      // one -- nothing to simulate here, unlike adjust_stat/apply_perk/
+      // apply_flaw which conditions like crew_threshold/has_item can react to.
       return
   }
 }

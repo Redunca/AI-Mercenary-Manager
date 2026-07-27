@@ -5,6 +5,7 @@ import { GameSnapshot } from '../models/game-state';
 import { GameApiService } from './game-api.service';
 import { GameSyncService } from './game-sync.service';
 import { Player } from '../models/player';
+import { Relationship, RelationshipTier } from '../models/relationship';
 
 @Injectable({ providedIn: 'root' })
 export class GameService {
@@ -13,6 +14,7 @@ export class GameService {
 
   recruitHired$ = new Subject<Recruit>();
   recruits: Recruit[] = [];
+  relationships: Relationship[] = [];
   player$ = new BehaviorSubject<Player>({
     credits: 0,
     tokens: 0,
@@ -28,6 +30,7 @@ export class GameService {
 
   applyState(state: GameSnapshot): void {
     this.recruits = state.recruits;
+    this.relationships = state.relationships;
     this.player$.next({
       credits: state.player.credits,
       tokens: state.player.tokens,
@@ -44,6 +47,19 @@ export class GameService {
 
   getRecruit(id: string): Recruit | null {
     return this.recruits.find((r) => r.id === id) ?? null;
+  }
+
+  // The other side of every relationship pair involving `recruitId`, for
+  // the recruit-detail view's relationships section.
+  getRelationshipsFor(
+    recruitId: string,
+  ): { recruit: Recruit | null; score: number; tier: RelationshipTier }[] {
+    return this.relationships
+      .filter((r) => r.recruitAId === recruitId || r.recruitBId === recruitId)
+      .map((r) => {
+        const otherId = r.recruitAId === recruitId ? r.recruitBId : r.recruitAId;
+        return { recruit: this.getRecruit(otherId), score: r.score, tier: r.tier };
+      });
   }
 
   async renameRecruit(id: string, newName: string): Promise<void> {

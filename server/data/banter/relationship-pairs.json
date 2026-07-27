@@ -1,0 +1,40 @@
+{
+  "friend": {
+    "speaker": "A",
+    "lines": [
+      "{A} tosses {B} a ration bar without even looking. {B} catches it without looking either.",
+      "{A} checks on {B} between breaths. {B} gives the old signal back: fine, still standing.",
+      "{A} covers {B}'s blind side out of pure habit by now.",
+      "{A} cracks a joke only {B} would get. {B} laughs before the punchline even lands.",
+      "{A} and {B} fall into step without a word passing between them.",
+      "{A} watches {B}'s back the way you only do for someone you trust with your life."
+    ],
+    "reply": [
+      "Always got you, {A}.",
+      "Wouldn't have it any other way, {A}.",
+      "That's what friends are for, {A}.",
+      "You'd do the same for me, {A}.",
+      "We've got each other, {A}. Always have.",
+      "Right back at you, {A}."
+    ]
+  },
+  "rival": {
+    "speaker": "A",
+    "lines": [
+      "{A} takes the lead just to keep it away from {B}. {B} notices. {B} always notices.",
+      "{A} makes a point of not needing {B}'s help. {B} makes a point of offering it anyway.",
+      "{A} and {B} both reach for the same call, and neither backs down first.",
+      "{A} mutters something under their breath about {B}. {B} mutters something back.",
+      "{A} keeps score. {B} keeps score too, just quieter about it.",
+      "{A} and {B} stand shoulder to shoulder and somehow still feel like they're on opposite sides."
+    ],
+    "reply": [
+      "Don't push it, {A}.",
+      "I don't need the reminder, {A}.",
+      "We'll settle this later, {A}.",
+      "Not now, {A}. Not here.",
+      "Save it for after the mission, {A}.",
+      "Noted, {A}. As always."
+    ]
+  }
+}

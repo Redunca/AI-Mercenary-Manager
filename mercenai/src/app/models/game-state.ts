@@ -3,6 +3,7 @@ import { LogEntry } from './log';
 import { Mission, MissionState } from './mission';
 import { OperaSummary } from './opera';
 import { Recruit } from './recruit';
+import { Relationship } from './relationship';
 import { Ship } from './ship';
 
 export interface PlayerSnapshot {
@@ -20,6 +21,7 @@ export interface PlayerSnapshot {
 export interface GameSnapshot {
   player: PlayerSnapshot;
   recruits: Recruit[];
+  relationships: Relationship[];
   candidates: Candidate[];
   ships: Ship[];
   missions: Mission[];

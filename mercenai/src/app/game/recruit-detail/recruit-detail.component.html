@@ -65,6 +65,15 @@
   <div *ngIf="!recruit.flaws?.length" class="indent-two muted">—</div>
   <div class="indent-one">],</div>
 
+  <div class="indent-one">"relationships" : [</div>
+  <ng-container *ngFor="let r of relationships">
+    <div class="indent-two relationship-{{ r.tier | lowercase }}">
+      {{ r.recruit?.name }} — {{ r.tier | lowercase }} ({{ r.score }})
+    </div>
+  </ng-container>
+  <div *ngIf="!relationships.length" class="indent-two muted">—</div>
+  <div class="indent-one">],</div>
+
   <div class="indent-one">"armor" : {{ '{' }}</div>
   <ng-container *ngIf="equippedArmor as armor; else noArmor">
     <div class="indent-two">"name" : "{{ armor.name }}",</div>

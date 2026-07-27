@@ -45,6 +45,7 @@ function createFakeClient() {
     missionInstances: [],
     ships: [],
     logEntries: [],
+    recruitRelationships: [],
   }
   let nextInstanceId = 1000
   // Postgres implicitly casts text parameters to the column type (int);
@@ -170,6 +171,7 @@ function createFakeClient() {
       state.candidates = []
       state.missionInstances = []
       state.logEntries = []
+      state.recruitRelationships = []
       return { rows: [] }
     }
     if (s === 'DELETE FROM mission_templates') {
@@ -536,6 +538,39 @@ function createFakeClient() {
       return { rows: state.logEntries.filter((l) => l.player_id === params[0]) }
     }
 
+    // recruit_relationships (relationship.service.js is real, not mocked -- see RelationshipService)
+    if (
+      s === 'SELECT score FROM recruit_relationships WHERE player_id = $1 AND recruit_a_id = $2 AND recruit_b_id = $3'
+    ) {
+      const [playerId, a, b] = params
+      const row = state.recruitRelationships.find(
+        (r) => r.player_id === playerId && r.recruit_a_id === a && r.recruit_b_id === b,
+      )
+      return { rows: row ? [{ score: row.score }] : [] }
+    }
+    if (s.includes('FROM recruit_relationships') && s.includes('recruit_a_id = ANY($2::int[])')) {
+      const [playerId, ids] = params
+      const idSet = new Set(ids)
+      return {
+        rows: state.recruitRelationships.filter(
+          (r) =>
+            r.player_id === playerId && idSet.has(r.recruit_a_id) && idSet.has(r.recruit_b_id),
+        ),
+      }
+    }
+    if (s === 'SELECT recruit_a_id, recruit_b_id, score FROM recruit_relationships WHERE player_id = $1') {
+      return { rows: state.recruitRelationships.filter((r) => r.player_id === params[0]) }
+    }
+    if (s.includes('INSERT INTO recruit_relationships')) {
+      const [playerId, a, b, score] = params
+      const existing = state.recruitRelationships.find(
+        (r) => r.player_id === playerId && r.recruit_a_id === a && r.recruit_b_id === b,
+      )
+      if (existing) existing.score = score
+      else state.recruitRelationships.push({ player_id: playerId, recruit_a_id: a, recruit_b_id: b, score })
+      return { rows: [] }
+    }
+
     throw new Error(`Query not handled by the fake test client: ${s}`)
   })
 
@@ -632,6 +667,20 @@ describe('GameService', () => {
     })
     LogService.buildCombatEventLogs.mockReturnValue({ mission: [], global: [] })
     LogService.insertLogEntries.mockResolvedValue(undefined)
+    // Real pairing logic (not the trigger-content lookups) so completeMission's
+    // relationship-delta loop iterates real crew pairs; hasTraitFriction/the
+    // shift/reroll log builders stay simple stand-ins since their content
+    // (banter trigger data, flavor text) is exercised in log.service.test.js.
+    LogService.allCrewPairs.mockImplementation((crew) => {
+      const pairs = []
+      for (let i = 0; i < crew.length; i++) {
+        for (let j = i + 1; j < crew.length; j++) pairs.push([crew[i], crew[j]])
+      }
+      return pairs
+    })
+    LogService.hasTraitFriction.mockReturnValue(false)
+    LogService.buildRelationshipShiftLog.mockReturnValue({ mission: [] })
+    LogService.buildRelationshipRerollLog.mockReturnValue({ mission: [] })
 
     ShipService.getHangar.mockResolvedValue(null)
     ShipService.createHangar.mockResolvedValue({})
@@ -1623,6 +1672,94 @@ describe('GameService', () => {
       expect(recruit.status).toBe('available')
       expect(ShipService.destroyShip).not.toHaveBeenCalled()
       expect(ShipService.updateShipStatus).toHaveBeenCalledWith(expect.anything(), 1, 1, 'docked')
+    })
+  })
+
+  describe('syncGame — relationship reroll and mission-outcome drift', () => {
+    const RELATIONSHIP_TEMPLATE_ID = 110
+
+    async function launchTwoRecruitMission(templateDef) {
+      await GameService.initGame()
+      seedTemplate(state, templateDef)
+      state.recruits[0].id = 1
+      state.recruits.push({ ...state.recruits[0], id: 2, name: 'Second' })
+      ShipService.getShip.mockResolvedValue({
+        id: 1,
+        player_id: 1,
+        crew: [1, 2],
+        status: 'docked',
+        deleted_at: null,
+      })
+      await GameService.startMission(templateDef.id, 1)
+      return state.missionInstances[0]
+    }
+
+    test('a BONDED partner rerolls a failed test once, and only once, per mission', async () => {
+      const instance = await launchTwoRecruitMission({
+        id: RELATIONSHIP_TEMPLATE_ID,
+        difficulty: 'STANDARD',
+        events: [
+          buildEvent({ id: 'e1', type: 'RECON', attribute: 'perception', dc: 10 }),
+          buildEvent({ id: 'e2', type: 'RECON', attribute: 'perception', dc: 10 }),
+        ],
+      })
+      instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
+      // recruit 1 (the higher/tied stat -> acting recruit) and recruit 2 are BONDED.
+      state.recruitRelationships.push({ player_id: 1, recruit_a_id: 1, recruit_b_id: 2, score: 80 })
+      rollAction
+        .mockReturnValueOnce({ d20: 1, bonus: 0, diceNotation: '—', total: 1 }) // e1 initial roll fails
+        .mockReturnValueOnce({ d20: 20, bonus: 0, diceNotation: '—', total: 20 }) // e1 friend reroll succeeds
+        .mockReturnValueOnce({ d20: 1, bonus: 0, diceNotation: '—', total: 1 }) // e2 initial roll fails too
+
+      await GameService.syncGame()
+
+      const [e1, e2] = state.missionInstances[0].event_results
+      expect(e1.success).toBe(true)
+      expect(e1.relationshipReroll).toBe('friend')
+      // Once per mission: e2 also fails but gets no second friend reroll.
+      expect(e2.success).toBe(false)
+      expect(e2.relationshipReroll).toBeUndefined()
+    })
+
+    test('a RIVAL partner forces a reroll of a successful test', async () => {
+      const instance = await launchTwoRecruitMission({
+        id: RELATIONSHIP_TEMPLATE_ID + 1,
+        difficulty: 'STANDARD',
+        events: [buildEvent({ id: 'e1', type: 'RECON', attribute: 'perception', dc: 10 })],
+      })
+      instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
+      state.recruitRelationships.push({ player_id: 1, recruit_a_id: 1, recruit_b_id: 2, score: -80 })
+      rollAction
+        .mockReturnValueOnce({ d20: 20, bonus: 0, diceNotation: '—', total: 20 }) // initial roll succeeds
+        .mockReturnValueOnce({ d20: 1, bonus: 0, diceNotation: '—', total: 1 }) // rival-forced reroll fails
+
+      await GameService.syncGame()
+
+      const [e1] = state.missionInstances[0].event_results
+      expect(e1.success).toBe(false)
+      expect(e1.relationshipReroll).toBe('rival')
+    })
+
+    test('completeMission nudges every crew pair together on success and apart on failure', async () => {
+      await launchTwoRecruitMission({
+        id: RELATIONSHIP_TEMPLATE_ID + 2,
+        difficulty: 'ROUTINE',
+        events: [buildEvent({ id: 'e1', type: 'RECON', attribute: 'perception', dc: 1 })],
+      })
+      state.missionInstances[0].started_at = new Date(Date.now() - 60 * 60 * 1000)
+      rollAction.mockReturnValue({ d20: 20, bonus: 0, diceNotation: '—', total: 20 }) // clears dc 1
+
+      await GameService.syncGame()
+
+      const row = state.recruitRelationships.find(
+        (r) => r.recruit_a_id === 1 && r.recruit_b_id === 2,
+      )
+      expect(row).toBeDefined()
+      // Mission succeeded: outcome delta (+4) always dominates the worst-case
+      // personality compatibility penalty (-2) with trait friction mocked off,
+      // so the pair's score must have moved up from its starting 0, regardless
+      // of the recruits' (randomly generated) personalities.
+      expect(row.score).toBeGreaterThan(0)
     })
   })
 

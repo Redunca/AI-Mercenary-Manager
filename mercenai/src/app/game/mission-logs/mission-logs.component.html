@@ -4,7 +4,12 @@
 </div>
 <div>ok ==> [</div>
 <div *ngFor="let entry of logs" class="indent-one log-entry">
-  <span class="tag" [class.tag-banter]="isBanterTag(entry.tag)">{{ entry.tag }}</span>
+  <span
+    class="tag"
+    [class.tag-banter]="isBanterTag(entry.tag)"
+    [class.tag-relationship]="isRelationshipShiftTag(entry.tag)"
+    >{{ entry.tag }}</span
+  >
   {{ entry.message }}
 </div>
 <div *ngIf="logs.length === 0" class="indent-one muted">— no logs for this mission —</div>

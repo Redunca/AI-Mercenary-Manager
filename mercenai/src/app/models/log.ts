@@ -9,3 +9,11 @@ export interface LogEntry {
 export function isBanterTag(tag: string): boolean {
   return tag.includes('→');
 }
+
+// Relationship-shift tags use '[NAME_A⇄NAME_B]' (see server's log.service.js
+// buildRelationshipShiftLog) — '⇄' instead of banter's '→' so the two tag
+// families stay distinguishable, and so this one never matches the server's
+// banter-cooldown query (`tag LIKE '%→%'`).
+export function isRelationshipShiftTag(tag: string): boolean {
+  return tag.includes('⇄');
+}
