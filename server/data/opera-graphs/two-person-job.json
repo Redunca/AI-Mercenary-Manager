@@ -1,0 +1,383 @@
+{
+  "id": "two-person-job",
+  "title": "Two-Person Job",
+  "description": "A contract that only works with two sets of hands forces a pair of recruits to rely on each other completely.",
+  "nodes": [
+    {
+      "id": "start",
+      "type": "start",
+      "text": "A flag goes up on the contract board: two-operative minimum, no exceptions.",
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "beat1a",
+      "type": "story",
+      "text": "A contract broker flags a job explicitly requiring two operatives on-site. No exceptions, no solo runs.",
+      "effects": [],
+      "position": {
+        "x": 300,
+        "y": -75
+      }
+    },
+    {
+      "id": "beat1b",
+      "type": "story",
+      "text": "The dispatch board lists a job too dangerous to insure for a single operative.",
+      "effects": [],
+      "position": {
+        "x": 300,
+        "y": 75
+      }
+    },
+    {
+      "id": "bridge1",
+      "type": "story",
+      "text": "One name goes on the manifest. Command is waiting on the second.",
+      "effects": [],
+      "position": {
+        "x": 600,
+        "y": 0
+      }
+    },
+    {
+      "id": "prep",
+      "type": "story",
+      "text": "Second assignment confirmed. Clearance granted for departure.",
+      "effects": [],
+      "position": {
+        "x": 900,
+        "y": 0
+      }
+    },
+    {
+      "id": "mission2a",
+      "type": "mission",
+      "mission": {
+        "title": "Two-Hand Extraction",
+        "description": "Get the contact off {planetName} before the window closes. This is not a job for one.",
+        "difficulty": "STANDARD",
+        "tags": [
+          "isolated"
+        ],
+        "missionType": "EXTRACTION_OP"
+      },
+      "completionText": "Extraction logged. Both operatives accounted for.",
+      "position": {
+        "x": 1200,
+        "y": -75
+      }
+    },
+    {
+      "id": "mission2b",
+      "type": "mission",
+      "mission": {
+        "title": "Two-Voice Negotiation",
+        "description": "Close the deal on {planetName} -- one voice to talk, one pair of eyes to watch the room.",
+        "difficulty": "STANDARD",
+        "tags": [
+          "frontier"
+        ],
+        "missionType": "DIPLOMACY"
+      },
+      "completionText": "Terms signed. Neither of them worked alone.",
+      "position": {
+        "x": 1200,
+        "y": 75
+      }
+    },
+    {
+      "id": "bridge2",
+      "type": "story",
+      "text": "The job is done. What is left is what it cost, or earned, between the two of them.",
+      "effects": [],
+      "position": {
+        "x": 1500,
+        "y": 0
+      }
+    },
+    {
+      "id": "finale-choice",
+      "type": "choice",
+      "text": "How do they close it out?",
+      "choiceOptions": [
+        {
+          "id": "debrief",
+          "label": "Debrief properly -- go over every step together"
+        },
+        {
+          "id": "nod",
+          "label": "A quiet nod is enough"
+        },
+        {
+          "id": "business",
+          "label": "Say nothing, get back to work"
+        }
+      ],
+      "position": {
+        "x": 1800,
+        "y": 0
+      }
+    },
+    {
+      "id": "payoff-debrief",
+      "type": "story",
+      "text": "They walk through the whole job again, step by step -- what worked, what almost did not. By the end neither one is holding anything back.",
+      "effects": [
+        {
+          "type": "adjust_relationship",
+          "params": {
+            "amount": 30
+          }
+        }
+      ],
+      "position": {
+        "x": 2100,
+        "y": -150
+      }
+    },
+    {
+      "id": "end-debrief",
+      "type": "end",
+      "outcome": "success",
+      "text": "Whatever this job cost, it bought something sturdier between the two of them.",
+      "position": {
+        "x": 2400,
+        "y": -150
+      }
+    },
+    {
+      "id": "payoff-nod",
+      "type": "story",
+      "text": "No debrief, no words. Just a nod that means the same thing twice.",
+      "effects": [
+        {
+          "type": "adjust_relationship",
+          "params": {
+            "amount": 20
+          }
+        }
+      ],
+      "position": {
+        "x": 2100,
+        "y": 0
+      }
+    },
+    {
+      "id": "end-nod",
+      "type": "end",
+      "outcome": "success",
+      "text": "Nothing was said, and nothing needed to be. The trust is there regardless.",
+      "position": {
+        "x": 2400,
+        "y": 0
+      }
+    },
+    {
+      "id": "payoff-business",
+      "type": "story",
+      "text": "The manifest gets filed and everyone moves on to the next thing. Still, something small has shifted.",
+      "effects": [
+        {
+          "type": "adjust_relationship",
+          "params": {
+            "amount": 12
+          }
+        }
+      ],
+      "position": {
+        "x": 2100,
+        "y": 150
+      }
+    },
+    {
+      "id": "end-business",
+      "type": "end",
+      "outcome": "success",
+      "text": "Not everything needs a moment. The job is done, and it left its mark anyway.",
+      "position": {
+        "x": 2400,
+        "y": 150
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "start--beat1a",
+      "from": "start",
+      "to": "beat1a",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 50
+          }
+        }
+      ]
+    },
+    {
+      "id": "start--beat1b",
+      "from": "start",
+      "to": "beat1b",
+      "priority": 1,
+      "conditions": []
+    },
+    {
+      "id": "beat1a--bridge1--2",
+      "from": "beat1a",
+      "to": "bridge1",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "assign_crew_to_ship",
+            "match": {
+              "scope": "any"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "beat1b--bridge1--3",
+      "from": "beat1b",
+      "to": "bridge1",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "assign_crew_to_ship",
+            "match": {
+              "scope": "any"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge1--prep--4",
+      "from": "bridge1",
+      "to": "prep",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "crew_threshold",
+          "params": {
+            "operator": ">=",
+            "value": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "prep--mission2a",
+      "from": "prep",
+      "to": "mission2a",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 50
+          }
+        }
+      ]
+    },
+    {
+      "id": "prep--mission2b",
+      "from": "prep",
+      "to": "mission2b",
+      "priority": 1,
+      "conditions": []
+    },
+    {
+      "id": "mission2a--bridge2--7",
+      "from": "mission2a",
+      "to": "bridge2",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "mission2b--bridge2--8",
+      "from": "mission2b",
+      "to": "bridge2",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "bridge2--finale-choice--9",
+      "from": "bridge2",
+      "to": "finale-choice",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-choice--payoff-debrief--10",
+      "from": "finale-choice",
+      "to": "payoff-debrief",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "debrief"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-choice--payoff-nod--11",
+      "from": "finale-choice",
+      "to": "payoff-nod",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "nod"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-choice--payoff-business--12",
+      "from": "finale-choice",
+      "to": "payoff-business",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "business"
+          }
+        }
+      ]
+    },
+    {
+      "id": "payoff-debrief--end-debrief--13",
+      "from": "payoff-debrief",
+      "to": "end-debrief",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "payoff-nod--end-nod--14",
+      "from": "payoff-nod",
+      "to": "end-nod",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "payoff-business--end-business--15",
+      "from": "payoff-business",
+      "to": "end-business",
+      "priority": 0,
+      "conditions": []
+    }
+  ]
+}

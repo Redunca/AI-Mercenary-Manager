@@ -1,0 +1,400 @@
+{
+  "id": "standing-arrangement",
+  "title": "Standing Arrangement",
+  "description": "Two recruits start drilling together off the books. What starts as practice becomes something worth keeping.",
+  "nodes": [
+    {
+      "id": "start",
+      "type": "start",
+      "text": "Maintenance logs flag an odd pattern: the same gear, checked out in pairs, against no scheduled mission.",
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "beat1a",
+      "type": "story",
+      "text": "Maintenance logs show the same gear checked out twice this week, by two different names, for no scheduled mission.",
+      "effects": [],
+      "position": {
+        "x": 300,
+        "y": -75
+      }
+    },
+    {
+      "id": "beat1b",
+      "type": "story",
+      "text": "Two recruits keep ending up on the same range slot, unscheduled, more nights than not.",
+      "effects": [],
+      "position": {
+        "x": 300,
+        "y": 75
+      }
+    },
+    {
+      "id": "seed1",
+      "type": "seed",
+      "seeds": [
+        {
+          "target": "shop",
+          "params": {
+            "itemName": "Matched Training Gear"
+          },
+          "note": "A matched set turns up in the requisition catalog, sized for two."
+        }
+      ],
+      "completionText": "Logged in the requisition catalog.",
+      "position": {
+        "x": 600,
+        "y": 0
+      }
+    },
+    {
+      "id": "bridge1",
+      "type": "story",
+      "text": "One name goes on the roster for the arrangement. Command wants a second before it is official.",
+      "effects": [],
+      "position": {
+        "x": 900,
+        "y": 0
+      }
+    },
+    {
+      "id": "prep",
+      "type": "story",
+      "text": "Pairing confirmed. The next contract goes to both of them.",
+      "effects": [],
+      "position": {
+        "x": 1200,
+        "y": 0
+      }
+    },
+    {
+      "id": "mission2a",
+      "type": "mission",
+      "mission": {
+        "title": "Paired Sabotage Run",
+        "description": "Two sets of hands on one objective on {planetName} -- cut the risk of anyone working alone.",
+        "difficulty": "STANDARD",
+        "tags": [
+          "urban"
+        ],
+        "missionType": "SABOTAGE"
+      },
+      "completionText": "Objective down. Neither of them went in alone.",
+      "position": {
+        "x": 1500,
+        "y": -75
+      }
+    },
+    {
+      "id": "mission2b",
+      "type": "mission",
+      "mission": {
+        "title": "Paired Recon Sweep",
+        "description": "A quiet sweep of {planetName}, one watching, one moving -- exactly how they have been drilling it.",
+        "difficulty": "STANDARD",
+        "tags": [
+          "frontier"
+        ],
+        "missionType": "RECON"
+      },
+      "completionText": "Sweep complete. The drilling shows.",
+      "position": {
+        "x": 1500,
+        "y": 75
+      }
+    },
+    {
+      "id": "bridge2",
+      "type": "story",
+      "text": "The contract closes. The arrangement, whatever it is now, keeps going.",
+      "effects": [],
+      "position": {
+        "x": 1800,
+        "y": 0
+      }
+    },
+    {
+      "id": "finale-choice",
+      "type": "choice",
+      "text": "How do they treat the next round?",
+      "choiceOptions": [
+        {
+          "id": "push",
+          "label": "Push each other to the limit"
+        },
+        {
+          "id": "ease",
+          "label": "Keep it friendly, ease off"
+        }
+      ],
+      "position": {
+        "x": 2100,
+        "y": 0
+      }
+    },
+    {
+      "id": "payoff-push-bonus",
+      "type": "story",
+      "text": "With the matched gear finally paying off, the drill turns into something close to instinct. Neither one is holding back anymore.",
+      "effects": [
+        {
+          "type": "adjust_relationship",
+          "params": {
+            "amount": 35
+          }
+        }
+      ],
+      "position": {
+        "x": 2400,
+        "y": -150
+      }
+    },
+    {
+      "id": "end-push-bonus",
+      "type": "end",
+      "outcome": "success",
+      "text": "The arrangement stops being informal. Whatever this is, it is not going away.",
+      "position": {
+        "x": 2700,
+        "y": -150
+      }
+    },
+    {
+      "id": "payoff-push-standard",
+      "type": "story",
+      "text": "No matched gear, no shortcuts -- they push through it anyway, the hard way.",
+      "effects": [
+        {
+          "type": "adjust_relationship",
+          "params": {
+            "amount": 22
+          }
+        }
+      ],
+      "position": {
+        "x": 2400,
+        "y": 0
+      }
+    },
+    {
+      "id": "end-push-standard",
+      "type": "end",
+      "outcome": "success",
+      "text": "It cost more effort than it should have. It worked anyway.",
+      "position": {
+        "x": 2700,
+        "y": 0
+      }
+    },
+    {
+      "id": "payoff-ease",
+      "type": "story",
+      "text": "They keep it light, no score being kept between them.",
+      "effects": [
+        {
+          "type": "adjust_relationship",
+          "params": {
+            "amount": 18
+          }
+        }
+      ],
+      "position": {
+        "x": 2400,
+        "y": 150
+      }
+    },
+    {
+      "id": "end-ease",
+      "type": "end",
+      "outcome": "success",
+      "text": "Not everything has to be a test. This still counts.",
+      "position": {
+        "x": 2700,
+        "y": 150
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "start--beat1a",
+      "from": "start",
+      "to": "beat1a",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 50
+          }
+        }
+      ]
+    },
+    {
+      "id": "start--beat1b",
+      "from": "start",
+      "to": "beat1b",
+      "priority": 1,
+      "conditions": []
+    },
+    {
+      "id": "beat1a--seed1--2",
+      "from": "beat1a",
+      "to": "seed1",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "beat1b--seed1--3",
+      "from": "beat1b",
+      "to": "seed1",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "seed1--bridge1--4",
+      "from": "seed1",
+      "to": "bridge1",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "assign_crew_to_ship",
+            "match": {
+              "scope": "any"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge1--prep--5",
+      "from": "bridge1",
+      "to": "prep",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "crew_threshold",
+          "params": {
+            "operator": ">=",
+            "value": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "prep--mission2a",
+      "from": "prep",
+      "to": "mission2a",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 50
+          }
+        }
+      ]
+    },
+    {
+      "id": "prep--mission2b",
+      "from": "prep",
+      "to": "mission2b",
+      "priority": 1,
+      "conditions": []
+    },
+    {
+      "id": "mission2a--bridge2--8",
+      "from": "mission2a",
+      "to": "bridge2",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "mission2b--bridge2--9",
+      "from": "mission2b",
+      "to": "bridge2",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "bridge2--finale-choice--10",
+      "from": "bridge2",
+      "to": "finale-choice",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-choice--payoff-push-bonus--11",
+      "from": "finale-choice",
+      "to": "payoff-push-bonus",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "push"
+          }
+        },
+        {
+          "type": "has_item",
+          "params": {
+            "itemName": "Matched Training Gear"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-choice--payoff-push-standard--12",
+      "from": "finale-choice",
+      "to": "payoff-push-standard",
+      "priority": 1,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "push"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-choice--payoff-ease--13",
+      "from": "finale-choice",
+      "to": "payoff-ease",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "ease"
+          }
+        }
+      ]
+    },
+    {
+      "id": "payoff-push-bonus--end-push-bonus--14",
+      "from": "payoff-push-bonus",
+      "to": "end-push-bonus",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "payoff-push-standard--end-push-standard--15",
+      "from": "payoff-push-standard",
+      "to": "end-push-standard",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "payoff-ease--end-ease--16",
+      "from": "payoff-ease",
+      "to": "end-ease",
+      "priority": 0,
+      "conditions": []
+    }
+  ]
+}
