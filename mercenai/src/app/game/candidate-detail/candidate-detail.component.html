@@ -9,6 +9,7 @@
   <div class="indent-one">"job" : "{{ candidate.jobTitle }}",</div>
   <div class="indent-one">"archetype" : "{{ archetypeLabel(candidate) }}",</div>
   <div class="indent-one">"hp" : {{ candidate.hp }}/{{ candidate.maxHp }},</div>
+  <div class="indent-one" *ngIf="candidate.isQuestCandidate">"quest" : true,</div>
 
   <div class="indent-one">"attributes" : {{ '{' }}</div>
   <div class="indent-two">// Physical</div>

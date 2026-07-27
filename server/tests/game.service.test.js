@@ -232,8 +232,10 @@ function createFakeClient() {
       )
       return { rows: [] }
     }
-    if (s === 'DELETE FROM candidates WHERE player_id = $1') {
-      state.candidates = state.candidates.filter((c) => c.player_id !== params[0])
+    if (s === 'DELETE FROM candidates WHERE player_id = $1 AND seed_key IS NULL') {
+      state.candidates = state.candidates.filter(
+        (c) => !(c.player_id === params[0] && c.seed_key == null),
+      )
       return { rows: [] }
     }
     if (s === 'SELECT * FROM candidates WHERE player_id = $1 ORDER BY id') {
@@ -2587,15 +2589,45 @@ describe('GameService', () => {
       jest.setSystemTime(new Date('2026-01-01T10:05:00Z')) // exactly the next 5-minute boundary
       await GameService.initGame()
 
-      // The whole pool is replaced -- not just topped back up to 4 -- and ids
-      // reset back to 1 (unlike mission templates; see generateCandidateBatch's
-      // own comment on why that's safe for candidates specifically).
+      // The whole (unseeded) pool is replaced -- not just topped back up to
+      // 4. Unlike mission templates, ids are NOT reset back to 1: a seeded
+      // quest candidate can survive a refresh (see next test), so a fresh
+      // id could otherwise collide with one still in the pool.
       expect(state.candidates).toHaveLength(5)
-      expect(state.candidates.map((c) => c.id).sort((a, b) => a - b)).toEqual([1, 2, 3, 4, 5])
-      expect(state.players[0].next_candidate_id).toBe(6)
+      expect(state.candidates.map((c) => c.id).sort((a, b) => a - b)).toEqual([6, 7, 8, 9, 10])
+      expect(state.players[0].next_candidate_id).toBe(11)
       expect(new Date(state.players[0].candidate_refresh_at).toISOString()).toBe(
         '2026-01-01T10:05:00.000Z',
       )
+    })
+
+    test('a seeded quest candidate survives the pool wipe at the refresh boundary', async () => {
+      jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] })
+      jest.setSystemTime(new Date('2026-01-01T10:00:00Z'))
+      await GameService.initGame()
+      state.candidates.push({
+        id: 99,
+        player_id: 1,
+        name: 'Defector',
+        job_title: 'Operative',
+        archetype: 'well-rounded',
+        hp: 10,
+        max_hp: 10,
+        attributes: {},
+        perks: [],
+        flaws: [],
+        personality: 'Analyst',
+        seed_key: 'quest-defector',
+      })
+
+      jest.setSystemTime(new Date('2026-01-01T10:05:00Z')) // next 5-minute boundary
+      await GameService.initGame()
+
+      const seeded = state.candidates.find((c) => c.id === 99)
+      expect(seeded).toBeDefined()
+      expect(seeded.seed_key).toBe('quest-defector')
+      // The rest of the pool was still replaced around it.
+      expect(state.candidates.filter((c) => c.seed_key == null)).toHaveLength(5)
     })
   })
 

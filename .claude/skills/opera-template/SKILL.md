@@ -99,7 +99,7 @@ Player actions detectable today via an `action_performed` condition
 | `purchase_item` / `purchase_quest_item` | `shop buy <id>` | `{itemName}` (pair with a `seed` node that puts the item in the shop) |
 | `send_recruit_to_quest` → `complete_quest` | `mission start <id> <shipId>` (start → finish) | `{scope:"any"}` or `{templateId}` |
 | `execute_command` | any literal typed command | `{command}` -- brittle; only for narrow UI-teaching (as in `tutorial.json`), never as a narrative gate |
-| `fire_recruit` | **no live command exists yet** | `{scope:"any"}` -- opera-forge-only addition (see Schema gotchas); flavor-repurposable (e.g. "gift a recruit away") as long as that's an honest stretch, not a lie about what happens |
+| `fire_recruit` | `recruit fire <id>` | `{scope:"any"}` -- flavor-repurposable (e.g. "gift a recruit away") as long as that's an honest stretch, not a lie about what happens |
 
 Decision table for each Beat:
 
@@ -147,12 +147,11 @@ perks/flaws/stat effects are the **payoff**, never the gate.
 - Exactly one `start` node, at least one `end` node, unique node/link ids
   within the graph.
 - `fire_recruit` and the `candidate` seed target (with `{seedId}` /
-  `action_performed` `{seedId}` matches) are **opera-forge-only additions**
-  with no live-game backing today -- see the "not-yet-built engine" comments
-  in `graph.js`/`graph.ts`. Using them in a template is legitimate (that's
-  how OGL discovers what the real engine needs to grow), but say so plainly
-  when reporting the template back, the same way `seed`'s `mission`/`shop`
-  targets already are.
+  `action_performed` `{seedId}` matches) are both live-engine features, same
+  as `seed`'s `mission`/`shop` targets. A `candidate` seed's inserted row is
+  tagged as a quest candidate and exempted from the shop-style candidate
+  rotation (see `generateCandidateBatch` in `game.service.js`), so the
+  player can find and hire it without it getting bumped out by a refresh.
 
 ## Workflow
 
@@ -199,9 +198,7 @@ perks/flaws/stat effects are the **payoff**, never the gate.
    naturally lands on the right earlier beat -- see that template's build
    script for the pattern.
 7. **Report back**: node/link counts, the act-by-act beat-pool sizes, the
-   ending list, and the combinatorial story count (see below) -- plus a
-   one-line callout for any opera-forge-only mechanic used (`fire_recruit`,
-   `candidate` seeding) so the reader knows it needs live-engine work later.
+   ending list, and the combinatorial story count (see below).
 
 ## Estimating "how many different stories"
 

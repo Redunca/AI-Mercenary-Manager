@@ -8,6 +8,7 @@
   <div>
     [{{ c.id }}] <span class="candidate-name">{{ c.name }}</span> · {{ c.jobTitle }}
     <span class="archetype">({{ archetypeLabel(c) }})</span> — HP {{ c.hp }}/{{ c.maxHp }}
+    <span *ngIf="c.isQuestCandidate" class="quest-tag">[QUEST]</span>
   </div>
   <div class="indent-two" *ngIf="c.perks.length > 0">
     Perks: <span class="perk">{{ perkNames(c) }}</span>

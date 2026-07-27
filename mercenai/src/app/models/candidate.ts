@@ -23,4 +23,7 @@ export interface Candidate {
   maxHp: number;
   perks: Perk[];
   flaws: Flaw[];
+  // True when an opera required hiring this specific candidate -- exempt
+  // from shop-style rotation, see server's generateCandidateBatch.
+  isQuestCandidate: boolean;
 }

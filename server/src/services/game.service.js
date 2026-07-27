@@ -230,18 +230,22 @@ async function generateCandidatesForPlayer(client, player, count = 5) {
   await client.query('UPDATE players SET next_candidate_id = $1 WHERE id = $2', [nextId, player.id])
 }
 
-// Discards every existing candidate and draws a fresh batch, mirroring
-// generateMissionBatch()'s shape (delete the stale pool, regenerate, stamp
-// the wall-clock refresh boundary) but with no "started" concept to
-// preserve — every candidate is either still in the pool or already hired
-// into a recruit, so the whole batch is always safe to replace outright.
+// Discards every existing *random* candidate and draws a fresh batch,
+// mirroring generateMissionBatch()'s shape (delete the stale pool,
+// regenerate, stamp the wall-clock refresh boundary) but with no "started"
+// concept to preserve. Candidates seeded by an opera (seed_key IS NOT NULL,
+// see insertSeededCandidate) are exempt from the wipe -- an opera can
+// require hiring one specific candidate, and they'd have no way to recover
+// that candidate if a routine rotation deleted it out from under them
+// (mirrors shop.service.js's is_quest_item exclusion from drawShopRotation).
+// Since seeded rows can survive across batches, next_candidate_id is never
+// reset back to 1 here (unlike mission templates) -- that would risk a
+// fresh row's id colliding with a retained seeded candidate's id.
 async function generateCandidateBatch(client, player, now) {
-  await client.query('DELETE FROM candidates WHERE player_id = $1', [player.id])
-  await generateCandidatesForPlayer(
-    client,
-    { ...player, next_candidate_id: 1 },
-    CANDIDATE_BATCH_SIZE,
-  )
+  await client.query('DELETE FROM candidates WHERE player_id = $1 AND seed_key IS NULL', [
+    player.id,
+  ])
+  await generateCandidatesForPlayer(client, player, CANDIDATE_BATCH_SIZE)
 
   const refreshedAt = new Date(currentIntervalBoundary(now, player.candidate_refresh_interval_ms))
   await client.query('UPDATE players SET candidate_refresh_at = $1 WHERE id = $2', [

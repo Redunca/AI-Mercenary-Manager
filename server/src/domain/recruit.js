@@ -311,6 +311,10 @@ function rowToCandidate(row) {
     maxHp: row.max_hp,
     perks: row.perks,
     flaws: row.flaws,
+    // True when an opera's 'candidate' seed inserted this row (see
+    // insertSeededCandidate) -- exempt from rotation, see
+    // game.service.js's generateCandidateBatch.
+    isQuestCandidate: row.seed_key != null,
   }
 }
 

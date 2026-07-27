@@ -285,8 +285,10 @@ function createFakeClient() {
       )
       return { rows: [] }
     }
-    if (s === 'DELETE FROM candidates WHERE player_id = $1') {
-      state.candidates = state.candidates.filter((c) => c.player_id !== params[0])
+    if (s === 'DELETE FROM candidates WHERE player_id = $1 AND seed_key IS NULL') {
+      state.candidates = state.candidates.filter(
+        (c) => !(c.player_id === params[0] && c.seed_key == null),
+      )
       return { rows: [] }
     }
     if (s === 'SELECT * FROM candidates WHERE player_id = $1 ORDER BY id') {

@@ -121,7 +121,26 @@ describe('rowToCandidate', () => {
       maxHp: 22,
       perks: [{ name: 'Lucky' }],
       flaws: [],
+      isQuestCandidate: false,
     })
+  })
+
+  test('marks a seeded row as a quest candidate', () => {
+    const row = {
+      id: 3,
+      name: 'Vex',
+      job_title: 'Assassin',
+      archetype: 'specialized',
+      personality: 'Sentinel',
+      attributes: { fortitude: 3 },
+      hp: 20,
+      max_hp: 22,
+      perks: [],
+      flaws: [],
+      seed_key: 'quest-defector',
+    }
+
+    expect(rowToCandidate(row).isQuestCandidate).toBe(true)
   })
 })
 
