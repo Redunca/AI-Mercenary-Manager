@@ -1190,9 +1190,12 @@ async function syncMissions(client, playerId) {
 
 async function hireCandidate(client, playerId, candidateId) {
   const player = (await client.query('SELECT * FROM players WHERE id = $1', [playerId])).rows[0]
+  // A dead recruit's row stays (deleted_at only applies to fireRecruit's
+  // soft-delete) but no longer occupies a roster slot -- excluded here so
+  // losing a recruit always frees up room to hire a replacement.
   const recruitCount = (
     await client.query(
-      'SELECT COUNT(*)::int AS count FROM recruits WHERE player_id = $1 AND deleted_at IS NULL',
+      "SELECT COUNT(*)::int AS count FROM recruits WHERE player_id = $1 AND deleted_at IS NULL AND status != 'dead'",
       [playerId],
     )
   ).rows[0].count

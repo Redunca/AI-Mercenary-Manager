@@ -289,6 +289,23 @@ function createFakeClient() {
       const r = state.recruits.find((r) => r.player_id === params[0] && sameId(r.id, params[1]))
       return { rows: r ? [{ name: r.name }] : [] }
     }
+    // hireCandidate's roster-cap check -- dead recruits no longer occupy a slot.
+    if (
+      s ===
+      "SELECT COUNT(*)::int AS count FROM recruits WHERE player_id = $1 AND deleted_at IS NULL AND status != 'dead'"
+    ) {
+      return {
+        rows: [
+          {
+            count: state.recruits.filter(
+              (r) => r.player_id === params[0] && !r.deleted_at && r.status !== 'dead',
+            ).length,
+          },
+        ],
+      }
+    }
+    // bootstrapPlayer's "does this player have any recruit yet at all" onboarding
+    // check -- deliberately still counts a dead recruit as "not a brand new player".
     if (
       s ===
       'SELECT COUNT(*)::int AS count FROM recruits WHERE player_id = $1 AND deleted_at IS NULL'
@@ -1036,6 +1053,21 @@ describe('GameService', () => {
 
       expect(result.error).toBe('Recruitment failed')
       expect(state.recruits).toHaveLength(1)
+    })
+
+    test('a dead recruit does not count against the cap -- hiring still succeeds', async () => {
+      await GameService.initGame()
+      state.players[0].max_recruits = 1
+      state.recruits[0].status = 'dead'
+      const candidateId = state.candidates[0].id
+
+      const result = await GameService.hireCandidate(String(candidateId))
+
+      expect(result.error).toBeUndefined()
+      expect(result.recruit.status).toBe('available')
+      // The dead recruit's row is untouched (still on the roster for the
+      // cemetery/history), it just no longer blocks a hire.
+      expect(state.recruits).toHaveLength(2)
     })
 
     test('fails when the candidate cannot be found', async () => {

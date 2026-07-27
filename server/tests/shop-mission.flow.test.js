@@ -321,6 +321,23 @@ function createFakeClient() {
       const r = state.recruits.find((r) => r.player_id === params[0] && sameId(r.id, params[1]))
       return { rows: r ? [{ name: r.name }] : [] }
     }
+    // hireCandidate's roster-cap check -- dead recruits no longer occupy a slot.
+    if (
+      s ===
+      "SELECT COUNT(*)::int AS count FROM recruits WHERE player_id = $1 AND deleted_at IS NULL AND status != 'dead'"
+    ) {
+      return {
+        rows: [
+          {
+            count: state.recruits.filter(
+              (r) => r.player_id === params[0] && !r.deleted_at && r.status !== 'dead',
+            ).length,
+          },
+        ],
+      }
+    }
+    // bootstrapPlayer's "does this player have any recruit yet at all" onboarding
+    // check -- deliberately still counts a dead recruit as "not a brand new player".
     if (
       s ===
       'SELECT COUNT(*)::int AS count FROM recruits WHERE player_id = $1 AND deleted_at IS NULL'

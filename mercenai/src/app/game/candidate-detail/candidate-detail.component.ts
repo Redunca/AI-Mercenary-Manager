@@ -22,6 +22,13 @@ export class CandidateDetailComponent {
     return this.candidateService.candidates.find((c) => c.id === this.id) ?? null;
   }
 
+  // Excludes dead recruits -- they no longer occupy a roster slot (see
+  // hireCandidate's matching status != 'dead' filter, server-side), so this
+  // matches whether hiring will actually succeed.
+  get livingRecruitCount(): number {
+    return this.game.recruits.filter((r) => r.status !== 'dead').length;
+  }
+
   archetypeLabel(c: Candidate): string {
     switch (c.archetype) {
       case 'specialized':
