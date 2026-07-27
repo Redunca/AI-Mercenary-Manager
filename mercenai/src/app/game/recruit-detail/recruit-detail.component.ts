@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { GameService } from '../../core/game.service';
 import { ShipService } from '../../core/ship.service';
 import { EquipmentService, Equipment } from '../../core/equipment.service';
+import { PERK_ATTRIBUTE_MODIFIERS } from '../../models/recruit';
 
 @Component({
   selector: 'app-recruit-detail',
@@ -43,6 +44,15 @@ export class RecruitDetailComponent implements OnInit {
 
   statBar(value: number): string {
     return '[' + '■'.repeat(value) + '□'.repeat(10 - value) + ']';
+  }
+
+  // Mechanical-effect annotation for a perk/flaw name, if it's one of the
+  // curated entries in PERK_ATTRIBUTE_MODIFIERS -- null for purely
+  // cosmetic perks/flaws (most of them).
+  perkEffectLabel(name: string): string | null {
+    const effect = PERK_ATTRIBUTE_MODIFIERS[name];
+    if (!effect) return null;
+    return `${effect.amount > 0 ? '+' : ''}${effect.amount} ${effect.attribute}`;
   }
 
   registerCommands() {

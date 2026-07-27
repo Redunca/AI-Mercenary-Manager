@@ -6,7 +6,7 @@ import { GameSyncService } from '../../core/game-sync.service';
 import { GameService } from '../../core/game.service';
 import { Mission, MissionEvent, MissionState } from '../../models/mission';
 import { FACTION_REWARD_MULTIPLIER } from '../../models/faction';
-import { Recruit } from '../../models/recruit';
+import { PERK_ATTRIBUTE_MODIFIERS, Recruit } from '../../models/recruit';
 
 @Component({
   selector: 'app-mission-detail',
@@ -83,18 +83,28 @@ export class MissionDetailComponent implements OnInit, OnDestroy {
     return currentEventIndex < events.length ? events[currentEventIndex] : null;
   }
 
-  // Crew eligible to be assigned to nextEvent, sorted by their relevant
-  // stat descending. Empty for COMBAT events (full-crew auto-battle, no
-  // recruit choice) or once there's no next event at all.
-  get assignableCrew(): { id: string; name: string; value: number }[] {
+  // Crew eligible to be assigned to nextEvent, sorted by effective value
+  // (raw stat + any matching perk/flaw modifier) descending -- the point is
+  // showing real odds, not just the raw stat. Empty for COMBAT events
+  // (full-crew auto-battle, no recruit choice) or once there's no next
+  // event at all.
+  get assignableCrew(): { id: string; name: string; value: number; modifier: number }[] {
     const event = this.nextEvent;
     if (!event || event.type === 'COMBAT' || !this.state) return [];
     const crewIds = this.shipService.getShipById(this.state.shipId)?.crew ?? [];
     return crewIds
       .map((recruitId) => this.game.getRecruit(String(recruitId)))
       .filter((r): r is Recruit => !!r && r.status !== 'dead')
-      .map((r) => ({ id: r.id, name: r.name, value: r.attributes[event.attribute] }))
-      .sort((a, b) => b.value - a.value);
+      .map((r) => ({
+        id: r.id,
+        name: r.name,
+        value: r.attributes[event.attribute],
+        modifier: [...(r.perks ?? []), ...(r.flaws ?? [])].reduce((total, trait) => {
+          const effect = PERK_ATTRIBUTE_MODIFIERS[trait.name];
+          return effect && effect.attribute === event.attribute ? total + effect.amount : total;
+        }, 0),
+      }))
+      .sort((a, b) => b.value + b.modifier - (a.value + a.modifier));
   }
 
   get assignedRecruitName(): string | null {

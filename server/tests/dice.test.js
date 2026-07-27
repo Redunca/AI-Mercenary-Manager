@@ -136,3 +136,40 @@ describe('advantage', () => {
     expect(result.sum).toBe(6) // sorted [2,4,6], drop the two lowest, keep the highest
   })
 })
+
+describe('disadvantage', () => {
+  test('rollDice with disadvantage 1 rolls one extra die and drops the highest', () => {
+    const rolls = [1, 2, 6] // score 5 -> base 2d6, +1 extra for disadvantage 1 -> 3d6
+    let i = 0
+    jest.spyOn(global.Math, 'random').mockImplementation(() => (rolls[i++] - 1) / 6)
+
+    const result = rollDice(5, -1)
+
+    expect(result.notation).toBe('3d6 drop highest 1')
+    expect(result.sum).toBe(1 + 2) // sorted [1,2,6], drops the highest (6), keeps the rest
+  })
+
+  test('rollDice with disadvantage 2 rolls two extra dice and drops the two highest', () => {
+    const rolls = [2, 6, 4] // score 4 -> base 1d10, +2 extra for disadvantage 2 -> 3d10
+    let i = 0
+    jest.spyOn(global.Math, 'random').mockImplementation(() => (rolls[i++] - 1) / 10)
+
+    const result = rollDice(4, -2)
+
+    expect(result.notation).toBe('3d10 drop highest 2')
+    expect(result.sum).toBe(2) // sorted [2,4,6], drops the two highest, keeps the lowest
+  })
+
+  test('a score of 0 with disadvantage rerolls the d20 and keeps the lower result', () => {
+    jest
+      .spyOn(global.Math, 'random')
+      .mockReturnValueOnce(0.5) // d20 -> 11, kept
+      .mockReturnValueOnce(0.9) // d20 -> 19
+
+    const result = rollAction(0, -1)
+
+    expect(result.d20).toBe(11)
+    expect(result.bonus).toBe(0)
+    expect(result.total).toBe(11)
+  })
+})

@@ -52,9 +52,11 @@ async function getRecruitRow(client, playerId, recruitId) {
 }
 
 // Appends a perk/flaw the same shape generateCandidate() already produces
-// ({name, description}) if not already present. Stays exactly as
-// mechanically inert as every other perk/flaw in the game (flavor +
-// log.service.js banter/quote selection only) -- no new combat hook.
+// ({name, description}) if not already present. Purely flavor (+
+// log.service.js banter/quote selection) unless perkName happens to match
+// one of the curated entries in server/data/perk-effects.json, in which
+// case game.service.js's resolveEvents picks up the real attribute
+// modifier automatically by name -- see getPerkAttributeModifier.
 async function applyPerk(client, playerId, recruitId, perkName, description = '') {
   const recruit = await getRecruitRow(client, playerId, recruitId)
   if (!recruit) return null

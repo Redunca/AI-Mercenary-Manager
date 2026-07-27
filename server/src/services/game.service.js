@@ -482,6 +482,19 @@ function pickAssignedOrBest(activeCrew, event, assignedRecruitId) {
   return pickBestRecruit(activeCrew, event.attribute)
 }
 
+// Sums curated perk/flaw modifiers (server/data/perk-effects.json) whose
+// attribute matches the event being rolled. Passive and always-on -- no
+// per-mission usage tracking, unlike the BONDED/RIVAL reroll below. Names
+// not in perkEffects (custom opera-granted names, or any of the game's
+// other uncurated perks/flaws) contribute 0.
+function getPerkAttributeModifier(recruit, attribute, perkEffects) {
+  const traits = [...(recruit.perks ?? []), ...(recruit.flaws ?? [])]
+  return traits.reduce((total, trait) => {
+    const effect = perkEffects[trait.name]
+    return effect && effect.attribute === attribute ? total + effect.amount : total
+  }, 0)
+}
+
 async function resolveEvents(client, playerId, instance, template, crewMembers, targetEventIndex) {
   const events = template.events
   const eventResults = [...instance.event_results]
@@ -491,6 +504,7 @@ async function resolveEvents(client, playerId, instance, template, crewMembers, 
   const missionId = template.id
   const shipId = instance.ship_id
   let crewDead = []
+  const { perkEffects } = loadData()
   // Fetched once per call (not per-event) for the friend/rival reroll check
   // below -- see resolveEvents' skill-check branch.
   const relationships = await RelationshipService.getCrewRelationships(
@@ -662,7 +676,12 @@ async function resolveEvents(client, playerId, instance, template, crewMembers, 
       'ATTRIBUTE_BOOST',
       (data) => data?.attribute === event.attribute,
     )
-    const advantage = boost ? (boost.effect_data?.advantage ?? 1) : 0
+    const boostAdvantage = boost ? (boost.effect_data?.advantage ?? 1) : 0
+    // A perk grants Advantage, a flaw imposes symmetric Disadvantage, on any
+    // roll matching its curated attribute -- summed with the boost above,
+    // always-on, no per-mission usage tracking (see getPerkAttributeModifier).
+    const perkModifier = getPerkAttributeModifier(bestRecruit, event.attribute, perkEffects)
+    const advantage = boostAdvantage + perkModifier
 
     const roll = rollAction(bestRecruit.attributes[event.attribute], advantage)
     let success = roll.total >= event.dc
@@ -721,7 +740,7 @@ async function resolveEvents(client, playerId, instance, template, crewMembers, 
       dc: event.dc,
       success,
     }
-    if (advantage > 0) result.advantageUsed = advantage
+    if (advantage !== 0) result.advantageUsed = advantage
     if (relationshipReroll) result.relationshipReroll = relationshipReroll.tier
 
     if (success) {

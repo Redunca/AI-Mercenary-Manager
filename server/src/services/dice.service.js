@@ -17,33 +17,41 @@ function rollDie(sides) {
 }
 
 // Advantage rolls one extra attribute die per advantage level, then drops the
-// lowest dice equal to that level (OpenLegend core rule). It never touches
-// the d20 — except for a score of 0, which has no attribute dice to add to;
-// there, advantage instead rerolls the d20 and keeps the higher result.
+// lowest dice equal to that level (OpenLegend core rule). Disadvantage is the
+// mirror image: a negative `advantage` rolls one extra die per level too, but
+// drops the *highest* dice instead. Neither touches the d20 — except for a
+// score of 0, which has no attribute dice to add to; there, advantage instead
+// rerolls the d20 and keeps the higher result, while disadvantage rerolls and
+// keeps the lower result.
 function rollDice(score, advantage = 0) {
   const clamped = Math.min(10, Math.max(0, score))
   const entry = DICE_TABLE[clamped]
   if (entry.count === 0) return { sum: 0, notation: '—' }
 
-  const rollCount = entry.count + advantage
+  const magnitude = Math.abs(advantage)
+  const rollCount = entry.count + magnitude
   const rolls = []
   for (let i = 0; i < rollCount; i++) {
     rolls.push(rollDie(entry.sides))
   }
   rolls.sort((a, b) => a - b)
-  const kept = rolls.slice(advantage)
+  const kept = advantage < 0 ? rolls.slice(0, entry.count) : rolls.slice(magnitude)
   const sum = kept.reduce((total, roll) => total + roll, 0)
   const notation =
     advantage > 0
       ? `${rollCount}d${entry.sides} drop lowest ${advantage}`
-      : `${entry.count}d${entry.sides}`
+      : advantage < 0
+        ? `${rollCount}d${entry.sides} drop highest ${magnitude}`
+        : `${entry.count}d${entry.sides}`
   return { sum, notation }
 }
 
 function rollAction(score, advantage = 0) {
   const clamped = Math.min(10, Math.max(0, score))
-  if (DICE_TABLE[clamped].count === 0 && advantage > 0) {
-    const d20 = Math.max(rollDie(20), rollDie(20))
+  if (DICE_TABLE[clamped].count === 0 && advantage !== 0) {
+    const first = rollDie(20)
+    const second = rollDie(20)
+    const d20 = advantage > 0 ? Math.max(first, second) : Math.min(first, second)
     return { d20, bonus: 0, diceNotation: '—', total: d20 }
   }
 

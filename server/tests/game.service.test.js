@@ -2510,6 +2510,129 @@ describe('GameService', () => {
     })
   })
 
+  describe('syncGame — perk/flaw effects', () => {
+    async function launchSeededMission(templateDef, crewId = 1) {
+      await GameService.initGame() // creates the natural batch first
+      seedTemplate(state, templateDef) // ...then add the custom template, so it isn't discarded as an "unstarted leftover"
+      state.recruits[0].id = crewId
+      ShipService.getShip.mockResolvedValue({
+        id: 1,
+        player_id: 1,
+        crew: [crewId],
+        status: 'docked',
+        deleted_at: null,
+      })
+      await GameService.startMission(templateDef.id, 1)
+      return state.missionInstances[0]
+    }
+
+    const PERK_TEMPLATE_ID = 200
+
+    test('a matching perk grants Advantage 1 on the roll', async () => {
+      const instance = await launchSeededMission({
+        id: PERK_TEMPLATE_ID,
+        difficulty: 'ROUTINE',
+        events: [buildEvent({ id: 'e1', type: 'RECON', attribute: 'perception', dc: 10 })],
+      })
+      instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
+      state.recruits[0].perks = [{ name: 'Observant', description: 'Notices things.' }]
+      rollAction.mockReturnValue({ d20: 20, bonus: 0, diceNotation: '—', total: 20 })
+
+      await GameService.syncGame()
+
+      expect(rollAction).toHaveBeenNthCalledWith(1, expect.any(Number), 1)
+    })
+
+    test('a matching flaw imposes Disadvantage 1 on the roll', async () => {
+      const instance = await launchSeededMission({
+        id: PERK_TEMPLATE_ID + 1,
+        difficulty: 'ROUTINE',
+        events: [buildEvent({ id: 'e1', type: 'RECON', attribute: 'perception', dc: 10 })],
+      })
+      instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
+      state.recruits[0].flaws = [{ name: 'Absent-minded', description: 'Misses things.' }]
+      rollAction.mockReturnValue({ d20: 20, bonus: 0, diceNotation: '—', total: 20 })
+
+      await GameService.syncGame()
+
+      expect(rollAction).toHaveBeenNthCalledWith(1, expect.any(Number), -1)
+    })
+
+    test('a perk/flaw for a different attribute has no effect on this roll', async () => {
+      const instance = await launchSeededMission({
+        id: PERK_TEMPLATE_ID + 2,
+        difficulty: 'ROUTINE',
+        events: [buildEvent({ id: 'e1', type: 'RECON', attribute: 'perception', dc: 10 })],
+      })
+      instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
+      // Scholar is curated, but for 'learning' -- irrelevant to this
+      // perception-based RECON event.
+      state.recruits[0].perks = [{ name: 'Scholar', description: 'Studious.' }]
+      rollAction.mockReturnValue({ d20: 20, bonus: 0, diceNotation: '—', total: 20 })
+
+      await GameService.syncGame()
+
+      expect(rollAction).toHaveBeenNthCalledWith(1, expect.any(Number), 0)
+    })
+
+    test('a perk modifier stacks with an ATTRIBUTE_BOOST consumable', async () => {
+      const instance = await launchSeededMission({
+        id: PERK_TEMPLATE_ID + 3,
+        difficulty: 'ROUTINE',
+        events: [buildEvent({ id: 'e1', type: 'RECON', attribute: 'perception', dc: 10 })],
+      })
+      instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
+      state.recruits[0].perks = [{ name: 'Observant', description: 'Notices things.' }]
+      rollAction.mockReturnValue({ d20: 20, bonus: 0, diceNotation: '—', total: 20 })
+      ConsumableService.consumeFromShipInventory.mockImplementation(
+        (client, shipId, effect, matcher) => {
+          if (effect === 'ATTRIBUTE_BOOST' && matcher && matcher({ attribute: 'perception' })) {
+            return Promise.resolve({ id: 42, effect_data: { advantage: 1 } })
+          }
+          return Promise.resolve(null)
+        },
+      )
+
+      await GameService.syncGame()
+
+      expect(rollAction).toHaveBeenNthCalledWith(1, expect.any(Number), 2)
+    })
+
+    test('a custom, non-curated perk/flaw name no-ops gracefully', async () => {
+      const instance = await launchSeededMission({
+        id: PERK_TEMPLATE_ID + 4,
+        difficulty: 'ROUTINE',
+        events: [buildEvent({ id: 'e1', type: 'RECON', attribute: 'perception', dc: 10 })],
+      })
+      instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
+      // "Diplomatic Standing" is a real opera-granted perk name (see
+      // bought-loyalty.json's apply_perk effect) that isn't in the curated
+      // perk-effects.json table.
+      state.recruits[0].perks = [{ name: 'Diplomatic Standing', description: 'Opera-granted.' }]
+      rollAction.mockReturnValue({ d20: 20, bonus: 0, diceNotation: '—', total: 20 })
+
+      await GameService.syncGame()
+
+      expect(rollAction).toHaveBeenNthCalledWith(1, expect.any(Number), 0)
+    })
+
+    test("a flaw's negative modifier is persisted onto the event result", async () => {
+      const instance = await launchSeededMission({
+        id: PERK_TEMPLATE_ID + 5,
+        difficulty: 'ROUTINE',
+        events: [buildEvent({ id: 'e1', type: 'RECON', attribute: 'perception', dc: 10 })],
+      })
+      instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
+      state.recruits[0].flaws = [{ name: 'Absent-minded', description: 'Misses things.' }]
+      rollAction.mockReturnValue({ d20: 20, bonus: 0, diceNotation: '—', total: 20 })
+
+      await GameService.syncGame()
+
+      const [e1] = state.missionInstances[0].event_results
+      expect(e1.advantageUsed).toBe(-1)
+    })
+  })
+
   describe('hospital HP regen (via syncGame)', () => {
     test('regenerates 1 HP per elapsed interval for a hospitalized recruit, at the default 1/minute rate', async () => {
       await GameService.initGame()

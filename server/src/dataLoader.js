@@ -17,6 +17,7 @@ function loadData() {
     missionNames: require(path.join(DATA_DIR, 'mission-names.json')),
     missionDescriptions: require(path.join(DATA_DIR, 'mission-descriptions.json')),
     difficultyTables: require(path.join(DATA_DIR, 'difficulty-tables.json')),
+    perkEffects: require(path.join(DATA_DIR, 'perk-effects.json')),
   }
 
   return cache

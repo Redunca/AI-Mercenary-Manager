@@ -24,7 +24,10 @@
       </div>
       <div class="indent-one">"crew" : [</div>
       <div class="indent-two" *ngFor="let c of assignableCrew">
-        [{{ c.id }}] {{ c.name }} {{ statBar(c.value) }} {{ c.value }}
+        [{{ c.id }}] {{ c.name }} {{ statBar(c.value) }} {{ c.value
+        }}<span *ngIf="c.modifier" class="muted">
+          ({{ c.modifier > 0 ? '+' : '' }}{{ c.modifier }})</span
+        >
       </div>
       <div class="indent-two muted" *ngIf="!assignableCrew.length">— no eligible crew —</div>
       <div class="indent-one">],</div>

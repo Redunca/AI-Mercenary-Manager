@@ -53,14 +53,20 @@
 
   <div class="indent-one">"perks" : [</div>
   <ng-container *ngFor="let p of recruit.perks">
-    <div class="indent-two perk">{{ p.name }} — {{ p.description }}</div>
+    <div class="indent-two perk">
+      {{ p.name }} — {{ p.description
+      }}<span *ngIf="perkEffectLabel(p.name) as label" class="muted"> ({{ label }})</span>
+    </div>
   </ng-container>
   <div *ngIf="!recruit.perks?.length" class="indent-two muted">—</div>
   <div class="indent-one">],</div>
 
   <div class="indent-one">"flaws" : [</div>
   <ng-container *ngFor="let f of recruit.flaws">
-    <div class="indent-two flaw">{{ f.name }} — {{ f.description }}</div>
+    <div class="indent-two flaw">
+      {{ f.name }} — {{ f.description
+      }}<span *ngIf="perkEffectLabel(f.name) as label" class="muted"> ({{ label }})</span>
+    </div>
   </ng-container>
   <div *ngIf="!recruit.flaws?.length" class="indent-two muted">—</div>
   <div class="indent-one">],</div>
