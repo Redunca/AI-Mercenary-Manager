@@ -4,8 +4,9 @@ import { MissionService } from '../../core/mission.service';
 import { ShipService } from '../../core/ship.service';
 import { GameSyncService } from '../../core/game-sync.service';
 import { GameService } from '../../core/game.service';
-import { Mission, MissionState } from '../../models/mission';
+import { Mission, MissionEvent, MissionState } from '../../models/mission';
 import { FACTION_REWARD_MULTIPLIER } from '../../models/faction';
+import { Recruit } from '../../models/recruit';
 
 @Component({
   selector: 'app-mission-detail',
@@ -21,6 +22,8 @@ export class MissionDetailComponent implements OnInit, OnDestroy {
   shipService = inject(ShipService);
   private game = inject(GameService);
   private sync = inject(GameSyncService);
+
+  assignError: string | null = null;
 
   ngOnInit(): void {
     this.sync.watchMissionProgress();
@@ -71,10 +74,55 @@ export class MissionDetailComponent implements OnInit, OnDestroy {
     return '[' + '█'.repeat(filled) + '░'.repeat(20 - filled) + ']';
   }
 
+  // The next unresolved event, if any -- see resolveEvents' one-shot
+  // manual-assignment fallback in game.service.js. null once every event
+  // has resolved (mission is in RETURN or COMPLETED).
+  get nextEvent(): MissionEvent | null {
+    if (!this.state) return null;
+    const { events, currentEventIndex } = this.state;
+    return currentEventIndex < events.length ? events[currentEventIndex] : null;
+  }
+
+  // Crew eligible to be assigned to nextEvent, sorted by their relevant
+  // stat descending. Empty for COMBAT events (full-crew auto-battle, no
+  // recruit choice) or once there's no next event at all.
+  get assignableCrew(): { id: string; name: string; value: number }[] {
+    const event = this.nextEvent;
+    if (!event || event.type === 'COMBAT' || !this.state) return [];
+    const crewIds = this.shipService.getShipById(this.state.shipId)?.crew ?? [];
+    return crewIds
+      .map((recruitId) => this.game.getRecruit(String(recruitId)))
+      .filter((r): r is Recruit => !!r && r.status !== 'dead')
+      .map((r) => ({ id: r.id, name: r.name, value: r.attributes[event.attribute] }))
+      .sort((a, b) => b.value - a.value);
+  }
+
+  get assignedRecruitName(): string | null {
+    const id = this.state?.assignedRecruitId;
+    return id ? (this.game.getRecruit(id)?.name ?? null) : null;
+  }
+
+  statBar(value: number): string {
+    return '[' + '■'.repeat(value) + '□'.repeat(10 - value) + ']';
+  }
+
   registerCommands() {
     return {
       stop: () => {
         void this.missionService.forceReturn(this.id);
+      },
+      assign: (recruitId: string) => {
+        if (!recruitId) {
+          console.warn('Usage: assign <recruitId>');
+          return;
+        }
+        if (!this.state || this.nextEvent == null) return;
+        this.assignError = null;
+        void this.missionService
+          .assignEventRecruit(this.id, this.state.currentEventIndex, recruitId)
+          .then((err) => {
+            if (err) this.assignError = err;
+          });
       },
     };
   }

@@ -45,6 +45,17 @@ export class MissionService {
     return null;
   }
 
+  async assignEventRecruit(
+    missionId: number,
+    eventIndex: number,
+    recruitId: string,
+  ): Promise<string | null> {
+    const result = await this.api.assignMissionEvent(missionId, eventIndex, recruitId);
+    if (result.error) return result.error;
+    if (result.state) this.injector.get(GameSyncService).applyState(result.state);
+    return null;
+  }
+
   getState(missionId: number): MissionState | undefined {
     return this.missionStates[missionId];
   }

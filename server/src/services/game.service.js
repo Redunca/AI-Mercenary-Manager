@@ -463,6 +463,25 @@ async function finalizeTerminalEvent(
   }
 }
 
+function pickBestRecruit(activeCrew, attribute) {
+  return activeCrew.reduce((best, current) => {
+    const currentStat = current.attributes[attribute] || 0
+    const bestStat = best.attributes[attribute] || 0
+    return currentStat > bestStat ? current : best
+  })
+}
+
+// The player's manually assigned recruit wins if they're still active
+// (alive and part of the crew); otherwise falls back to the highest-stat
+// auto-pick, same as if nothing had been assigned at all.
+function pickAssignedOrBest(activeCrew, event, assignedRecruitId) {
+  if (assignedRecruitId != null) {
+    const assigned = activeCrew.find((r) => String(r.id) === String(assignedRecruitId))
+    if (assigned) return assigned
+  }
+  return pickBestRecruit(activeCrew, event.attribute)
+}
+
 async function resolveEvents(client, playerId, instance, template, crewMembers, targetEventIndex) {
   const events = template.events
   const eventResults = [...instance.event_results]
@@ -479,6 +498,19 @@ async function resolveEvents(client, playerId, instance, template, crewMembers, 
     playerId,
     crewMembers.map((r) => r.id),
   )
+
+  // The player's manual pick (if any) only ever applies to the very first
+  // event this call processes -- captured before the loop below mutates
+  // currentEventIndex. Cleared immediately (one-shot read) since
+  // resolveEvents is only ever called when targetEventIndex >
+  // currentEventIndex, so that first iteration is guaranteed to run.
+  const initialEventIndex = currentEventIndex
+  const assignedRecruitId = instance.assigned_recruit_id
+  if (assignedRecruitId != null) {
+    await client.query('UPDATE mission_instances SET assigned_recruit_id = NULL WHERE id = $1', [
+      instance.id,
+    ])
+  }
 
   // Only resolves events due by targetEventIndex, not every remaining one --
   // see advanceMission's dueEventCount() call for why. Every early-exit path
@@ -616,11 +648,11 @@ async function resolveEvents(client, playerId, instance, template, crewMembers, 
       continue
     }
 
-    const bestRecruit = activeCrew.reduce((best, current) => {
-      const currentStat = current.attributes[event.attribute] || 0
-      const bestStat = best.attributes[event.attribute] || 0
-      return currentStat > bestStat ? current : best
-    })
+    const bestRecruit = pickAssignedOrBest(
+      activeCrew,
+      event,
+      i === initialEventIndex ? assignedRecruitId : null,
+    )
 
     // An ATTRIBUTE_BOOST consumable sitting in the ship's own inventory grants
     // Advantage on the one roll it matches, then is spent regardless of outcome.
@@ -1459,6 +1491,50 @@ async function forceReturnMission(client, playerId, templateId) {
   return { ok: true }
 }
 
+// Stores the player's pick for whichever event is currently
+// current_event_index -- see resolveEvents' pickAssignedOrBest. Only ever
+// applies to that one event: eventIndex must match it exactly, so a stale
+// or premature pick is rejected rather than silently queued.
+async function assignMissionEventRecruit(client, playerId, templateId, eventIndex, recruitId) {
+  const instanceResult = await client.query(
+    'SELECT * FROM mission_instances WHERE player_id = $1 AND template_id = $2',
+    [playerId, templateId],
+  )
+  if (instanceResult.rows.length === 0) return { error: 'No active mission' }
+  const instance = instanceResult.rows[0]
+  if (instance.status !== 'in_progress') return { error: 'Mission already completed' }
+
+  const template = (
+    await client.query('SELECT * FROM mission_templates WHERE id = $1', [instance.template_id])
+  ).rows[0]
+  const events = template.events
+
+  if (!Number.isInteger(eventIndex) || eventIndex < 0 || eventIndex >= events.length) {
+    return { error: 'Invalid event index' }
+  }
+  if (eventIndex !== instance.current_event_index) {
+    return { error: 'Too late -- that event has already been resolved' }
+  }
+  if (events[eventIndex].type === 'COMBAT') {
+    return { error: 'Combat events are resolved by the full crew automatically' }
+  }
+
+  const ship = await ShipService.getShip(client, playerId, instance.ship_id)
+  const crewIds = ship?.crew ?? []
+  if (!crewIds.some((id) => String(id) === String(recruitId))) {
+    return { error: "That recruit is not part of this mission's crew" }
+  }
+
+  const recruit = await getRecruit(client, playerId, Number(recruitId))
+  if (!recruit || recruit.status === 'dead') return { error: 'Recruit is dead' }
+
+  await client.query('UPDATE mission_instances SET assigned_recruit_id = $1 WHERE id = $2', [
+    Number(recruitId),
+    instance.id,
+  ])
+  return { ok: true }
+}
+
 // --- Dev/testing helpers ----------------------------------------------
 // Not gated behind an environment check: this is a single-player local
 // game with no auth system anywhere else in the app either.
@@ -1605,6 +1681,8 @@ async function buildGameState(client, playerId) {
       eventResults: instance.event_results,
       failed: instance.failed,
       rewardForfeited: instance.reward_forfeited,
+      assignedRecruitId:
+        instance.assigned_recruit_id != null ? String(instance.assigned_recruit_id) : null,
       intervalId: null,
     }
   }
@@ -1806,6 +1884,17 @@ module.exports = {
     const result = await forceReturnMission(client, DEFAULT_PLAYER_ID, templateId)
     if (result.error) return result
     await syncMissions(client, DEFAULT_PLAYER_ID)
+    return {}
+  }),
+  assignMissionEventRecruit: withPlayerAction(async (client, templateId, eventIndex, recruitId) => {
+    const result = await assignMissionEventRecruit(
+      client,
+      DEFAULT_PLAYER_ID,
+      templateId,
+      eventIndex,
+      recruitId,
+    )
+    if (result.error) return result
     return {}
   }),
   devRefresh: withPlayerAction(async (client) => {

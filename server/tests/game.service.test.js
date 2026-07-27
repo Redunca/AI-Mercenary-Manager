@@ -552,6 +552,17 @@ function createFakeClient() {
       Object.assign(i, { started_at: startedAt, forced_return: false, return_started_at: null })
       return { rows: [] }
     }
+    if (s === 'UPDATE mission_instances SET assigned_recruit_id = NULL WHERE id = $1') {
+      const i = state.missionInstances.find((i) => i.id === params[0])
+      if (i) i.assigned_recruit_id = null
+      return { rows: [] }
+    }
+    if (s === 'UPDATE mission_instances SET assigned_recruit_id = $1 WHERE id = $2') {
+      const [recruitId, id] = params
+      const i = state.missionInstances.find((i) => i.id === id)
+      if (i) i.assigned_recruit_id = recruitId
+      return { rows: [] }
+    }
 
     // ships (only the raw read used by buildGameState — the rest goes through ShipService, mocked)
     if (s === 'SELECT * FROM ships WHERE player_id = $1 AND deleted_at IS NULL ORDER BY id') {
@@ -1842,6 +1853,130 @@ describe('GameService', () => {
       // so the pair's score must have moved up from its starting 0, regardless
       // of the recruits' (randomly generated) personalities.
       expect(row.score).toBeGreaterThan(0)
+    })
+  })
+
+  describe('assignMissionEventRecruit', () => {
+    const ASSIGN_TEMPLATE_ID = 200
+
+    async function launchTwoRecruitAssignMission(templateDef) {
+      await GameService.initGame()
+      seedTemplate(state, templateDef)
+      state.recruits[0].id = 1
+      state.recruits.push({ ...state.recruits[0], id: 2, name: 'Second' })
+      ShipService.getShip.mockResolvedValue({
+        id: 1,
+        player_id: 1,
+        crew: [1, 2],
+        status: 'docked',
+        deleted_at: null,
+      })
+      await GameService.startMission(templateDef.id, 1)
+      return state.missionInstances[0]
+    }
+
+    test('assignment overrides auto-pick, but only for the assigned event', async () => {
+      const instance = await launchTwoRecruitAssignMission({
+        id: ASSIGN_TEMPLATE_ID,
+        difficulty: 'STANDARD',
+        events: [
+          buildEvent({ id: 'e1', type: 'RECON', attribute: 'perception', dc: 1 }),
+          buildEvent({ id: 'e2', type: 'RECON', attribute: 'perception', dc: 1 }),
+        ],
+      })
+      // Recruit 2 is a same-stat copy of recruit 1 (see helper above), so
+      // auto-pick's strict `>` tie-break would always land on recruit 1 --
+      // the default outcome this test needs to prove gets overridden.
+      instance.started_at = new Date(Date.now() - 60 * 60 * 1000) // both events already due
+
+      const assignResult = await GameService.assignMissionEventRecruit(ASSIGN_TEMPLATE_ID, 0, '2')
+      expect(assignResult.error).toBeUndefined()
+      expect(state.missionInstances[0].assigned_recruit_id).toBe(2)
+
+      rollAction.mockReturnValue({ d20: 20, bonus: 0, diceNotation: '—', total: 20 })
+      await GameService.syncGame()
+
+      const [e1, e2] = state.missionInstances[0].event_results
+      expect(String(e1.recruitId)).toBe('2')
+      // One-shot: the assignment doesn't carry over to the next event in the
+      // same catch-up batch, even though both resolved in this one syncGame().
+      expect(String(e2.recruitId)).toBe('1')
+      expect(state.missionInstances[0].assigned_recruit_id).toBeNull()
+    })
+
+    test('falls back to auto-pick if the assigned recruit is no longer active by resolution time', async () => {
+      const instance = await launchTwoRecruitAssignMission({
+        id: ASSIGN_TEMPLATE_ID + 1,
+        difficulty: 'STANDARD',
+        events: [buildEvent({ id: 'e1', type: 'RECON', attribute: 'perception', dc: 1 })],
+      })
+      instance.started_at = new Date(Date.now() - 60 * 60 * 1000)
+
+      const assignResult = await GameService.assignMissionEventRecruit(
+        ASSIGN_TEMPLATE_ID + 1,
+        0,
+        '2',
+      )
+      expect(assignResult.error).toBeUndefined()
+
+      // Recruit 2 dies (or otherwise stops being active) before the event
+      // this call already committed to actually resolves.
+      state.recruits.find((r) => r.id === 2).status = 'dead'
+      rollAction.mockReturnValue({ d20: 20, bonus: 0, diceNotation: '—', total: 20 })
+      await GameService.syncGame()
+
+      const [e1] = state.missionInstances[0].event_results
+      expect(String(e1.recruitId)).toBe('1')
+    })
+
+    test('rejects assigning when there is no active mission', async () => {
+      await GameService.initGame()
+      const result = await GameService.assignMissionEventRecruit(9999, 0, '1')
+      expect(result.error).toBe('No active mission')
+    })
+
+    test("rejects an event index that isn't the current unresolved one", async () => {
+      await launchTwoRecruitAssignMission({
+        id: ASSIGN_TEMPLATE_ID + 2,
+        difficulty: 'STANDARD',
+        events: [
+          buildEvent({ id: 'e1', type: 'RECON', attribute: 'perception', dc: 1 }),
+          buildEvent({ id: 'e2', type: 'RECON', attribute: 'perception', dc: 1 }),
+        ],
+      })
+      const result = await GameService.assignMissionEventRecruit(ASSIGN_TEMPLATE_ID + 2, 1, '2')
+      expect(result.error).toBe('Too late -- that event has already been resolved')
+    })
+
+    test('rejects assigning to a COMBAT event', async () => {
+      await launchTwoRecruitAssignMission({
+        id: ASSIGN_TEMPLATE_ID + 3,
+        difficulty: 'STANDARD',
+        events: [buildEvent({ id: 'e1', type: 'COMBAT' })],
+      })
+      const result = await GameService.assignMissionEventRecruit(ASSIGN_TEMPLATE_ID + 3, 0, '2')
+      expect(result.error).toBe('Combat events are resolved by the full crew automatically')
+    })
+
+    test('rejects a recruit not part of this mission\'s crew', async () => {
+      await launchTwoRecruitAssignMission({
+        id: ASSIGN_TEMPLATE_ID + 4,
+        difficulty: 'STANDARD',
+        events: [buildEvent({ id: 'e1', type: 'RECON', attribute: 'perception', dc: 1 })],
+      })
+      const result = await GameService.assignMissionEventRecruit(ASSIGN_TEMPLATE_ID + 4, 0, '999')
+      expect(result.error).toBe("That recruit is not part of this mission's crew")
+    })
+
+    test('rejects a dead recruit', async () => {
+      await launchTwoRecruitAssignMission({
+        id: ASSIGN_TEMPLATE_ID + 5,
+        difficulty: 'STANDARD',
+        events: [buildEvent({ id: 'e1', type: 'RECON', attribute: 'perception', dc: 1 })],
+      })
+      state.recruits.find((r) => r.id === 2).status = 'dead'
+      const result = await GameService.assignMissionEventRecruit(ASSIGN_TEMPLATE_ID + 5, 0, '2')
+      expect(result.error).toBe('Recruit is dead')
     })
   })
 

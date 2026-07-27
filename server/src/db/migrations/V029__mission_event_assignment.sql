@@ -1,0 +1,12 @@
+-- Player's manual pick for whichever event is currently
+-- mission_instances.current_event_index -- see resolveEvents' auto-pick
+-- fallback in game.service.js. Meaningful only for the single next
+-- unresolved event, never a queue: resolveEvents reads it once and clears
+-- it back to NULL the moment it's consumed (whether the assigned recruit
+-- was actually used, or had to fall back to the highest-stat auto-pick),
+-- so a stale pick can never bleed into a later event. NULL means "no
+-- manual pick -- auto-pick as before." No FK to recruits: like
+-- mission_instances' original recruit_id column (V001), recruits are keyed
+-- by (player_id, id), not a bare id, so a simple FK isn't possible; the
+-- assign action itself validates crew membership at write time instead.
+ALTER TABLE mission_instances ADD COLUMN IF NOT EXISTS assigned_recruit_id INT;

@@ -83,4 +83,5 @@ export interface MissionState {
   eventResults: EventResult[];
   failed: boolean;
   rewardForfeited: boolean;
+  assignedRecruitId: string | null;
 }

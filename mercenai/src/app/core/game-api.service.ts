@@ -82,6 +82,21 @@ export class GameApiService {
     );
   }
 
+  assignMissionEvent(
+    templateId: number,
+    eventIndex: number,
+    recruitId: string,
+  ): Promise<StateResponse> {
+    return firstValueFrom(
+      this.http
+        .post<StateResponse>(`${this.base}/missions/${templateId}/assign-event`, {
+          eventIndex,
+          recruitId,
+        })
+        .pipe(catchError((err) => of(this.onError(err)))),
+    );
+  }
+
   getMissionLogs(templateId: number): Promise<{ logs: { tag: string; message: string }[] }> {
     return firstValueFrom(
       this.http.get<{ logs: { tag: string; message: string }[] }>(

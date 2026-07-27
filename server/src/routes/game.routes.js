@@ -121,6 +121,22 @@ router.post(
   }),
 )
 
+router.post(
+  '/missions/:templateId/assign-event',
+  asyncRoute(async (req, res) => {
+    const result = await game.assignMissionEventRecruit(
+      Number(req.params.templateId),
+      Number(req.body.eventIndex),
+      req.body.recruitId,
+    )
+    if (result.error) {
+      res.status(400).json(result)
+      return
+    }
+    res.json(result)
+  }),
+)
+
 // --- Dev/testing endpoints ---
 // Force-refresh missions/shop/candidates, set credits/tokens directly, or
 // wipe and restart the game — for easy manual testing, not player-facing.

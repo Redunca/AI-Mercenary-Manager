@@ -12,7 +12,27 @@
 <ng-container *ngIf="state; else available">
   <div class="indent-one">"ship" : "{{ shipName }}",</div>
   <div class="indent-one">"phase" : "{{ state.phase }}",</div>
-  <div class="indent-one">"progress" : "{{ progressBar }} {{ state.progress }}%"</div>
+  <div class="indent-one">"progress" : "{{ progressBar }} {{ state.progress }}%",</div>
+
+  <ng-container *ngIf="nextEvent as event">
+    <div class="indent-one">"nextEvent" : "{{ event.type }}",</div>
+
+    <ng-container *ngIf="event.type !== 'COMBAT'; else combatEvent">
+      <div class="indent-one">"relevantStat" : "{{ event.attribute }}",</div>
+      <div class="indent-one">
+        "assigned" : "{{ assignedRecruitName ?? '— none, will auto-pick —' }}",
+      </div>
+      <div class="indent-one">"crew" : [</div>
+      <div class="indent-two" *ngFor="let c of assignableCrew">
+        [{{ c.id }}] {{ c.name }} {{ statBar(c.value) }} {{ c.value }}
+      </div>
+      <div class="indent-two muted" *ngIf="!assignableCrew.length">— no eligible crew —</div>
+      <div class="indent-one">],</div>
+    </ng-container>
+    <ng-template #combatEvent>
+      <div class="indent-one muted">// full crew auto-battle, no recruit choice</div>
+    </ng-template>
+  </ng-container>
 </ng-container>
 
 <ng-template #available>
@@ -20,4 +40,10 @@
 </ng-template>
 
 <div>{{ '}' }}</div>
-<div class="hint" *ngIf="state">[ stop ] to trigger a forced mission return</div>
+<div class="hint" *ngIf="state">
+  [ stop ] to trigger a forced mission return<span
+    *ngIf="nextEvent && nextEvent.type !== 'COMBAT'"
+  >, [ assign &lt;recruitId&gt; ] to choose who handles the next event</span
+  >
+</div>
+<div *ngIf="assignError" class="error">{{ assignError }}</div>
