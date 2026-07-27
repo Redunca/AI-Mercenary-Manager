@@ -115,6 +115,25 @@ describe('CommandService', () => {
     expect(layout.getPanelById(panelId)?.module).toBe(PanelModule.Self);
   });
 
+  const bareNounPanels: [string, PanelModule][] = [
+    ['shop', PanelModule.ShopList],
+    ['recruit', PanelModule.RecruitList],
+    ['mission', PanelModule.MissionList],
+    ['ship', PanelModule.ShipList],
+    ['candidate', PanelModule.CandidateList],
+    ['opera', PanelModule.OperaList],
+  ];
+  for (const [noun, module] of bareNounPanels) {
+    it(`routes bare "${noun}" to the same panel as "${noun} list"`, () => {
+      const panelId = layout.addPanel(PanelModule.Dashboard);
+      layout.setActivePanel(panelId);
+
+      service.routeCommand(noun, panelId);
+
+      expect(layout.getPanelById(panelId)?.module).toBe(module);
+    });
+  }
+
   it('"self buy <id>" calls SelfService.buyUpgrade and resyncs on success', fakeAsync(() => {
     const panelId = layout.addPanel(PanelModule.Dashboard);
     layout.setActivePanel(panelId);

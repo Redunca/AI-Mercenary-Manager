@@ -132,7 +132,7 @@ export class CommandService {
     if (!panelId) return;
 
     if (args.length === 0) {
-      console.log('Usage: recruit -l | --list | -d <id>');
+      this.layout.setPanelModule(panelId, PanelModule.RecruitList);
       return;
     }
 
@@ -196,7 +196,12 @@ export class CommandService {
     this.layout.focus(dir);
   }
 
-  private handleMission(action: string, ...args: string[]) {
+  private handleMission(action?: string, ...args: string[]) {
+    if (!action) {
+      this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.MissionList);
+      return;
+    }
+
     switch (action) {
       case 'list':
       case '-l':
@@ -282,7 +287,12 @@ export class CommandService {
     this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.Help);
   }
 
-  private handleCandidate(action: string, ...args: string[]) {
+  private handleCandidate(action?: string, ...args: string[]) {
+    if (!action) {
+      this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.CandidateList);
+      return;
+    }
+
     switch (action) {
       case 'list':
       case '-l':
@@ -307,7 +317,12 @@ export class CommandService {
     console.error(`[ship ${action}]`, err?.error?.error ?? err?.message ?? err);
   }
 
-  private handleShip(action: string, ...args: string[]) {
+  private handleShip(action?: string, ...args: string[]) {
+    if (!action) {
+      this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShipList);
+      return;
+    }
+
     switch (action) {
       case 'list':
       case '-l':
@@ -388,7 +403,12 @@ export class CommandService {
     }
   }
 
-  private handleShop(action: string, ...args: string[]) {
+  private handleShop(action?: string, ...args: string[]) {
+    if (!action) {
+      this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.ShopList);
+      return;
+    }
+
     switch (action) {
       case 'list':
       case '-l':
@@ -504,7 +524,12 @@ export class CommandService {
     console.warn('Usage: factions');
   }
 
-  private handleOpera(action: string, ...args: string[]) {
+  private handleOpera(action?: string, ...args: string[]) {
+    if (!action) {
+      this.layout.setPanelModule(this.layout.activePanelId!, PanelModule.OperaList);
+      return;
+    }
+
     switch (action) {
       case 'list':
       case '-l':
