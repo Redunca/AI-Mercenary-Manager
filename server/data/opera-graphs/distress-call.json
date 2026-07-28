@@ -1,0 +1,875 @@
+{
+  "id": "distress-call",
+  "title": "Distress Call",
+  "titles": [
+    "Open Channel",
+    "What Sent It",
+    "Faint but Steady"
+  ],
+  "description": "An SOS turns out to be cover for something bigger than a rescue -- smuggling, illegal experiments, or a trap.",
+  "nodes": [
+    {
+      "id": "start",
+      "type": "start",
+      "text": "An SOS repeats on an open channel near {planetName}, faint but steady. Whatever sent it isn't saying anything else.",
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "act1-triangulate",
+      "type": "mission",
+      "mission": {
+        "title": "Triangulate the Signal",
+        "description": "Confirm exactly where the SOS near {planetName} is actually coming from before committing a ship to it.",
+        "difficulty": "ROUTINE",
+        "tags": [
+          "recon"
+        ],
+        "missionType": "RECON"
+      },
+      "position": {
+        "x": 300,
+        "y": -150
+      }
+    },
+    {
+      "id": "act1-log",
+      "type": "seed",
+      "seeds": [
+        {
+          "target": "shop",
+          "params": {
+            "itemName": "Distress Beacon Log"
+          },
+          "note": "A salvaged log fragment from the same signal turns up, sold by someone who got close enough to listen and turned back."
+        }
+      ],
+      "completionText": "The log fragment is bought and decoded.",
+      "position": {
+        "x": 300,
+        "y": 0
+      }
+    },
+    {
+      "id": "act1-repeat",
+      "type": "story",
+      "text": "The SOS starts repeating on an open channel mid-contract, impossible to route around once it's been heard.",
+      "effects": [],
+      "position": {
+        "x": 300,
+        "y": 150
+      }
+    },
+    {
+      "id": "bridge-1",
+      "type": "story",
+      "text": "Whatever's out there, it isn't stopping on its own.",
+      "position": {
+        "x": 600,
+        "y": 0
+      }
+    },
+    {
+      "id": "act2-reach",
+      "type": "mission",
+      "mission": {
+        "title": "Reach the Source",
+        "description": "Get aboard whatever's sending the signal near {planetName} before it cuts out for good.",
+        "difficulty": "STANDARD",
+        "tags": [
+          "extraction"
+        ],
+        "missionType": "EXTRACTION_OP"
+      },
+      "position": {
+        "x": 900,
+        "y": -150
+      }
+    },
+    {
+      "id": "act2-escort",
+      "type": "mission",
+      "mission": {
+        "title": "Get Them Out",
+        "description": "Survivors are found. Getting them clear means running an escort under fire.",
+        "difficulty": "STANDARD",
+        "tags": [
+          "escort"
+        ],
+        "missionType": "ESCORT"
+      },
+      "position": {
+        "x": 900,
+        "y": 0
+      }
+    },
+    {
+      "id": "act2-survivor",
+      "type": "seed",
+      "seeds": [
+        {
+          "target": "candidate",
+          "params": {
+            "seedId": "distress-survivor"
+          },
+          "note": "One of the people pulled out says they'd rather sign on than go back to whatever they were doing before this."
+        }
+      ],
+      "completionText": "The survivor signs on.",
+      "position": {
+        "x": 900,
+        "y": 150
+      }
+    },
+    {
+      "id": "bridge-2",
+      "type": "story",
+      "text": "Everyone who's coming out is out. What's left is figuring out what actually happened here.",
+      "position": {
+        "x": 1200,
+        "y": 0
+      }
+    },
+    {
+      "id": "act3-search",
+      "type": "mission",
+      "mission": {
+        "title": "Search the Wreck",
+        "description": "Go back in and search what's left near {planetName} for whatever the survivors aren't saying.",
+        "difficulty": "HARD",
+        "tags": [
+          "recon"
+        ],
+        "missionType": "RECON"
+      },
+      "position": {
+        "x": 1500,
+        "y": -150
+      }
+    },
+    {
+      "id": "act3-search-payoff",
+      "type": "story",
+      "text": "What's left of the cargo hold says exactly what was actually being moved, and under whose name.",
+      "effects": [
+        {
+          "type": "give_item",
+          "params": {
+            "itemName": "Contraband Manifest"
+          }
+        }
+      ],
+      "position": {
+        "x": 1800,
+        "y": 0
+      }
+    },
+    {
+      "id": "act3-stories",
+      "type": "story",
+      "text": "The survivors' accounts don't line up with each other, or with what the crew actually saw out there.",
+      "effects": [],
+      "position": {
+        "x": 1500,
+        "y": 0
+      }
+    },
+    {
+      "id": "act3-defenses",
+      "type": "mission",
+      "mission": {
+        "title": "Silence the Automated Defenses",
+        "description": "The 'trap' reading turns out literal -- someone rigged this to keep people out, not call them in.",
+        "difficulty": "STANDARD",
+        "tags": [
+          "sabotage"
+        ],
+        "missionType": "SABOTAGE"
+      },
+      "position": {
+        "x": 1500,
+        "y": 150
+      }
+    },
+    {
+      "id": "bridge-3",
+      "type": "story",
+      "text": "Whatever this actually was, someone now has to decide what gets said about it.",
+      "position": {
+        "x": 2100,
+        "y": 0
+      }
+    },
+    {
+      "id": "finale-choice",
+      "type": "choice",
+      "text": "What gets reported?",
+      "choiceOptions": [
+        {
+          "id": "report",
+          "label": "File the full report"
+        },
+        {
+          "id": "sell",
+          "label": "Sell what the crew found"
+        },
+        {
+          "id": "bury",
+          "label": "Say nothing, let it vanish"
+        },
+        {
+          "id": "salvage",
+          "label": "Strip the wreck while everyone's still distracted"
+        }
+      ],
+      "position": {
+        "x": 2400,
+        "y": 0
+      }
+    },
+    {
+      "id": "finale-report-mission",
+      "type": "mission",
+      "mission": {
+        "title": "File the Full Report",
+        "description": "Put everything the crew found on the record, no omissions.",
+        "difficulty": "STANDARD",
+        "tags": [
+          "diplomacy"
+        ],
+        "missionType": "DIPLOMACY"
+      },
+      "position": {
+        "x": 2700,
+        "y": -300
+      }
+    },
+    {
+      "id": "finale-report-payoff",
+      "type": "story",
+      "text": "The report goes through in full, and stays on the record with the crew named on it.",
+      "effects": [
+        {
+          "type": "apply_perk",
+          "params": {
+            "perkName": "On the Record"
+          }
+        }
+      ],
+      "position": {
+        "x": 3000,
+        "y": -450
+      }
+    },
+    {
+      "id": "finale-report-success-end",
+      "type": "end",
+      "outcome": "success",
+      "text": "The full account goes on record. Whatever happens with it next, it happened in the open.",
+      "position": {
+        "x": 3300,
+        "y": -300
+      }
+    },
+    {
+      "id": "finale-report-fail-end",
+      "type": "end",
+      "outcome": "neutral",
+      "text": "The report gets buried in someone else's queue. On the record and going nowhere are, it turns out, not so different.",
+      "position": {
+        "x": 3000,
+        "y": -300
+      }
+    },
+    {
+      "id": "finale-sell-bonus-payoff",
+      "type": "story",
+      "text": "With the manifest already in hand, finding a quiet buyer takes an afternoon, not an investigation.",
+      "effects": [
+        {
+          "type": "apply_perk",
+          "params": {
+            "perkName": "Discreet"
+          }
+        }
+      ],
+      "position": {
+        "x": 2700,
+        "y": -150
+      }
+    },
+    {
+      "id": "finale-sell-bonus-end",
+      "type": "end",
+      "outcome": "success",
+      "text": "The manifest changes hands quietly, for a clean, quiet profit. No one asks where it came from.",
+      "position": {
+        "x": 3000,
+        "y": -150
+      }
+    },
+    {
+      "id": "finale-sell-mission",
+      "type": "mission",
+      "mission": {
+        "title": "Move the Contraband",
+        "description": "No manifest, no proof of what it even was -- just move what came out of that wreck before anyone asks.",
+        "difficulty": "PERILOUS",
+        "tags": [
+          "heist"
+        ],
+        "missionType": "HEIST"
+      },
+      "position": {
+        "x": 2700,
+        "y": 0
+      }
+    },
+    {
+      "id": "finale-sell-success-payoff",
+      "type": "story",
+      "text": "It moves, eventually, through channels that ask fewer questions than they should.",
+      "effects": [
+        {
+          "type": "apply_perk",
+          "params": {
+            "perkName": "Under the Table"
+          }
+        }
+      ],
+      "position": {
+        "x": 3000,
+        "y": 0
+      }
+    },
+    {
+      "id": "finale-sell-success-end",
+      "type": "end",
+      "outcome": "success",
+      "text": "The contraband moves. Whoever it originally belonged to is, for now, someone else's problem.",
+      "position": {
+        "x": 3300,
+        "y": -150
+      }
+    },
+    {
+      "id": "finale-sell-fail-payoff",
+      "type": "story",
+      "text": "The buyer was never a buyer. Now several people know exactly what the crew is sitting on.",
+      "effects": [
+        {
+          "type": "apply_flaw",
+          "params": {
+            "flawName": "Compromised"
+          }
+        }
+      ],
+      "position": {
+        "x": 3000,
+        "y": 150
+      }
+    },
+    {
+      "id": "finale-sell-fail-end",
+      "type": "end",
+      "outcome": "failure",
+      "text": "The deal falls apart in the worst possible way. The contraband is gone, and so is any claim to not having known what it was.",
+      "position": {
+        "x": 3300,
+        "y": 0
+      }
+    },
+    {
+      "id": "finale-bury-end",
+      "type": "end",
+      "outcome": "neutral",
+      "text": "Nothing gets said. Whatever this was disappears back into background traffic, unremarked on.",
+      "position": {
+        "x": 2700,
+        "y": 150
+      }
+    },
+    {
+      "id": "finale-salvage-mission",
+      "type": "mission",
+      "mission": {
+        "title": "Strip It While You Can",
+        "description": "Pull everything worth pulling off the wreck near {planetName} before the survivors' rescue draws real attention.",
+        "difficulty": "STANDARD",
+        "tags": [
+          "heist"
+        ],
+        "missionType": "HEIST"
+      },
+      "position": {
+        "x": 2700,
+        "y": 300
+      }
+    },
+    {
+      "id": "finale-salvage-success-payoff",
+      "type": "story",
+      "text": "Everyone official is still busy with the survivors. The crew works fast and quiet.",
+      "effects": [
+        {
+          "type": "apply_perk",
+          "params": {
+            "perkName": "Opportunist"
+          }
+        }
+      ],
+      "position": {
+        "x": 3000,
+        "y": 300
+      }
+    },
+    {
+      "id": "finale-salvage-success-end",
+      "type": "end",
+      "outcome": "success",
+      "text": "The wreck gets picked clean before anyone official even finishes the survivor count.",
+      "position": {
+        "x": 3300,
+        "y": 150
+      }
+    },
+    {
+      "id": "finale-salvage-fail-payoff",
+      "type": "story",
+      "text": "Someone official notices before the crew's finished, and asks exactly the wrong question.",
+      "effects": [
+        {
+          "type": "apply_flaw",
+          "params": {
+            "flawName": "Caught Looting"
+          }
+        }
+      ],
+      "position": {
+        "x": 3000,
+        "y": 450
+      }
+    },
+    {
+      "id": "finale-salvage-fail-end",
+      "type": "end",
+      "outcome": "failure",
+      "text": "The crew gets caught mid-salvage. Explaining it away costs more than the parts were worth.",
+      "position": {
+        "x": 3300,
+        "y": 300
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "start--act1-triangulate",
+      "from": "start",
+      "to": "act1-triangulate",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 33
+          }
+        }
+      ]
+    },
+    {
+      "id": "start--act1-log",
+      "from": "start",
+      "to": "act1-log",
+      "priority": 1,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 50
+          }
+        }
+      ]
+    },
+    {
+      "id": "start--act1-repeat",
+      "from": "start",
+      "to": "act1-repeat",
+      "priority": 2,
+      "conditions": []
+    },
+    {
+      "id": "act1-triangulate--bridge-1--3",
+      "from": "act1-triangulate",
+      "to": "bridge-1",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "act1-log--bridge-1--4",
+      "from": "act1-log",
+      "to": "bridge-1",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "purchase_quest_item",
+            "match": {
+              "itemName": "Distress Beacon Log"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "act1-repeat--bridge-1--5",
+      "from": "act1-repeat",
+      "to": "bridge-1",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "complete_quest",
+            "match": {
+              "scope": "any"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-1--act2-reach",
+      "from": "bridge-1",
+      "to": "act2-reach",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 33
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-1--act2-escort",
+      "from": "bridge-1",
+      "to": "act2-escort",
+      "priority": 1,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 50
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-1--act2-survivor",
+      "from": "bridge-1",
+      "to": "act2-survivor",
+      "priority": 2,
+      "conditions": []
+    },
+    {
+      "id": "act2-reach--bridge-2--9",
+      "from": "act2-reach",
+      "to": "bridge-2",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "act2-escort--bridge-2--10",
+      "from": "act2-escort",
+      "to": "bridge-2",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "act2-survivor--bridge-2--11",
+      "from": "act2-survivor",
+      "to": "bridge-2",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "hire_recruit",
+            "match": {
+              "seedId": "distress-survivor"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-2--act3-search",
+      "from": "bridge-2",
+      "to": "act3-search",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 33
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-2--act3-stories",
+      "from": "bridge-2",
+      "to": "act3-stories",
+      "priority": 1,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 50
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-2--act3-defenses",
+      "from": "bridge-2",
+      "to": "act3-defenses",
+      "priority": 2,
+      "conditions": []
+    },
+    {
+      "id": "act3-search--act3-search-payoff--15",
+      "from": "act3-search",
+      "to": "act3-search-payoff",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "previous_outcome",
+          "params": {
+            "equals": "success"
+          }
+        }
+      ]
+    },
+    {
+      "id": "act3-search--bridge-3--16",
+      "from": "act3-search",
+      "to": "bridge-3",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "act3-search-payoff--bridge-3--17",
+      "from": "act3-search-payoff",
+      "to": "bridge-3",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "act3-stories--bridge-3--18",
+      "from": "act3-stories",
+      "to": "bridge-3",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "act3-defenses--bridge-3--19",
+      "from": "act3-defenses",
+      "to": "bridge-3",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "bridge-3--finale-choice--20",
+      "from": "bridge-3",
+      "to": "finale-choice",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-choice--finale-report-mission--21",
+      "from": "finale-choice",
+      "to": "finale-report-mission",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "report"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-report-mission--finale-report-payoff--22",
+      "from": "finale-report-mission",
+      "to": "finale-report-payoff",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "previous_outcome",
+          "params": {
+            "equals": "success"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-report-mission--finale-report-fail-end--23",
+      "from": "finale-report-mission",
+      "to": "finale-report-fail-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-report-payoff--finale-report-success-end--24",
+      "from": "finale-report-payoff",
+      "to": "finale-report-success-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-choice--finale-sell-bonus-payoff--25",
+      "from": "finale-choice",
+      "to": "finale-sell-bonus-payoff",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "sell"
+          }
+        },
+        {
+          "type": "has_item",
+          "params": {
+            "itemName": "Contraband Manifest"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-choice--finale-sell-mission--26",
+      "from": "finale-choice",
+      "to": "finale-sell-mission",
+      "priority": 1,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "sell"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-sell-bonus-payoff--finale-sell-bonus-end--27",
+      "from": "finale-sell-bonus-payoff",
+      "to": "finale-sell-bonus-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-sell-mission--finale-sell-success-payoff--28",
+      "from": "finale-sell-mission",
+      "to": "finale-sell-success-payoff",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "previous_outcome",
+          "params": {
+            "equals": "success"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-sell-mission--finale-sell-fail-payoff--29",
+      "from": "finale-sell-mission",
+      "to": "finale-sell-fail-payoff",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-sell-success-payoff--finale-sell-success-end--30",
+      "from": "finale-sell-success-payoff",
+      "to": "finale-sell-success-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-sell-fail-payoff--finale-sell-fail-end--31",
+      "from": "finale-sell-fail-payoff",
+      "to": "finale-sell-fail-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-choice--finale-bury-end--32",
+      "from": "finale-choice",
+      "to": "finale-bury-end",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "bury"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-choice--finale-salvage-mission--33",
+      "from": "finale-choice",
+      "to": "finale-salvage-mission",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "salvage"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-salvage-mission--finale-salvage-success-payoff--34",
+      "from": "finale-salvage-mission",
+      "to": "finale-salvage-success-payoff",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "previous_outcome",
+          "params": {
+            "equals": "success"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-salvage-mission--finale-salvage-fail-payoff--35",
+      "from": "finale-salvage-mission",
+      "to": "finale-salvage-fail-payoff",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-salvage-success-payoff--finale-salvage-success-end--36",
+      "from": "finale-salvage-success-payoff",
+      "to": "finale-salvage-success-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-salvage-fail-payoff--finale-salvage-fail-end--37",
+      "from": "finale-salvage-fail-payoff",
+      "to": "finale-salvage-fail-end",
+      "priority": 0,
+      "conditions": []
+    }
+  ]
+}

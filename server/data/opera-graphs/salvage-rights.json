@@ -1,0 +1,802 @@
+{
+  "id": "salvage-rights",
+  "title": "Salvage Rights",
+  "titles": [
+    "Finders, Contested",
+    "Prior Claim",
+    "Nothing Unclaimed for Long"
+  ],
+  "description": "A derelict wreck turns up with multiple claimants -- a corp faction, a rival salvage operator, and whatever is still aboard. The crew has to back one claim, or work an angle of its own.",
+  "nodes": [
+    {
+      "id": "start",
+      "type": "start",
+      "text": "A derelict's transponder keeps pinging near {planetName}. The signal is already public. It will not stay unclaimed for long.",
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "act1-recon",
+      "type": "mission",
+      "mission": {
+        "title": "Chart the Wreck",
+        "description": "Get eyes on the derelict near {planetName} before a rival claim gets filed.",
+        "difficulty": "ROUTINE",
+        "tags": [
+          "recon"
+        ],
+        "missionType": "RECON"
+      },
+      "position": {
+        "x": 300,
+        "y": -150
+      }
+    },
+    {
+      "id": "act1-beacon",
+      "type": "seed",
+      "seeds": [
+        {
+          "target": "shop",
+          "params": {
+            "itemName": "Salvage Priority Beacon"
+          },
+          "note": "A black-market beacon turns up, one that can backdate a claim filing for whoever gets to it first."
+        }
+      ],
+      "completionText": "The beacon is bought and armed.",
+      "position": {
+        "x": 300,
+        "y": 0
+      }
+    },
+    {
+      "id": "act1-nearby",
+      "type": "story",
+      "text": "The ping starts mid-contract, nowhere near finished. Whatever this is, it will have to wait for a lull.",
+      "effects": [],
+      "position": {
+        "x": 300,
+        "y": 150
+      }
+    },
+    {
+      "id": "bridge-1",
+      "type": "story",
+      "text": "Word's out. Getting there first isn't enough -- staying there is the actual fight.",
+      "position": {
+        "x": 600,
+        "y": 0
+      }
+    },
+    {
+      "id": "act2-jam",
+      "type": "mission",
+      "mission": {
+        "title": "Jam the Rival Claim",
+        "description": "Disable a rival salvage tug's transponder near {planetName} long enough to file first.",
+        "difficulty": "STANDARD",
+        "tags": [
+          "sabotage"
+        ],
+        "missionType": "SABOTAGE"
+      },
+      "position": {
+        "x": 900,
+        "y": -150
+      }
+    },
+    {
+      "id": "act2-escort",
+      "type": "mission",
+      "mission": {
+        "title": "Hold the Line",
+        "description": "Escort a claims inspector through contested space near {planetName} long enough to make the filing stick.",
+        "difficulty": "STANDARD",
+        "tags": [
+          "escort"
+        ],
+        "missionType": "ESCORT"
+      },
+      "position": {
+        "x": 900,
+        "y": 0
+      }
+    },
+    {
+      "id": "act2-scavenger",
+      "type": "seed",
+      "seeds": [
+        {
+          "target": "candidate",
+          "params": {
+            "seedId": "salvage-hand"
+          },
+          "note": "A scavenger already working the wreck from the inside says they'll sign on, if someone actually shows up to hire them."
+        }
+      ],
+      "completionText": "The scavenger comes aboard.",
+      "position": {
+        "x": 900,
+        "y": 150
+      }
+    },
+    {
+      "id": "bridge-2",
+      "type": "story",
+      "text": "The claim is holding, for now. What's actually aboard is another question.",
+      "position": {
+        "x": 1200,
+        "y": 0
+      }
+    },
+    {
+      "id": "act3-manifest",
+      "type": "mission",
+      "mission": {
+        "title": "Read the Manifest",
+        "description": "Crack the derelict's dead systems open near {planetName} and pull whatever cargo manifest survived.",
+        "difficulty": "HARD",
+        "tags": [
+          "recon"
+        ],
+        "missionType": "RECON"
+      },
+      "position": {
+        "x": 1500,
+        "y": -150
+      }
+    },
+    {
+      "id": "act3-manifest-payoff",
+      "type": "story",
+      "text": "The manifest survives intact. It says exactly what the wreck was carrying, and for whom.",
+      "effects": [
+        {
+          "type": "give_item",
+          "params": {
+            "itemName": "Wreck's Manifest"
+          }
+        }
+      ],
+      "position": {
+        "x": 1800,
+        "y": 0
+      }
+    },
+    {
+      "id": "act3-logs",
+      "type": "story",
+      "text": "The derelict's own logs are mostly static, but what comes through clean is not comforting.",
+      "effects": [],
+      "position": {
+        "x": 1500,
+        "y": 0
+      }
+    },
+    {
+      "id": "act3-forceopen",
+      "type": "mission",
+      "mission": {
+        "title": "Force the Cargo Hold",
+        "description": "No time to be careful -- force the cargo hold open before anyone else beats the crew to it.",
+        "difficulty": "STANDARD",
+        "tags": [
+          "heist"
+        ],
+        "missionType": "HEIST"
+      },
+      "position": {
+        "x": 1500,
+        "y": 150
+      }
+    },
+    {
+      "id": "bridge-3",
+      "type": "story",
+      "text": "Whatever the wreck gave up, someone still has to decide who it belongs to.",
+      "position": {
+        "x": 2100,
+        "y": 0
+      }
+    },
+    {
+      "id": "finale-choice",
+      "type": "choice",
+      "text": "Whose wreck is it?",
+      "choiceOptions": [
+        {
+          "id": "report",
+          "label": "Report it to {faction}"
+        },
+        {
+          "id": "sell",
+          "label": "Sell the claim outright"
+        },
+        {
+          "id": "keep",
+          "label": "Keep it for the crew"
+        },
+        {
+          "id": "walkaway",
+          "label": "Report the coordinates as a hazard and walk away"
+        }
+      ],
+      "position": {
+        "x": 2400,
+        "y": 0
+      }
+    },
+    {
+      "id": "finale-report-mission",
+      "type": "mission",
+      "mission": {
+        "title": "Report the Find",
+        "description": "File the claim with {faction} in full, manifest and all.",
+        "difficulty": "STANDARD",
+        "tags": [
+          "diplomacy"
+        ],
+        "missionType": "DIPLOMACY"
+      },
+      "position": {
+        "x": 2700,
+        "y": -300
+      }
+    },
+    {
+      "id": "finale-report-payoff",
+      "type": "story",
+      "text": "{faction} takes the filing seriously, and takes note of who brought it.",
+      "effects": [
+        {
+          "type": "apply_perk",
+          "params": {
+            "perkName": "Above Board"
+          }
+        }
+      ],
+      "position": {
+        "x": 3000,
+        "y": -375
+      }
+    },
+    {
+      "id": "finale-report-success-end",
+      "type": "end",
+      "outcome": "success",
+      "text": "{faction} takes the wreck off the crew's hands -- officially, and at a fair price.",
+      "position": {
+        "x": 3300,
+        "y": -150
+      }
+    },
+    {
+      "id": "finale-report-fail-end",
+      "type": "end",
+      "outcome": "neutral",
+      "text": "The filing gets lost in someone else's paperwork. The reward, such as it was, goes to whoever filed second.",
+      "position": {
+        "x": 3000,
+        "y": -225
+      }
+    },
+    {
+      "id": "finale-sell-payoff",
+      "type": "story",
+      "text": "The salvage guild proxy does not haggle. The claim changes hands, quietly and for a fair number.",
+      "effects": [
+        {
+          "type": "apply_perk",
+          "params": {
+            "perkName": "Fair Dealer"
+          }
+        }
+      ],
+      "position": {
+        "x": 2700,
+        "y": -150
+      }
+    },
+    {
+      "id": "finale-sell-end",
+      "type": "end",
+      "outcome": "success",
+      "text": "The deal closes clean. No fight, no filing, no wreck to argue over anymore.",
+      "position": {
+        "x": 3000,
+        "y": -75
+      }
+    },
+    {
+      "id": "finale-keep-bonus-payoff",
+      "type": "story",
+      "text": "With the manifest in hand, stripping the wreck quietly is just a matter of knowing which rounds to avoid and when.",
+      "effects": [
+        {
+          "type": "apply_perk",
+          "params": {
+            "perkName": "Salvage Rights Holder"
+          }
+        }
+      ],
+      "position": {
+        "x": 2700,
+        "y": 0
+      }
+    },
+    {
+      "id": "finale-keep-bonus-end",
+      "type": "end",
+      "outcome": "success",
+      "text": "The crew strips the wreck clean before anyone else even finishes filing. It's theirs because no one else knew what they knew.",
+      "position": {
+        "x": 3000,
+        "y": 75
+      }
+    },
+    {
+      "id": "finale-keep-mission",
+      "type": "mission",
+      "mission": {
+        "title": "Hold What's Yours",
+        "description": "No manifest, no shortcuts -- just hold the claim near {planetName} against whoever else still wants it.",
+        "difficulty": "PERILOUS",
+        "tags": [
+          "combat"
+        ]
+      },
+      "position": {
+        "x": 2700,
+        "y": 150
+      }
+    },
+    {
+      "id": "finale-keep-success-payoff",
+      "type": "story",
+      "text": "It costs more than it should have, but the claim holds.",
+      "effects": [
+        {
+          "type": "apply_perk",
+          "params": {
+            "perkName": "Hard-Won Claim"
+          }
+        }
+      ],
+      "position": {
+        "x": 3000,
+        "y": 225
+      }
+    },
+    {
+      "id": "finale-keep-success-end",
+      "type": "end",
+      "outcome": "success",
+      "text": "The wreck belongs to the crew now, for exactly as long as they can keep saying so.",
+      "position": {
+        "x": 3300,
+        "y": 0
+      }
+    },
+    {
+      "id": "finale-keep-fail-payoff",
+      "type": "story",
+      "text": "The claim does not hold. Whoever else wanted it badly enough remembers who tried to stop them.",
+      "effects": [
+        {
+          "type": "apply_flaw",
+          "params": {
+            "flawName": "Marked by Rivals"
+          }
+        }
+      ],
+      "position": {
+        "x": 3000,
+        "y": 375
+      }
+    },
+    {
+      "id": "finale-keep-fail-end",
+      "type": "end",
+      "outcome": "failure",
+      "text": "The wreck changes hands anyway. The only thing the crew keeps is the grudge now aimed at them.",
+      "position": {
+        "x": 3300,
+        "y": 150
+      }
+    },
+    {
+      "id": "finale-walkaway-end",
+      "type": "end",
+      "outcome": "neutral",
+      "text": "The coordinates go out flagged as a hazard, nothing more. Someone else's problem now.",
+      "position": {
+        "x": 2700,
+        "y": 300
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "start--act1-recon",
+      "from": "start",
+      "to": "act1-recon",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 33
+          }
+        }
+      ]
+    },
+    {
+      "id": "start--act1-beacon",
+      "from": "start",
+      "to": "act1-beacon",
+      "priority": 1,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 50
+          }
+        }
+      ]
+    },
+    {
+      "id": "start--act1-nearby",
+      "from": "start",
+      "to": "act1-nearby",
+      "priority": 2,
+      "conditions": []
+    },
+    {
+      "id": "act1-recon--bridge-1--3",
+      "from": "act1-recon",
+      "to": "bridge-1",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "act1-beacon--bridge-1--4",
+      "from": "act1-beacon",
+      "to": "bridge-1",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "purchase_quest_item",
+            "match": {
+              "itemName": "Salvage Priority Beacon"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "act1-nearby--bridge-1--5",
+      "from": "act1-nearby",
+      "to": "bridge-1",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "complete_quest",
+            "match": {
+              "scope": "any"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-1--act2-jam",
+      "from": "bridge-1",
+      "to": "act2-jam",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 33
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-1--act2-escort",
+      "from": "bridge-1",
+      "to": "act2-escort",
+      "priority": 1,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 50
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-1--act2-scavenger",
+      "from": "bridge-1",
+      "to": "act2-scavenger",
+      "priority": 2,
+      "conditions": []
+    },
+    {
+      "id": "act2-jam--bridge-2--9",
+      "from": "act2-jam",
+      "to": "bridge-2",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "act2-escort--bridge-2--10",
+      "from": "act2-escort",
+      "to": "bridge-2",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "act2-scavenger--bridge-2--11",
+      "from": "act2-scavenger",
+      "to": "bridge-2",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "hire_recruit",
+            "match": {
+              "seedId": "salvage-hand"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-2--act3-manifest",
+      "from": "bridge-2",
+      "to": "act3-manifest",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 33
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-2--act3-logs",
+      "from": "bridge-2",
+      "to": "act3-logs",
+      "priority": 1,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 50
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-2--act3-forceopen",
+      "from": "bridge-2",
+      "to": "act3-forceopen",
+      "priority": 2,
+      "conditions": []
+    },
+    {
+      "id": "act3-manifest--act3-manifest-payoff--15",
+      "from": "act3-manifest",
+      "to": "act3-manifest-payoff",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "previous_outcome",
+          "params": {
+            "equals": "success"
+          }
+        }
+      ]
+    },
+    {
+      "id": "act3-manifest--bridge-3--16",
+      "from": "act3-manifest",
+      "to": "bridge-3",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "act3-manifest-payoff--bridge-3--17",
+      "from": "act3-manifest-payoff",
+      "to": "bridge-3",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "act3-logs--bridge-3--18",
+      "from": "act3-logs",
+      "to": "bridge-3",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "act3-forceopen--bridge-3--19",
+      "from": "act3-forceopen",
+      "to": "bridge-3",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "bridge-3--finale-choice--20",
+      "from": "bridge-3",
+      "to": "finale-choice",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-choice--finale-report-mission--21",
+      "from": "finale-choice",
+      "to": "finale-report-mission",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "report"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-report-mission--finale-report-payoff--22",
+      "from": "finale-report-mission",
+      "to": "finale-report-payoff",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "previous_outcome",
+          "params": {
+            "equals": "success"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-report-mission--finale-report-fail-end--23",
+      "from": "finale-report-mission",
+      "to": "finale-report-fail-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-report-payoff--finale-report-success-end--24",
+      "from": "finale-report-payoff",
+      "to": "finale-report-success-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-choice--finale-sell-payoff--25",
+      "from": "finale-choice",
+      "to": "finale-sell-payoff",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "sell"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-sell-payoff--finale-sell-end--26",
+      "from": "finale-sell-payoff",
+      "to": "finale-sell-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-choice--finale-keep-bonus-payoff--27",
+      "from": "finale-choice",
+      "to": "finale-keep-bonus-payoff",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "keep"
+          }
+        },
+        {
+          "type": "has_item",
+          "params": {
+            "itemName": "Wreck's Manifest"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-choice--finale-keep-mission--28",
+      "from": "finale-choice",
+      "to": "finale-keep-mission",
+      "priority": 1,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "keep"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-keep-bonus-payoff--finale-keep-bonus-end--29",
+      "from": "finale-keep-bonus-payoff",
+      "to": "finale-keep-bonus-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-keep-mission--finale-keep-success-payoff--30",
+      "from": "finale-keep-mission",
+      "to": "finale-keep-success-payoff",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "previous_outcome",
+          "params": {
+            "equals": "success"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-keep-mission--finale-keep-fail-payoff--31",
+      "from": "finale-keep-mission",
+      "to": "finale-keep-fail-payoff",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-keep-success-payoff--finale-keep-success-end--32",
+      "from": "finale-keep-success-payoff",
+      "to": "finale-keep-success-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-keep-fail-payoff--finale-keep-fail-end--33",
+      "from": "finale-keep-fail-payoff",
+      "to": "finale-keep-fail-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-choice--finale-walkaway-end--34",
+      "from": "finale-choice",
+      "to": "finale-walkaway-end",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "walkaway"
+          }
+        }
+      ]
+    }
+  ]
+}

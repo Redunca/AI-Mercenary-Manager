@@ -1,0 +1,875 @@
+{
+  "id": "the-bounty-circuit",
+  "title": "The Bounty Circuit",
+  "titles": [
+    "Open to Any Outfit",
+    "First Contact Wins",
+    "The Field Thins"
+  ],
+  "description": "Multiple mercenary outfits are chasing the same marked bounty -- the crew isn't just doing the job, it's racing rivals doing the same job.",
+  "nodes": [
+    {
+      "id": "start",
+      "type": "start",
+      "text": "A bounty on {targetName} clears the board near {planetName}, open to any outfit that can close it. {enemyGroupName} already has a head start.",
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "act1-verify",
+      "type": "mission",
+      "mission": {
+        "title": "Confirm the Mark",
+        "description": "{targetName} may or may not still be where the board claims -- verify it before committing a ship to the chase.",
+        "difficulty": "ROUTINE",
+        "tags": [
+          "recon"
+        ],
+        "missionType": "RECON"
+      },
+      "position": {
+        "x": 300,
+        "y": -150
+      }
+    },
+    {
+      "id": "act1-registry",
+      "type": "seed",
+      "seeds": [
+        {
+          "target": "shop",
+          "params": {
+            "itemName": "Bounty Circuit Registration"
+          },
+          "note": "Buy-in papers for the circuit's official registry make the rounds, guaranteeing a cut to whoever actually holds them."
+        }
+      ],
+      "completionText": "The registration is filed.",
+      "position": {
+        "x": 300,
+        "y": 0
+      }
+    },
+    {
+      "id": "act1-reputation",
+      "type": "story",
+      "text": "The crew's name is already circulating among circuit regulars, on the strength of the last job alone.",
+      "effects": [],
+      "position": {
+        "x": 300,
+        "y": 150
+      }
+    },
+    {
+      "id": "bridge-1",
+      "type": "story",
+      "text": "Word is moving fast. So is everyone else chasing the same bounty.",
+      "position": {
+        "x": 600,
+        "y": 0
+      }
+    },
+    {
+      "id": "act2-delay",
+      "type": "mission",
+      "mission": {
+        "title": "Slow the Competition",
+        "description": "Quietly delay {enemyGroupName}'s outfit without tipping them off it was the crew.",
+        "difficulty": "STANDARD",
+        "tags": [
+          "sabotage"
+        ],
+        "missionType": "SABOTAGE"
+      },
+      "position": {
+        "x": 900,
+        "y": -150
+      }
+    },
+    {
+      "id": "act2-approach",
+      "type": "mission",
+      "mission": {
+        "title": "Beat Them to the Approach",
+        "description": "Find a faster route to {targetName} before {enemyGroupName} does.",
+        "difficulty": "STANDARD",
+        "tags": [
+          "recon"
+        ],
+        "missionType": "RECON"
+      },
+      "position": {
+        "x": 900,
+        "y": 0
+      }
+    },
+    {
+      "id": "act2-defector",
+      "type": "seed",
+      "seeds": [
+        {
+          "target": "candidate",
+          "params": {
+            "seedId": "circuit-defector"
+          },
+          "note": "A regular running with {enemyGroupName} sends word they're open to switching outfits mid-race, for the right offer."
+        }
+      ],
+      "completionText": "The defector switches sides.",
+      "position": {
+        "x": 900,
+        "y": 150
+      }
+    },
+    {
+      "id": "bridge-2",
+      "type": "story",
+      "text": "The field is thinner than it was. {enemyGroupName} is still in it.",
+      "position": {
+        "x": 1200,
+        "y": 0
+      }
+    },
+    {
+      "id": "act3-corner",
+      "type": "mission",
+      "mission": {
+        "title": "Corner the Mark",
+        "description": "Get {targetName} cornered near {planetName} and the claim locked down before anyone else gets close.",
+        "difficulty": "HARD",
+        "tags": [
+          "extraction"
+        ],
+        "missionType": "EXTRACTION_OP"
+      },
+      "position": {
+        "x": 1500,
+        "y": -150
+      }
+    },
+    {
+      "id": "act3-corner-payoff",
+      "type": "story",
+      "text": "The claim is locked down, timestamped and witnessed before anyone else gets within a system of it.",
+      "effects": [
+        {
+          "type": "give_item",
+          "params": {
+            "itemName": "Confirmed Bounty Claim"
+          }
+        }
+      ],
+      "position": {
+        "x": 1800,
+        "y": 0
+      }
+    },
+    {
+      "id": "act3-forced",
+      "type": "story",
+      "text": "{enemyGroupName} makes its move early, forcing every outfit still in the running to show its hand.",
+      "effects": [],
+      "position": {
+        "x": 1500,
+        "y": 0
+      }
+    },
+    {
+      "id": "act3-cutoff",
+      "type": "mission",
+      "mission": {
+        "title": "Cut Off the Backup Route",
+        "description": "Deny {enemyGroupName} a second attempt, in case the first one goes bad.",
+        "difficulty": "STANDARD",
+        "tags": [
+          "sabotage"
+        ],
+        "missionType": "SABOTAGE"
+      },
+      "position": {
+        "x": 1500,
+        "y": 150
+      }
+    },
+    {
+      "id": "bridge-3",
+      "type": "story",
+      "text": "Whatever happens next, this bounty is closing one way or another.",
+      "position": {
+        "x": 2100,
+        "y": 0
+      }
+    },
+    {
+      "id": "finale-choice",
+      "type": "choice",
+      "text": "How does the circuit close?",
+      "choiceOptions": [
+        {
+          "id": "claim",
+          "label": "Bring in the mark"
+        },
+        {
+          "id": "sabotage",
+          "label": "Take {enemyGroupName} out of the running"
+        },
+        {
+          "id": "split",
+          "label": "Cut a deal to split it"
+        },
+        {
+          "id": "walkaway",
+          "label": "Let the circuit have this one"
+        }
+      ],
+      "position": {
+        "x": 2400,
+        "y": 0
+      }
+    },
+    {
+      "id": "finale-claim-bonus-payoff",
+      "type": "story",
+      "text": "With the claim already locked down, bringing the mark in is paperwork, not a fight.",
+      "effects": [
+        {
+          "type": "apply_perk",
+          "params": {
+            "perkName": "Circuit Ringer"
+          }
+        }
+      ],
+      "position": {
+        "x": 2700,
+        "y": -300
+      }
+    },
+    {
+      "id": "finale-claim-bonus-end",
+      "type": "end",
+      "outcome": "success",
+      "text": "The bounty closes uncontested. The paperwork was airtight before anyone else even arrived.",
+      "position": {
+        "x": 3000,
+        "y": -450
+      }
+    },
+    {
+      "id": "finale-claim-mission",
+      "type": "mission",
+      "mission": {
+        "title": "Bring in the Mark",
+        "description": "No lock on the claim, no shortcuts -- just bring {targetName} in before {enemyGroupName} does.",
+        "difficulty": "PERILOUS",
+        "tags": [
+          "extraction"
+        ],
+        "missionType": "EXTRACTION_OP"
+      },
+      "position": {
+        "x": 2700,
+        "y": -150
+      }
+    },
+    {
+      "id": "finale-claim-success-payoff",
+      "type": "story",
+      "text": "It comes down to the wire, but the crew brings the mark in first.",
+      "effects": [
+        {
+          "type": "apply_perk",
+          "params": {
+            "perkName": "Hard-Won Bounty"
+          }
+        }
+      ],
+      "position": {
+        "x": 3000,
+        "y": -300
+      }
+    },
+    {
+      "id": "finale-claim-success-end",
+      "type": "end",
+      "outcome": "success",
+      "text": "The bounty closes in the crew's favor. It was closer than anyone aboard is admitting.",
+      "position": {
+        "x": 3300,
+        "y": -300
+      }
+    },
+    {
+      "id": "finale-claim-fail-payoff",
+      "type": "story",
+      "text": "{enemyGroupName} closes it first. The circuit remembers who almost had it.",
+      "effects": [
+        {
+          "type": "apply_flaw",
+          "params": {
+            "flawName": "Also-Ran"
+          }
+        }
+      ],
+      "position": {
+        "x": 3000,
+        "y": -150
+      }
+    },
+    {
+      "id": "finale-claim-fail-end",
+      "type": "end",
+      "outcome": "failure",
+      "text": "The mark goes to {enemyGroupName}. The crew walks away with nothing but the story of how close it was.",
+      "position": {
+        "x": 3300,
+        "y": -150
+      }
+    },
+    {
+      "id": "finale-sabotage-mission",
+      "type": "mission",
+      "mission": {
+        "title": "Take {enemyGroupName} Out of the Running",
+        "description": "Ground {enemyGroupName}'s outfit outright before they can close on {targetName}.",
+        "difficulty": "HARD",
+        "tags": [
+          "sabotage"
+        ],
+        "missionType": "SABOTAGE"
+      },
+      "position": {
+        "x": 2700,
+        "y": 0
+      }
+    },
+    {
+      "id": "finale-sabotage-success-payoff",
+      "type": "story",
+      "text": "{enemyGroupName}'s outfit is grounded for good. The rest of the circuit takes notice of who did it.",
+      "effects": [
+        {
+          "type": "apply_perk",
+          "params": {
+            "perkName": "Feared on the Circuit"
+          }
+        }
+      ],
+      "position": {
+        "x": 3000,
+        "y": 0
+      }
+    },
+    {
+      "id": "finale-sabotage-success-end",
+      "type": "end",
+      "outcome": "success",
+      "text": "The competition is gone. What happens to the bounty after that is barely a footnote.",
+      "position": {
+        "x": 3300,
+        "y": 0
+      }
+    },
+    {
+      "id": "finale-sabotage-fail-payoff",
+      "type": "story",
+      "text": "The attempt is traced straight back to the crew, in front of the entire circuit.",
+      "effects": [
+        {
+          "type": "apply_flaw",
+          "params": {
+            "flawName": "Exposed"
+          }
+        }
+      ],
+      "position": {
+        "x": 3000,
+        "y": 150
+      }
+    },
+    {
+      "id": "finale-sabotage-fail-end",
+      "type": "end",
+      "outcome": "failure",
+      "text": "The sabotage fails in the open. Every outfit on the circuit knows exactly who to watch now.",
+      "position": {
+        "x": 3300,
+        "y": 150
+      }
+    },
+    {
+      "id": "finale-split-mission",
+      "type": "mission",
+      "mission": {
+        "title": "Cut a Deal",
+        "description": "Propose splitting the bounty with {enemyGroupName} rather than risk losing it all.",
+        "difficulty": "STANDARD",
+        "tags": [
+          "diplomacy"
+        ],
+        "missionType": "DIPLOMACY"
+      },
+      "position": {
+        "x": 2700,
+        "y": 150
+      }
+    },
+    {
+      "id": "finale-split-success-payoff",
+      "type": "story",
+      "text": "Neither side loves the split. Both sides take it.",
+      "effects": [
+        {
+          "type": "apply_perk",
+          "params": {
+            "perkName": "Fair Split"
+          }
+        }
+      ],
+      "position": {
+        "x": 3000,
+        "y": 300
+      }
+    },
+    {
+      "id": "finale-split-success-end",
+      "type": "end",
+      "outcome": "success",
+      "text": "The bounty gets split down the middle. Smaller than a clean win, guaranteed all the same.",
+      "position": {
+        "x": 3300,
+        "y": 300
+      }
+    },
+    {
+      "id": "finale-split-fail-end",
+      "type": "end",
+      "outcome": "neutral",
+      "text": "The offer falls flat. {enemyGroupName} was never interested in sharing.",
+      "position": {
+        "x": 3000,
+        "y": 450
+      }
+    },
+    {
+      "id": "finale-walkaway-end",
+      "type": "end",
+      "outcome": "neutral",
+      "text": "The crew lets the circuit have this one. Not every bounty is worth the chase.",
+      "position": {
+        "x": 2700,
+        "y": 300
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "start--act1-verify",
+      "from": "start",
+      "to": "act1-verify",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 33
+          }
+        }
+      ]
+    },
+    {
+      "id": "start--act1-registry",
+      "from": "start",
+      "to": "act1-registry",
+      "priority": 1,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 50
+          }
+        }
+      ]
+    },
+    {
+      "id": "start--act1-reputation",
+      "from": "start",
+      "to": "act1-reputation",
+      "priority": 2,
+      "conditions": []
+    },
+    {
+      "id": "act1-verify--bridge-1--3",
+      "from": "act1-verify",
+      "to": "bridge-1",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "act1-registry--bridge-1--4",
+      "from": "act1-registry",
+      "to": "bridge-1",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "purchase_quest_item",
+            "match": {
+              "itemName": "Bounty Circuit Registration"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "act1-reputation--bridge-1--5",
+      "from": "act1-reputation",
+      "to": "bridge-1",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "complete_quest",
+            "match": {
+              "scope": "any"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-1--act2-delay",
+      "from": "bridge-1",
+      "to": "act2-delay",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 33
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-1--act2-approach",
+      "from": "bridge-1",
+      "to": "act2-approach",
+      "priority": 1,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 50
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-1--act2-defector",
+      "from": "bridge-1",
+      "to": "act2-defector",
+      "priority": 2,
+      "conditions": []
+    },
+    {
+      "id": "act2-delay--bridge-2--9",
+      "from": "act2-delay",
+      "to": "bridge-2",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "act2-approach--bridge-2--10",
+      "from": "act2-approach",
+      "to": "bridge-2",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "act2-defector--bridge-2--11",
+      "from": "act2-defector",
+      "to": "bridge-2",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "action_performed",
+          "params": {
+            "actionType": "hire_recruit",
+            "match": {
+              "seedId": "circuit-defector"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-2--act3-corner",
+      "from": "bridge-2",
+      "to": "act3-corner",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 33
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-2--act3-forced",
+      "from": "bridge-2",
+      "to": "act3-forced",
+      "priority": 1,
+      "conditions": [
+        {
+          "type": "chance",
+          "params": {
+            "percentage": 50
+          }
+        }
+      ]
+    },
+    {
+      "id": "bridge-2--act3-cutoff",
+      "from": "bridge-2",
+      "to": "act3-cutoff",
+      "priority": 2,
+      "conditions": []
+    },
+    {
+      "id": "act3-corner--act3-corner-payoff--15",
+      "from": "act3-corner",
+      "to": "act3-corner-payoff",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "previous_outcome",
+          "params": {
+            "equals": "success"
+          }
+        }
+      ]
+    },
+    {
+      "id": "act3-corner--bridge-3--16",
+      "from": "act3-corner",
+      "to": "bridge-3",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "act3-corner-payoff--bridge-3--17",
+      "from": "act3-corner-payoff",
+      "to": "bridge-3",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "act3-forced--bridge-3--18",
+      "from": "act3-forced",
+      "to": "bridge-3",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "act3-cutoff--bridge-3--19",
+      "from": "act3-cutoff",
+      "to": "bridge-3",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "bridge-3--finale-choice--20",
+      "from": "bridge-3",
+      "to": "finale-choice",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-choice--finale-claim-bonus-payoff--21",
+      "from": "finale-choice",
+      "to": "finale-claim-bonus-payoff",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "claim"
+          }
+        },
+        {
+          "type": "has_item",
+          "params": {
+            "itemName": "Confirmed Bounty Claim"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-choice--finale-claim-mission--22",
+      "from": "finale-choice",
+      "to": "finale-claim-mission",
+      "priority": 1,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "claim"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-claim-bonus-payoff--finale-claim-bonus-end--23",
+      "from": "finale-claim-bonus-payoff",
+      "to": "finale-claim-bonus-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-claim-mission--finale-claim-success-payoff--24",
+      "from": "finale-claim-mission",
+      "to": "finale-claim-success-payoff",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "previous_outcome",
+          "params": {
+            "equals": "success"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-claim-mission--finale-claim-fail-payoff--25",
+      "from": "finale-claim-mission",
+      "to": "finale-claim-fail-payoff",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-claim-success-payoff--finale-claim-success-end--26",
+      "from": "finale-claim-success-payoff",
+      "to": "finale-claim-success-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-claim-fail-payoff--finale-claim-fail-end--27",
+      "from": "finale-claim-fail-payoff",
+      "to": "finale-claim-fail-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-choice--finale-sabotage-mission--28",
+      "from": "finale-choice",
+      "to": "finale-sabotage-mission",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "sabotage"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-sabotage-mission--finale-sabotage-success-payoff--29",
+      "from": "finale-sabotage-mission",
+      "to": "finale-sabotage-success-payoff",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "previous_outcome",
+          "params": {
+            "equals": "success"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-sabotage-mission--finale-sabotage-fail-payoff--30",
+      "from": "finale-sabotage-mission",
+      "to": "finale-sabotage-fail-payoff",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-sabotage-success-payoff--finale-sabotage-success-end--31",
+      "from": "finale-sabotage-success-payoff",
+      "to": "finale-sabotage-success-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-sabotage-fail-payoff--finale-sabotage-fail-end--32",
+      "from": "finale-sabotage-fail-payoff",
+      "to": "finale-sabotage-fail-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-choice--finale-split-mission--33",
+      "from": "finale-choice",
+      "to": "finale-split-mission",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "split"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-split-mission--finale-split-success-payoff--34",
+      "from": "finale-split-mission",
+      "to": "finale-split-success-payoff",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "previous_outcome",
+          "params": {
+            "equals": "success"
+          }
+        }
+      ]
+    },
+    {
+      "id": "finale-split-mission--finale-split-fail-end--35",
+      "from": "finale-split-mission",
+      "to": "finale-split-fail-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-split-success-payoff--finale-split-success-end--36",
+      "from": "finale-split-success-payoff",
+      "to": "finale-split-success-end",
+      "priority": 0,
+      "conditions": []
+    },
+    {
+      "id": "finale-choice--finale-walkaway-end--37",
+      "from": "finale-choice",
+      "to": "finale-walkaway-end",
+      "priority": 0,
+      "conditions": [
+        {
+          "type": "choice_made",
+          "params": {
+            "optionId": "walkaway"
+          }
+        }
+      ]
+    }
+  ]
+}
