@@ -456,6 +456,20 @@ export class CommandService {
     }
 
     if (action === 'buy' && args[0]) {
+      // The Self panel's own registered local "buy" command purchases AND
+      // refreshes its own upgrades/tokens directly on the live component --
+      // reuse it when that panel is already active, since the
+      // setPanelModule(..., PanelModule.Self) fallback below is a no-op
+      // when the panel is already showing 'self' (NgSwitch only swaps views
+      // when its bound value actually changes), which would otherwise leave
+      // the panel showing pre-purchase tier/tokens until the player
+      // navigates away and back.
+      const activePanel = this.layout.getPanelById(this.layout.activePanelId!);
+      if (activePanel?.module === PanelModule.Self) {
+        activePanel.terminal?.localCommands['buy']?.(args[0]);
+        return;
+      }
+
       void this.selfService.buyUpgrade(Number(args[0])).then((result) => {
         if (result?.error) {
           console.warn('Purchase failed:', result.error);

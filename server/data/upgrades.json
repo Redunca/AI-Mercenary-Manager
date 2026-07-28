@@ -108,5 +108,45 @@
     "increment": 1,
     "maxValue": 6,
     "costs": [60, 90, 135, 200, 300]
+  },
+  {
+    "id": 12,
+    "name": "Difficulty Scanner",
+    "description": "Reveals a mission's difficulty rating before you commit a ship to it.",
+    "appliesTo": "players.has_difficulty_scanner",
+    "baseValue": 0,
+    "increment": 1,
+    "maxValue": 1,
+    "costs": [75]
+  },
+  {
+    "id": 13,
+    "name": "Duration Scanner",
+    "description": "Reveals a mission's estimated time to complete before you commit a ship to it.",
+    "appliesTo": "players.has_duration_scanner",
+    "baseValue": 0,
+    "increment": 1,
+    "maxValue": 1,
+    "costs": [100]
+  },
+  {
+    "id": 14,
+    "name": "Combat Scanner",
+    "description": "Reveals whether a mission involves combat before you commit a ship to it.",
+    "appliesTo": "players.has_combat_scanner",
+    "baseValue": 0,
+    "increment": 1,
+    "maxValue": 1,
+    "costs": [125]
+  },
+  {
+    "id": 15,
+    "name": "Skill-Check Scanner",
+    "description": "Reveals which attributes a mission will test before you commit a ship to it.",
+    "appliesTo": "players.has_skill_check_scanner",
+    "baseValue": 0,
+    "increment": 1,
+    "maxValue": 1,
+    "costs": [150]
   }
 ]

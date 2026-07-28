@@ -28,6 +28,10 @@ export class GameService {
     candidateRefreshIntervalMs: 300000,
     hospitalSlots: 1,
     hospitalHealIntervalMs: 60000,
+    hasDifficultyScanner: false,
+    hasDurationScanner: false,
+    hasCombatScanner: false,
+    hasSkillCheckScanner: false,
   });
 
   applyState(state: GameSnapshot): void {
@@ -45,6 +49,10 @@ export class GameService {
       candidateRefreshIntervalMs: state.player.candidateRefreshIntervalMs,
       hospitalSlots: state.player.hospitalSlots,
       hospitalHealIntervalMs: state.player.hospitalHealIntervalMs,
+      hasDifficultyScanner: state.player.hasDifficultyScanner,
+      hasDurationScanner: state.player.hasDurationScanner,
+      hasCombatScanner: state.player.hasCombatScanner,
+      hasSkillCheckScanner: state.player.hasSkillCheckScanner,
     });
   }
 

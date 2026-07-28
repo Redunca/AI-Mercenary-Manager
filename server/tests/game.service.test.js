@@ -83,6 +83,10 @@ function createFakeClient() {
         inventory_capacity: 5,
         hospital_heal_interval_ms: 60000,
         hospital_slots: 1,
+        has_difficulty_scanner: 0,
+        has_duration_scanner: 0,
+        has_combat_scanner: 0,
+        has_skill_check_scanner: 0,
       }
       state.players.push(player)
       return { rows: [player] }
@@ -109,6 +113,10 @@ function createFakeClient() {
                 candidate_refresh_interval_ms: p.candidate_refresh_interval_ms,
                 hospital_slots: p.hospital_slots,
                 hospital_heal_interval_ms: p.hospital_heal_interval_ms,
+                has_difficulty_scanner: p.has_difficulty_scanner,
+                has_duration_scanner: p.has_duration_scanner,
+                has_combat_scanner: p.has_combat_scanner,
+                has_skill_check_scanner: p.has_skill_check_scanner,
               },
             ]
           : [],
@@ -1036,11 +1044,27 @@ describe('GameService', () => {
         candidateRefreshIntervalMs: 300000,
         hospitalSlots: 1,
         hospitalHealIntervalMs: 60000,
+        hasDifficultyScanner: false,
+        hasDurationScanner: false,
+        hasCombatScanner: false,
+        hasSkillCheckScanner: false,
       })
       expect(result.recruits).toHaveLength(1)
       expect(result.candidates).toHaveLength(4)
       expect(result.missions.length).toBeLessThanOrEqual(5)
       expect(result.missions.every((m) => m.status === 'available')).toBe(true)
+    })
+
+    test('surfaces a purchased scanner as true, independent of the other three', async () => {
+      await GameService.getGameState()
+      state.players[0].has_combat_scanner = 1
+
+      const result = await GameService.getGameState()
+
+      expect(result.player.hasCombatScanner).toBe(true)
+      expect(result.player.hasDifficultyScanner).toBe(false)
+      expect(result.player.hasDurationScanner).toBe(false)
+      expect(result.player.hasSkillCheckScanner).toBe(false)
     })
   })
 
@@ -3115,6 +3139,36 @@ describe('GameService', () => {
       const history = await GameService.getMissionHistory()
 
       expect(history).toEqual([])
+    })
+
+    test('carries the pre-commitment summary fields (hasCombat/skillChecks/estimatedDurationMs)', async () => {
+      const { travelSegmentMs, eventsSegmentMs } = require('../src/domain/mission')
+      const events = [
+        buildEvent({ type: 'RECON', attribute: 'perception' }),
+        buildEvent({ type: 'COMBAT', attribute: 'agility' }),
+      ]
+      seedTemplate(state, { id: 7, difficulty: 'STANDARD', events })
+      state.missionInstances.push({
+        id: 1004,
+        player_id: 1,
+        template_id: 7,
+        ship_id: 3,
+        status: 'success',
+        phase: 'COMPLETED',
+        progress: 100,
+        current_event_index: 0,
+        event_results: [],
+        failed: false,
+        reward_forfeited: false,
+      })
+
+      const history = await GameService.getMissionHistory()
+
+      expect(history.find((m) => m.id === 7)).toMatchObject({
+        hasCombat: true,
+        skillChecks: ['perception'],
+        estimatedDurationMs: travelSegmentMs('STANDARD', 100) * 2 + eventsSegmentMs('STANDARD', 2),
+      })
     })
   })
 })

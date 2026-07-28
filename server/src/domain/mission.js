@@ -27,6 +27,45 @@ function eventsSegmentMs(difficulty, eventCount) {
   return eventDurationMs(difficulty) * eventCount
 }
 
+// Baseline speed assumed for a pre-commitment duration estimate, before any
+// ship is assigned -- matches travelSegmentMs's own default param and the
+// starter ship's speed (domain/ship.js), i.e. "no speed boost/penalty".
+const BASELINE_SHIP_SPEED = 100
+
+function estimatedMissionDurationMs(difficulty, eventCount, shipSpeed = BASELINE_SHIP_SPEED) {
+  return travelSegmentMs(difficulty, shipSpeed) * 2 + eventsSegmentMs(difficulty, eventCount)
+}
+
+function missionHasCombat(events) {
+  return events.some((e) => e.type === 'COMBAT')
+}
+
+// Attributes a mission will actually exercise as discrete skill checks, in
+// first-appearance order, deduped. COMBAT events are excluded: their
+// `attribute` is archetype flavor never consulted by resolveEvents' combat
+// branch (game.service.js resolves COMBAT via bestCombatStat instead), so
+// it isn't a real check to warn the player about.
+function missionSkillChecks(events) {
+  const seen = new Set()
+  const result = []
+  for (const e of events) {
+    if (e.type === 'COMBAT' || seen.has(e.attribute)) continue
+    seen.add(e.attribute)
+    result.push(e.attribute)
+  }
+  return result
+}
+
+// Bundled pre-commitment summary for the two call sites in game.service.js
+// that map a mission_templates row to client shape.
+function missionPreCommitmentSummary(difficulty, events) {
+  return {
+    hasCombat: missionHasCombat(events),
+    skillChecks: missionSkillChecks(events),
+    estimatedDurationMs: estimatedMissionDurationMs(difficulty, events.length),
+  }
+}
+
 // How many of a mission's events should have resolved by now, given an
 // equal (fixed) time-slice per event within eventsMs -- the pacing fix: a
 // mission's events are meant to trickle in one at a time as the EVENT phase
@@ -79,4 +118,8 @@ module.exports = {
   dueEventCount,
   phaseAndProgressFromElapsed,
   missionOutcome,
+  estimatedMissionDurationMs,
+  missionHasCombat,
+  missionSkillChecks,
+  missionPreCommitmentSummary,
 }

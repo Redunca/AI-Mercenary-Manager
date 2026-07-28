@@ -5,6 +5,10 @@ const {
   dueEventCount,
   phaseAndProgressFromElapsed,
   missionOutcome,
+  estimatedMissionDurationMs,
+  missionHasCombat,
+  missionSkillChecks,
+  missionPreCommitmentSummary,
 } = require('../src/domain/mission')
 
 const MINUTE_MS = 60_000
@@ -148,5 +152,84 @@ describe('missionOutcome', () => {
     expect(missionOutcome({ failed: false, rewardForfeited: false, anyDeath: true })).toBe(
       'PARTIAL SUCCESS',
     )
+  })
+})
+
+describe('estimatedMissionDurationMs', () => {
+  test('at the default (baseline) speed, equals travel*2 + events', () => {
+    const difficulty = 'STANDARD'
+    const eventCount = 3
+    const expected =
+      travelSegmentMs(difficulty, 100) * 2 + eventsSegmentMs(difficulty, eventCount)
+    expect(estimatedMissionDurationMs(difficulty, eventCount)).toBe(expected)
+  })
+
+  test('honors an explicit ship speed', () => {
+    const difficulty = 'HARD'
+    const eventCount = 2
+    const expected =
+      travelSegmentMs(difficulty, 200) * 2 + eventsSegmentMs(difficulty, eventCount)
+    expect(estimatedMissionDurationMs(difficulty, eventCount, 200)).toBe(expected)
+  })
+})
+
+describe('missionHasCombat', () => {
+  test('true when any event is COMBAT', () => {
+    expect(missionHasCombat([{ type: 'RECON', attribute: 'perception' }, { type: 'COMBAT' }])).toBe(
+      true,
+    )
+  })
+
+  test('false when no event is COMBAT', () => {
+    expect(
+      missionHasCombat([
+        { type: 'RECON', attribute: 'perception' },
+        { type: 'BREACH', attribute: 'learning' },
+      ]),
+    ).toBe(false)
+  })
+
+  test('false for a mission with no events', () => {
+    expect(missionHasCombat([])).toBe(false)
+  })
+})
+
+describe('missionSkillChecks', () => {
+  test('collects each event attribute once, in first-appearance order', () => {
+    expect(
+      missionSkillChecks([
+        { type: 'RECON', attribute: 'perception' },
+        { type: 'ENGINEERING', attribute: 'logic' },
+        { type: 'RECON', attribute: 'perception' },
+      ]),
+    ).toEqual(['perception', 'logic'])
+  })
+
+  test('excludes COMBAT events -- their attribute is archetype flavor, never a real check', () => {
+    expect(
+      missionSkillChecks([
+        { type: 'COMBAT', attribute: 'agility' },
+        { type: 'BREACH', attribute: 'learning' },
+      ]),
+    ).toEqual(['learning'])
+  })
+
+  test('is empty for a COMBAT-only mission', () => {
+    expect(missionSkillChecks([{ type: 'COMBAT', attribute: 'might' }])).toEqual([])
+  })
+})
+
+describe('missionPreCommitmentSummary', () => {
+  test('bundles hasCombat, skillChecks, and estimatedDurationMs', () => {
+    const difficulty = 'STANDARD'
+    const events = [
+      { type: 'RECON', attribute: 'perception' },
+      { type: 'COMBAT', attribute: 'agility' },
+    ]
+    expect(missionPreCommitmentSummary(difficulty, events)).toEqual({
+      hasCombat: true,
+      skillChecks: ['perception'],
+      estimatedDurationMs: estimatedMissionDurationMs(difficulty, events.length),
+    })
   })
 })

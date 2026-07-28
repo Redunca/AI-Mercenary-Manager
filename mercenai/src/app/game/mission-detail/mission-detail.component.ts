@@ -7,6 +7,7 @@ import { GameService } from '../../core/game.service';
 import { Mission, MissionEvent, MissionState } from '../../models/mission';
 import { FACTION_REWARD_MULTIPLIER } from '../../models/faction';
 import { PERK_ATTRIBUTE_MODIFIERS, Recruit } from '../../models/recruit';
+import { formatCountdown } from '../../core/refresh-countdown';
 
 @Component({
   selector: 'app-mission-detail',
@@ -66,6 +67,38 @@ export class MissionDetailComponent implements OnInit, OnDestroy {
     const pct = Math.round(FACTION_REWARD_MULTIPLIER[tier] * 100);
     if (pct === 0) return '';
     return pct > 0 ? `+${pct}%` : `${pct}%`;
+  }
+
+  // The four pre-commitment fields below are only real if the matching
+  // self-shop scanner has been bought (see self.service.js/upgrades.json
+  // ids 12-15) -- otherwise show a masked placeholder (see mission-list's
+  // identical helpers).
+  get difficultyLabel(): string {
+    if (!this.mission) return '—';
+    return this.game.player$.value.hasDifficultyScanner ? this.mission.difficulty : '???';
+  }
+
+  get difficultyClass(): string {
+    if (!this.mission || !this.game.player$.value.hasDifficultyScanner) return 'masked';
+    return `difficulty-${this.mission.difficulty.toLowerCase()}`;
+  }
+
+  get durationLabel(): string {
+    if (!this.mission) return '—';
+    return this.game.player$.value.hasDurationScanner
+      ? '~' + formatCountdown(this.mission.estimatedDurationMs)
+      : '~???';
+  }
+
+  get combatLabel(): string {
+    if (!this.mission) return '—';
+    return this.game.player$.value.hasCombatScanner ? (this.mission.hasCombat ? 'yes' : 'no') : '???';
+  }
+
+  get skillChecksLabel(): string {
+    if (!this.mission) return '—';
+    if (!this.game.player$.value.hasSkillCheckScanner) return '???';
+    return this.mission.skillChecks.length > 0 ? this.mission.skillChecks.join(', ') : '—';
   }
 
   get progressBar(): string {

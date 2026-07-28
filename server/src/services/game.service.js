@@ -15,6 +15,7 @@ const {
   dueEventCount,
   phaseAndProgressFromElapsed,
   missionOutcome,
+  missionPreCommitmentSummary,
 } = require('../domain/mission')
 const {
   insertLogEntries,
@@ -1630,7 +1631,8 @@ async function buildGameState(client, playerId) {
   const playerResult = await client.query(
     `SELECT max_recruits, max_available_missions, wallet, tokens,
             mission_refresh_interval_ms, shop_refresh_interval_ms, candidate_refresh_interval_ms,
-            hospital_slots, hospital_heal_interval_ms
+            hospital_slots, hospital_heal_interval_ms,
+            has_difficulty_scanner, has_duration_scanner, has_combat_scanner, has_skill_check_scanner
      FROM players WHERE id = $1`,
     [playerId],
   )
@@ -1678,6 +1680,7 @@ async function buildGameState(client, playerId) {
       description: t.description,
       difficulty: t.difficulty,
       events: t.events,
+      ...missionPreCommitmentSummary(t.difficulty, t.events),
       assignedShipId,
       status,
       isOperaMission: t.opera_instance_id != null,
@@ -1753,6 +1756,10 @@ async function buildGameState(client, playerId) {
       candidateRefreshIntervalMs: player.candidate_refresh_interval_ms,
       hospitalSlots: player.hospital_slots,
       hospitalHealIntervalMs: player.hospital_heal_interval_ms,
+      hasDifficultyScanner: player.has_difficulty_scanner === 1,
+      hasDurationScanner: player.has_duration_scanner === 1,
+      hasCombatScanner: player.has_combat_scanner === 1,
+      hasSkillCheckScanner: player.has_skill_check_scanner === 1,
     },
     recruits: recruitsResult.rows.map(rowToRecruit),
     relationships,
@@ -1795,6 +1802,7 @@ async function getMissionHistory(client, playerId) {
         description: t.description,
         difficulty: t.difficulty,
         events: t.events,
+        ...missionPreCommitmentSummary(t.difficulty, t.events),
         assignedShipId: instance.ship_id,
         status: instance.status === 'in_progress' ? 'in_progress' : instance.status,
         forFaction: t.for_faction ?? undefined,

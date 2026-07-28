@@ -14,4 +14,8 @@ export interface Player {
   candidateRefreshIntervalMs: number;
   hospitalSlots: number;
   hospitalHealIntervalMs: number;
+  hasDifficultyScanner: boolean;
+  hasDurationScanner: boolean;
+  hasCombatScanner: boolean;
+  hasSkillCheckScanner: boolean;
 }

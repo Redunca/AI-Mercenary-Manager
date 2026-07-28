@@ -63,6 +63,9 @@ export interface Mission {
   description: string;
   difficulty: MissionDifficulty;
   events: MissionEvent[];
+  hasCombat: boolean;
+  skillChecks: AttributeKey[];
+  estimatedDurationMs: number;
   assignedShipId: number | null;
   status: MissionStatus;
   // The org (if any) this mission is done for/against — see

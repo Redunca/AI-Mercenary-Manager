@@ -8,7 +8,8 @@
 // Ids mirror server/data/upgrades.json: 1 recruits, 2 missionList,
 // 3 dockedShips, 4 shopItems, 5 inventorySpace, 6 shopRefreshSpeed,
 // 7 missionRefreshSpeed, 8 hospitalHealSpeed, 9 concurrentOperas,
-// 10 candidateRefreshSpeed, 11 hospitalBeds.
+// 10 candidateRefreshSpeed, 11 hospitalBeds, 12 difficultyScanner,
+// 13 durationScanner, 14 combatScanner, 15 skillCheckScanner.
 const SelfService = require('../src/services/self.service')
 
 const RECRUITS = 1
@@ -20,6 +21,7 @@ const SHOP_REFRESH_SPEED = 6
 const MISSION_REFRESH_SPEED = 7
 const HOSPITAL_HEAL_SPEED = 8
 const HOSPITAL_BEDS = 11
+const DIFFICULTY_SCANNER = 12
 
 function createFakeClient({
   tokens = 1000,
@@ -331,6 +333,24 @@ describe('SelfService', () => {
       expect(state.tiers[RECRUITS]).toBe(2)
       expect(state.tokens).toBe(1000 - 50 - 65)
       expect(state.columnUpdates.max_recruits).toBe(7) // baseValue 5 + tier 2
+    })
+
+    // Mission scanners (ids 12-15) are single-purchase unlocks modeled as the
+    // same generic counter shape as every other upgrade here (baseValue 0,
+    // increment 1, maxValue 1) rather than a distinct upgrade type -- so
+    // buying one just moves tier/currentValue from 0 to 1 and immediately
+    // maxes out, same as dockedShips maxing at its tier ceiling above.
+    test('applies the difficultyScanner effect to players.has_difficulty_scanner and maxes after one purchase', async () => {
+      const { client, state } = createFakeClient({ tokens: 1000 })
+
+      const result = await SelfService.buyUpgrade(client, 1, DIFFICULTY_SCANNER)
+
+      expect(result.success).toBe(true)
+      expect(state.columnUpdates.has_difficulty_scanner).toBe(1)
+      expect(result.upgrade).toMatchObject({ tier: 1, currentValue: 1, maxed: true, nextCost: null })
+
+      const second = await SelfService.buyUpgrade(client, 1, DIFFICULTY_SCANNER)
+      expect(second.error).toBe('Upgrade already maxed')
     })
   })
 })

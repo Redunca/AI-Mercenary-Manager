@@ -15,6 +15,10 @@
     <th>Status</th>
     <th>Progression</th>
     <th>Ship</th>
+    <th>Difficulty</th>
+    <th>Duration</th>
+    <th>Combat</th>
+    <th>Checks</th>
   </tr>
   <tr *ngFor="let m of missions">
     <td>{{ m.id }}</td>
@@ -34,9 +38,13 @@
       {{ m.status === 'in_progress' ? (missionService.getState(m.id)?.progress ?? 0) + '%' : '' }}
     </td>
     <td>{{ m.assignedShipId ?? '—' }}</td>
+    <td [class]="difficultyClass(m)">{{ difficultyLabel(m) }}</td>
+    <td>{{ durationLabel(m) }}</td>
+    <td>{{ combatLabel(m) }}</td>
+    <td>{{ skillChecksLabel(m) }}</td>
   </tr>
   <tr *ngIf="completed && !historyLoading && !historyError && missions.length === 0">
-    <td colspan="7" class="indent-one muted">No completed missions yet</td>
+    <td colspan="11" class="indent-one muted">No completed missions yet</td>
   </tr>
 </table>
 <div>{{ '}' }}</div>

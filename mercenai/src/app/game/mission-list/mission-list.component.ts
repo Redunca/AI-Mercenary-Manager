@@ -102,6 +102,36 @@ export class MissionListComponent implements OnInit, OnChanges, OnDestroy {
     return pct > 0 ? `+${pct}%` : `${pct}%`;
   }
 
+  // The four pre-commitment fields below are only real if the matching
+  // self-shop scanner has been bought (see self.service.js/upgrades.json
+  // ids 12-15) -- otherwise show a masked placeholder rather than the
+  // mission's real (server-computed) value.
+  difficultyLabel(m: Mission): string {
+    return this.game.player$.value.hasDifficultyScanner ? m.difficulty : '???';
+  }
+
+  difficultyClass(m: Mission): string {
+    return this.game.player$.value.hasDifficultyScanner
+      ? `difficulty-${m.difficulty.toLowerCase()}`
+      : 'masked';
+  }
+
+  durationLabel(m: Mission): string {
+    if (m.status !== 'available') return '—';
+    return this.game.player$.value.hasDurationScanner
+      ? '~' + formatCountdown(m.estimatedDurationMs)
+      : '~???';
+  }
+
+  combatLabel(m: Mission): string {
+    return this.game.player$.value.hasCombatScanner ? (m.hasCombat ? 'yes' : 'no') : '???';
+  }
+
+  skillChecksLabel(m: Mission): string {
+    if (!this.game.player$.value.hasSkillCheckScanner) return '???';
+    return m.skillChecks.length > 0 ? m.skillChecks.join(', ') : '—';
+  }
+
   private tickCountdown(): void {
     const intervalMs = this.game.player$.value.missionRefreshIntervalMs;
     this.nextRefreshLabel = formatCountdown(msUntilNextRefresh(intervalMs));

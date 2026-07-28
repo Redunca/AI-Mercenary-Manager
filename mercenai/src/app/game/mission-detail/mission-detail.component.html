@@ -39,7 +39,11 @@
 </ng-container>
 
 <ng-template #available>
-  <div class="indent-one">"status" : "available"</div>
+  <div class="indent-one">"status" : "available",</div>
+  <div class="indent-one" [class]="difficultyClass">"difficulty" : "{{ difficultyLabel }}",</div>
+  <div class="indent-one">"estimatedDuration" : "{{ durationLabel }}",</div>
+  <div class="indent-one">"combat" : "{{ combatLabel }}",</div>
+  <div class="indent-one">"skillChecks" : "{{ skillChecksLabel }}"</div>
 </ng-template>
 
 <div>{{ '}' }}</div>

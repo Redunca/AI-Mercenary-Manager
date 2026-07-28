@@ -17,6 +17,10 @@ export interface PlayerSnapshot {
   candidateRefreshIntervalMs: number;
   hospitalSlots: number;
   hospitalHealIntervalMs: number;
+  hasDifficultyScanner: boolean;
+  hasDurationScanner: boolean;
+  hasCombatScanner: boolean;
+  hasSkillCheckScanner: boolean;
 }
 
 export interface GameSnapshot {

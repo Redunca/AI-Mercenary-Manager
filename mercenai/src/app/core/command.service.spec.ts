@@ -7,6 +7,7 @@ import { LayoutService } from './layout.service';
 import { SelfService } from './self.service';
 import { GameSyncService } from './game-sync.service';
 import { PanelModule } from '../models/panel';
+import { TerminalController } from './terminal-controller';
 
 describe('CommandService', () => {
   let service: CommandService;
@@ -166,6 +167,30 @@ describe('CommandService', () => {
 
     expect(warnSpy).toHaveBeenCalledWith('Purchase failed:', 'Insufficient tokens');
     expect(gameSync.sync).not.toHaveBeenCalled();
+  }));
+
+  it('"self buy <id>" delegates to the Self panel\'s own local "buy" command when that panel is already active, rather than duplicating the purchase', fakeAsync(() => {
+    // Regression test: setPanelModule(panelId, PanelModule.Self) is a no-op
+    // when the panel is already showing 'self' (NgSwitch only swaps views
+    // when its bound value changes), so the buyUpgrade+sync+setPanelModule
+    // fallback path never actually refreshes the live SelfComponent's own
+    // upgrades/tokens in that case -- only the panel's own local "buy"
+    // command (registered by SelfComponent, which refreshes itself directly)
+    // does. See command.service.ts's handleSelf.
+    const panelId = layout.addPanel(PanelModule.Self);
+    layout.setActivePanel(panelId);
+    const panel = layout.getPanelById(panelId)!;
+    const localBuySpy = jasmine.createSpy('buy');
+    panel.terminal = new TerminalController(panelId, { buy: localBuySpy });
+
+    const selfService = TestBed.inject(SelfService);
+    spyOn(selfService, 'buyUpgrade');
+
+    service.routeCommand('self buy 3', panelId);
+    tick();
+
+    expect(localBuySpy).toHaveBeenCalledWith('3');
+    expect(selfService.buyUpgrade).not.toHaveBeenCalled();
   }));
 
   it('characterizes why a leaked newline corrupts the next command (motivates the UI fix)', () => {
