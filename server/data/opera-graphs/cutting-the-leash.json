@@ -1,6 +1,11 @@
 {
   "id": "cutting-the-leash",
   "title": "Cutting the Leash",
+  "titles": [
+    "Severance",
+    "No Clean Break",
+    "Still Owed"
+  ],
   "description": "A recruit tangled up with an illegal conglomerate wants out -- to sign on with the Guild instead. The conglomerate doesn't let people just walk away from what they're owed.",
   "nodes": [
     {

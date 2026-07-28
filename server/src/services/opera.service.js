@@ -458,6 +458,11 @@ async function advanceInstance(client, playerId, instance, def, action = null) {
       : {
           currentNodeId: def.nodes.find((n) => n.type === 'start').id,
           tags: resolveTags(),
+          // Picked once per instance, like tags, so an opera's display name
+          // stays stable for the whole playthrough. [def.title, ...] always
+          // has at least one entry, so a template with no titles array
+          // always resolves to its own title, same as before this existed.
+          title: pickOne([def.title, ...(def.titles ?? [])]),
           log: [],
           awaiting: null,
         }
@@ -753,7 +758,10 @@ function summarizeInstance(instance, def) {
   return {
     id: String(instance.id),
     templateId: instance.template_id,
-    title: def?.title ?? instance.template_id,
+    // state.title is the once-per-instance pick from [title, ...titles]
+    // (see advanceInstance's initial-state comment); def.title is only a
+    // fallback for an instance whose stored state predates that pick.
+    title: state.title ?? def?.title ?? instance.template_id,
     description: def?.description ?? '',
     status: instance.status,
     slotIndex: instance.slot_index,

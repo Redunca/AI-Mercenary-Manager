@@ -32,6 +32,13 @@ import { QuickGenerationComponent } from './quick-generation.component';
 
 type VNode = HtmlTemplateNode<GraphNode>;
 
+function parseCommaList(text: string): string[] {
+  return text
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
 // A node's live width/height, once ngx-vflow's own resize handles take over
 // (see the `resizable` div in the template), lives in ngx-vflow's internal
 // model, not ours -- our persisted `size` only needs to seed that model on
@@ -153,6 +160,14 @@ export class GraphEditorComponent implements OnInit, OnDestroy {
 
   async ngOnInit(): Promise<void> {
     await this.graphService.load(this.graphId());
+  }
+
+  altTitlesText(): string {
+    return (this.graphService.graph()?.titles ?? []).join(', ');
+  }
+
+  setAltTitlesText(text: string): void {
+    this.graphService.updateTitles(parseCommaList(text));
   }
 
   linkSummary(link: GraphLink): string {

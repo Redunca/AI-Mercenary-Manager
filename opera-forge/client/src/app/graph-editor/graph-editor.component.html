@@ -4,15 +4,25 @@
 
     @if (graphService.graph(); as def) {
       <div class="meta">
+        <div class="title-row">
+          <input
+            type="text"
+            class="title-input"
+            [ngModel]="def.title"
+            (ngModelChange)="graphService.updateMeta($event, def.description ?? '')"
+          />
+          @if (graphService.dirty()) {
+            <span class="dirty-badge">unsaved</span>
+          }
+        </div>
         <input
           type="text"
-          class="title-input"
-          [ngModel]="def.title"
-          (ngModelChange)="graphService.updateMeta($event, def.description ?? '')"
+          class="alt-titles-input"
+          placeholder="Alternate titles (comma separated, optional)"
+          title="Picked at random alongside the title above each time this opera is generated for a player, so the same template doesn't always show the same name."
+          [ngModel]="altTitlesText()"
+          (ngModelChange)="setAltTitlesText($event)"
         />
-        @if (graphService.dirty()) {
-          <span class="dirty-badge">unsaved</span>
-        }
       </div>
     }
 

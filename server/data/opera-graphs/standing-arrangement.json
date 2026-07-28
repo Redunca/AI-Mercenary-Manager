@@ -1,6 +1,11 @@
 {
   "id": "standing-arrangement",
   "title": "Standing Arrangement",
+  "titles": [
+    "Off the Books",
+    "Something Worth Keeping",
+    "Unscheduled"
+  ],
   "description": "Two recruits start drilling together off the books. What starts as practice becomes something worth keeping.",
   "nodes": [
     {

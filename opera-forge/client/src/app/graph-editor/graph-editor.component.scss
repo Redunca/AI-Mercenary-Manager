@@ -13,15 +13,29 @@
 
     .meta {
       display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.3rem;
       flex: 1;
+      min-width: 280px;
+
+      .title-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
     }
 
     .title-input {
       font-size: 1.1rem;
       padding: 0.3rem 0.5rem;
       min-width: 240px;
+    }
+
+    .alt-titles-input {
+      font-size: 0.85em;
+      padding: 0.25rem 0.5rem;
+      opacity: 0.85;
     }
 
     .dirty-badge {

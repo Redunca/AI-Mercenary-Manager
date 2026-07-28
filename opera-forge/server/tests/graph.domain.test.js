@@ -28,6 +28,21 @@ describe('validateGraphDefinition', () => {
     expect(() => validateGraphDefinition(makeDef())).not.toThrow()
   })
 
+  test('accepts an optional titles array', () => {
+    const def = makeDef({ titles: ['Alternate Name', 'Another Name'] })
+    expect(() => validateGraphDefinition(def)).not.toThrow()
+  })
+
+  test('rejects a non-array titles field', () => {
+    const def = makeDef({ titles: 'Not An Array' })
+    expect(() => validateGraphDefinition(def)).toThrow(/titles must be an array/)
+  })
+
+  test('rejects a titles array containing an empty string', () => {
+    const def = makeDef({ titles: ['Fine', ''] })
+    expect(() => validateGraphDefinition(def)).toThrow(/titles must be an array/)
+  })
+
   test('rejects an unknown node type', () => {
     const def = makeDef({ nodes: [{ id: 'x', type: 'not_a_type' }] })
     expect(() => validateGraphDefinition(def)).toThrow(/unknown type/)

@@ -356,6 +356,14 @@ function validateGraphDefinition(def) {
   if (!def || typeof def !== 'object') throw new Error('Graph definition must be an object')
   if (!isNonEmptyString(def.id)) throw new Error('Graph definition missing a string id')
   if (!isNonEmptyString(def.title)) throw new Error(`Graph "${def.id}": missing a string title`)
+  // Optional variance pool: advanceInstance() picks uniformly from
+  // [title, ...titles] once per instance and keeps that pick stable for the
+  // whole playthrough, the same way a resolved tag context is.
+  if (def.titles !== undefined) {
+    if (!Array.isArray(def.titles) || !def.titles.every(isNonEmptyString)) {
+      throw new Error(`Graph "${def.id}": titles must be an array of non-empty strings`)
+    }
+  }
   if (!Array.isArray(def.nodes) || def.nodes.length === 0)
     throw new Error(`Graph "${def.id}": nodes must be a non-empty array`)
   if (!Array.isArray(def.links)) throw new Error(`Graph "${def.id}": links must be an array`)

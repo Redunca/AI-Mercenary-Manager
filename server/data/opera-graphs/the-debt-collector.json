@@ -1,6 +1,11 @@
 {
   "id": "the-debt-collector",
   "title": "The Debt Collector",
+  "titles": [
+    "Old Debts",
+    "Coming Due",
+    "Settling Up"
+  ],
   "description": "Whichever recruit triggers it: an old debt from before this crew catches up with them. Generic/archetypal -- not tied to a specific recruit.",
   "nodes": [
     {

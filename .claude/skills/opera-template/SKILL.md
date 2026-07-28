@@ -140,6 +140,15 @@ perks/flaws/stat effects are the **payoff**, never the gate.
   `choiceOptions[].label`. This is the single easiest mistake to make when a
   template is meant to be tag-heavy -- lean on tags hard in text, never in
   match/seed/effect params.
+- **`titles` (optional, top-level, sibling of `title`)** is a pool of
+  alternate names for the same template. When an opera is generated for a
+  player, the engine picks uniformly from `[title, ...titles]` once and
+  keeps that pick for the whole playthrough (same stability guarantee as
+  resolved tags) -- so add a few interchangeable titles when you want name
+  variance across playthroughs of one template. Every entry must read as a
+  plain, literal name: no `{tagName}` placeholders (titles render nowhere
+  tags do) and nothing that implies a different plot than the one this
+  template actually tells.
 - **Every node needs a `position`** (`{x, y}`) or the graph-editor client
   defaults it to `(0,0)`, stacking every node on the origin when opened.
   Call `layout(def)` from the bundled script before `writeGraph(def)` unless

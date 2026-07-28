@@ -1,6 +1,11 @@
 {
   "id": "the-machine-messiah",
   "title": "The Machine Messiah",
+  "titles": [
+    "The Looping Prayer",
+    "Something Worth Worshipping",
+    "The Core"
+  ],
   "description": "A fringe cult believes the AI they're building will save them. The crew has to find it, understand it, and decide what happens to something that might already be alive.",
   "nodes": [
     {

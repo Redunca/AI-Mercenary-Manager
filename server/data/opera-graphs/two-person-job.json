@@ -1,6 +1,11 @@
 {
   "id": "two-person-job",
   "title": "Two-Person Job",
+  "titles": [
+    "No Exceptions",
+    "Two Sets of Hands",
+    "Minimum Crew"
+  ],
   "description": "A contract that only works with two sets of hands forces a pair of recruits to rely on each other completely.",
   "nodes": [
     {

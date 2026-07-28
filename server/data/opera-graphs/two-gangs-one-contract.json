@@ -1,6 +1,11 @@
 {
   "id": "two-gangs-one-contract",
   "title": "Two Gangs, One Contract",
+  "titles": [
+    "No Neutral Ground",
+    "Territory Dispute",
+    "Caught Between"
+  ],
   "description": "A turf war breaks out over territory the crew has to keep passing through. Neutral is not on the table for long.",
   "nodes": [
     {

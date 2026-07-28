@@ -1,6 +1,11 @@
 {
   "id": "bought-loyalty",
   "title": "Bought Loyalty",
+  "titles": [
+    "Good Faith",
+    "The Asking Price",
+    "A Working Relationship"
+  ],
   "description": "A faction/corporation controlling a planet extends a hand. The crew decides how much it's worth, and whether to hold up their end.",
   "nodes": [
     {

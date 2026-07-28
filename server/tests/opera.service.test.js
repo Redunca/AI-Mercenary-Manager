@@ -178,6 +178,16 @@ function createFakeClient({ instances = [], players = {} } = {}) {
       const [playerId, id] = params
       return { rows: state.instances.filter((i) => i.player_id === playerId && i.id === id) }
     }
+    if (s.startsWith("SELECT * FROM opera_instances WHERE player_id = $1 AND (status")) {
+      const [playerId, tutorialTemplateId] = params
+      return {
+        rows: state.instances.filter(
+          (i) =>
+            i.player_id === playerId &&
+            (i.status === 'in_progress' || i.template_id === tutorialTemplateId),
+        ),
+      }
+    }
     if (s.startsWith('UPDATE opera_instances SET state = $1 WHERE id = $2')) {
       const [stateJson, id] = params
       const row = state.instances.find((i) => i.id === id)
@@ -660,6 +670,72 @@ describe('maintainOperaSlots', () => {
     }) // task keeps the lore note
     const seedLog = client.state.logEntries.find((e) => e.operaId === String(pooled.id))
     expect(seedLog.message).toBe('New item available in the shop.') // [SYS] log stays dry, not the note
+  })
+})
+
+describe('title variance', () => {
+  // gatedGraph (not instantGraph) on purpose: it stops mid-walk instead of
+  // completing in the same pass, so the created instance stays 'in_progress'
+  // and getOperaState's own filter (see its comment: completed pooled
+  // operas drop off the list) doesn't exclude it before the assertion.
+  test("falls back to the template's own title when it defines no titles array", async () => {
+    const def = gatedGraph({ id: 'template-a', title: 'template-a' })
+    getOperaDefinition.mockImplementation((id) => (id === 'template-a' ? def : gatedGraph()))
+    getGenerationPoolDefinitions.mockReturnValue([def])
+    const client = createFakeClient({
+      instances: [
+        {
+          id: 1,
+          player_id: PLAYER_ID,
+          template_id: 'tutorial',
+          slot_index: null,
+          status: 'completed',
+          state: {},
+        },
+      ],
+      players: { [PLAYER_ID]: { opera_slot_capacity: 1 } },
+    })
+
+    await OperaService.maintainOperaSlots(client, PLAYER_ID)
+
+    const created = client.state.instances.find((i) => i.template_id === 'template-a')
+    expect(created.state.title).toBe('template-a')
+
+    const summarized = await OperaService.getOperaState(client, PLAYER_ID)
+    expect(summarized.find((o) => o.templateId === 'template-a').title).toBe('template-a')
+  })
+
+  test('picks a title from [title, ...titles] at instance creation and keeps it stable', async () => {
+    const def = gatedGraph({ id: 'template-a', title: 'template-a', titles: ['Alt One', 'Alt Two'] })
+    getOperaDefinition.mockImplementation((id) => (id === 'template-a' ? def : gatedGraph()))
+    getGenerationPoolDefinitions.mockReturnValue([def])
+    const client = createFakeClient({
+      instances: [
+        {
+          id: 1,
+          player_id: PLAYER_ID,
+          template_id: 'tutorial',
+          slot_index: null,
+          status: 'completed',
+          state: {},
+        },
+      ],
+      players: { [PLAYER_ID]: { opera_slot_capacity: 1 } },
+    })
+
+    // Forces pickOne's randInt(0, 2) to land on the last candidate.
+    const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0.99)
+    try {
+      await OperaService.maintainOperaSlots(client, PLAYER_ID)
+    } finally {
+      randomSpy.mockRestore()
+    }
+
+    const created = client.state.instances.find((i) => i.template_id === 'template-a')
+    expect(created.state.title).toBe('Alt Two')
+
+    const summarized = await OperaService.getOperaState(client, PLAYER_ID)
+    expect(summarized.find((o) => o.templateId === 'template-a').title).toBe('Alt Two')
   })
 })
 

@@ -93,6 +93,10 @@ export class GraphService {
     this.mutate((def) => ({ ...def, title, description }));
   }
 
+  updateTitles(titles: string[]): void {
+    this.mutate((def) => ({ ...def, titles: titles.length > 0 ? titles : undefined }));
+  }
+
   addNode(type: Exclude<NodeType, 'start'>, position: { x: number; y: number }): void {
     const id = nextNodeId(type);
     const base: GraphNode = { id, type, position };

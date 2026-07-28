@@ -240,6 +240,12 @@ export interface GraphLink {
 export interface GraphDefinition {
   id: string;
   title: string;
+  // Optional variance pool: the live engine picks uniformly from
+  // [title, ...titles] once per generated instance and keeps that pick
+  // stable for the whole playthrough (see server/src/services/
+  // opera.service.js's advanceInstance). Purely cosmetic -- every entry
+  // must read as an interchangeable name for the same story.
+  titles?: string[];
   description?: string;
   nodes: GraphNode[];
   links: GraphLink[];

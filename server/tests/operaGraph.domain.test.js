@@ -93,6 +93,21 @@ describe('validateGraphDefinition', () => {
     expect(() => validateGraphDefinition(def)).toThrow(/seed target "candidate" requires a seedId/)
   })
 
+  test('accepts an optional titles array', () => {
+    const def = makeDef({ titles: ['Alternate Name', 'Another Name'] })
+    expect(() => validateGraphDefinition(def)).not.toThrow()
+  })
+
+  test('rejects a non-array titles field', () => {
+    const def = makeDef({ titles: 'Not An Array' })
+    expect(() => validateGraphDefinition(def)).toThrow(/titles must be an array/)
+  })
+
+  test('rejects a titles array containing an empty string', () => {
+    const def = makeDef({ titles: ['Fine', ''] })
+    expect(() => validateGraphDefinition(def)).toThrow(/titles must be an array/)
+  })
+
   test('rejects a mission node without a title', () => {
     const def = makeDef({
       nodes: [
