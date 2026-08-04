@@ -523,11 +523,18 @@ function buildCombatStartLog({ missionId }) {
   return { mission: [{ tag: '[AI]', message: pick(EVENT_PHRASES.combat_start_ai), missionId }] }
 }
 
-// One [SYS]-only log line per combat round (a round is ~6s of game time),
-// deliberately throttled — no [AI]/recruit banter mid-fight.
+// One [SYS]-only log entry per combat round (a round is ~6s of game time),
+// deliberately throttled — no [AI]/recruit banter mid-fight. The entry's
+// message puts each crew member's attack on its own line, followed by the
+// enemy's attack, under a "Round N" header — instead of one interleaved
+// clause.
 function buildCombatRoundLog({ round, missionId }) {
-  const summary = round.entries.map(summarizeCombatEntry).join(' · ')
-  return { tag: '[SYS]', message: `Round ${round.round} — ${summary}`, missionId }
+  const crewClauses = round.entries.filter((e) => e.actor === 'crew').map(summarizeCombatEntry)
+  const enemyClauses = round.entries.filter((e) => e.actor !== 'crew').map(summarizeCombatEntry)
+  const lines = [`Round ${round.round}`]
+  for (const clause of crewClauses) lines.push(`    ${clause}`)
+  if (enemyClauses.length) lines.push(`    ${enemyClauses.join(' · ')}`)
+  return { tag: '[SYS]', message: lines.join('\n'), missionId }
 }
 
 // The final [SYS]/[AI]/[RECRUIT] summary once a COMBAT event's auto-battle
