@@ -1033,10 +1033,15 @@ async function completeMission(client, playerId, instance, template, failed, shi
 
   // Fires on both success and failure -- a 'mission' opera node branches on
   // previous_outcome exactly like a 'check' node's roll, so it needs to
-  // hear about a failed mission too, not just a successful one.
+  // hear about a failed mission too, not just a successful one. outcomeLabel
+  // carries the granular SUCCESS/PARTIAL SUCCESS/FAILURE (computed above)
+  // purely for the opera's own resolution log line -- outcome stays the
+  // plain success/failure binary so existing previous_outcome conditions
+  // authored against it keep working unchanged.
   await OperaService.recordOperaAction(client, playerId, 'complete_quest', {
     templateId: template.id,
     outcome: failed ? 'failure' : 'success',
+    outcomeLabel: outcome,
   })
 }
 
@@ -1464,6 +1469,7 @@ async function stopMission(client, playerId, templateId) {
   await OperaService.recordOperaAction(client, playerId, 'complete_quest', {
     templateId: row.template_id,
     outcome: 'failure',
+    outcomeLabel: 'FAILURE',
   })
 
   await client.query('DELETE FROM mission_instances WHERE id = $1', [row.id])

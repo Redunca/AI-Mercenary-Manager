@@ -272,7 +272,13 @@ async function applyEffect(client, playerId, state, effect) {
       if (recruitAId == null) return
       const recruitBId = await resolveSecondRecruitId(client, playerId, state)
       if (recruitBId == null) return
-      await RelationshipService.adjustRelationship(client, playerId, recruitAId, recruitBId, p.amount)
+      await RelationshipService.adjustRelationship(
+        client,
+        playerId,
+        recruitAId,
+        recruitBId,
+        p.amount,
+      )
       return
     }
     case 'adjust_faction_reputation': {
@@ -430,12 +436,107 @@ function dryEndLog(outcome) {
   return 'Opera concluded.'
 }
 
+function dryMissionResolutionLog(missionTitle, outcomeLabel) {
+  const phrase =
+    outcomeLabel === 'FAILURE'
+      ? 'Failed'
+      : outcomeLabel === 'PARTIAL SUCCESS'
+        ? 'Completed with partial success'
+        : 'Completed'
+  return `Mission "${missionTitle}": ${phrase}`
+}
+
+// Every name this template could ever have put in the player's hands as a
+// quest item. Three distinct sources, all resolving through the same
+// shop_items catalog row (see giveItem()/insertOperaMission()'s own
+// comments) so all three are fair game:
+//   - a 'seed' node's shop target (purchased once seeded)
+//   - a 'story' node's give_item effect (granted directly)
+//   - a link's action_performed condition on purchase_item/purchase_quest_item
+//     (tutorial.json's own pattern: no 'seed' node at all -- the item is
+//     just always in the catalog with is_quest_item=true, per V017's
+//     seeding, and getPendingPurchaseNeeds()/reconcileQuestRotation in
+//     shop.service.js are what actually put it in rotation, driven by this
+//     exact condition shape rather than a seed declaration)
+// Scanned statically across every node/link in the definition, not just
+// ones this particular playthrough visited -- branches never taken just
+// yield names nothing was ever seeded under, harmless to include.
+function questItemNamesInTemplate(def) {
+  const names = new Set()
+  for (const node of def.nodes ?? []) {
+    for (const seed of node.seeds ?? []) {
+      if (seed.target === 'shop' && seed.params?.itemName) names.add(seed.params.itemName)
+    }
+    for (const effect of node.effects ?? []) {
+      if (effect.type === 'give_item' && effect.params?.itemName) names.add(effect.params.itemName)
+    }
+  }
+  for (const link of def.links ?? []) {
+    for (const condition of link.conditions ?? []) {
+      if (condition.type !== 'action_performed') continue
+      const { actionType, match } = condition.params ?? {}
+      if (
+        (actionType === 'purchase_item' || actionType === 'purchase_quest_item') &&
+        match?.itemName
+      ) {
+        names.add(match.itemName)
+      }
+    }
+  }
+  return [...names]
+}
+
+// Quest items only ever exist to gate a link (buying/holding one satisfies
+// an action_performed condition) or dress up a mission's cost -- nothing
+// about them is useful once their opera is over, so anything still sitting
+// unused would otherwise linger in the player's stash/ship forever (see
+// tutorial.json's "Encrypted Data Chip": effect 'NONE', never targeted by
+// any consumesItemName, purely there to teach the buy/load flow). Equipped
+// gear (assigned_to_recruit_id set) is left alone -- equipping it turned it
+// from a dangling purchase into a recruit's active loadout, no longer
+// "leftover." Scoped by name, not a stored opera_instance_id (items carry no
+// such column -- see is_quest_item's own comment in V017), so a sibling
+// in-progress instance of the *same* template (maintainOperaSlotsInner can
+// fall back to repeats once its pool is exhausted) skips the sweep entirely
+// rather than risk deleting something that sibling still needs.
+async function sweepQuestItems(client, playerId, instance, def) {
+  const candidateNames = questItemNamesInTemplate(def)
+  if (candidateNames.length === 0) return
+
+  const sibling = await client.query(
+    `SELECT 1 FROM opera_instances
+     WHERE player_id = $1 AND template_id = $2 AND status = 'in_progress' AND id != $3 LIMIT 1`,
+    [playerId, instance.template_id, instance.id],
+  )
+  if (sibling.rows.length > 0) return
+
+  const questNames = (
+    await client.query(
+      `SELECT name FROM shop_items WHERE is_quest_item = TRUE AND name = ANY($1::text[])`,
+      [candidateNames],
+    )
+  ).rows.map((row) => row.name)
+  if (questNames.length === 0) return
+
+  await client.query('DELETE FROM consumables WHERE player_id = $1 AND name = ANY($2::text[])', [
+    playerId,
+    questNames,
+  ])
+  await client.query(
+    `DELETE FROM equipment
+     WHERE player_id = $1 AND name = ANY($2::text[]) AND assigned_to_recruit_id IS NULL`,
+    [playerId, questNames],
+  )
+}
+
 async function finish(client, playerId, instance, state, outcome) {
   const status = outcome === 'failure' ? 'failed' : 'completed'
   await client.query(
     `UPDATE opera_instances SET status = $1, state = $2, completed_at = NOW() WHERE id = $3`,
     [status, JSON.stringify(state), instance.id],
   )
+  const def = getOperaDefinition(instance.template_id)
+  if (def) await sweepQuestItems(client, playerId, instance, def)
   // Unconditional, not just for slotted instances: this is also the tutorial
   // (slot_index IS NULL) finishing, which is precisely trigger #1 for
   // opening the first concurrent-opera slots -- maintainOperaSlots itself
@@ -482,6 +583,19 @@ async function advanceInstance(client, playerId, instance, def, action = null) {
       ) {
         bindRecruit(state, action.payload)
         ctx.lastOutcome = action.payload.outcome
+        // Announces the mission's actual resolution -- otherwise the log
+        // stream jumps straight from "Complete mission: ..." (an
+        // instruction, logged on arrival) to the next node's own dry text,
+        // with nothing ever confirming the instruction was carried out.
+        // outcomeLabel carries the granular SUCCESS/PARTIAL SUCCESS/FAILURE
+        // (see missionOutcome() in domain/mission.js) purely for this
+        // phrasing; ctx.lastOutcome stays the plain success/failure binary
+        // link conditions branch on, so this never touches graph routing.
+        const missionTitle = OperaGraph.render(current.mission.title, state.tags).text
+        const outcomeLabel =
+          action.payload.outcomeLabel ??
+          (action.payload.outcome === 'success' ? 'SUCCESS' : 'FAILURE')
+        await log(client, playerId, instance, dryMissionResolutionLog(missionTitle, outcomeLabel))
         state.awaiting = 'link'
         state.pendingMissionTemplateId = null
         action = null // consumed
@@ -550,7 +664,7 @@ async function advanceInstance(client, playerId, instance, def, action = null) {
           templateId,
           status: 'current',
         })
-        await log(client, playerId, instance, 'Complete Mission')
+        await log(client, playerId, instance, `Complete mission: "${rendered.text}"`)
         await persist(client, instance, state)
         return
       } else if (current.type === 'choice') {

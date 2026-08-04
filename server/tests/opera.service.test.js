@@ -155,12 +155,21 @@ function instantGraph(id) {
   }
 }
 
-function createFakeClient({ instances = [], players = {} } = {}) {
+function createFakeClient({
+  instances = [],
+  players = {},
+  shopItems = [],
+  consumables = [],
+  equipment = [],
+} = {}) {
   const state = {
     instances: instances.map((i) => ({ ...i })),
     players: { ...players },
     nextInstanceId: Math.max(0, ...instances.map((i) => i.id)) + 1,
     logEntries: [],
+    shopItems: shopItems.map((i) => ({ ...i })),
+    consumables: consumables.map((i) => ({ ...i })),
+    equipment: equipment.map((i) => ({ ...i })),
   }
 
   const query = jest.fn(async (sql, params = []) => {
@@ -178,7 +187,7 @@ function createFakeClient({ instances = [], players = {} } = {}) {
       const [playerId, id] = params
       return { rows: state.instances.filter((i) => i.player_id === playerId && i.id === id) }
     }
-    if (s.startsWith("SELECT * FROM opera_instances WHERE player_id = $1 AND (status")) {
+    if (s.startsWith('SELECT * FROM opera_instances WHERE player_id = $1 AND (status')) {
       const [playerId, tutorialTemplateId] = params
       return {
         rows: state.instances.filter(
@@ -254,10 +263,47 @@ function createFakeClient({ instances = [], players = {} } = {}) {
       state.logEntries.push({ playerId, tag, message, missionId, operaId })
       return { rows: [] }
     }
-    // Anything else (consumables/equipment has_item lookups, ships
-    // crew_threshold lookups, etc.) isn't reached by these narrow test
-    // graphs -- default to an empty result rather than growing the fixture
-    // to cover the full walk engine's surface here.
+    if (s.startsWith('SELECT 1 FROM opera_instances WHERE player_id = $1 AND template_id = $2')) {
+      const [playerId, templateId, excludeId] = params
+      return {
+        rows: state.instances
+          .filter(
+            (i) =>
+              i.player_id === playerId &&
+              i.template_id === templateId &&
+              i.status === 'in_progress' &&
+              i.id !== excludeId,
+          )
+          .slice(0, 1),
+      }
+    }
+    if (s.startsWith('SELECT name FROM shop_items WHERE is_quest_item = TRUE')) {
+      const [names] = params
+      return {
+        rows: state.shopItems
+          .filter((i) => i.is_quest_item && names.includes(i.name))
+          .map((i) => ({ name: i.name })),
+      }
+    }
+    if (s.startsWith('DELETE FROM consumables WHERE player_id = $1 AND name = ANY')) {
+      const [playerId, names] = params
+      state.consumables = state.consumables.filter(
+        (c) => !(c.player_id === playerId && names.includes(c.name)),
+      )
+      return { rows: [] }
+    }
+    if (s.startsWith('DELETE FROM equipment WHERE player_id = $1 AND name = ANY')) {
+      const [playerId, names] = params
+      state.equipment = state.equipment.filter(
+        (e) =>
+          !(e.player_id === playerId && names.includes(e.name) && e.assigned_to_recruit_id == null),
+      )
+      return { rows: [] }
+    }
+    // Anything else (has_item lookups, ships crew_threshold lookups, etc.)
+    // isn't reached by these narrow test graphs -- default to an empty
+    // result rather than growing the fixture to cover the full walk
+    // engine's surface here.
     return { rows: [] }
   })
 
@@ -459,7 +505,7 @@ describe('getPendingPurchaseNeeds', () => {
     }
   }
 
-  test('returns the itemName pending at an instance\'s current node', async () => {
+  test("returns the itemName pending at an instance's current node", async () => {
     getOperaDefinition.mockReturnValue(purchaseGatedGraph())
     const client = createFakeClient({
       instances: [
@@ -673,6 +719,210 @@ describe('maintainOperaSlots', () => {
   })
 })
 
+describe('quest-item cleanup on opera end', () => {
+  // Reuses seedGraph's own 'Widget' seed node -- reaching its end node exits
+  // through the exact link the seed's purchase gates, so satisfying that
+  // action_performed condition is enough to drive the walk to finish().
+  function reachEnd(client) {
+    return OperaService.recordOperaAction(client, PLAYER_ID, 'purchase_quest_item', {
+      itemName: 'Widget',
+    })
+  }
+
+  test('removes a leftover quest-item consumable once its opera ends', async () => {
+    getOperaDefinition.mockReturnValue(seedGraph('side-quest'))
+    const client = createFakeClient({
+      instances: [
+        {
+          id: 10,
+          player_id: PLAYER_ID,
+          template_id: 'side-quest',
+          slot_index: 0,
+          status: 'in_progress',
+          state: { currentNodeId: 'get-item', tags: {}, log: [], awaiting: 'link' },
+        },
+      ],
+      shopItems: [{ name: 'Widget', is_quest_item: true }],
+      consumables: [{ id: 501, player_id: PLAYER_ID, name: 'Widget', assigned_to_ship: null }],
+    })
+
+    await reachEnd(client)
+
+    expect(client.state.instances.find((i) => i.id === 10).status).toBe('completed')
+    expect(client.state.consumables).toHaveLength(0)
+  })
+
+  test('removes an unequipped leftover quest-item piece of equipment', async () => {
+    getOperaDefinition.mockReturnValue(seedGraph('side-quest'))
+    const client = createFakeClient({
+      instances: [
+        {
+          id: 10,
+          player_id: PLAYER_ID,
+          template_id: 'side-quest',
+          slot_index: 0,
+          status: 'in_progress',
+          state: { currentNodeId: 'get-item', tags: {}, log: [], awaiting: 'link' },
+        },
+      ],
+      shopItems: [{ name: 'Widget', is_quest_item: true }],
+      equipment: [{ id: 601, player_id: PLAYER_ID, name: 'Widget', assigned_to_recruit_id: null }],
+    })
+
+    await reachEnd(client)
+
+    expect(client.state.equipment).toHaveLength(0)
+  })
+
+  test('leaves an equipped quest item alone -- it is a reward now, not clutter', async () => {
+    getOperaDefinition.mockReturnValue(seedGraph('side-quest'))
+    const client = createFakeClient({
+      instances: [
+        {
+          id: 10,
+          player_id: PLAYER_ID,
+          template_id: 'side-quest',
+          slot_index: 0,
+          status: 'in_progress',
+          state: { currentNodeId: 'get-item', tags: {}, log: [], awaiting: 'link' },
+        },
+      ],
+      shopItems: [{ name: 'Widget', is_quest_item: true }],
+      equipment: [{ id: 601, player_id: PLAYER_ID, name: 'Widget', assigned_to_recruit_id: 99 }],
+    })
+
+    await reachEnd(client)
+
+    expect(client.state.equipment).toHaveLength(1)
+  })
+
+  test('leaves items alone whose name only coincidentally matches -- catalog row is not flagged is_quest_item', async () => {
+    getOperaDefinition.mockReturnValue(seedGraph('side-quest'))
+    const client = createFakeClient({
+      instances: [
+        {
+          id: 10,
+          player_id: PLAYER_ID,
+          template_id: 'side-quest',
+          slot_index: 0,
+          status: 'in_progress',
+          state: { currentNodeId: 'get-item', tags: {}, log: [], awaiting: 'link' },
+        },
+      ],
+      shopItems: [{ name: 'Widget', is_quest_item: false }],
+      consumables: [{ id: 501, player_id: PLAYER_ID, name: 'Widget', assigned_to_ship: null }],
+    })
+
+    await reachEnd(client)
+
+    expect(client.state.consumables).toHaveLength(1)
+  })
+
+  test('skips the sweep while a sibling in-progress instance of the same template still exists', async () => {
+    getOperaDefinition.mockReturnValue(seedGraph('side-quest'))
+    const client = createFakeClient({
+      instances: [
+        {
+          id: 10,
+          player_id: PLAYER_ID,
+          template_id: 'side-quest',
+          slot_index: 0,
+          status: 'in_progress',
+          state: { currentNodeId: 'get-item', tags: {}, log: [], awaiting: 'link' },
+        },
+        {
+          id: 11,
+          player_id: PLAYER_ID,
+          template_id: 'side-quest',
+          slot_index: 1,
+          status: 'in_progress',
+          // awaiting 'mission' on a templateId this action can never match
+          // (it only ever satisfies a 'complete_quest' action) -- keeps this
+          // sibling genuinely stuck in place instead of also resolving to
+          // 'end' from the very same triggering action, which would leave
+          // no sibling left to protect by the time either sweep runs.
+          state: {
+            currentNodeId: 'get-item',
+            tags: {},
+            log: [],
+            awaiting: 'mission',
+            pendingMissionTemplateId: 999,
+          },
+        },
+      ],
+      shopItems: [{ name: 'Widget', is_quest_item: true }],
+      consumables: [{ id: 501, player_id: PLAYER_ID, name: 'Widget', assigned_to_ship: null }],
+    })
+
+    await reachEnd(client)
+
+    expect(client.state.instances.find((i) => i.id === 10).status).toBe('completed')
+    expect(client.state.instances.find((i) => i.id === 11).status).toBe('in_progress')
+    expect(client.state.consumables).toHaveLength(1) // instance 11 might still need it
+  })
+
+  test('a give_item effect authored anywhere in the template counts too, even on a branch this walk never took', async () => {
+    getOperaDefinition.mockReturnValue({
+      id: 'side-quest',
+      title: 'side-quest',
+      nodes: [
+        { id: 'start', type: 'start' },
+        {
+          // No incoming link at all -- proves questItemNamesInTemplate scans
+          // every authored node, not just ones this particular walk visited.
+          id: 'unreached-gift',
+          type: 'story',
+          text: 'An alternate beat this playthrough never took.',
+          effects: [{ type: 'give_item', params: { itemName: 'Gizmo' } }],
+        },
+        { id: 'end', type: 'end', outcome: 'success', text: 'Done.' },
+      ],
+      links: [{ id: 'start--end', from: 'start', to: 'end', conditions: [] }],
+    })
+    const client = createFakeClient({
+      instances: [
+        {
+          id: 10,
+          player_id: PLAYER_ID,
+          template_id: 'side-quest',
+          slot_index: 0,
+          status: 'in_progress',
+          state: { currentNodeId: 'start', tags: {}, log: [], awaiting: 'link' },
+        },
+      ],
+      shopItems: [{ name: 'Gizmo', is_quest_item: true }],
+      consumables: [{ id: 502, player_id: PLAYER_ID, name: 'Gizmo', assigned_to_ship: 7 }],
+    })
+
+    await OperaService.recordOperaAction(client, PLAYER_ID, 'execute_command', { command: 'noop' })
+
+    expect(client.state.instances.find((i) => i.id === 10).status).toBe('completed')
+    expect(client.state.consumables).toHaveLength(0)
+  })
+
+  test('issues no new item queries for a template with no quest items at all', async () => {
+    getOperaDefinition.mockReturnValue(instantGraph('plain'))
+    const client = createFakeClient({
+      instances: [
+        {
+          id: 10,
+          player_id: PLAYER_ID,
+          template_id: 'plain',
+          slot_index: 0,
+          status: 'in_progress',
+          state: { currentNodeId: 'start', tags: {}, log: [], awaiting: 'link' },
+        },
+      ],
+    })
+
+    await OperaService.recordOperaAction(client, PLAYER_ID, 'execute_command', { command: 'noop' })
+
+    expect(
+      client.query.mock.calls.some(([sql]) => /consumables|equipment|shop_items/.test(sql)),
+    ).toBe(false)
+  })
+})
+
 describe('title variance', () => {
   // gatedGraph (not instantGraph) on purpose: it stops mid-walk instead of
   // completing in the same pass, so the created instance stays 'in_progress'
@@ -706,7 +956,11 @@ describe('title variance', () => {
   })
 
   test('picks a title from [title, ...titles] at instance creation and keeps it stable', async () => {
-    const def = gatedGraph({ id: 'template-a', title: 'template-a', titles: ['Alt One', 'Alt Two'] })
+    const def = gatedGraph({
+      id: 'template-a',
+      title: 'template-a',
+      titles: ['Alt One', 'Alt Two'],
+    })
     getOperaDefinition.mockImplementation((id) => (id === 'template-a' ? def : gatedGraph()))
     getGenerationPoolDefinitions.mockReturnValue([def])
     const client = createFakeClient({
@@ -879,9 +1133,7 @@ describe('resolveTags', () => {
   // draw is random -- every run must independently show full coverage, not
   // just "eventually" across runs.
   const missionTypes = require('../data/mission-types.json')
-  const allProvidedKeys = [
-    ...new Set(missionTypes.flatMap((mt) => Object.keys(mt.provides))),
-  ]
+  const allProvidedKeys = [...new Set(missionTypes.flatMap((mt) => Object.keys(mt.provides)))]
 
   test('every tag key any mission type can provide is resolved on every run', () => {
     for (let i = 0; i < 20; i++) {
