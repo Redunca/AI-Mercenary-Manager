@@ -80,6 +80,18 @@ export class MissionListComponent implements OnInit, OnChanges, OnDestroy {
     return this.completed ? this.completedMissions : this.missionService.missions;
   }
 
+  // Regular missions cycle in on the mission-refresh timer; Opera missions
+  // are injected on demand by an in-progress Opera and stay listed until it
+  // resolves them (see Mission.isOperaMission) -- split so the player can
+  // tell "will refresh away" apart from "here because of a questline".
+  get regularMissions(): Mission[] {
+    return this.missions.filter((m) => !m.isOperaMission);
+  }
+
+  get operaMissions(): Mission[] {
+    return this.missions.filter((m) => m.isOperaMission);
+  }
+
   // A mission's host and antagonist are frequently both present (e.g. a
   // DIPLOMACY mission is "for" the planet's controlling org and "against" a
   // rival faction at once) -- show both rather than only the first that's set.

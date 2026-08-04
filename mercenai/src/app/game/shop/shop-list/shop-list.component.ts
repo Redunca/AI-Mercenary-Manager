@@ -12,6 +12,19 @@ import { GameService } from '../../../core/game.service';
 import { PanelModule } from '../../../models/panel';
 import { msUntilNextRefresh, formatCountdown } from '../../../core/refresh-countdown';
 
+// Display grouping only -- distinct from ShopItem.type, since a quest item
+// (is_quest_item) is pulled into its own section regardless of its
+// underlying type. Order here is display order: items that cycle in on the
+// shop's timed rotation first, then the conditionally-present quest items.
+type ShopCategory = 'consumable' | 'armor' | 'ship' | 'quest';
+const SHOP_CATEGORY_ORDER: ShopCategory[] = ['consumable', 'armor', 'ship', 'quest'];
+const SHOP_CATEGORY_LABELS: Record<ShopCategory, string> = {
+  consumable: 'Consumables',
+  armor: 'Equipment',
+  ship: 'Ships',
+  quest: 'Quests',
+};
+
 @Component({
   selector: 'app-shop-list',
   standalone: true,
@@ -29,6 +42,28 @@ export class ShopListComponent implements OnInit, OnDestroy {
 
   get wallet(): number {
     return this.game.player$.value.credits;
+  }
+
+  // Same items, sorted into display-category order (Array.sort is stable,
+  // so within a category the backend's type/rarity/price ordering — see
+  // shop.service.js's getShopItems — is preserved). The template pairs this
+  // with `category()` to print one section header per run of matching items
+  // rather than duplicating the row markup per category.
+  get groupedItems(): ShopItem[] {
+    return [...this.items].sort(
+      (a, b) =>
+        SHOP_CATEGORY_ORDER.indexOf(this.category(a)!) -
+        SHOP_CATEGORY_ORDER.indexOf(this.category(b)!),
+    );
+  }
+
+  category(item: ShopItem | undefined): ShopCategory | null {
+    if (!item) return null;
+    return item.is_quest_item ? 'quest' : item.type;
+  }
+
+  categoryLabel(item: ShopItem): string {
+    return SHOP_CATEGORY_LABELS[this.category(item)!];
   }
 
   private refreshTimer: ReturnType<typeof setInterval> | null = null;

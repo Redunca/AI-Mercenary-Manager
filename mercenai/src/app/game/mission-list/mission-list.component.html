@@ -20,29 +20,64 @@
     <th>Combat</th>
     <th>Checks</th>
   </tr>
-  <tr *ngFor="let m of missions">
-    <td>{{ m.id }}</td>
-    <td>{{ m.name }}</td>
-    <td>{{ m.description }}</td>
-    <td>
-      {{ orgLabel(m) }}<span *ngIf="rewardMultiplierLabel(m)"> ({{ rewardMultiplierLabel(m) }})</span>
-    </td>
-    <td>
-      {{
-        m.status === 'in_progress'
-          ? (missionService.getState(m.id)?.phase ?? 'in_progress')
-          : m.status
-      }}
-    </td>
-    <td>
-      {{ m.status === 'in_progress' ? (missionService.getState(m.id)?.progress ?? 0) + '%' : '' }}
-    </td>
-    <td>{{ m.assignedShipId ?? '—' }}</td>
-    <td [class]="difficultyClass(m)">{{ difficultyLabel(m) }}</td>
-    <td>{{ durationLabel(m) }}</td>
-    <td>{{ combatLabel(m) }}</td>
-    <td>{{ skillChecksLabel(m) }}</td>
-  </tr>
+  <ng-container *ngIf="regularMissions.length > 0">
+    <tr>
+      <td colspan="11" class="section-header muted">Quests</td>
+    </tr>
+    <tr *ngFor="let m of regularMissions">
+      <td>{{ m.id }}</td>
+      <td>{{ m.name }}</td>
+      <td>{{ m.description }}</td>
+      <td>
+        {{ orgLabel(m)
+        }}<span *ngIf="rewardMultiplierLabel(m)"> ({{ rewardMultiplierLabel(m) }})</span>
+      </td>
+      <td>
+        {{
+          m.status === 'in_progress'
+            ? (missionService.getState(m.id)?.phase ?? 'in_progress')
+            : m.status
+        }}
+      </td>
+      <td>
+        {{ m.status === 'in_progress' ? (missionService.getState(m.id)?.progress ?? 0) + '%' : '' }}
+      </td>
+      <td>{{ m.assignedShipId ?? '—' }}</td>
+      <td [class]="difficultyClass(m)">{{ difficultyLabel(m) }}</td>
+      <td>{{ durationLabel(m) }}</td>
+      <td>{{ combatLabel(m) }}</td>
+      <td>{{ skillChecksLabel(m) }}</td>
+    </tr>
+  </ng-container>
+  <ng-container *ngIf="operaMissions.length > 0">
+    <tr>
+      <td colspan="11" class="section-header muted">Opera Quests</td>
+    </tr>
+    <tr *ngFor="let m of operaMissions">
+      <td>{{ m.id }}</td>
+      <td>{{ m.name }}</td>
+      <td>{{ m.description }}</td>
+      <td>
+        {{ orgLabel(m)
+        }}<span *ngIf="rewardMultiplierLabel(m)"> ({{ rewardMultiplierLabel(m) }})</span>
+      </td>
+      <td>
+        {{
+          m.status === 'in_progress'
+            ? (missionService.getState(m.id)?.phase ?? 'in_progress')
+            : m.status
+        }}
+      </td>
+      <td>
+        {{ m.status === 'in_progress' ? (missionService.getState(m.id)?.progress ?? 0) + '%' : '' }}
+      </td>
+      <td>{{ m.assignedShipId ?? '—' }}</td>
+      <td [class]="difficultyClass(m)">{{ difficultyLabel(m) }}</td>
+      <td>{{ durationLabel(m) }}</td>
+      <td>{{ combatLabel(m) }}</td>
+      <td>{{ skillChecksLabel(m) }}</td>
+    </tr>
+  </ng-container>
   <tr *ngIf="completed && !historyLoading && !historyError && missions.length === 0">
     <td colspan="11" class="indent-one muted">No completed missions yet</td>
   </tr>

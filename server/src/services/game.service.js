@@ -1805,6 +1805,7 @@ async function getMissionHistory(client, playerId) {
         ...missionPreCommitmentSummary(t.difficulty, t.events),
         assignedShipId: instance.ship_id,
         status: instance.status === 'in_progress' ? 'in_progress' : instance.status,
+        isOperaMission: t.opera_instance_id != null,
         forFaction: t.for_faction ?? undefined,
         againstFaction: t.against_faction ?? undefined,
       }

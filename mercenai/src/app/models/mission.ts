@@ -68,6 +68,11 @@ export interface Mission {
   estimatedDurationMs: number;
   assignedShipId: number | null;
   status: MissionStatus;
+  // True when this mission was injected by an in-progress Opera (see
+  // server/src/services/opera.service.js) rather than drawn from the
+  // regular timed rotation — it stays on the board regardless of the
+  // player's mission slot cap until the Opera resolves it.
+  isOperaMission: boolean;
   // The org (if any) this mission is done for/against — see
   // server/src/engine/missionGenerator.js's resolveAgainstFaction.
   // forFaction's current standing scales the credit reward (see

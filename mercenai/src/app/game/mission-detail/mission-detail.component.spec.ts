@@ -19,6 +19,7 @@ const MOCK_MISSIONS: Mission[] = [
     estimatedDurationMs: 0,
     assignedShipId: null,
     status: 'available',
+    isOperaMission: false,
   },
   {
     id: 2,
@@ -31,6 +32,7 @@ const MOCK_MISSIONS: Mission[] = [
     estimatedDurationMs: 0,
     assignedShipId: null,
     status: 'available',
+    isOperaMission: false,
   },
 ];
 
