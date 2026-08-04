@@ -69,6 +69,10 @@ export class CommandService {
     this.globalCommands[name] = fn;
   }
 
+  getGlobalCommandNames(): string[] {
+    return Object.keys(this.globalCommands);
+  }
+
   private parse(input: string) {
     const parts = input.trim().split(/\s+/);
     const command = parts[0];

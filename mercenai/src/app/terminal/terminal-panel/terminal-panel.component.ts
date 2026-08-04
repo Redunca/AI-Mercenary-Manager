@@ -154,6 +154,37 @@ export class TerminalPanelComponent implements OnInit, AfterViewChecked, AfterVi
     this.panel.terminal?.historyNext();
   }
 
+  onTabKey(event: Event): void {
+    // Without this, Tab would move browser focus off the textarea instead
+    // of completing the command.
+    event.preventDefault();
+    const input = this.panel.terminal?.getInput() ?? '';
+    const suggestion = this.getSuggestion(input);
+    if (!suggestion) return;
+    this.panel.terminal?.setInput(suggestion + ' ');
+  }
+
+  // Only completes the command name itself (the first, space-free token),
+  // matched against the commands actually available in this panel right
+  // now (local + global) -- not sub-command arguments, which live in
+  // per-handler switch statements rather than any enumerable registry.
+  private getSuggestion(input: string): string | null {
+    if (!input || /\s/.test(input)) return null;
+
+    const lower = input.toLowerCase();
+    const names = [...Object.keys(this.localCommands), ...this.commandService.getGlobalCommandNames()];
+    const matches = names
+      .filter((name) => name.toLowerCase() !== lower && name.toLowerCase().startsWith(lower))
+      .sort();
+    return matches[0] ?? null;
+  }
+
+  getGhostSuffix(): string {
+    const input = this.panel.terminal?.getInput() ?? '';
+    const suggestion = this.getSuggestion(input);
+    return suggestion ? suggestion.slice(input.length) : '';
+  }
+
   onFocus(): void {
     this.layout.setActivePanel(this.getPanelId());
   }

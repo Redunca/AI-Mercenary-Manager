@@ -68,17 +68,21 @@
   </div>
 
   <div class="panel-input">
-    <textarea
-      #cmdInput
-      [value]="panel.terminal?.getInput() ?? ''"
-      (input)="onInputChange($event); autoResize($event)"
-      (keydown.enter)="onEnterKey($event)"
-      (keydown.arrowup)="onArrowUpKey($event)"
-      (keydown.arrowdown)="onArrowDownKey($event)"
-      (focus)="onFocus()"
-      placeholder="Enter a command..."
-      class="command-input"
-    >
-    </textarea>
+    <div class="command-input-wrap">
+      <div class="command-ghost" aria-hidden="true"><span class="ghost-typed">{{ panel.terminal?.getInput() }}</span><span class="ghost-suffix">{{ getGhostSuffix() }}</span></div>
+      <textarea
+        #cmdInput
+        [value]="panel.terminal?.getInput() ?? ''"
+        (input)="onInputChange($event); autoResize($event)"
+        (keydown.enter)="onEnterKey($event)"
+        (keydown.tab)="onTabKey($event)"
+        (keydown.arrowup)="onArrowUpKey($event)"
+        (keydown.arrowdown)="onArrowDownKey($event)"
+        (focus)="onFocus()"
+        placeholder="Enter a command..."
+        class="command-input"
+      >
+      </textarea>
+    </div>
   </div>
 </div>

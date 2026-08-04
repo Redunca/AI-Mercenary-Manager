@@ -33,8 +33,44 @@
   display: flex;
 }
 
+.command-input-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Sits behind the textarea, same font metrics, so its text lines up
+   character-for-character. The already-typed portion is rendered
+   transparent (it exists only to push the suffix into position); only the
+   suffix -- the part Tab would insert -- is actually visible. */
+.command-ghost {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  min-height: 1.2rem;
+  padding: 0;
+  border: 0;
+  box-sizing: border-box;
+  font-family: monospace;
+  font-size: 1rem;
+  line-height: 1.2rem;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  pointer-events: none;
+}
+
+.ghost-typed {
+  color: transparent;
+}
+
+.ghost-suffix {
+  color: #666;
+}
+
 /* Fix for .command-input: Allow vertical scroll instead of growing infinitely if needed, or let autoResize handle height */
 .command-input {
+  position: relative; /* keeps it painted above the ghost layer, which sits behind it in the DOM */
   width: 100%; /* Ensure it takes full horizontal space */
 
   /* Terminal-like behavior: single line initially, grows with content OR scrolls */
@@ -46,7 +82,9 @@
   /* Prevent resize handle */
   resize: none;
 
-  border: none;
+  padding: 0;
+  border: 0;
+  box-sizing: border-box;
   outline: none;
   background: transparent;
   color: lightgrey;
