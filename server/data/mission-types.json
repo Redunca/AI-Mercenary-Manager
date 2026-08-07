@@ -8,7 +8,7 @@
       "targetName": { "category": "person" },
       "enemyGroupName": { "category": "gang" }
     },
-    "eventPool": ["PLAN_ITINERARY", "AMBUSH", "FIELD_MEDICINE"]
+    "eventPool": ["PLAN_ITINERARY", "AMBUSH", "FIELD_MEDICINE", "LESSONS_LEARNED"]
   },
   {
     "type": "HEIST",
@@ -19,7 +19,7 @@
       "targetCorpName": { "category": "corporation" },
       "securityGroupName": { "category": "gang" }
     },
-    "eventPool": ["CASE_THE_JOINT", "CRACK_THE_VAULT", "CLEAN_GETAWAY"]
+    "eventPool": ["CASE_THE_JOINT", "CRACK_THE_VAULT", "CLEAN_GETAWAY", "LESSONS_LEARNED"]
   },
   {
     "type": "SABOTAGE",
@@ -29,7 +29,7 @@
       "clientName": { "category": "person" },
       "enemyGroupName": { "category": "corporation" }
     },
-    "eventPool": ["DISABLE_SENSORS", "PLANT_CHARGES", "ESCAPE_BLAST"]
+    "eventPool": ["DISABLE_SENSORS", "PLANT_CHARGES", "ESCAPE_BLAST", "LESSONS_LEARNED"]
   },
   {
     "type": "RECON",
@@ -39,7 +39,7 @@
       "clientName": { "category": "person" },
       "enemyGroupName": { "category": "gang" }
     },
-    "eventPool": ["INFILTRATE_PERIMETER", "GATHER_INTEL", "AVOID_PATROL"]
+    "eventPool": ["INFILTRATE_PERIMETER", "GATHER_INTEL", "AVOID_PATROL", "LESSONS_LEARNED"]
   },
   {
     "type": "DIPLOMACY",
@@ -50,7 +50,7 @@
       "targetName": { "category": "person", "tags": ["diplomat"] },
       "enemyGroupName": { "category": "faction" }
     },
-    "eventPool": ["ESTABLISH_CONTACT", "NEGOTIATE_TERMS", "WITHSTAND_PRESSURE"]
+    "eventPool": ["ESTABLISH_CONTACT", "NEGOTIATE_TERMS", "WITHSTAND_PRESSURE", "LESSONS_LEARNED"]
   },
   {
     "type": "EXTRACTION_OP",
@@ -61,6 +61,6 @@
       "targetName": { "category": "person" },
       "enemyGroupName": { "category": "gang" }
     },
-    "eventPool": ["LOCATE_TARGET", "BREACH_HOLDING", "FIGHTING_RETREAT"]
+    "eventPool": ["LOCATE_TARGET", "BREACH_HOLDING", "FIGHTING_RETREAT", "LESSONS_LEARNED"]
   }
 ]

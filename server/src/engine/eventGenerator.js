@@ -22,8 +22,19 @@ function generateEvent(archetype, context, difficultyTable) {
   const descriptionTemplate = pickOne(archetype.descriptionTemplates)
   const description = render(descriptionTemplate, context.getAll())
 
-  const rewardAmount = randInt(difficultyTable.rewardRange.min, difficultyTable.rewardRange.max)
   const rewardDescription = pickOne(archetype.rewardDescriptions)
+
+  // REFLECTION always grants a flat 1 XP -- the Open Legend rule ("every XP
+  // grants 3 attribute points") isn't difficulty-scaled the way a credit
+  // bounty is, so it skips the normal rewardRange roll entirely.
+  const reward =
+    archetype.eventType === 'REFLECTION'
+      ? { type: 'EXPERIENCE', amount: 1, description: rewardDescription }
+      : {
+          type: 'CREDITS',
+          amount: randInt(difficultyTable.rewardRange.min, difficultyTable.rewardRange.max),
+          description: rewardDescription,
+        }
 
   const failureConsequences = archetype.failureConsequences || difficultyTable.failureConsequences
   const failureConsequence = pickOne(failureConsequences)
@@ -35,11 +46,7 @@ function generateEvent(archetype, context, difficultyTable) {
     attribute: archetype.attribute,
     dc,
     description,
-    reward: {
-      type: 'CREDITS',
-      amount: rewardAmount,
-      description: rewardDescription,
-    },
+    reward,
     failureConsequence,
   }
 }

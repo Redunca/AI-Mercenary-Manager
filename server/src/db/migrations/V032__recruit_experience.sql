@@ -1,0 +1,2 @@
+ALTER TABLE recruits ADD COLUMN experience INT NOT NULL DEFAULT 0;
+ALTER TABLE recruits ADD COLUMN attribute_points INT NOT NULL DEFAULT 0;

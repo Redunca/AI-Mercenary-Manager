@@ -11,6 +11,13 @@ const ATTRIBUTE_KEYS = [
   'presence',
 ]
 
+// Open Legend core rules (08-running-the-game): "Every XP that players
+// receive grants them 1 feat point and 3 attribute points, and every 3 XP
+// results in a new level." Feat points aren't tracked (nothing to spend them
+// on yet); level is deliberately not stored -- it's floor(experience / 3) + 1
+// whenever a future leveling feature needs it, so it can never drift from XP.
+const EXPERIENCE_TO_ATTRIBUTE_POINTS = 3
+
 const ATTRIBUTE_TABLES = {
   specialized: [5, 4, 3, 2, 2, 2, 0, 0, 0, 0],
   'well-rounded': [4, 4, 3, 3, 3, 1, 1, 0, 0, 0],
@@ -331,11 +338,14 @@ function rowToRecruit(row) {
     status: row.status,
     perks: row.perks,
     flaws: row.flaws,
+    experience: row.experience ?? 0,
+    attributePoints: row.attribute_points ?? 0,
   }
 }
 
 module.exports = {
   ATTRIBUTE_KEYS,
+  EXPERIENCE_TO_ATTRIBUTE_POINTS,
   computeMaxHp,
   computeGuard,
   bestCombatStat,

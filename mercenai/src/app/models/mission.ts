@@ -12,7 +12,8 @@ export type EventType =
   | 'DECEPTION'
   | 'RECON'
   | 'ENGINEERING'
-  | 'PSYCHWAR';
+  | 'PSYCHWAR'
+  | 'REFLECTION';
 
 export type MissionDifficulty = 'ROUTINE' | 'STANDARD' | 'HARD' | 'PERILOUS' | 'EPIC';
 
@@ -55,6 +56,10 @@ export interface EventResult {
   rounds?: number;
   enemyDefeated?: boolean;
   recruitsDied?: number[];
+  // Only present for REFLECTION events -- see grantExperience in
+  // server/src/services/recruit.service.js (3 attribute points per XP,
+  // per the Open Legend core rules).
+  attributePointsEarned?: number;
 }
 
 export interface Mission {

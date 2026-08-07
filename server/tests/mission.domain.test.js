@@ -217,6 +217,15 @@ describe('missionSkillChecks', () => {
   test('is empty for a COMBAT-only mission', () => {
     expect(missionSkillChecks([{ type: 'COMBAT', attribute: 'might' }])).toEqual([])
   })
+
+  test('excludes REFLECTION events -- they always succeed, never a real check', () => {
+    expect(
+      missionSkillChecks([
+        { type: 'REFLECTION', attribute: 'learning' },
+        { type: 'BREACH', attribute: 'logic' },
+      ]),
+    ).toEqual(['logic'])
+  })
 })
 
 describe('missionPreCommitmentSummary', () => {

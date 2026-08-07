@@ -42,6 +42,11 @@ export interface Recruit {
   status: RecruitStatus;
   perks?: { name: string; description: string }[];
   flaws?: { name: string; description: string }[];
+  // Gained from REFLECTION mission events (1 XP = 3 attribute points, per
+  // the Open Legend core rules). Spending attributePoints to raise
+  // attributes/level up is separate, not-yet-built functionality.
+  experience: number;
+  attributePoints: number;
 }
 
 // Mirrors server/data/perk-effects.json -- the curated subset of perks/flaws

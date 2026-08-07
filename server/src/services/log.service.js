@@ -256,6 +256,15 @@ const EVENT_PHRASES = {
     'Contact confirmed. Hostiles closing in.',
     'Weapons free. Engaging Hostiles.',
   ],
+  reflection_ai: [
+    'Experience log updated. Growth registered.',
+    'Debrief complete. Lessons filed for future reference.',
+  ],
+  reflection_recruit: [
+    "I think I get it a little better now.",
+    "Noted, for next time.",
+    "Learning as we go, I guess.",
+  ],
 }
 
 /**
@@ -582,6 +591,41 @@ function buildCombatEventLogs({ context, event, combatResult }) {
   }
 
   return { mission: entries, global }
+}
+
+// The [SYS]/[AI]/[RECRUIT] summary for a REFLECTION event -- always a
+// success, so unlike buildEventResultLogs there's no failure branch and no
+// roll string (formatRoll doesn't apply -- REFLECTION never rolls).
+function buildReflectionEventLog({ context, result }) {
+  const { missionId, actingRecruit, planet } = context
+  const rewardStr = ` [+${result.rewardEarned.amount} EXPERIENCE, +${result.attributePointsEarned} ATTRIBUTE POINTS]`
+  const quote = pickEventRecruitQuote({
+    eventType: 'REFLECTION',
+    success: true,
+    perks: actingRecruit?.perks,
+    flaws: actingRecruit?.flaws,
+    personality: actingRecruit?.personality,
+  })
+
+  const entries = [
+    {
+      tag: '[SYS]',
+      message: `REFLECTION [${result.attribute}] — SUCCESS${rewardStr}`,
+      missionId,
+    },
+    {
+      tag: '[AI]',
+      message: pickPlanetTagQuote({ tags: planet?.tags, channel: 'ai' }) ?? pick(EVENT_PHRASES.reflection_ai),
+      missionId,
+    },
+    {
+      tag: `[${actingRecruit.name.toUpperCase()}]`,
+      message: `"${quote ?? pick(EVENT_PHRASES.reflection_recruit)}"`,
+      missionId,
+    },
+  ]
+
+  return { mission: entries, global: [] }
 }
 
 // --- Recruit-to-recruit banter (task 5) ---
@@ -935,6 +979,7 @@ module.exports = {
   buildCombatStartLog,
   buildCombatRoundLog,
   buildCombatEventLogs,
+  buildReflectionEventLog,
   getRecentMissionMessages,
   allCrewPairs,
   hasTraitFriction,

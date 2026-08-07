@@ -41,15 +41,15 @@ function missionHasCombat(events) {
 }
 
 // Attributes a mission will actually exercise as discrete skill checks, in
-// first-appearance order, deduped. COMBAT events are excluded: their
-// `attribute` is archetype flavor never consulted by resolveEvents' combat
-// branch (game.service.js resolves COMBAT via bestCombatStat instead), so
-// it isn't a real check to warn the player about.
+// first-appearance order, deduped. COMBAT and REFLECTION events are
+// excluded: neither ever rolls against their `attribute` (COMBAT resolves
+// via bestCombatStat, REFLECTION always succeeds -- see resolveEvents in
+// game.service.js), so it isn't a real check to warn the player about.
 function missionSkillChecks(events) {
   const seen = new Set()
   const result = []
   for (const e of events) {
-    if (e.type === 'COMBAT' || seen.has(e.attribute)) continue
+    if (e.type === 'COMBAT' || e.type === 'REFLECTION' || seen.has(e.attribute)) continue
     seen.add(e.attribute)
     result.push(e.attribute)
   }

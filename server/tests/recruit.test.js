@@ -171,6 +171,8 @@ describe('rowToRecruit', () => {
       status: 'available',
       perks: [],
       flaws: [{ name: 'Clumsy' }],
+      experience: 0,
+      attributePoints: 0,
     })
   })
 

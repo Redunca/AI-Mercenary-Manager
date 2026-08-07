@@ -1,0 +1,28 @@
+{
+  "REFLECTION": {
+    "success": {
+      "perk-and-flawless": {
+        "Analyst": [
+          "Cross-referenced against prior data. This updates my model meaningfully.",
+          "Noted and filed. I'll factor this into future projections.",
+          "An instructive data point. I appreciate a clean lesson."
+        ],
+        "Diplomat": [
+          "I think I understand a little more about people now.",
+          "Every mission teaches you something, if you let it.",
+          "I'll carry this lesson with me. It feels important."
+        ],
+        "Sentinel": [
+          "Logging this for the after-action report. Won't make that mistake twice.",
+          "Lesson noted. Adjusting procedure accordingly.",
+          "Filed under 'hard-won experience'. Moving on."
+        ],
+        "Explorer": [
+          "Huh. Didn't expect to learn that today, but okay.",
+          "Well, now I know better. That's something, right?",
+          "Chalk that one up to experience."
+        ]
+      }
+    }
+  }
+}

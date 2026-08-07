@@ -76,6 +76,13 @@ function createFakeClient({
       row.attributes = JSON.parse(attrsJson)
       return { rows: [row] }
     }
+    if (s.startsWith('UPDATE recruits SET experience = experience + $1')) {
+      const [xp, attributePoints, playerId, recruitId] = params
+      const row = state.recruits.find((r) => r.player_id === playerId && r.id === recruitId)
+      row.experience = (row.experience ?? 0) + xp
+      row.attribute_points = (row.attribute_points ?? 0) + attributePoints
+      return { rows: [row] }
+    }
     if (s.startsWith('SELECT * FROM shop_items WHERE name = $1')) {
       const [name] = params
       return { rows: state.shopItems.filter((i) => i.name === name) }
@@ -244,6 +251,32 @@ describe('adjustAttribute', () => {
     // computeMaxHp = 2*(fortitude+presence+will) + 10 = 2*3 + 10 = 16
     expect(client.state.recruits[0].max_hp).toBe(16)
     expect(client.state.recruits[0].hp).toBe(10) // unchanged, still below the new max
+  })
+})
+
+describe('grantExperience', () => {
+  test('grants XP and, per the Open Legend rule, 3 attribute points per XP', async () => {
+    const client = createFakeClient({
+      recruits: [{ player_id: PLAYER_ID, id: 5, experience: 0, attribute_points: 0 }],
+    })
+
+    const result = await RecruitService.grantExperience(client, PLAYER_ID, 5, 1)
+
+    expect(result.experience).toBe(1)
+    expect(result.attribute_points).toBe(3)
+    expect(client.state.recruits[0].experience).toBe(1)
+    expect(client.state.recruits[0].attribute_points).toBe(3)
+  })
+
+  test('accumulates across repeated grants', async () => {
+    const client = createFakeClient({
+      recruits: [{ player_id: PLAYER_ID, id: 5, experience: 2, attribute_points: 6 }],
+    })
+
+    await RecruitService.grantExperience(client, PLAYER_ID, 5, 1)
+
+    expect(client.state.recruits[0].experience).toBe(3)
+    expect(client.state.recruits[0].attribute_points).toBe(9)
   })
 })
 

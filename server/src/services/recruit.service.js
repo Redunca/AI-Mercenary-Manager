@@ -14,7 +14,12 @@ const path = require('path')
 const { rollInRange } = require('./dice.service')
 const ConsumableService = require('./consumable.service')
 const EquipmentService = require('./equipment.service')
-const { generateCandidate, computeMaxHp, ATTRIBUTE_KEYS } = require('../domain/recruit')
+const {
+  generateCandidate,
+  computeMaxHp,
+  ATTRIBUTE_KEYS,
+  EXPERIENCE_TO_ATTRIBUTE_POINTS,
+} = require('../domain/recruit')
 
 const PERKS_FLAWS_PATH = path.join(__dirname, '../../data/perks-flaws.json')
 
@@ -114,6 +119,19 @@ async function adjustAttribute(client, playerId, recruitId, attribute, amount) {
   return result.rows[0]
 }
 
+// Grants XP and, per the Open Legend rule (1 XP = 3 attribute points), the
+// attribute points that come with it in lockstep -- see the REFLECTION
+// mission event branch in game.service.js's resolveEvents.
+async function grantExperience(client, playerId, recruitId, xp) {
+  const attributePoints = xp * EXPERIENCE_TO_ATTRIBUTE_POINTS
+  const result = await client.query(
+    `UPDATE recruits SET experience = experience + $1, attribute_points = attribute_points + $2
+     WHERE player_id = $3 AND id = $4 RETURNING *`,
+    [xp, attributePoints, playerId, recruitId],
+  )
+  return result.rows[0]
+}
+
 // Hands the player a shop-catalog item directly, bypassing wallet/rotation.
 // The item must already exist in the shop_items master catalog -- OGL's
 // give_item effect only carries an itemName, no stats/price, so it can only
@@ -182,6 +200,7 @@ module.exports = {
   applyPerk,
   applyFlaw,
   adjustAttribute,
+  grantExperience,
   giveItem,
   insertSeededCandidate,
 }

@@ -219,5 +219,18 @@
       "Fight a path back to the ship with {targetName}, {enemyGroupName} hot on their heels."
     ],
     "rewardDescriptions": ["Extraction Under Fire Bounty"]
+  },
+
+  {
+    "id": "LESSONS_LEARNED",
+    "eventType": "REFLECTION",
+    "attribute": "learning",
+    "beat": "EXTRACTION",
+    "consumes": [],
+    "descriptionTemplates": [
+      "As extraction nears, the crew takes a quiet moment to go over what this operation taught them.",
+      "With the objective secured, someone finally has time to think back on what just happened."
+    ],
+    "rewardDescriptions": ["Lessons Learned"]
   }
 ]

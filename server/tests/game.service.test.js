@@ -276,6 +276,15 @@ function createFakeClient() {
       if (r && r.status !== 'dead') Object.assign(r, { status })
       return { rows: [] }
     }
+    if (s.includes('UPDATE recruits SET experience = experience + $1')) {
+      const [xp, attributePoints, playerId, id] = params
+      const r = state.recruits.find((r) => r.player_id === playerId && sameId(r.id, id))
+      if (r) {
+        r.experience = (r.experience ?? 0) + xp
+        r.attribute_points = (r.attribute_points ?? 0) + attributePoints
+      }
+      return { rows: r ? [r] : [] }
+    }
     if (
       s ===
       "SELECT * FROM recruits WHERE player_id = $1 AND status = 'hospitalized' AND hp < max_hp"
@@ -680,6 +689,7 @@ function buildEvent({
   dc = 10,
   failureConsequence = null,
   rewardAmount = 100,
+  reward = null,
 }) {
   return {
     id,
@@ -688,7 +698,7 @@ function buildEvent({
     attribute,
     dc,
     description: `Test ${type} event`,
-    reward: { type: 'CREDITS', amount: rewardAmount, description: 'Test reward' },
+    reward: reward || { type: 'CREDITS', amount: rewardAmount, description: 'Test reward' },
     failureConsequence,
   }
 }
@@ -750,6 +760,7 @@ describe('GameService', () => {
     })
     LogService.buildCombatEventLogs.mockReturnValue({ mission: [], global: [] })
     LogService.buildCombatStartLog.mockReturnValue({ mission: [] })
+    LogService.buildReflectionEventLog.mockReturnValue({ mission: [], global: [] })
     LogService.buildDeathReactionLog.mockReturnValue(null)
     LogService.insertLogEntries.mockResolvedValue(undefined)
     // Real pairing logic (not the trigger-content lookups) so completeMission's
@@ -2155,6 +2166,57 @@ describe('GameService', () => {
       expect(recruit.max_hp).toBe(3) // 4 -> 3, still recorded even though the recruit died
       expect(updated.failed).toBe(true)
       expect(updated.event_results.at(-1).recruitsDied).toEqual(['1'])
+    })
+  })
+
+  describe('syncGame — REFLECTION event', () => {
+    const REFLECTION_TEMPLATE_ID = 107
+    function seedReflectionTemplate() {
+      seedTemplate(state, {
+        id: REFLECTION_TEMPLATE_ID,
+        difficulty: 'STANDARD',
+        events: [
+          buildEvent({
+            id: 'e1',
+            type: 'REFLECTION',
+            attribute: 'learning',
+            reward: { type: 'EXPERIENCE', amount: 1, description: 'Lessons Learned' },
+          }),
+        ],
+      })
+    }
+
+    test('always succeeds and grants the acting recruit 1 XP + 3 attribute points', async () => {
+      await GameService.initGame()
+      seedReflectionTemplate()
+      state.recruits[0].id = 1
+      ShipService.getShip.mockResolvedValue({
+        id: 1,
+        player_id: 1,
+        crew: [1],
+        status: 'docked',
+        deleted_at: null,
+      })
+      await GameService.startMission(REFLECTION_TEMPLATE_ID, 1)
+      state.missionInstances[0].started_at = new Date(Date.now() - 60 * 60 * 1000)
+
+      await GameService.syncGame()
+      const recruit = state.recruits.find((r) => r.id === 1)
+      const updated = state.missionInstances[0]
+
+      expect(updated.status).toBe('success')
+      expect(updated.event_results).toHaveLength(1)
+      const result = updated.event_results[0]
+      expect(result.success).toBe(true)
+      expect(result.rewardEarned).toEqual({
+        type: 'EXPERIENCE',
+        amount: 1,
+        description: 'Lessons Learned',
+      })
+      expect(result.attributePointsEarned).toBe(3)
+      expect(recruit.experience).toBe(1)
+      expect(recruit.attribute_points).toBe(3)
+      expect(LogService.buildReflectionEventLog).toHaveBeenCalledTimes(1)
     })
   })
 

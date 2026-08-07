@@ -7,6 +7,7 @@ const {
   rowToCandidate,
   rowToRecruit,
   computeMaxHp,
+  EXPERIENCE_TO_ATTRIBUTE_POINTS,
 } = require('../domain/recruit')
 const { buildEnemy, runAutoBattle } = require('../domain/combat')
 const {
@@ -25,6 +26,7 @@ const {
   buildCombatStartLog,
   buildCombatRoundLog,
   buildCombatEventLogs,
+  buildReflectionEventLog,
   getRecentMissionMessages,
   allCrewPairs,
   hasTraitFriction,
@@ -660,6 +662,50 @@ async function resolveEvents(client, playerId, instance, template, crewMembers, 
         }
       }
 
+      continue
+    }
+
+    // REFLECTION events always succeed -- reflecting on lessons learned
+    // isn't something a crew member can fail at, so (like COMBAT) there is
+    // no DC roll. Unlike COMBAT, the acting recruit is still meaningfully
+    // chosen (whoever reflects is who banks the XP), so it still honors a
+    // one-shot manual assignment via pickAssignedOrBest.
+    if (event.type === 'REFLECTION') {
+      const bestRecruit = pickAssignedOrBest(
+        activeCrew,
+        event,
+        i === initialEventIndex ? assignedRecruitId : null,
+      )
+      const updated = await RecruitService.grantExperience(
+        client,
+        playerId,
+        bestRecruit.id,
+        event.reward.amount,
+      )
+      const local = crewMembers.find((r) => String(r.id) === String(bestRecruit.id))
+      if (local && updated) {
+        local.experience = updated.experience
+        local.attributePoints = updated.attribute_points
+      }
+
+      const result = {
+        eventIndex: i,
+        type: event.type,
+        attribute: event.attribute,
+        recruitId: bestRecruit.id,
+        recruitName: bestRecruit.name,
+        success: true,
+        rewardEarned: event.reward,
+        attributePointsEarned: event.reward.amount * EXPERIENCE_TO_ATTRIBUTE_POINTS,
+      }
+
+      currentEventIndex = i + 1
+      eventResults.push(result)
+      const reflectionLogs = buildReflectionEventLog({
+        context: buildLogContext({ template, crewMembers, actingRecruit: bestRecruit }),
+        result,
+      })
+      await insertLogEntries(client, playerId, [...reflectionLogs.mission, ...reflectionLogs.global])
       continue
     }
 
