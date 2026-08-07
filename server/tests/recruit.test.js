@@ -10,6 +10,9 @@ const {
   rowToCandidate,
   rowToRecruit,
   ATTRIBUTE_KEYS,
+  levelForExperience,
+  maxAttributeForLevel,
+  attributePointCost,
 } = require('../src/domain/recruit')
 
 const DATA_DIR = path.join(__dirname, '../data')
@@ -223,5 +226,44 @@ describe('bestCombatStat', () => {
 
   test('breaks ties in favor of Might', () => {
     expect(bestCombatStat({ might: 4, agility: 4 })).toEqual({ attribute: 'might', score: 4 })
+  })
+})
+
+describe('levelForExperience', () => {
+  test('level 1 at 0 XP, advancing every 3 XP per the Player Character Level Advancement table', () => {
+    expect(levelForExperience(0)).toBe(1)
+    expect(levelForExperience(2)).toBe(1)
+    expect(levelForExperience(3)).toBe(2)
+    expect(levelForExperience(6)).toBe(3)
+    expect(levelForExperience(27)).toBe(10)
+    expect(levelForExperience(30)).toBe(11) // beyond the table -- the rules say to continue the progression
+  })
+})
+
+describe('maxAttributeForLevel', () => {
+  test('follows the tiered Maximum Attribute Score column, every 2 levels', () => {
+    expect(maxAttributeForLevel(1)).toBe(5)
+    expect(maxAttributeForLevel(2)).toBe(5)
+    expect(maxAttributeForLevel(3)).toBe(6)
+    expect(maxAttributeForLevel(4)).toBe(6)
+    expect(maxAttributeForLevel(5)).toBe(7)
+    expect(maxAttributeForLevel(6)).toBe(7)
+    expect(maxAttributeForLevel(7)).toBe(8)
+    expect(maxAttributeForLevel(8)).toBe(8)
+    expect(maxAttributeForLevel(9)).toBe(9)
+    expect(maxAttributeForLevel(10)).toBe(9)
+  })
+
+  test('never exceeds 9 beyond level 10 -- a score of 10 is never purchasable with attribute points', () => {
+    expect(maxAttributeForLevel(15)).toBe(9)
+    expect(maxAttributeForLevel(100)).toBe(9)
+  })
+})
+
+describe('attributePointCost', () => {
+  test('costs the new score, per the Attribute Overview table', () => {
+    expect(attributePointCost(0)).toBe(1)
+    expect(attributePointCost(3)).toBe(4)
+    expect(attributePointCost(8)).toBe(9)
   })
 })

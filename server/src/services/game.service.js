@@ -2008,6 +2008,17 @@ module.exports = {
     if (!recruit) return { error: 'Recruit not found' }
     return { recruit }
   }),
+  raiseAttribute: withPlayerAction(async (client, recruitId, attribute) => {
+    const result = await RecruitService.spendAttributePoint(
+      client,
+      DEFAULT_PLAYER_ID,
+      recruitId,
+      attribute,
+    )
+    if (!result) return { error: 'Recruit not found' }
+    if (result.error) return result
+    return {}
+  }),
   fireRecruit: withPlayerAction(async (client, recruitId) => {
     const recruit = await RecruitService.fireRecruit(client, DEFAULT_PLAYER_ID, Number(recruitId))
     if (!recruit) return { error: 'Recruit not found' }

@@ -3,7 +3,13 @@ import { CommonModule } from '@angular/common';
 import { GameService } from '../../core/game.service';
 import { ShipService } from '../../core/ship.service';
 import { EquipmentService, Equipment } from '../../core/equipment.service';
-import { PERK_ATTRIBUTE_MODIFIERS } from '../../models/recruit';
+import {
+  AttributeKey,
+  PERK_ATTRIBUTE_MODIFIERS,
+  levelForExperience,
+  maxAttributeForLevel,
+  attributePointCost,
+} from '../../models/recruit';
 
 @Component({
   selector: 'app-recruit-detail',
@@ -21,9 +27,25 @@ export class RecruitDetailComponent implements OnInit {
   armorStash: Equipment[] = [];
   equippedArmor: Equipment | null = null;
   equipError: string | null = null;
+  raiseError: string | null = null;
 
   get recruit() {
     return this.game.getRecruit(this.id);
+  }
+
+  get level(): number {
+    return levelForExperience(this.recruit?.experience ?? 0);
+  }
+
+  // Cost/cap hint shown next to each attribute -- "capped at N" once the
+  // recruit's level-derived ceiling is reached (see maxAttributeForLevel),
+  // otherwise "+1 = N pts" (see attributePointCost).
+  attributeCostLabel(key: AttributeKey): string {
+    if (!this.recruit) return '';
+    const current = this.recruit.attributes[key];
+    const cap = maxAttributeForLevel(this.level);
+    if (current >= cap) return `capped at ${cap}`;
+    return `+1 = ${attributePointCost(current)} pts`;
   }
 
   get relationships() {
@@ -95,6 +117,16 @@ export class RecruitDetailComponent implements OnInit {
       fire: () => {
         void this.game.fireRecruit(this.id).then((err) => {
           if (err) console.error(`[recruit fire] ${err}`);
+        });
+      },
+      raise: (attribute: string) => {
+        if (!attribute) {
+          console.warn('Usage: raise <attribute>');
+          return;
+        }
+        this.raiseError = null;
+        void this.game.raiseAttribute(this.id, attribute).then((err) => {
+          if (err) this.raiseError = err;
         });
       },
     };

@@ -56,6 +56,18 @@ router.post(
   }),
 )
 
+router.post(
+  '/recruits/:id/raise-attribute',
+  asyncRoute(async (req, res) => {
+    const result = await game.raiseAttribute(req.params.id, req.body.attribute)
+    if (result.error) {
+      res.status(400).json(result)
+      return
+    }
+    res.json(result)
+  }),
+)
+
 // Full mission history (every template ever started, regardless of the
 // batch it belonged to) — kept as its own endpoint rather than folded into
 // /state or /sync since it's fetched on demand by `mission list --completed`

@@ -58,6 +58,14 @@ export class GameApiService {
     );
   }
 
+  raiseAttribute(id: string, attribute: string): Promise<StateResponse> {
+    return firstValueFrom(
+      this.http
+        .post<StateResponse>(`${this.base}/recruits/${id}/raise-attribute`, { attribute })
+        .pipe(catchError((err) => of(this.onError(err)))),
+    );
+  }
+
   startMission(templateId: number, shipId: number, dev = false): Promise<StateResponse> {
     return firstValueFrom(
       this.http

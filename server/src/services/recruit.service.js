@@ -19,6 +19,9 @@ const {
   computeMaxHp,
   ATTRIBUTE_KEYS,
   EXPERIENCE_TO_ATTRIBUTE_POINTS,
+  levelForExperience,
+  maxAttributeForLevel,
+  attributePointCost,
 } = require('../domain/recruit')
 
 const PERKS_FLAWS_PATH = path.join(__dirname, '../../data/perks-flaws.json')
@@ -132,6 +135,39 @@ async function grantExperience(client, playerId, recruitId, xp) {
   return result.rows[0]
 }
 
+// Spends banked attribute points to raise one attribute by 1, per the Open
+// Legend rules: cost equals the new score, and the max purchasable score is
+// capped by the recruit's level (itself derived from experience -- see
+// levelForExperience). Returns null if the recruit doesn't exist, or
+// {error} with a player-facing reason if the spend is invalid -- unlike
+// adjustAttribute (an unconditional primitive with a single caller, the
+// Opera engine), this one has two distinct rejection reasons a player
+// actually needs to see, so it surfaces them directly (mirrors
+// assignMissionEventRecruit's validation style in game.service.js).
+async function spendAttributePoint(client, playerId, recruitId, attribute) {
+  if (!ATTRIBUTE_KEYS.includes(attribute)) return { error: 'Unknown attribute' }
+  const recruit = await getRecruitRow(client, playerId, recruitId)
+  if (!recruit) return null
+
+  const currentScore = recruit.attributes[attribute] ?? 0
+  const cap = maxAttributeForLevel(levelForExperience(recruit.experience))
+  if (currentScore + 1 > cap) {
+    return { error: `${attribute} is already at its level cap (${cap})` }
+  }
+  const cost = attributePointCost(currentScore)
+  if (recruit.attribute_points < cost) {
+    return {
+      error: `Not enough attribute points (need ${cost}, have ${recruit.attribute_points})`,
+    }
+  }
+
+  await client.query(
+    'UPDATE recruits SET attribute_points = attribute_points - $1 WHERE player_id = $2 AND id = $3',
+    [cost, playerId, recruitId],
+  )
+  return adjustAttribute(client, playerId, recruitId, attribute, 1)
+}
+
 // Hands the player a shop-catalog item directly, bypassing wallet/rotation.
 // The item must already exist in the shop_items master catalog -- OGL's
 // give_item effect only carries an itemName, no stats/price, so it can only
@@ -201,6 +237,7 @@ module.exports = {
   applyFlaw,
   adjustAttribute,
   grantExperience,
+  spendAttributePoint,
   giveItem,
   insertSeededCandidate,
 }

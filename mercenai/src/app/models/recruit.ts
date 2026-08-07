@@ -43,10 +43,35 @@ export interface Recruit {
   perks?: { name: string; description: string }[];
   flaws?: { name: string; description: string }[];
   // Gained from REFLECTION mission events (1 XP = 3 attribute points, per
-  // the Open Legend core rules). Spending attributePoints to raise
-  // attributes/level up is separate, not-yet-built functionality.
+  // the Open Legend core rules). Spend attributePoints via the recruit-detail
+  // screen's `raise <attribute>` command -- see levelForExperience/
+  // maxAttributeForLevel/attributePointCost below.
   experience: number;
   attributePoints: number;
+}
+
+// Open Legend core rules (01-character-creation), Player Character Level
+// Advancement table: level = floor(total XP / 3) + 1. Mirrors
+// server/src/domain/recruit.js's levelForExperience.
+export function levelForExperience(experience: number): number {
+  return Math.floor(experience / 3) + 1;
+}
+
+// Same table's Maximum Attribute Score column, tiered every 2 levels. A
+// score of 10 can never be purchased with attribute points regardless of
+// level, so 9 is the ceiling forever. Mirrors maxAttributeForLevel.
+export function maxAttributeForLevel(level: number): number {
+  if (level <= 2) return 5;
+  if (level <= 4) return 6;
+  if (level <= 6) return 7;
+  if (level <= 8) return 8;
+  return 9;
+}
+
+// Attribute Overview table: cost to increase an attribute equals its new
+// score. Mirrors attributePointCost.
+export function attributePointCost(currentScore: number): number {
+  return currentScore + 1;
 }
 
 // Mirrors server/data/perk-effects.json -- the curated subset of perks/flaws

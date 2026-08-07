@@ -83,6 +83,12 @@ function createFakeClient({
       row.attribute_points = (row.attribute_points ?? 0) + attributePoints
       return { rows: [row] }
     }
+    if (s.startsWith('UPDATE recruits SET attribute_points = attribute_points - $1')) {
+      const [cost, playerId, recruitId] = params
+      const row = state.recruits.find((r) => r.player_id === playerId && r.id === recruitId)
+      row.attribute_points = (row.attribute_points ?? 0) - cost
+      return { rows: row ? [row] : [] }
+    }
     if (s.startsWith('SELECT * FROM shop_items WHERE name = $1')) {
       const [name] = params
       return { rows: state.shopItems.filter((i) => i.name === name) }
@@ -277,6 +283,126 @@ describe('grantExperience', () => {
 
     expect(client.state.recruits[0].experience).toBe(3)
     expect(client.state.recruits[0].attribute_points).toBe(9)
+  })
+})
+
+describe('spendAttributePoint', () => {
+  test('raises the attribute by 1 and deducts a cost equal to the new score', async () => {
+    const client = createFakeClient({
+      recruits: [
+        {
+          player_id: PLAYER_ID,
+          id: 5,
+          attributes: { agility: 3, fortitude: 0, presence: 0, will: 0 },
+          experience: 0,
+          attribute_points: 10,
+          max_hp: 10,
+          hp: 10,
+        },
+      ],
+    })
+
+    const result = await RecruitService.spendAttributePoint(client, PLAYER_ID, 5, 'agility')
+
+    expect(result.attributes.agility).toBe(4)
+    expect(client.state.recruits[0].attribute_points).toBe(6) // cost = new score (4)
+  })
+
+  test('raising fortitude/presence/will also recomputes max HP, same as adjustAttribute', async () => {
+    const client = createFakeClient({
+      recruits: [
+        {
+          player_id: PLAYER_ID,
+          id: 5,
+          attributes: { fortitude: 0, presence: 0, will: 0 },
+          experience: 0,
+          attribute_points: 10,
+          max_hp: 10,
+          hp: 10,
+        },
+      ],
+    })
+
+    await RecruitService.spendAttributePoint(client, PLAYER_ID, 5, 'fortitude')
+
+    // computeMaxHp = 2*(fortitude+presence+will) + 10 = 2*1 + 10 = 12
+    expect(client.state.recruits[0].max_hp).toBe(12)
+    expect(client.state.recruits[0].attribute_points).toBe(9) // cost = new score (1)
+  })
+
+  test('rejects with a descriptive error when there are not enough attribute points', async () => {
+    const client = createFakeClient({
+      recruits: [
+        {
+          player_id: PLAYER_ID,
+          id: 5,
+          attributes: { agility: 3 },
+          experience: 0,
+          attribute_points: 2, // raising 3 -> 4 costs 4
+        },
+      ],
+    })
+
+    const result = await RecruitService.spendAttributePoint(client, PLAYER_ID, 5, 'agility')
+
+    expect(result.error).toMatch(/not enough attribute points/i)
+    expect(client.state.recruits[0].attributes.agility).toBe(3) // unchanged
+    expect(client.state.recruits[0].attribute_points).toBe(2) // unchanged
+  })
+
+  test('rejects once the attribute is at its level-derived cap', async () => {
+    const client = createFakeClient({
+      recruits: [
+        {
+          player_id: PLAYER_ID,
+          id: 5,
+          attributes: { agility: 5 }, // level 1 -> max 5, already there
+          experience: 0,
+          attribute_points: 999,
+        },
+      ],
+    })
+
+    const result = await RecruitService.spendAttributePoint(client, PLAYER_ID, 5, 'agility')
+
+    expect(result.error).toMatch(/level cap/i)
+    expect(client.state.recruits[0].attributes.agility).toBe(5) // unchanged
+    expect(client.state.recruits[0].attribute_points).toBe(999) // unchanged
+  })
+
+  test('a higher level raises the cap, allowing the spend to proceed', async () => {
+    const client = createFakeClient({
+      recruits: [
+        {
+          player_id: PLAYER_ID,
+          id: 5,
+          attributes: { agility: 5 },
+          experience: 6, // level 3 -> max 6
+          attribute_points: 999,
+        },
+      ],
+    })
+
+    const result = await RecruitService.spendAttributePoint(client, PLAYER_ID, 5, 'agility')
+
+    expect(result.error).toBeUndefined()
+    expect(client.state.recruits[0].attributes.agility).toBe(6)
+  })
+
+  test('rejects an unknown attribute name', async () => {
+    const client = createFakeClient({
+      recruits: [{ player_id: PLAYER_ID, id: 5, attributes: {}, experience: 0, attribute_points: 10 }],
+    })
+
+    const result = await RecruitService.spendAttributePoint(client, PLAYER_ID, 5, 'charisma')
+
+    expect(result.error).toBe('Unknown attribute')
+  })
+
+  test('returns null for an unknown recruit', async () => {
+    const client = createFakeClient({ recruits: [] })
+    const result = await RecruitService.spendAttributePoint(client, PLAYER_ID, 999, 'agility')
+    expect(result).toBeNull()
   })
 })
 

@@ -18,6 +18,30 @@ const ATTRIBUTE_KEYS = [
 // whenever a future leveling feature needs it, so it can never drift from XP.
 const EXPERIENCE_TO_ATTRIBUTE_POINTS = 3
 
+// Open Legend core rules (01-character-creation), Player Character Level
+// Advancement table: level = floor(total XP / 3) + 1.
+function levelForExperience(experience) {
+  return Math.floor(experience / 3) + 1
+}
+
+// Same table's Maximum Attribute Score column, tiered every 2 levels. A
+// score of 10 can never be purchased with attribute points regardless of
+// level ("only be obtained through feats, boons, or other special means"),
+// so 9 is the ceiling forever.
+function maxAttributeForLevel(level) {
+  if (level <= 2) return 5
+  if (level <= 4) return 6
+  if (level <= 6) return 7
+  if (level <= 8) return 8
+  return 9
+}
+
+// Open Legend core rules, Attribute Overview table: "The cost to increase
+// an attribute is equal to the new score."
+function attributePointCost(currentScore) {
+  return currentScore + 1
+}
+
 const ATTRIBUTE_TABLES = {
   specialized: [5, 4, 3, 2, 2, 2, 0, 0, 0, 0],
   'well-rounded': [4, 4, 3, 3, 3, 1, 1, 0, 0, 0],
@@ -346,6 +370,9 @@ function rowToRecruit(row) {
 module.exports = {
   ATTRIBUTE_KEYS,
   EXPERIENCE_TO_ATTRIBUTE_POINTS,
+  levelForExperience,
+  maxAttributeForLevel,
+  attributePointCost,
   computeMaxHp,
   computeGuard,
   bestCombatStat,

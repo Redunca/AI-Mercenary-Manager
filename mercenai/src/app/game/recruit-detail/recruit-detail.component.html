@@ -14,6 +14,7 @@
   </div>
   <div class="indent-one">"hp" : {{ recruit.hp }}/{{ recruit.maxHp }},</div>
   <div class="indent-one">"initial hp" : {{ recruit.originalMaxHp }},</div>
+  <div class="indent-one">"level" : {{ level }},</div>
   <div class="indent-one">"experience" : {{ recruit.experience }},</div>
   <div class="indent-one">"attributePoints" : {{ recruit.attributePoints }},</div>
 
@@ -21,35 +22,45 @@
   <div class="indent-two muted">// Physical</div>
   <div class="indent-two">
     agility {{ statBar(recruit.attributes.agility) }} {{ recruit.attributes.agility }}
+    <span class="muted">({{ attributeCostLabel('agility') }})</span>
   </div>
   <div class="indent-two">
     fortitude {{ statBar(recruit.attributes.fortitude) }} {{ recruit.attributes.fortitude }}
+    <span class="muted">({{ attributeCostLabel('fortitude') }})</span>
   </div>
   <div class="indent-two">
     might {{ statBar(recruit.attributes.might) }} {{ recruit.attributes.might }}
+    <span class="muted">({{ attributeCostLabel('might') }})</span>
   </div>
   <div class="indent-two muted">// Mental</div>
   <div class="indent-two">
     learning {{ statBar(recruit.attributes.learning) }} {{ recruit.attributes.learning }}
+    <span class="muted">({{ attributeCostLabel('learning') }})</span>
   </div>
   <div class="indent-two">
     logic {{ statBar(recruit.attributes.logic) }} {{ recruit.attributes.logic }}
+    <span class="muted">({{ attributeCostLabel('logic') }})</span>
   </div>
   <div class="indent-two">
     perception {{ statBar(recruit.attributes.perception) }} {{ recruit.attributes.perception }}
+    <span class="muted">({{ attributeCostLabel('perception') }})</span>
   </div>
   <div class="indent-two">
     will {{ statBar(recruit.attributes.will) }} {{ recruit.attributes.will }}
+    <span class="muted">({{ attributeCostLabel('will') }})</span>
   </div>
   <div class="indent-two muted">// Social</div>
   <div class="indent-two">
     deception {{ statBar(recruit.attributes.deception) }} {{ recruit.attributes.deception }}
+    <span class="muted">({{ attributeCostLabel('deception') }})</span>
   </div>
   <div class="indent-two">
     persuasion {{ statBar(recruit.attributes.persuasion) }} {{ recruit.attributes.persuasion }}
+    <span class="muted">({{ attributeCostLabel('persuasion') }})</span>
   </div>
   <div class="indent-two">
     presence {{ statBar(recruit.attributes.presence) }} {{ recruit.attributes.presence }}
+    <span class="muted">({{ attributeCostLabel('presence') }})</span>
   </div>
   <div class="indent-one">{{ '}' }},</div>
 
@@ -111,5 +122,8 @@
   <div class="indent-one muted">Recruit not found: {{ id }}</div>
 </ng-template>
 <div>{{ '}' }}</div>
-<div class="hint">[ rename &lt;name&gt; | equip &lt;equipmentId&gt; | unequip ]</div>
+<div class="hint">
+  [ rename &lt;name&gt; | equip &lt;equipmentId&gt; | unequip | raise &lt;attribute&gt; ]
+</div>
 <div *ngIf="equipError" class="error">{{ equipError }}</div>
+<div *ngIf="raiseError" class="error">{{ raiseError }}</div>

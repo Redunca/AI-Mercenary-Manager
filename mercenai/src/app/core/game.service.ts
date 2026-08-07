@@ -99,6 +99,15 @@ export class GameService {
     return null;
   }
 
+  async raiseAttribute(id: string, attribute: string): Promise<string | null> {
+    const result = await this.api.raiseAttribute(id, attribute);
+    if (result.error) return result.error;
+    if (result.state) {
+      this.injector.get(GameSyncService).applyState(result.state);
+    }
+    return null;
+  }
+
   setRecruitStatus(_id: string, _status: RecruitStatus): void {
     // Status is owned by the server; refreshed via sync.
   }
