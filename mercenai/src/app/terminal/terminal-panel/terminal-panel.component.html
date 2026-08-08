@@ -35,6 +35,7 @@
         #moduleInstance
         *ngSwitchCase="'candidate-detail'"
         [id]="panel.data?.id"
+        [hireError]="panel.data?.hireError ?? null"
       >
       </app-candidate-detail>
 

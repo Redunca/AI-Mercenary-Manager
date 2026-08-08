@@ -1314,13 +1314,17 @@ async function hireCandidate(client, playerId, candidateId) {
     )
   ).rows[0].count
 
-  if (recruitCount >= player.max_recruits) return null
+  if (recruitCount >= player.max_recruits) {
+    return { error: `Roster full (max ${player.max_recruits} recruits)` }
+  }
 
   const candidateResult = await client.query(
     'SELECT * FROM candidates WHERE player_id = $1 AND id = $2',
     [playerId, Number(candidateId)],
   )
-  if (candidateResult.rows.length === 0) return null
+  if (candidateResult.rows.length === 0) {
+    return { error: 'Candidate not found -- the pool may have refreshed' }
+  }
 
   const candidate = candidateResult.rows[0]
   const recruitId = player.next_recruit_id
@@ -1359,7 +1363,7 @@ async function hireCandidate(client, playerId, candidateId) {
     seedId: candidate.seed_key ?? undefined,
   })
 
-  return getRecruit(client, playerId, recruitId)
+  return { recruit: await getRecruit(client, playerId, recruitId) }
 }
 
 async function startMission(
@@ -1944,10 +1948,10 @@ module.exports = {
   getMissionHistory: () => getMissionHistory(pool, DEFAULT_PLAYER_ID),
   hireCandidate: withPlayerAction(async (client, candidateId) => {
     await bootstrapPlayer(client)
-    const recruit = await hireCandidate(client, DEFAULT_PLAYER_ID, candidateId)
-    if (!recruit) return { error: 'Recruitment failed' }
+    const result = await hireCandidate(client, DEFAULT_PLAYER_ID, candidateId)
+    if (result.error) return result
     await syncMissions(client, DEFAULT_PLAYER_ID)
-    return { recruit }
+    return result
   }),
   startMission: withPlayerAction(async (client, templateId, shipId, speedConsumableId, devInstant) => {
     await bootstrapPlayer(client)

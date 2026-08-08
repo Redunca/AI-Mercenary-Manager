@@ -16,15 +16,14 @@ export class CandidateService {
     this.candidates = state.candidates;
   }
 
-  async hireCandidate(candidateId: string): Promise<Recruit | null> {
+  async hireCandidate(candidateId: string): Promise<{ recruit: Recruit | null; error: string | null }> {
     const result = await this.api.hireCandidate(candidateId);
     if (result.error || !result.recruit) {
-      console.warn(result.error ?? `Candidate ${candidateId} not found`);
-      return null;
+      return { recruit: null, error: result.error ?? `Candidate ${candidateId} not found` };
     }
     if (result.state) {
       this.injector.get(GameSyncService).applyState(result.state);
     }
-    return result.recruit;
+    return { recruit: result.recruit, error: null };
   }
 }

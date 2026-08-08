@@ -1109,7 +1109,7 @@ describe('GameService', () => {
 
       const result = await GameService.hireCandidate(String(candidateId))
 
-      expect(result.error).toBe('Recruitment failed')
+      expect(result.error).toBe('Roster full (max 1 recruits)')
       expect(state.recruits).toHaveLength(1)
     })
 
@@ -1133,7 +1133,7 @@ describe('GameService', () => {
 
       const result = await GameService.hireCandidate('99999')
 
-      expect(result.error).toBe('Recruitment failed')
+      expect(result.error).toBe('Candidate not found -- the pool may have refreshed')
     })
   })
 

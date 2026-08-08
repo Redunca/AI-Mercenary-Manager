@@ -5,6 +5,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { CommandService } from './command.service';
 import { LayoutService } from './layout.service';
 import { SelfService } from './self.service';
+import { CandidateService } from './candidate.service';
 import { GameSyncService } from './game-sync.service';
 import { PanelModule } from '../models/panel';
 import { TerminalController } from './terminal-controller';
@@ -191,6 +192,47 @@ describe('CommandService', () => {
 
     expect(localBuySpy).toHaveBeenCalledWith('3');
     expect(selfService.buyUpgrade).not.toHaveBeenCalled();
+  }));
+
+  it('"recruit hire <id>" opens the new recruit\'s detail panel on success', fakeAsync(() => {
+    const panelId = layout.addPanel(PanelModule.Dashboard);
+    layout.setActivePanel(panelId);
+
+    const candidateService = TestBed.inject(CandidateService);
+    spyOn(candidateService, 'hireCandidate').and.resolveTo({
+      recruit: { id: '7' } as any,
+      error: null,
+    });
+
+    service.routeCommand('recruit hire 3', panelId);
+    tick();
+
+    expect(candidateService.hireCandidate).toHaveBeenCalledWith('3');
+    expect(layout.getPanelById(panelId)?.module).toBe(PanelModule.RecruitDetail);
+    expect(layout.getPanelById(panelId)?.data).toEqual({ id: '7' });
+  }));
+
+  // Regression test: this command used to have no failure branch at all --
+  // not even a console.warn -- so a player at the recruit cap who typed
+  // "recruit hire <id>" got no feedback whatsoever, just nothing happening.
+  it('"recruit hire <id>" reports failure on the candidate\'s own detail panel instead of doing nothing', fakeAsync(() => {
+    const panelId = layout.addPanel(PanelModule.Dashboard);
+    layout.setActivePanel(panelId);
+
+    const candidateService = TestBed.inject(CandidateService);
+    spyOn(candidateService, 'hireCandidate').and.resolveTo({
+      recruit: null,
+      error: 'Roster full (max 5 recruits)',
+    });
+
+    service.routeCommand('recruit hire 3', panelId);
+    tick();
+
+    expect(layout.getPanelById(panelId)?.module).toBe(PanelModule.CandidateDetail);
+    expect(layout.getPanelById(panelId)?.data).toEqual({
+      id: '3',
+      hireError: 'Roster full (max 5 recruits)',
+    });
   }));
 
   it('characterizes why a leaked newline corrupts the next command (motivates the UI fix)', () => {

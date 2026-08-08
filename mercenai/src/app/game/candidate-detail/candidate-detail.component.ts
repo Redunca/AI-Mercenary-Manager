@@ -13,10 +13,12 @@ import { GameService } from '../../core/game.service';
 })
 export class CandidateDetailComponent {
   @Input() id!: string;
+  // Set when the global `recruit hire <id>` command (command.service.ts)
+  // fails and routes here to report why -- this panel's own hireError div
+  // is the only existing player-visible surface for that message.
+  @Input() hireError: string | null = null;
   candidateService = inject(CandidateService);
   game = inject(GameService);
-
-  hireError: string | null = null;
 
   get candidate(): Candidate | null {
     return this.candidateService.candidates.find((c) => c.id === this.id) ?? null;
@@ -48,10 +50,9 @@ export class CandidateDetailComponent {
     return {
       hire: () => {
         if (!this.candidate) return;
+        this.hireError = null;
         void this.candidateService.hireCandidate(this.candidate.id).then((result) => {
-          if (!result) {
-            this.hireError = `Roster full (max ${this.game.player$.value.maxNumberOfRecruits} recruits)`;
-          }
+          this.hireError = result.error;
         });
       },
     };

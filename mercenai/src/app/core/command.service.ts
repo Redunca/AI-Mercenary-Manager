@@ -162,10 +162,16 @@ export class CommandService {
 
       case 'hire':
         if (arg) {
-          void this.candidateService.hireCandidate(arg).then((recruit) => {
+          void this.candidateService.hireCandidate(arg).then(({ recruit, error }) => {
             if (recruit) {
               this.layout.setPanelModule(panelId, PanelModule.RecruitDetail, { id: recruit.id });
+              return;
             }
+            // Surfaced on the candidate's own detail panel (the same
+            // hireError div its local `hire` command already renders)
+            // rather than swallowed to console -- this command has no
+            // panel of its own to report back to otherwise.
+            this.layout.setPanelModule(panelId, PanelModule.CandidateDetail, { id: arg, hireError: error });
           });
           return;
         }
