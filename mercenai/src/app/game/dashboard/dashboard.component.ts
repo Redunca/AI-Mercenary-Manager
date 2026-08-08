@@ -39,11 +39,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   get totalMissions() {
     return this.game.player$.value.maxAvailableMissions;
   }
-  // Excludes dead recruits -- they no longer occupy a roster slot (see
-  // hireCandidate's matching status != 'dead' filter, server-side), so this
-  // reflects the crew you actually have, not every row ever hired.
   get totalRecruits() {
-    return this.game.recruits.filter((r) => r.status !== 'dead').length;
+    return this.game.player$.value.maxNumberOfRecruits;
   }
   get tokens() {
     return this.game.player$.value.tokens;
