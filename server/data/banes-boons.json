@@ -1,0 +1,103 @@
+{
+  "Knockdown": {
+    "kind": "bane",
+    "resolution": "disadvantage_next",
+    "attributes": ["agility", "might"],
+    "defense": "guard",
+    "levels": [{ "power": 1, "amount": 1 }]
+  },
+  "Stunned": {
+    "kind": "bane",
+    "resolution": "skip_next",
+    "attributes": ["agility", "might"],
+    "defense": "toughness",
+    "levels": [{ "power": 4 }]
+  },
+  "Persistent Damage": {
+    "kind": "bane",
+    "resolution": "persistent_damage",
+    "attributes": ["agility"],
+    "defense": "guard",
+    "levels": [
+      { "power": 2, "dice": { "count": 1, "sides": 4 } },
+      { "power": 4, "dice": { "count": 1, "sides": 6 } },
+      { "power": 6, "dice": { "count": 1, "sides": 8 } },
+      { "power": 8, "dice": { "count": 1, "sides": 10 } },
+      { "power": 9, "dice": { "count": 2, "sides": 6 } }
+    ]
+  },
+  "Demoralized": {
+    "kind": "bane",
+    "resolution": "disadvantage_persist",
+    "attributes": ["might", "persuasion", "presence", "agility"],
+    "defense": "resolve",
+    "levels": [
+      { "power": 3, "amount": 1 },
+      { "power": 6, "amount": 2 },
+      { "power": 8, "amount": 3 }
+    ]
+  },
+  "Fear": {
+    "kind": "bane",
+    "resolution": "skip_rest",
+    "attributes": ["might"],
+    "defense": "resolve",
+    "levels": [{ "power": 5 }]
+  },
+  "Provoked": {
+    "kind": "bane",
+    "resolution": "redirect_target",
+    "attributes": ["agility", "deception", "might", "persuasion", "presence"],
+    "defense": "resolve",
+    "levels": [{ "power": 4 }]
+  },
+  "Heal": {
+    "kind": "boon",
+    "resolution": "heal_once",
+    "attributes": ["learning", "logic", "presence"],
+    "levels": [
+      { "power": 1, "dice": { "count": 1, "sides": 4 } },
+      { "power": 2, "dice": { "count": 1, "sides": 6 } },
+      { "power": 3, "dice": { "count": 1, "sides": 8 } },
+      { "power": 4, "dice": { "count": 1, "sides": 10 } },
+      { "power": 5, "dice": { "count": 2, "sides": 6 } },
+      { "power": 6, "dice": { "count": 2, "sides": 8 } },
+      { "power": 7, "dice": { "count": 2, "sides": 10 } },
+      { "power": 8, "dice": { "count": 3, "sides": 8 } },
+      { "power": 9, "dice": { "count": 3, "sides": 10 } }
+    ]
+  },
+  "Bolster": {
+    "kind": "boon",
+    "resolution": "advantage_persist",
+    "attributes": ["presence"],
+    "levels": [
+      { "power": 3, "amount": 1 },
+      { "power": 6, "amount": 2 },
+      { "power": 8, "amount": 3 }
+    ]
+  },
+  "Resistance": {
+    "kind": "boon",
+    "resolution": "guard_bonus_persist",
+    "attributes": ["fortitude"],
+    "levels": [
+      { "power": 3, "amount": 3 },
+      { "power": 5, "amount": 6 },
+      { "power": 7, "amount": 9 },
+      { "power": 9, "amount": 12 }
+    ]
+  },
+  "Regeneration": {
+    "kind": "boon",
+    "resolution": "heal_over_time",
+    "attributes": ["learning"],
+    "levels": [
+      { "power": 1, "dice": { "count": 1, "sides": 4 } },
+      { "power": 3, "dice": { "count": 1, "sides": 6 } },
+      { "power": 5, "dice": { "count": 1, "sides": 8 } },
+      { "power": 7, "dice": { "count": 1, "sides": 10 } },
+      { "power": 9, "dice": { "count": 2, "sides": 6 } }
+    ]
+  }
+}

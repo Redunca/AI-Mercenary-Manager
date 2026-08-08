@@ -1,7 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const { pool } = require('../db/pool')
-const { rollAction, rollDie, rollInRange } = require('./dice.service')
+const { rollAction, rollDie, rollInRange, rollPercent, rollExploding } = require('./dice.service')
 const {
   generateCandidate,
   rowToCandidate,
@@ -562,7 +562,14 @@ async function resolveEvents(client, playerId, instance, template, crewMembers, 
         ...r,
         equippedArmor: armorByRecruit.get(String(r.id)) || null,
       }))
-      const combatResult = runAutoBattle({ crew: armedCrew, enemy, rollAction, healCharges })
+      const combatResult = runAutoBattle({
+        crew: armedCrew,
+        enemy,
+        rollAction,
+        healCharges,
+        rollPercent,
+        rollExploding,
+      })
 
       for (const round of combatResult.rounds) {
         await insertLogEntries(client, playerId, [buildCombatRoundLog({ round, missionId })])

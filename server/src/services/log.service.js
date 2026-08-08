@@ -503,10 +503,33 @@ function buildEventResultLogs({ context, eventResult }) {
 
 // --- Auto-battle combat logs ---
 
+// Summarizes an invoked bane/boon (see domain/combat.js's maybeInvoke) into
+// a short clause, matching the tense/tone of a plain hit/miss line.
+function summarizeInvokeEntry(entry) {
+  const { actorName } = entry
+  const { name, kind, attribute, targetName, success, healedAmount } = entry.invoke
+  if (kind === 'bane') {
+    return success
+      ? `${actorName} (${attribute}) inflicts ${name} on Hostiles!`
+      : `${actorName} (${attribute}) attempts ${name} on Hostiles but fails`
+  }
+  const onWhom = targetName === actorName ? 'themself' : targetName
+  if (!success) return `${actorName} (${attribute}) attempts ${name} on ${onWhom} but fails`
+  const healSuffix = healedAmount != null ? ` for ${healedAmount} HP` : ''
+  return `${actorName} (${attribute}) invokes ${name} on ${onWhom}${healSuffix}`
+}
+
 // Summarizes one attack within a combat round into a short clause. Combat
 // rounds only ever produce [SYS] log lines (see buildCombatRoundLog), so this
 // intentionally carries no [AI]/recruit flavor of its own.
 function summarizeCombatEntry(entry) {
+  if (entry.invoke) return summarizeInvokeEntry(entry)
+  if (entry.regenTick)
+    return `${entry.actorName} regenerates ${entry.healed} HP (${entry.hpAfter} HP left)`
+  if (entry.persistentTick)
+    return `Hostiles take ${entry.damage} persistent damage (${entry.enemyHpAfter} HP left)`
+  if (entry.skipped) return `Hostiles are unable to act`
+
   if (entry.actor === 'crew') {
     return entry.hit
       ? `${entry.actorName} (${entry.attribute}) hits Hostiles for ${entry.damage} (${entry.enemyHpAfter} HP left)`
