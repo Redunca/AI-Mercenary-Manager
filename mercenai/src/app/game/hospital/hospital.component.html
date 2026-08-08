@@ -5,12 +5,18 @@
 <div class="indent-one">"slots" ({{ hospitalizedRecruits.length }}/{{ slots }}) : [</div>
 <ng-container *ngFor="let r of hospitalizedRecruits">
   <div class="indent-two patient">
-    [{{ r.id }}] {{ r.name }} — {{ r.hp }}/{{ r.maxHp }} hp
+    [{{ r.id }}] {{ r.name }} — {{ r.hp }}/{{ r.maxHp }} hp<span
+      *ngIf="r.maxHp < r.originalMaxHp"
+      class="muted"
+    >
+      (injury: {{ r.maxHp }}/{{ r.originalMaxHp }} max hp)</span
+    >
   </div>
 </ng-container>
 <div *ngIf="hospitalizedRecruits.length === 0" class="indent-two muted">— no one admitted —</div>
 <div class="indent-one">],</div>
-<div class="indent-one">"healIntervalMs" : {{ healIntervalMs }}</div>
+<div class="indent-one">"healIntervalMs" : {{ healIntervalMs }},</div>
+<div class="indent-one">"permanentHealIntervalMs" : {{ permanentHealIntervalMs }}</div>
 <div>{{ '}' }}</div>
 <div class="hint">
   [ hospital admit &lt;recruitId&gt; ] [ hospital discharge &lt;recruitId&gt; ] — admitting pulls a

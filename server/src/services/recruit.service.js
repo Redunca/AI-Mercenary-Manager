@@ -94,7 +94,12 @@ async function applyFlaw(client, playerId, recruitId, flawName, description = ''
 // Adjusts one attribute by a signed delta, then recomputes+writes max_hp
 // (never below 1 current hp) if the touched attribute feeds computeMaxHp
 // (fortitude/presence/will) -- mirrors how max HP is derived once at
-// creation and otherwise never recalculated.
+// creation and otherwise never recalculated. original_max_hp rises in
+// lockstep (it's the recruit's fully-healed baseline given their current
+// attributes, not just a hire-time snapshot -- see hospital.service.js's
+// permanent-injury healing) while any existing unhealed injury (the gap
+// between original_max_hp and max_hp) is preserved in absolute HP terms
+// rather than wiped out by the recompute.
 async function adjustAttribute(client, playerId, recruitId, attribute, amount) {
   if (!ATTRIBUTE_KEYS.includes(attribute)) return null
   const recruit = await getRecruitRow(client, playerId, recruitId)
@@ -106,11 +111,14 @@ async function adjustAttribute(client, playerId, recruitId, attribute, amount) {
   }
 
   if (['fortitude', 'presence', 'will'].includes(attribute)) {
-    const maxHp = computeMaxHp(attributes)
+    const originalMaxHp = computeMaxHp(attributes)
+    const injury = recruit.original_max_hp - recruit.max_hp
+    const maxHp = Math.max(1, originalMaxHp - injury)
     const hp = Math.min(recruit.hp, maxHp)
     const result = await client.query(
-      'UPDATE recruits SET attributes = $1, max_hp = $2, hp = $3 WHERE player_id = $4 AND id = $5 RETURNING *',
-      [JSON.stringify(attributes), maxHp, hp, playerId, recruitId],
+      `UPDATE recruits SET attributes = $1, max_hp = $2, hp = $3, original_max_hp = $4
+       WHERE player_id = $5 AND id = $6 RETURNING *`,
+      [JSON.stringify(attributes), maxHp, hp, originalMaxHp, playerId, recruitId],
     )
     return result.rows[0]
   }

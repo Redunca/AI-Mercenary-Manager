@@ -62,12 +62,13 @@ function createFakeClient({
       row.flaws = JSON.parse(flawsJson)
       return { rows: [row] }
     }
-    if (s.startsWith('UPDATE recruits SET attributes = $1, max_hp = $2, hp = $3')) {
-      const [attrsJson, maxHp, hp, playerId, recruitId] = params
+    if (s.startsWith('UPDATE recruits SET attributes = $1, max_hp = $2, hp = $3, original_max_hp = $4')) {
+      const [attrsJson, maxHp, hp, originalMaxHp, playerId, recruitId] = params
       const row = state.recruits.find((r) => r.player_id === playerId && r.id === recruitId)
       row.attributes = JSON.parse(attrsJson)
       row.max_hp = maxHp
       row.hp = hp
+      row.original_max_hp = originalMaxHp
       return { rows: [row] }
     }
     if (s.startsWith('UPDATE recruits SET attributes = $1 WHERE')) {
@@ -239,7 +240,7 @@ describe('adjustAttribute', () => {
     expect(client.state.recruits[0].attributes.agility).toBe(5)
   })
 
-  test('recomputes max_hp when fortitude/presence/will changes, capping current hp at the new max', async () => {
+  test('recomputes max_hp and original_max_hp when fortitude/presence/will changes, capping current hp at the new max', async () => {
     const client = createFakeClient({
       recruits: [
         {
@@ -247,6 +248,7 @@ describe('adjustAttribute', () => {
           id: 5,
           attributes: { fortitude: 0, presence: 0, will: 0 },
           max_hp: 10,
+          original_max_hp: 10,
           hp: 10,
         },
       ],
@@ -256,7 +258,31 @@ describe('adjustAttribute', () => {
 
     // computeMaxHp = 2*(fortitude+presence+will) + 10 = 2*3 + 10 = 16
     expect(client.state.recruits[0].max_hp).toBe(16)
+    expect(client.state.recruits[0].original_max_hp).toBe(16)
     expect(client.state.recruits[0].hp).toBe(10) // unchanged, still below the new max
+  })
+
+  test('preserves an existing permanent injury instead of erasing it when attributes rise', async () => {
+    const client = createFakeClient({
+      recruits: [
+        {
+          player_id: PLAYER_ID,
+          id: 5,
+          attributes: { fortitude: 0, presence: 0, will: 0 },
+          max_hp: 8, // carrying a 2-point unhealed injury
+          original_max_hp: 10,
+          hp: 8,
+        },
+      ],
+    })
+
+    await RecruitService.adjustAttribute(client, PLAYER_ID, 5, 'fortitude', 3)
+
+    // original_max_hp (the fully-healed baseline) rises to the new computeMaxHp (16),
+    // but the 2-point injury gap survives instead of being wiped by the recompute.
+    expect(client.state.recruits[0].original_max_hp).toBe(16)
+    expect(client.state.recruits[0].max_hp).toBe(14)
+    expect(client.state.recruits[0].hp).toBe(8)
   })
 })
 
@@ -297,6 +323,7 @@ describe('spendAttributePoint', () => {
           experience: 0,
           attribute_points: 10,
           max_hp: 10,
+          original_max_hp: 10,
           hp: 10,
         },
       ],
@@ -318,6 +345,7 @@ describe('spendAttributePoint', () => {
           experience: 0,
           attribute_points: 10,
           max_hp: 10,
+          original_max_hp: 10,
           hp: 10,
         },
       ],

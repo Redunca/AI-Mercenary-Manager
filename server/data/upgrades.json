@@ -148,5 +148,15 @@
     "increment": 1,
     "maxValue": 1,
     "costs": [150]
+  },
+  {
+    "id": 16,
+    "name": "Long-Term Ward Care",
+    "description": "Speeds up how fast the hospital mends a recruit's permanent injuries (lost max HP).",
+    "appliesTo": "players.permanent_heal_interval_ms",
+    "baseValueMs": 300000,
+    "decrementMs": 24000,
+    "floorMs": 60000,
+    "costs": [120, 150, 190, 235, 295, 370, 460, 575, 720, 900]
   }
 ]

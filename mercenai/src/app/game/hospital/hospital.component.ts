@@ -25,6 +25,10 @@ export class HospitalComponent {
     return this.game.player$.value.hospitalHealIntervalMs;
   }
 
+  get permanentHealIntervalMs(): number {
+    return this.game.player$.value.permanentHealIntervalMs;
+  }
+
   get hospitalizedRecruits(): Recruit[] {
     return this.game.recruits.filter((r) => r.status === 'hospitalized');
   }

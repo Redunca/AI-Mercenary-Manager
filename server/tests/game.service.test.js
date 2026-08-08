@@ -83,6 +83,7 @@ function createFakeClient() {
         inventory_capacity: 5,
         hospital_heal_interval_ms: 60000,
         hospital_slots: 1,
+        permanent_heal_interval_ms: 300000,
         has_difficulty_scanner: 0,
         has_duration_scanner: 0,
         has_combat_scanner: 0,
@@ -91,11 +92,14 @@ function createFakeClient() {
       state.players.push(player)
       return { rows: [player] }
     }
-    if (s === 'SELECT hospital_heal_interval_ms FROM players WHERE id = $1') {
+    if (s === 'SELECT hospital_heal_interval_ms, permanent_heal_interval_ms FROM players WHERE id = $1') {
       return {
         rows: state.players
           .filter((p) => p.id === params[0])
-          .map((p) => ({ hospital_heal_interval_ms: p.hospital_heal_interval_ms })),
+          .map((p) => ({
+            hospital_heal_interval_ms: p.hospital_heal_interval_ms,
+            permanent_heal_interval_ms: p.permanent_heal_interval_ms,
+          })),
       }
     }
     if (s.includes('SELECT max_recruits, max_available_missions, wallet, tokens,')) {
@@ -113,6 +117,7 @@ function createFakeClient() {
                 candidate_refresh_interval_ms: p.candidate_refresh_interval_ms,
                 hospital_slots: p.hospital_slots,
                 hospital_heal_interval_ms: p.hospital_heal_interval_ms,
+                permanent_heal_interval_ms: p.permanent_heal_interval_ms,
                 has_difficulty_scanner: p.has_difficulty_scanner,
                 has_duration_scanner: p.has_duration_scanner,
                 has_combat_scanner: p.has_combat_scanner,
@@ -287,21 +292,24 @@ function createFakeClient() {
     }
     if (
       s ===
-      "SELECT * FROM recruits WHERE player_id = $1 AND status = 'hospitalized' AND hp < max_hp"
+      "SELECT * FROM recruits WHERE player_id = $1 AND status = 'hospitalized' AND (hp < max_hp OR max_hp < original_max_hp)"
     ) {
       return {
         rows: state.recruits.filter(
-          (r) => r.player_id === params[0] && r.status === 'hospitalized' && r.hp < r.max_hp,
+          (r) =>
+            r.player_id === params[0] &&
+            r.status === 'hospitalized' &&
+            (r.hp < r.max_hp || r.max_hp < r.original_max_hp),
         ),
       }
     }
     if (
       s ===
-      'UPDATE recruits SET hp = $1, last_hospital_heal_at = $2, status = $3 WHERE player_id = $4 AND id = $5'
+      'UPDATE recruits SET hp = $1, max_hp = $2, last_hospital_heal_at = $3, last_permanent_heal_at = $4, status = $5 WHERE player_id = $6 AND id = $7'
     ) {
-      const [hp, last_hospital_heal_at, status, playerId, id] = params
+      const [hp, max_hp, last_hospital_heal_at, last_permanent_heal_at, status, playerId, id] = params
       const r = state.recruits.find((r) => r.player_id === playerId && sameId(r.id, id))
-      if (r) Object.assign(r, { hp, last_hospital_heal_at, status })
+      if (r) Object.assign(r, { hp, max_hp, last_hospital_heal_at, last_permanent_heal_at, status })
       return { rows: [] }
     }
     if (s === 'SELECT name FROM recruits WHERE player_id = $1 AND id = $2') {
@@ -365,6 +373,7 @@ function createFakeClient() {
         flaws: JSON.parse(flaws),
         personality,
         last_hospital_heal_at: new Date(),
+        last_permanent_heal_at: new Date(),
       })
       return { rows: [] }
     }
@@ -1055,6 +1064,7 @@ describe('GameService', () => {
         candidateRefreshIntervalMs: 300000,
         hospitalSlots: 1,
         hospitalHealIntervalMs: 60000,
+        permanentHealIntervalMs: 300000,
         hasDifficultyScanner: false,
         hasDurationScanner: false,
         hasCombatScanner: false,
@@ -2797,6 +2807,52 @@ describe('GameService', () => {
       expect(new Date(state.recruits[0].last_hospital_heal_at).getTime()).toBe(
         expectedNewHealAt.getTime(),
       )
+    })
+
+    test('heals a permanent injury on its own, slower clock and keeps the recruit hospitalized until max_hp catches up too', async () => {
+      await GameService.initGame()
+      const recruit = state.recruits[0]
+      const originalMaxHp = recruit.original_max_hp
+      recruit.max_hp = originalMaxHp - 2 // carrying a 2-point permanent injury
+      recruit.hp = recruit.max_hp // already at full current HP
+      recruit.status = 'hospitalized'
+      recruit.last_permanent_heal_at = new Date(Date.now() - 12 * 60000) // 12 minutes ago, interval is 5
+
+      const result = await GameService.syncGame()
+
+      expect(state.recruits[0].max_hp).toBe(originalMaxHp) // floor(12/5)=2 ticks, fully closed
+      expect(state.recruits[0].status).toBe('hospitalized') // hp hasn't caught up to the new max_hp yet
+      expect(result.recruits[0].maxHp).toBe(originalMaxHp)
+    })
+
+    test('auto-discharges once both HP and a permanent injury are fully healed', async () => {
+      jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] })
+      jest.setSystemTime(new Date('2026-01-01T10:00:00Z'))
+
+      await GameService.initGame()
+      const recruit = state.recruits[0]
+      const originalMaxHp = recruit.original_max_hp
+      recruit.max_hp = originalMaxHp - 1 // 1-point permanent injury
+      recruit.hp = originalMaxHp - 2 // also 1 HP short of that (already-injured) max_hp
+      recruit.status = 'hospitalized'
+      recruit.last_hospital_heal_at = new Date('2026-01-01T09:50:00Z') // 10 min ago, 1/min rate
+      recruit.last_permanent_heal_at = new Date('2026-01-01T09:50:00Z') // 10 min ago, 1/5min rate
+
+      await GameService.syncGame()
+
+      // The permanent-heal stream closes the injury (max_hp -> originalMaxHp) in
+      // this same call, but HP is capped at this call's *pre-tick* max_hp
+      // (originalMaxHp - 1) -- it only catches up on the next sync.
+      expect(state.recruits[0].hp).toBe(originalMaxHp - 1)
+      expect(state.recruits[0].max_hp).toBe(originalMaxHp)
+      expect(state.recruits[0].status).toBe('hospitalized')
+
+      jest.setSystemTime(new Date('2026-01-01T10:01:00Z')) // one more minute
+      await GameService.syncGame()
+
+      expect(state.recruits[0].hp).toBe(originalMaxHp)
+      expect(state.recruits[0].max_hp).toBe(originalMaxHp)
+      expect(state.recruits[0].status).toBe('available')
     })
   })
 

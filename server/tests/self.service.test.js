@@ -9,7 +9,8 @@
 // 3 dockedShips, 4 shopItems, 5 inventorySpace, 6 shopRefreshSpeed,
 // 7 missionRefreshSpeed, 8 hospitalHealSpeed, 9 concurrentOperas,
 // 10 candidateRefreshSpeed, 11 hospitalBeds, 12 difficultyScanner,
-// 13 durationScanner, 14 combatScanner, 15 skillCheckScanner.
+// 13 durationScanner, 14 combatScanner, 15 skillCheckScanner,
+// 16 permanentHealSpeed.
 const SelfService = require('../src/services/self.service')
 
 const RECRUITS = 1
@@ -22,6 +23,7 @@ const MISSION_REFRESH_SPEED = 7
 const HOSPITAL_HEAL_SPEED = 8
 const HOSPITAL_BEDS = 11
 const DIFFICULTY_SCANNER = 12
+const PERMANENT_HEAL_SPEED = 16
 
 function createFakeClient({
   tokens = 1000,
@@ -160,6 +162,29 @@ describe('SelfService', () => {
         maxed: false,
         nextCost: 80,
       })
+    })
+
+    test('permanentHealSpeed starts at the 1/5min base rate and floors at 1/min', async () => {
+      const { client } = createFakeClient()
+
+      const result = await SelfService.getUpgradeCatalog(client, 1)
+
+      const upgrade = result.upgrades.find((u) => u.id === PERMANENT_HEAL_SPEED)
+      expect(upgrade).toMatchObject({
+        currentValue: 300000,
+        maxValue: 60000,
+        maxed: false,
+        nextCost: 120,
+      })
+    })
+
+    test('permanentHealSpeed below its floor is not maxed and reports the decremented value', async () => {
+      const { client } = createFakeClient({ tiers: { [PERMANENT_HEAL_SPEED]: 2 } })
+
+      const result = await SelfService.getUpgradeCatalog(client, 1)
+
+      const upgrade = result.upgrades.find((u) => u.id === PERMANENT_HEAL_SPEED)
+      expect(upgrade).toMatchObject({ currentValue: 252000, maxed: false, nextCost: 190 }) // 300000 - 2*24000, costs[2]
     })
 
     test('uses the live shop_items count as the dynamic ceiling for shopItems', async () => {
@@ -311,6 +336,12 @@ describe('SelfService', () => {
       const { client, state } = createFakeClient({ tokens: 1000 })
       await SelfService.buyUpgrade(client, 1, HOSPITAL_BEDS)
       expect(state.columnUpdates.hospital_slots).toBe(2) // baseValue 1 + tier 1
+    })
+
+    test('applies the permanentHealSpeed effect to players.permanent_heal_interval_ms, decremented by 24s per tier', async () => {
+      const { client, state } = createFakeClient({ tokens: 1000 })
+      await SelfService.buyUpgrade(client, 1, PERMANENT_HEAL_SPEED)
+      expect(state.columnUpdates.permanent_heal_interval_ms).toBe(276000) // 300000 - 1*24000
     })
 
     test('applies the dockedShips effect by inserting a capacity:1 docking_stations row instead of updating a column', async () => {
