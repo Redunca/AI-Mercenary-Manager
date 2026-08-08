@@ -116,8 +116,8 @@
       "id": "act3-sabotage",
       "type": "mission",
       "mission": {
-        "title": "Undercut {enemyGroupName}",
-        "description": "Hit {enemyGroupName}'s hold on {planetName} before they can consolidate.",
+        "title": "Undercut the Rival Gang",
+        "description": "Hit the rival gang's hold on {planetName} before they can consolidate.",
         "difficulty": "STANDARD",
         "tags": [
           "sabotage"
@@ -133,7 +133,7 @@
       "type": "mission",
       "mission": {
         "title": "Protect the Shipment",
-        "description": "Escort a shipment through contested territory near {planetName} without losing it to {enemyGroupName}.",
+        "description": "Escort a shipment through contested territory near {planetName} without losing it to the rival gang.",
         "difficulty": "STANDARD",
         "tags": [
           "escort"
@@ -148,8 +148,8 @@
       "id": "act3-recon",
       "type": "mission",
       "mission": {
-        "title": "Read {enemyGroupName}'s Next Move",
-        "description": "Get eyes on {enemyGroupName}'s movements {distance} before they get eyes on the crew.",
+        "title": "Read the Rival Gang's Next Move",
+        "description": "Get eyes on the rival gang's movements {distance} before they get eyes on the crew.",
         "difficulty": "ROUTINE",
         "tags": [
           "recon"
