@@ -38,6 +38,17 @@ export class ShipDetailComponent implements OnInit {
     return this.gameService.recruits.find((r) => Number(r.id) === recruitId);
   }
 
+  // A recruit can come home from a mission at 0 HP and still be flagged
+  // 'available' (see completeMission, server-side -- it doesn't check HP
+  // before clearing crew back to available) -- the crew list is the screen
+  // a player checks right before launching another mission, so this is
+  // where that risk needs to be visible, not just on the recruit's own
+  // detail panel.
+  isCritical(recruitId: number): boolean {
+    const r = this.getRecruit(recruitId);
+    return !!r && r.hp <= 0 && r.status !== 'dead' && r.status !== 'hospitalized';
+  }
+
   private refreshInventory(): void {
     if (this.ship)
       this.shipService

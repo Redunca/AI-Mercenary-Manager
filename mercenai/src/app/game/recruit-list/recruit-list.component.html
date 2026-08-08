@@ -3,8 +3,10 @@
 </div>
 <div>ok ==> {{ '{' }}</div>
 <div *ngFor="let r of recruits" class="indent-one">
-  "{{ r.id }}" : "{{ r.name }}" [HP {{ r.hp }}/{{ r.maxHp }}] — {{ statusLabel(r)
-  }}<ng-container *ngIf="ships.getShipForRecruit(+r.id) as ship">
+  "{{ r.id }}" : "{{ r.name }}" [HP {{ r.hp }}/{{ r.maxHp }}] —
+  <span [class.critical-tag]="isCritical(r)">{{ statusLabel(r)
+    }}</span
+  ><ng-container *ngIf="ships.getShipForRecruit(+r.id) as ship">
     &#64; {{ ship.name }}</ng-container
   >,
 </div>

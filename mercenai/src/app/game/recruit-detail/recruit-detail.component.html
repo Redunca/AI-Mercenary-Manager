@@ -12,7 +12,10 @@
   <div class="indent-one" *ngIf="ships.getShipForRecruit(+recruit.id) as ship">
     "ship" : "{{ ship.name }}",
   </div>
-  <div class="indent-one">"hp" : {{ recruit.hp }}/{{ recruit.maxHp }},</div>
+  <div class="indent-one">
+    "hp" : {{ recruit.hp }}/{{ recruit.maxHp
+    }}<span *ngIf="isCritical" class="critical-tag"> (CRITICAL — needs hospital)</span>,
+  </div>
   <div class="indent-one">"initial hp" : {{ recruit.originalMaxHp }},</div>
   <div class="indent-one">"level" : {{ level }},</div>
   <div class="indent-one">"experience" : {{ recruit.experience }},</div>

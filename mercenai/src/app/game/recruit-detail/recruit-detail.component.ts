@@ -52,6 +52,16 @@ export class RecruitDetailComponent implements OnInit {
     return this.game.getRelationshipsFor(this.id).filter((r) => r.recruit);
   }
 
+  // A recruit can come home from a mission at 0 HP and still be flagged
+  // 'available' (see completeMission, server-side -- it doesn't check HP
+  // before clearing crew back to available) -- without this, they render
+  // identically to a fully healthy recruit and are one bad roll from
+  // permadeath if sent straight back out.
+  get isCritical(): boolean {
+    if (!this.recruit) return false;
+    return this.recruit.hp <= 0 && this.recruit.status !== 'dead' && this.recruit.status !== 'hospitalized';
+  }
+
   ngOnInit() {
     this.refreshEquipment();
   }

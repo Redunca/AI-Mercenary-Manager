@@ -21,7 +21,10 @@
   <div class="indent-one">"crew" ({{ ship.crew.length }}/{{ ship.stats.capacity }}) : [</div>
   <ng-container *ngFor="let recruitId of ship.crew">
     <div class="indent-two crew-member">
-      {{ getRecruit(recruitId)?.name ?? 'Recruit #' + recruitId }}
+      {{ getRecruit(recruitId)?.name ?? 'Recruit #' + recruitId
+      }}<ng-container *ngIf="getRecruit(recruitId) as r">
+        [HP {{ r.hp }}/{{ r.maxHp }}]</ng-container
+      ><span *ngIf="isCritical(recruitId)" class="critical-tag"> CRITICAL — needs hospital</span>
     </div>
   </ng-container>
   <div *ngIf="ship.crew.length === 0" class="indent-two muted">— no crew assigned —</div>
