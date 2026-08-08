@@ -336,6 +336,72 @@ describe('recordOperaAction', () => {
     expect(row.state.awaiting).toBe('link')
   })
 
+  // Regression test for a bug where the mission gate's own resolution
+  // nulled `action` before the very same pass's outgoing-link check ran,
+  // so an action_performed/complete_quest edge sitting right after a
+  // mission node -- the "advance on this mission finishing, scope: any"
+  // pattern the-machine-messiah.json uses seven times -- could never be
+  // satisfied by its own mission's completion. It only ever looked like it
+  // "eventually worked" because scope: any also matches any *other*
+  // mission's complete_quest event landing on the same in-progress
+  // instance later.
+  test('advances past a mission gate in the same pass its own completion satisfies an action_performed edge', async () => {
+    getOperaDefinition.mockReturnValue({
+      id: 'side-quest',
+      title: 'Side Quest',
+      nodes: [
+        { id: 'start', type: 'start' },
+        { id: 'the-job', type: 'mission', mission: { title: 'Do The Job' } },
+        { id: 'thanks', type: 'story', text: 'Thanks.' },
+      ],
+      links: [
+        { id: 'start--the-job', from: 'start', to: 'the-job', conditions: [] },
+        {
+          id: 'the-job--thanks',
+          from: 'the-job',
+          to: 'thanks',
+          conditions: [
+            {
+              type: 'action_performed',
+              params: { actionType: 'complete_quest', match: { scope: 'any' } },
+            },
+          ],
+        },
+      ],
+    })
+    const client = createFakeClient({
+      instances: [
+        {
+          id: 10,
+          player_id: PLAYER_ID,
+          template_id: 'side-quest',
+          slot_index: 0,
+          status: 'in_progress',
+          state: {
+            currentNodeId: 'the-job',
+            tags: {},
+            log: [],
+            awaiting: 'mission',
+            pendingMissionTemplateId: 42,
+          },
+        },
+      ],
+    })
+
+    // A failed outcome specifically: this is the case that shipped broken --
+    // the opera looked like it only ever "eventually" recovered after some
+    // unrelated mission completed elsewhere.
+    await OperaService.recordOperaAction(client, PLAYER_ID, 'complete_quest', {
+      templateId: 42,
+      outcome: 'failure',
+      outcomeLabel: 'FAILURE',
+    })
+
+    const row = client.state.instances.find((i) => i.id === 10)
+    expect(row.state.currentNodeId).toBe('thanks')
+    expect(row.state.awaiting).toBe('link')
+  })
+
   test('leaves an instance untouched when the action does not match its pending gate', async () => {
     getOperaDefinition.mockReturnValue(gatedGraph())
     const client = createFakeClient({

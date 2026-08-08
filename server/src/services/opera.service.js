@@ -598,7 +598,19 @@ async function advanceInstance(client, playerId, instance, def, action = null) {
         await log(client, playerId, instance, dryMissionResolutionLog(missionTitle, outcomeLabel))
         state.awaiting = 'link'
         state.pendingMissionTemplateId = null
-        action = null // consumed
+        // Deliberately NOT nulling `action` here: this same event still has
+        // to run the gauntlet of the 'link' handling right below in this
+        // same pass, so an outgoing action_performed/complete_quest edge
+        // (the "advance on this mission finishing, scope: any" pattern) can
+        // actually see the very completion it's meant to react to. Nulling
+        // it here previously left every such edge permanently unsatisfiable
+        // -- the only reason it ever looked like it "eventually worked" is
+        // that scope: any also matches any *other* mission's completion,
+        // reactivating the stuck link path outgoing walk as an accidental
+        // side effect (see the-machine-messiah.json for graphs that rely on
+        // this pattern). It still gets cleared exactly once, at the bottom
+        // of this loop iteration, right after being consumed by whichever
+        // link it ends up satisfying (or not).
       } else {
         await persist(client, instance, state)
         return
