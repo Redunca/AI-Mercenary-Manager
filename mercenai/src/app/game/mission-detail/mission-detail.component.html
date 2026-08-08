@@ -2,48 +2,57 @@
   TASK: [<span class="task-title">Mission detail</span>] ******************************************
 </div>
 <div>ok ==> {{ '{' }}</div>
-<div class="indent-one">"id" : {{ mission?.id }},</div>
-<div class="indent-one">"name" : "{{ mission?.name }}",</div>
-<div class="indent-one">"description" : "{{ mission?.description }}",</div>
-<div class="indent-one">
-  "org" : "{{ orgLabel }}"<span *ngIf="rewardMultiplierLabel"> ({{ rewardMultiplierLabel }})</span>,
-</div>
 
-<ng-container *ngIf="state; else available">
-  <div class="indent-one">"ship" : "{{ shipName }}",</div>
-  <div class="indent-one">"phase" : "{{ state.phase }}",</div>
-  <div class="indent-one">"progress" : "{{ progressBar }} {{ state.progress }}%",</div>
+<ng-container *ngIf="mission; else notFound">
+  <div class="indent-one">"id" : {{ mission.id }},</div>
+  <div class="indent-one">"name" : "{{ mission.name }}",</div>
+  <div class="indent-one">"description" : "{{ mission.description }}",</div>
+  <div class="indent-one">
+    "org" : "{{ orgLabel }}"<span *ngIf="rewardMultiplierLabel"> ({{ rewardMultiplierLabel }})</span>,
+  </div>
 
-  <ng-container *ngIf="nextEvent as event">
-    <div class="indent-one">"nextEvent" : "{{ event.type }}",</div>
+  <ng-container *ngIf="state; else available">
+    <div class="indent-one">"ship" : "{{ shipName }}",</div>
+    <div class="indent-one">"phase" : "{{ state.phase }}",</div>
+    <div class="indent-one">"progress" : "{{ progressBar }} {{ state.progress }}%",</div>
 
-    <ng-container *ngIf="event.type !== 'COMBAT'; else combatEvent">
-      <div class="indent-one">"relevantStat" : "{{ event.attribute }}",</div>
-      <div class="indent-one">
-        "assigned" : "{{ assignedRecruitName ?? '— none, will auto-pick —' }}",
-      </div>
-      <div class="indent-one">"crew" : [</div>
-      <div class="indent-two" *ngFor="let c of assignableCrew">
-        [{{ c.id }}] {{ c.name }} {{ statBar(c.value) }} {{ c.value
-        }}<span *ngIf="c.modifier" class="muted">
-          ({{ c.modifier > 0 ? '+' : '' }}{{ c.modifier }})</span
-        >
-      </div>
-      <div class="indent-two muted" *ngIf="!assignableCrew.length">— no eligible crew —</div>
-      <div class="indent-one">],</div>
+    <ng-container *ngIf="nextEvent as event">
+      <div class="indent-one">"nextEvent" : "{{ event.type }}",</div>
+
+      <ng-container *ngIf="event.type !== 'COMBAT'; else combatEvent">
+        <div class="indent-one">"relevantStat" : "{{ event.attribute }}",</div>
+        <div class="indent-one">
+          "assigned" : "{{ assignedRecruitName ?? '— none, will auto-pick —' }}",
+        </div>
+        <div class="indent-one">"crew" : [</div>
+        <div class="indent-two" *ngFor="let c of assignableCrew">
+          [{{ c.id }}] {{ c.name }} {{ statBar(c.value) }} {{ c.value
+          }}<span *ngIf="c.modifier" class="muted">
+            ({{ c.modifier > 0 ? '+' : '' }}{{ c.modifier }})</span
+          >
+        </div>
+        <div class="indent-two muted" *ngIf="!assignableCrew.length">— no eligible crew —</div>
+        <div class="indent-one">],</div>
+      </ng-container>
+      <ng-template #combatEvent>
+        <div class="indent-one muted">// full crew auto-battle, no recruit choice</div>
+      </ng-template>
     </ng-container>
-    <ng-template #combatEvent>
-      <div class="indent-one muted">// full crew auto-battle, no recruit choice</div>
-    </ng-template>
   </ng-container>
+
+  <ng-template #available>
+    <div class="indent-one">"status" : "available",</div>
+    <div class="indent-one" [class]="difficultyClass">"difficulty" : "{{ difficultyLabel }}",</div>
+    <div class="indent-one">"estimatedDuration" : "{{ durationLabel }}",</div>
+    <div class="indent-one">"combat" : "{{ combatLabel }}",</div>
+    <div class="indent-one">"skillChecks" : "{{ skillChecksLabel }}"</div>
+  </ng-template>
 </ng-container>
 
-<ng-template #available>
-  <div class="indent-one">"status" : "available",</div>
-  <div class="indent-one" [class]="difficultyClass">"difficulty" : "{{ difficultyLabel }}",</div>
-  <div class="indent-one">"estimatedDuration" : "{{ durationLabel }}",</div>
-  <div class="indent-one">"combat" : "{{ combatLabel }}",</div>
-  <div class="indent-one">"skillChecks" : "{{ skillChecksLabel }}"</div>
+<ng-template #notFound>
+  <div class="indent-one muted">
+    Mission "{{ id }}" not found -- it may have already resolved (see mission -c for history).
+  </div>
 </ng-template>
 
 <div>{{ '}' }}</div>

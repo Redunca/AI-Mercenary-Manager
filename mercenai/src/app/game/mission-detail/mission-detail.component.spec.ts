@@ -112,4 +112,27 @@ describe('MissionDetailComponent', () => {
     component.id = 2;
     expect(component.mission?.id).toBe(2);
   });
+
+  // Regression coverage: a resolved mission (succeeded/failed, filtered out
+  // of the live board server-side -- see buildGameState's nonFinal filter)
+  // used to render an almost-entirely-blank panel here instead of a clear
+  // error, since nothing gated the template on whether the mission actually
+  // exists -- it fell through into the same branch as a real, genuinely
+  // available mission.
+  it('shows a not-found message instead of a blank panel for a resolved/nonexistent mission', () => {
+    component.id = 999;
+    fixture.detectChanges();
+
+    const text = (fixture.nativeElement as HTMLElement).textContent ?? '';
+    expect(text).toContain('Mission "999" not found');
+  });
+
+  it('renders the real mission fields, not the not-found message, for a mission that exists', () => {
+    component.id = 1;
+    fixture.detectChanges();
+
+    const text = (fixture.nativeElement as HTMLElement).textContent ?? '';
+    expect(text).toContain('Corridor Patrol');
+    expect(text).not.toContain('not found');
+  });
 });
